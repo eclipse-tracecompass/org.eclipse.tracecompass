@@ -57,7 +57,9 @@ import org.eclipse.tracecompass.internal.ctf.core.CtfCoreLoggerUtil;
 import org.eclipse.tracecompass.internal.ctf.core.SafeMappedByteBuffer;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.MetadataStrings;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
+import org.eclipse.tracecompass.internal.ctf.core.trace.CTFIndexFile;
 import org.eclipse.tracecompass.internal.ctf.core.trace.CTFStream;
+import org.eclipse.tracecompass.internal.ctf.core.trace.StreamInputPacketIndex;
 import org.eclipse.tracecompass.internal.ctf.core.utils.JsonMetadataStrings;
 import org.eclipse.tracecompass.internal.ctf.core.utils.Utils;
 
@@ -142,6 +144,11 @@ public class CTFTrace implements IDefinitionScope {
      * Collection of all the clocks in a system.
      */
     private final Map<String, CTFClock> fClocks = new HashMap<>();
+
+    private static final String INDEX_FILE_DIR = "index"; //$NON-NLS-1$
+
+    /** Helpers for index files */
+    private static final String INDEX_EXTENSION = ".idx"; //$NON-NLS-1$
 
     /** Handlers for the metadata files */
     private static final FileFilter METADATA_FILE_FILTER = new MetadataFileFilter();
@@ -502,6 +509,7 @@ public class CTFTrace implements IDefinitionScope {
             /* Shouldn't happen at this stage if every other check passed */
             throw new CTFException(e);
         }
+
         final StructDefinition packetHeaderDef = getPacketHeaderDef();
         if (packetHeaderDef != null) {
             if (!validateMagicNumber(packetHeaderDef)) {
@@ -521,7 +529,6 @@ public class CTFTrace implements IDefinitionScope {
                 /* No stream_id in the packet header */
                 stream = getStream(null);
             }
-
         } else {
             /* No packet header, we suppose there is only one stream */
             stream = getStream(null);
@@ -534,12 +541,24 @@ public class CTFTrace implements IDefinitionScope {
         if (!(stream instanceof CTFStream)) {
             throw new CTFException("Stream is not a CTFStream, but rather a " + stream.getClass().getCanonicalName()); //$NON-NLS-1$
         }
+
         CTFStream ctfStream = (CTFStream) stream;
+        /* Create the index from the index files in the CTF trace. */
+        CTFStreamInput ctfStreamInput;
+        StreamInputPacketIndex index = createIndex(streamFile, stream);
+        if (index != null) {
+            ctfStreamInput = new CTFStreamInput(ctfStream, streamFile, index);
+            if (!index.isEmpty()) {
+                ctfStreamInput.setTimestampEnd(index.lastElement().getTimestampEnd());
+            }
+        } else {
+            ctfStreamInput = new CTFStreamInput(ctfStream, streamFile);
+        }
         /*
          * Create the stream input and add a reference to the streamInput in the
          * stream.
          */
-        ctfStream.addInput(new CTFStreamInput(ctfStream, streamFile));
+        ctfStream.addInput(ctfStreamInput);
         return ctfStream;
     }
 
@@ -564,6 +583,39 @@ public class CTFTrace implements IDefinitionScope {
             fUUIDMismatchWarning = true;
             CtfCoreLoggerUtil.logWarning("Reading CTF trace: UUID mismatch for trace " + this); //$NON-NLS-1$
         }
+    }
+
+    private StreamInputPacketIndex createIndex(File streamFile, ICTFStream stream) throws CTFException {
+        try (FileChannel fc = FileChannel.open(streamFile.toPath(), StandardOpenOption.READ)) {
+            File indexFile = new File(streamFile.getParentFile(), INDEX_FILE_DIR + File.separator + streamFile.getName() + INDEX_EXTENSION);
+            if (indexFile.exists()) {
+                CTFIndexFile ctfIndex = null;
+                ctfIndex = new CTFIndexFile(indexFile, getPacketHeader(), stream.getPacketContextDecl());
+                StreamInputPacketIndex index = ctfIndex.getStreamInputPacketIndex();
+                /**
+                 * Go search for context definition in the stream file to
+                 * complete the packet descriptors
+                 */
+                for (int i = 0; i < index.size(); i++) {
+                    ICTFPacketDescriptor packetHeader = index.getElement(i);
+                    long packetPosition = packetHeader.getOffsetBits();
+                    StructDeclaration packetContextDecl = stream.getPacketContextDecl();
+                    if ((packetPosition + getPacketHeader().getMaximumSize() + packetContextDecl.getMaximumSize()) / Byte.SIZE > fc.size()) {
+                        // skip packet as the position must be invalid.
+                        continue;
+                    }
+                    ByteBuffer byteBuffer = SafeMappedByteBuffer.map(fc, MapMode.READ_ONLY, (packetPosition + getPacketHeader().getMaximumSize()) / Byte.SIZE, packetContextDecl.getMaximumSize());
+                    BitBuffer bitBuffer = new BitBuffer(byteBuffer);
+                    StructDefinition packetContextFromStream = packetContextDecl.createDefinition(this, ILexicalScope.PACKET_HEADER, bitBuffer);
+
+                    packetHeader.setStreamPacketContextDef(packetContextFromStream);
+                }
+                return index;
+            }
+        } catch (CTFIOException | IOException e) {
+            CtfCoreLoggerUtil.logWarning("Unable to read CTF index file: " + e.getMessage()); //$NON-NLS-1$
+        }
+        return null;
     }
 
     /**
