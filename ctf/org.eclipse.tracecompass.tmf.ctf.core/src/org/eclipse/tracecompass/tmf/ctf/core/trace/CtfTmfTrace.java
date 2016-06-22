@@ -235,7 +235,8 @@ public class CtfTmfTrace extends TmfTrace
             } else {
                 final ITmfTimestamp curTime = event.getTimestamp();
                 this.setStartTime(curTime);
-                this.setEndTime(curTime);
+                long endTime = Math.max(curTime.getValue(), fTrace.getCurrentEndTime());
+                this.setEndTime(TmfTimestamp.fromNanos(endTime));
             }
             /*
              * Register every event type. When you call getType, it will register a trace to
