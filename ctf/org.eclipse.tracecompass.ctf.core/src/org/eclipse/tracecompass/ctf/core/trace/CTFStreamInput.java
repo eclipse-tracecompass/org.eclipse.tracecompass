@@ -108,14 +108,13 @@ public class CTFStreamInput implements IDefinitionScope {
      *            The stream to which this StreamInput belongs to.
      * @param file
      *            Information about the trace file (for debugging purposes).
-     * @since 2.0
+     * @since 4.5
      */
-    public CTFStreamInput(ICTFStream stream, File file) {
+    public CTFStreamInput(ICTFStream stream, File file, StreamInputPacketIndex index) {
         fStream = stream;
         fFile = file;
         fFileName = fFile.getName();
-
-        fIndex = new StreamInputPacketIndex();
+        fIndex = index;
         /*
          * Create the definitions we need to read the packet headers + contexts
          */
@@ -131,6 +130,19 @@ public class CTFStreamInput implements IDefinitionScope {
         } else {
             fStreamPacketContextDecl = new StructDeclaration(1);
         }
+    }
+
+    /**
+     * Constructs a StreamInput.
+     *
+     * @param stream
+     *            The stream to which this StreamInput belongs to.
+     * @param file
+     *            Information about the trace file (for debugging purposes).
+     * @since 2.0
+     */
+    public CTFStreamInput(ICTFStream stream, File file) {
+        this(stream, file, new StreamInputPacketIndex());
     }
 
     // ------------------------------------------------------------------------

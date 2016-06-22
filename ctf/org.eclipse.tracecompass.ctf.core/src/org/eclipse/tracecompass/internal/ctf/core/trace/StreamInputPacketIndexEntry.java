@@ -16,6 +16,8 @@ package org.eclipse.tracecompass.internal.ctf.core.trace;
 
 import static java.util.Objects.requireNonNull;
 
+import java.io.DataInputStream;
+import java.io.IOException;
 import java.util.AbstractMap;
 import java.util.Collections;
 import java.util.Map;
@@ -48,6 +50,11 @@ import com.google.common.collect.ImmutableMap.Builder;
 public class StreamInputPacketIndexEntry implements ICTFPacketDescriptor {
 
     private static final Pattern NUMBER_PATTERN = Pattern.compile("\\D*(\\d+)"); //$NON-NLS-1$
+
+    /**
+     * Additional attribute to link this entry to a stream declaration
+     */
+    public static final String STREAM_ID = "stream_id"; //$NON-NLS-1$
 
     // ------------------------------------------------------------------------
     // Attributes
@@ -91,8 +98,8 @@ public class StreamInputPacketIndexEntry implements ICTFPacketDescriptor {
     /**
      * Which target is being traced
      */
-    private final String fTarget;
-    private final long fTargetID;
+    private String fTarget;
+    private long fTargetID;
 
     /**
      * Attributes of this index entry
@@ -101,7 +108,7 @@ public class StreamInputPacketIndexEntry implements ICTFPacketDescriptor {
 
     private final long fEndPacketHeaderBits;
 
-    private final StructDefinition fStreamPacketContextDef;
+    private StructDefinition fStreamPacketContextDef;
 
     // ------------------------------------------------------------------------
     // Constructors
@@ -117,7 +124,6 @@ public class StreamInputPacketIndexEntry implements ICTFPacketDescriptor {
      *
      *            TODO: Remove
      */
-
     public StreamInputPacketIndexEntry(long dataOffsetBits, long fileSizeBytes) {
         fAttributes = Collections.emptyMap();
         fContentSizeBits = (fileSizeBytes * Byte.SIZE);
@@ -135,6 +141,58 @@ public class StreamInputPacketIndexEntry implements ICTFPacketDescriptor {
 
     private static long bitsToBytes(long value) {
         return (long) Math.ceil(value / (double) Byte.SIZE);
+    }
+
+    /**
+     * Streamed stream input packet index entry constructor
+     *
+     * @param dataIn
+     *            the datastream
+     * @param packetHeaderBits
+     *            the number of bits taken for the header
+     * @throws IOException
+     *             an {@link IOException}, filenotfound or such
+     */
+    public StreamInputPacketIndexEntry(DataInputStream dataIn, long packetHeaderBits) throws IOException {
+        this(dataIn, packetHeaderBits, ""); //$NON-NLS-1$
+    }
+
+    /**
+     * Streamed stream input packet index entry constructor
+     *
+     * @param dataIn
+     *            the datastream
+     * @param packetHeaderBits
+     *            the number of bits taken for the header
+     * @param target
+     *            the target string
+     * @throws IOException
+     *             an {@link IOException}, filenotfound or such
+     */
+    public StreamInputPacketIndexEntry(DataInputStream dataIn, long packetHeaderBits, String target) throws IOException {
+        fOffsetBytes = dataIn.readLong();
+        fOffsetBits = fOffsetBytes * Byte.SIZE;
+        fPacketSizeBits = dataIn.readLong();
+        fContentSizeBits = dataIn.readLong();
+        fTimestampBegin = dataIn.readLong();
+        fTimestampEnd = dataIn.readLong();
+        fLostEvents = dataIn.readLong();
+        fAttributes = Collections.singletonMap(STREAM_ID, dataIn.readLong());
+        /*
+         * Skipping two longs accounting for the ID of the channel instance and
+         * the packet sequence number
+         */
+        dataIn.skipBytes(16);
+        fTarget = target;
+        long parsedTarget = -1;
+        try {
+            parsedTarget = Long.parseLong(target);
+        } catch (NumberFormatException e) {
+            // swallow it
+        }
+        fTargetID = parsedTarget;
+        fEndPacketHeaderBits = packetHeaderBits;
+        fStreamPacketContextDef = null;
     }
 
     /**
@@ -209,7 +267,7 @@ public class StreamInputPacketIndexEntry implements ICTFPacketDescriptor {
         fTimestampBegin = entryToAdd.getTimestampBegin();
         fTimestampEnd = newTimestampEnd;
         fOffsetBits = entryToAdd.getOffsetBits();
-        fOffsetBytes = entryToAdd.getOffsetBits();
+        fOffsetBytes = entryToAdd.getOffsetBytes();
 
         // LTTng Specific
         fTarget = entryToAdd.getTarget();
@@ -467,5 +525,17 @@ public class StreamInputPacketIndexEntry implements ICTFPacketDescriptor {
     @Override
     public StructDefinition getStreamPacketContextDef() {
         return fStreamPacketContextDef;
+    }
+
+    @Override
+    public void setStreamPacketContextDef(StructDefinition streamPacketContextDef) {
+        fStreamPacketContextDef = streamPacketContextDef;
+        IntegerDefinition cpuIdDefinition = (IntegerDefinition) streamPacketContextDef.getDefinition(CTFStrings.CPU_ID);
+        if (cpuIdDefinition != null) {
+            Target target = new Target("CPU" + cpuIdDefinition.getValue(), cpuIdDefinition.getValue()); //$NON-NLS-1$
+
+            fTarget = target.getLabel();
+            fTargetID = target.getNumber();
+        }
     }
 }

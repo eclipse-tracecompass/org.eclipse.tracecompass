@@ -18,6 +18,7 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.ctf.core.event.types.ICompositeDefinition;
+import org.eclipse.tracecompass.ctf.core.event.types.StructDefinition;
 
 /**
  * CTF Packet descriptor, can come from a packet context or an index file, this
@@ -102,6 +103,17 @@ public interface ICTFPacketDescriptor {
      */
     default @Nullable ICompositeDefinition getStreamPacketContextDef() {
         return null;
+    }
+
+    /**
+     * Set the packet context definition.
+     *
+     * @param streamPacketContextDef
+     *            the packet context to store in the descriptor.
+     * @since 4.5
+     */
+    default void setStreamPacketContextDef(StructDefinition streamPacketContextDef) {
+        // Do nothing
     }
 
     /**
