@@ -283,7 +283,10 @@ public final class StyleProperties {
     /**
      * Symbol type as a string. Possible values: {@link SymbolType}.
      * <p>
-     * Default: @link {@link SymbolType#NONE}
+     * Default: {@link SymbolType#NONE}
+     * <p>
+     * If the value is not amongst {@link SymbolType}, the string value itself
+     * is drawn.
      */
     public static final String SYMBOL_TYPE = "symbol-type"; //$NON-NLS-1$
 

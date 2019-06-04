@@ -2314,7 +2314,8 @@ public class TimeGraphControl extends TimeGraphBaseControl
             } else if (VerticalAlign.TOP.equals(verticalAlign)) {
                 y -= Math.max(0, rect.height / 2 - symbolSize);
             }
-            switch (String.valueOf(symbolType)) {
+            String symbol = String.valueOf(symbolType);
+            switch (symbol) {
             case SymbolType.CROSS:
                 SymbolHelper.drawCross(gc, color, symbolSize, rect.x, y);
                 break;
@@ -2333,8 +2334,22 @@ public class TimeGraphControl extends TimeGraphBaseControl
             case SymbolType.CIRCLE:
                 SymbolHelper.drawCircle(gc, color, symbolSize, rect.x, y);
                 break;
-            default:
+            case SymbolType.DIAMOND:
                 SymbolHelper.drawDiamond(gc, color, symbolSize, rect.x, y);
+                break;
+            default:
+                Color oldColor = gc.getForeground();
+                gc.setForeground(color);
+                int height = (int) (rect.height * heightFactor);
+                TimeGraphRender.setFontForHeight(height, gc);
+                int textSize = (gc.textExtent(symbol).y + 1) / 2;
+                if (VerticalAlign.BOTTOM.equals(verticalAlign)) {
+                    y = rect.y + rect.height / 2 + Math.max(0, rect.height / 2 - textSize);
+                } else if (VerticalAlign.TOP.equals(verticalAlign)) {
+                    y = rect.y + rect.height / 2 - Math.max(0, rect.height / 2 - textSize);
+                }
+                gc.drawText(symbol, rect.x - symbolSize, y - textSize, true);
+                gc.setForeground(oldColor);
             }
             gc.setAlpha(OPAQUE);
             if (marker.getDuration() == 0) {
