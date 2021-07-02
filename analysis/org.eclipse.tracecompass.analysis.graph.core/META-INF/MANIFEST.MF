@@ -21,7 +21,9 @@ Export-Package: org.eclipse.tracecompass.analysis.graph.core.base,
  org.eclipse.tracecompass.internal.analysis.graph.core;x-internal=true;uses:="org.eclipse.tracecompass.common.core",
  org.eclipse.tracecompass.internal.analysis.graph.core.base;x-friends:="org.eclipse.tracecompass.analysis.graph.ui,org.eclipse.tracecompass.analysis.graph.core.tests",
  org.eclipse.tracecompass.internal.analysis.graph.core.criticalpath;x-friends:="org.eclipse.tracecompass.analysis.graph.ui,org.eclipse.tracecompass.analysis.graph.core.tests",
- org.eclipse.tracecompass.internal.analysis.graph.core.dataprovider;x-friends:="org.eclipse.tracecompass.analysis.graph.ui"
+ org.eclipse.tracecompass.internal.analysis.graph.core.dataprovider;x-friends:="org.eclipse.tracecompass.analysis.graph.ui",
+ org.eclipse.tracecompass.internal.analysis.graph.core.graph;x-friends:="org.eclipse.tracecompass.analysis.graph.core.tests",
+ org.eclipse.tracecompass.internal.analysis.graph.core.graph.legacy;x-friends:="org.eclipse.tracecompass.analysis.graph.core.tests"
 Import-Package: com.google.common.annotations,
  com.google.common.cache,
  com.google.common.collect,
