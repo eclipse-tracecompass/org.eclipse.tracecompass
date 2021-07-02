@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 École Polytechnique de Montréal
+ * Copyright (c) 2015, 2022 École Polytechnique de Montréal
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -19,9 +19,12 @@ import org.eclipse.tracecompass.analysis.os.linux.core.execution.graph.OsWorker;
 import org.eclipse.tracecompass.analysis.os.linux.core.model.HostThread;
 import org.eclipse.tracecompass.analysis.os.linux.core.model.ProcessStatus;
 import org.eclipse.tracecompass.analysis.os.linux.core.trace.IKernelAnalysisEventLayout;
+import org.eclipse.tracecompass.common.core.NonNullUtils;
 import org.eclipse.tracecompass.internal.lttng2.kernel.core.analysis.graph.model.EventField;
 import org.eclipse.tracecompass.tmf.core.event.ITmfEvent;
 import org.eclipse.tracecompass.tmf.core.event.ITmfEventField;
+import org.eclipse.tracecompass.tmf.core.event.aspect.TmfCpuAspect;
+import org.eclipse.tracecompass.tmf.core.trace.TmfTraceUtils;
 
 /**
  * Handles the LTTng statedump events necessary for the initialization of the
@@ -58,6 +61,7 @@ public class TraceEventHandlerStatedump extends BaseHandler {
     private void handleStatedumpProcessState(ITmfEvent event, IKernelAnalysisEventLayout eventLayout) {
         OsSystemModel system = getProvider().getSystem();
         ITmfEventField content = event.getContent();
+        Integer cpu = NonNullUtils.checkNotNull(TmfTraceUtils.resolveIntEventAspectOfClassForEvent(event.getTrace(), TmfCpuAspect.class, event));
         Integer tid = content.getFieldValue(Integer.class, eventLayout.fieldTid());
         String name = EventField.getOrDefault(event, eventLayout.fieldName(), nullToEmptyString(Messages.TraceEventHandlerSched_UnknownThreadName));
         Integer status = content.getFieldValue(Integer.class, eventLayout.fieldStatus());
@@ -70,10 +74,10 @@ public class TraceEventHandlerStatedump extends BaseHandler {
         long ts = event.getTimestamp().getValue();
 
         HostThread ht = new HostThread(host, tid);
-        OsWorker task = system.findWorker(ht);
+        OsWorker task = system.findWorker(ht, cpu);
         if (task == null) {
             task = new OsWorker(ht, name, ts);
-            system.addWorker(task);
+            system.addWorker(task, cpu);
         } else {
             task.setName(name);
         }

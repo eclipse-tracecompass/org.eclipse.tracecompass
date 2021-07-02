@@ -24,6 +24,7 @@ import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfVertex;
  *
  * @author Geneviève Bastien
  */
+@SuppressWarnings("deprecation")
 public class TmfVertexLegacyWrapper implements ITmfVertex {
 
     private final IGraphWorker fWorker;

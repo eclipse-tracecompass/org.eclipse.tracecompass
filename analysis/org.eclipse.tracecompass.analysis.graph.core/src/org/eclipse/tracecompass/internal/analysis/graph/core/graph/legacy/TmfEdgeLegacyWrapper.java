@@ -23,6 +23,7 @@ import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfVertex;
  *
  * @author Geneviève Bastien
  */
+@SuppressWarnings("deprecation")
 public class TmfEdgeLegacyWrapper implements ITmfEdge {
 
     private TmfEdge fLegacyEdge;

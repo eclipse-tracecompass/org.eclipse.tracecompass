@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016 École Polytechnique de Montréal
+ * Copyright (c) 2016, 2022 École Polytechnique de Montréal
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -27,8 +27,8 @@ import org.eclipse.test.performance.Dimension;
 import org.eclipse.test.performance.Performance;
 import org.eclipse.test.performance.PerformanceMeter;
 import org.eclipse.tracecompass.analysis.graph.core.base.IGraphWorker;
-import org.eclipse.tracecompass.analysis.graph.core.base.TmfGraph;
 import org.eclipse.tracecompass.analysis.graph.core.criticalpath.CriticalPathModule;
+import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfGraph;
 import org.eclipse.tracecompass.analysis.os.linux.core.execution.graph.OsExecutionGraph;
 import org.eclipse.tracecompass.analysis.os.linux.core.execution.graph.OsWorker;
 import org.eclipse.tracecompass.ctf.core.tests.shared.CtfBenchmarkTrace;
@@ -207,7 +207,7 @@ public class KernelExecutionGraphBenchmark {
         CriticalPathModule critPathModule = null;
         try {
             // Find the worker in the execution graph
-            TmfGraph graph = module.getGraph();
+            ITmfGraph graph = module.getTmfGraph();
             assertNotNull("Execution graph is null!", graph);
             IGraphWorker worker = null;
             if (fGraphWorkerCount != null) {
@@ -230,7 +230,7 @@ public class KernelExecutionGraphBenchmark {
 
             // Make sure the critical path computed something and has a few
             // workers.
-            TmfGraph criticalPath = critPathModule.getCriticalPath();
+            ITmfGraph criticalPath = critPathModule.getCriticalPathGraph();
             assertNotNull("Critical path is null!", criticalPath);
             if (fCritPathWorkerCount != null) {
                 assertEquals("Number of critical path workers", (int) fCritPathWorkerCount, criticalPath.getWorkers().size());

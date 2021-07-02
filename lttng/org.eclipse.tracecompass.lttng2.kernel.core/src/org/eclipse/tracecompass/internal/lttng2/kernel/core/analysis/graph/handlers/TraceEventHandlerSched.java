@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 École Polytechnique de Montréal
+ * Copyright (c) 2015, 2022 École Polytechnique de Montréal
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -85,20 +85,20 @@ public class TraceEventHandlerSched extends BaseHandler {
         system.cacheTidOnCpu(cpu, new HostThread(event.getTrace().getHostId(), next));
 
         HostThread nextHt = new HostThread(host, next);
-        OsWorker nextTask = system.findWorker(nextHt);
+        OsWorker nextTask = system.findWorker(nextHt, cpu);
         if (nextTask == null) {
             String name = EventField.getOrDefault(event, eventLayout.fieldNextComm(), NonNullUtils.checkNotNull(Messages.TraceEventHandlerSched_UnknownThreadName));
             nextTask = new OsWorker(nextHt, name, ts);
-            system.addWorker(nextTask);
+            system.addWorker(nextTask, cpu);
         }
         nextTask.setStatus(ProcessStatus.RUN);
 
         HostThread prevHt = new HostThread(host, prev);
-        OsWorker prevTask = system.findWorker(prevHt);
+        OsWorker prevTask = system.findWorker(prevHt, cpu);
         String name = EventField.getOrDefault(event, eventLayout.fieldPrevComm(), NonNullUtils.checkNotNull(Messages.TraceEventHandlerSched_UnknownThreadName));
         if (prevTask == null) {
             prevTask = new OsWorker(prevHt, name, ts);
-            system.addWorker(prevTask);
+            system.addWorker(prevTask, cpu);
         } else if (prev != 0) {
             /* update the process name if changed at runtime */
             prevTask.setName(name);
@@ -113,6 +113,7 @@ public class TraceEventHandlerSched extends BaseHandler {
 
     private void handleSchedProcessFork(ITmfEvent event) {
         String host = event.getTrace().getHostId();
+        Integer cpu = NonNullUtils.checkNotNull(TmfTraceUtils.resolveIntEventAspectOfClassForEvent(event.getTrace(), TmfCpuAspect.class, event));
         IKernelAnalysisEventLayout eventLayout = getProvider().getEventLayout(event.getTrace());
         OsSystemModel system = getProvider().getSystem();
         ITmfEventField content = event.getContent();
@@ -127,10 +128,10 @@ public class TraceEventHandlerSched extends BaseHandler {
 
         HostThread childHt = new HostThread(host, childTid);
 
-        OsWorker childTask = system.findWorker(childHt);
+        OsWorker childTask = system.findWorker(childHt, cpu);
         if (childTask == null) {
             childTask = new OsWorker(childHt, name, ts);
-            system.addWorker(childTask);
+            system.addWorker(childTask, cpu);
         }
 
         childTask.setStatus(ProcessStatus.WAIT_FORK);
@@ -148,13 +149,13 @@ public class TraceEventHandlerSched extends BaseHandler {
         }
         HostThread targetHt = new HostThread(host, tid);
 
-        OsWorker target = system.findWorker(targetHt);
+        OsWorker target = system.findWorker(targetHt, cpu);
         OsWorker current = system.getWorkerOnCpu(host, cpu);
 
         if (target == null) {
             String name = EventField.getOrDefault(event, eventLayout.fieldComm(), NonNullUtils.checkNotNull(Messages.TraceEventHandlerSched_UnknownThreadName));
             target = new OsWorker(targetHt, name, event.getTimestamp().getValue());
-            system.addWorker(target);
+            system.addWorker(target, cpu);
             target.setStatus(ProcessStatus.WAIT_BLOCKED);
         }
         // spurious wakeup
@@ -174,13 +175,14 @@ public class TraceEventHandlerSched extends BaseHandler {
     private void handleSchedProcessExit(ITmfEvent event) {
         String host = event.getTrace().getHostId();
         IKernelAnalysisEventLayout eventLayout = getProvider().getEventLayout(event.getTrace());
+        Integer cpu = NonNullUtils.checkNotNull(TmfTraceUtils.resolveIntEventAspectOfClassForEvent(event.getTrace(), TmfCpuAspect.class, event));
         OsSystemModel system = getProvider().getSystem();
 
         Integer tid = event.getContent().getFieldValue(Integer.class, eventLayout.fieldTid());
         if (tid == null) {
             return;
         }
-        OsWorker task = system.findWorker(new HostThread(host, tid));
+        OsWorker task = system.findWorker(new HostThread(host, tid), cpu);
         if (task == null) {
             return;
         }

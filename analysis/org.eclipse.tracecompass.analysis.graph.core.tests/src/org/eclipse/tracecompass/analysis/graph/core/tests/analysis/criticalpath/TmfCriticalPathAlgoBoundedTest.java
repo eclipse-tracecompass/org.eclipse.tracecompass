@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 École Polytechnique de Montréal
+ * Copyright (c) 2015, 2022 École Polytechnique de Montréal
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -14,12 +14,13 @@ package org.eclipse.tracecompass.analysis.graph.core.tests.analysis.criticalpath
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
-import org.eclipse.tracecompass.analysis.graph.core.base.TmfGraph;
-import org.eclipse.tracecompass.analysis.graph.core.base.TmfVertex;
 import org.eclipse.tracecompass.analysis.graph.core.criticalpath.CriticalPathAlgorithmException;
 import org.eclipse.tracecompass.analysis.graph.core.criticalpath.ICriticalPathAlgorithm;
+import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfGraph;
+import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfVertex;
 import org.eclipse.tracecompass.analysis.graph.core.tests.stubs.GraphBuilder;
 import org.eclipse.tracecompass.internal.analysis.graph.core.criticalpath.CriticalPathAlgorithmBounded;
+import org.eclipse.tracecompass.internal.analysis.graph.core.graph.legacy.TmfGraphLegacyWrapper;
 
 /**
  * Test the {@link CriticalPathAlgorithmBounded} critical path algorithm
@@ -30,11 +31,11 @@ import org.eclipse.tracecompass.internal.analysis.graph.core.criticalpath.Critic
 public class TmfCriticalPathAlgoBoundedTest extends TmfCriticalPathAlgorithmTest {
 
     @Override
-    protected TmfGraph computeCriticalPath(TmfGraph graph, TmfVertex start) {
+    protected ITmfGraph computeCriticalPath(ITmfGraph graph, ITmfVertex start) {
         assertNotNull(graph);
         ICriticalPathAlgorithm cp = new CriticalPathAlgorithmBounded(graph);
         try {
-            return cp.compute(start, null);
+            return cp.computeCriticalPath(new TmfGraphLegacyWrapper(), start, null);
         } catch (CriticalPathAlgorithmException e) {
             fail(e.getMessage());
         }
@@ -42,7 +43,7 @@ public class TmfCriticalPathAlgoBoundedTest extends TmfCriticalPathAlgorithmTest
     }
 
     @Override
-    protected TmfGraph getExpectedCriticalPath(GraphBuilder builder) {
+    protected ITmfGraph getExpectedCriticalPath(GraphBuilder builder) {
         return builder.criticalPathBounded();
     }
 

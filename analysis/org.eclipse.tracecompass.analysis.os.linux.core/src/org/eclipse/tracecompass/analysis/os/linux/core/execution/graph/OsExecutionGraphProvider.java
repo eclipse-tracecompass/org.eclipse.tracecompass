@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 École Polytechnique de Montréal
+ * Copyright (c) 2015, 2022 École Polytechnique de Montréal
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -11,18 +11,9 @@
 
 package org.eclipse.tracecompass.analysis.os.linux.core.execution.graph;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.tracecompass.analysis.graph.core.base.IGraphWorker;
-import org.eclipse.tracecompass.analysis.graph.core.base.TmfEdge;
-import org.eclipse.tracecompass.analysis.graph.core.base.TmfGraph;
-import org.eclipse.tracecompass.analysis.graph.core.base.TmfVertex;
-import org.eclipse.tracecompass.analysis.graph.core.base.TmfVertex.EdgeDirection;
 import org.eclipse.tracecompass.analysis.graph.core.building.AbstractTmfGraphProvider;
 import org.eclipse.tracecompass.analysis.graph.core.building.ITraceEventHandler;
 import org.eclipse.tracecompass.analysis.os.linux.core.trace.DefaultEventLayout;
@@ -121,53 +112,9 @@ public class OsExecutionGraphProvider extends AbstractTmfGraphProvider {
         }
     }
 
-    /**
-     * Simplify graph after construction
-     */
     @Override
     public void done() {
-        TmfGraph graph = getAssignedGraph();
-        if (graph == null) {
-            throw new NullPointerException();
-        }
-        Set<IGraphWorker> keys = graph.getWorkers();
-        List<OsWorker> kernelWorker = new ArrayList<>();
-        /* build the set of worker to eliminate */
-        for (Object k : keys) {
-            if (k instanceof OsWorker) {
-                OsWorker w = (OsWorker) k;
-                if (w.getHostThread().getTid() == -1) {
-                    kernelWorker.add(w);
-                }
-            }
-        }
-        for (OsWorker k : kernelWorker) {
-            List<TmfVertex> nodes = graph.getNodesOf(k);
-            for (TmfVertex node : nodes) {
-                /*
-                 * send -> recv, it removes the vertex between the real source
-                 * and destination
-                 */
-                TmfEdge nextH = node.getEdge(EdgeDirection.OUTGOING_HORIZONTAL_EDGE);
-                TmfEdge inV = node.getEdge(EdgeDirection.INCOMING_VERTICAL_EDGE);
-                if (inV != null && nextH != null) {
-
-                    TmfVertex next = nextH.getVertexTo();
-                    TmfEdge nextV = next.getEdge(EdgeDirection.OUTGOING_VERTICAL_EDGE);
-                    if (nextV != null) {
-                        TmfVertex src = inV.getVertexFrom();
-                        TmfVertex dst = nextV.getVertexTo();
-
-                        /* unlink */
-                        node.removeEdge(EdgeDirection.INCOMING_VERTICAL_EDGE);
-                        next.removeEdge(EdgeDirection.OUTGOING_VERTICAL_EDGE);
-
-                        /* simplified link */
-                        src.linkVertical(dst).setType(inV.getType());
-                    }
-                }
-            }
-        }
+        // Nothing to do
     }
 
     /**

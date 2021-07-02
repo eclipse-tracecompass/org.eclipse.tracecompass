@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 École Polytechnique de Montréal
+ * Copyright (c) 2015, 2022 École Polytechnique de Montréal
  *
  * All rights reserved. This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0 which
@@ -15,9 +15,9 @@
 
 package org.eclipse.tracecompass.internal.analysis.graph.core.base;
 
-import org.eclipse.tracecompass.analysis.graph.core.base.ITmfGraphVisitor;
-import org.eclipse.tracecompass.analysis.graph.core.base.TmfEdge;
-import org.eclipse.tracecompass.analysis.graph.core.base.TmfVertex;
+import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfEdge;
+import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfGraphVisitor;
+import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfVertex;
 
 /**
  * An empty implementation of the graph visitor
@@ -28,17 +28,17 @@ import org.eclipse.tracecompass.analysis.graph.core.base.TmfVertex;
 public class TmfGraphVisitor implements ITmfGraphVisitor {
 
     @Override
-    public void visitHead(TmfVertex node) {
+    public void visitHead(ITmfVertex node) {
         // Do nothing
     }
 
     @Override
-    public void visit(TmfVertex node) {
+    public void visit(ITmfVertex node) {
         // Do nothing
     }
 
     @Override
-    public void visit(TmfEdge edge, boolean horizontal) {
+    public void visit(ITmfEdge edge, boolean horizontal) {
         // Do nothing
     }
 

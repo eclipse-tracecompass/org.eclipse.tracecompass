@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 École Polytechnique de Montréal
+ * Copyright (c) 2015, 2022 École Polytechnique de Montréal
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -32,7 +32,9 @@ import org.eclipse.tracecompass.analysis.graph.core.base.TmfVertex;
  * @author Francis Giraldeau
  * @author Geneviève Bastien
  * @author Matthew Khouzam
+ * @deprecated Use the one from o.e.t.internal.graph.core.graph
  */
+@Deprecated
 public class TmfGraphStatistics implements ITmfGraphVisitor {
 
     private final Map<IGraphWorker, Long> fWorkerStats;

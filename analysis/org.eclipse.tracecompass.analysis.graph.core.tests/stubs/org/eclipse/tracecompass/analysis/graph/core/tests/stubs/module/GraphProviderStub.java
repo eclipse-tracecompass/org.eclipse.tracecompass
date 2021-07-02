@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 École Polytechnique de Montréal
+ * Copyright (c) 2015, 2022 École Polytechnique de Montréal
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -15,12 +15,12 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.tracecompass.analysis.graph.core.base.IGraphWorker;
-import org.eclipse.tracecompass.analysis.graph.core.base.TmfEdge.EdgeType;
-import org.eclipse.tracecompass.analysis.graph.core.base.TmfGraph;
-import org.eclipse.tracecompass.analysis.graph.core.base.TmfVertex;
 import org.eclipse.tracecompass.analysis.graph.core.building.AbstractTmfGraphProvider;
 import org.eclipse.tracecompass.analysis.graph.core.building.AbstractTraceEventHandler;
 import org.eclipse.tracecompass.analysis.graph.core.building.ITraceEventHandler;
+import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfEdge.EdgeType;
+import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfGraph;
+import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfVertex;
 import org.eclipse.tracecompass.analysis.graph.core.tests.stubs.TestGraphWorker;
 import org.eclipse.tracecompass.common.core.NonNullUtils;
 import org.eclipse.tracecompass.tmf.core.event.ITmfEvent;
@@ -55,7 +55,7 @@ public class GraphProviderStub extends AbstractTmfGraphProvider {
         public void handleEvent(ITmfEvent event) {
             String evname = event.getType().getName();
 
-            TmfGraph graph = getAssignedGraph();
+            ITmfGraph graph = getGraph();
             if (graph == null) {
                 throw new IllegalStateException();
             }
@@ -63,24 +63,24 @@ public class GraphProviderStub extends AbstractTmfGraphProvider {
             switch (evname) {
             case "take": {
                 IGraphWorker player = new TestGraphWorker(NonNullUtils.checkNotNull((Integer) event.getContent().getField("player").getValue()));
-                TmfVertex v = new TmfVertex(event.getTimestamp().getValue());
-                graph.add(player, v);
+                ITmfVertex v = graph.createVertex(player, event.getTimestamp().getValue());
+                graph.add(v);
                 break;
             }
             case "pass": {
                 IGraphWorker playerFrom = new TestGraphWorker(NonNullUtils.checkNotNull((Integer) event.getContent().getField("from").getValue()));
                 IGraphWorker playerTo = new TestGraphWorker(NonNullUtils.checkNotNull((Integer) event.getContent().getField("to").getValue()));
-                TmfVertex vFrom = new TmfVertex(event.getTimestamp().getValue());
-                graph.append(playerFrom, vFrom);
-                TmfVertex vTo = new TmfVertex(event.getTimestamp().getValue());
-                graph.add(playerTo, vTo);
-                graph.link(vFrom, vTo, EdgeType.NETWORK);
+                ITmfVertex vFrom = graph.createVertex(playerFrom, event.getTimestamp().getValue());
+                ITmfVertex vTo = graph.createVertex(playerTo, event.getTimestamp().getValue());
+                graph.append(vFrom);
+                graph.add(vTo);
+                graph.edge(vFrom, vTo, EdgeType.NETWORK);
                 break;
             }
             case "kick": {
                 IGraphWorker player = new TestGraphWorker(NonNullUtils.checkNotNull((Integer) event.getContent().getField("player").getValue()));
-                TmfVertex v = new TmfVertex(event.getTimestamp().getValue());
-                graph.append(player, v);
+                ITmfVertex v = graph.createVertex(player, event.getTimestamp().getValue());
+                graph.append(v);
                 break;
             }
             default:

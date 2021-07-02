@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 École Polytechnique de Montréal
+ * Copyright (c) 2015, 2022 École Polytechnique de Montréal
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -18,11 +18,9 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.tracecompass.analysis.graph.core.base.TmfEdge;
-import org.eclipse.tracecompass.analysis.graph.core.base.TmfEdge.EdgeType;
-import org.eclipse.tracecompass.analysis.graph.core.base.TmfGraph;
-import org.eclipse.tracecompass.analysis.graph.core.base.TmfVertex;
-import org.eclipse.tracecompass.analysis.graph.core.base.TmfVertex.EdgeDirection;
+import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfEdge.EdgeType;
+import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfGraph;
+import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfVertex;
 import org.eclipse.tracecompass.analysis.os.linux.core.execution.graph.OsExecutionGraphProvider;
 import org.eclipse.tracecompass.analysis.os.linux.core.execution.graph.OsExecutionGraphProvider.Context;
 import org.eclipse.tracecompass.analysis.os.linux.core.execution.graph.OsInterruptContext;
@@ -43,6 +41,7 @@ import org.eclipse.tracecompass.tmf.core.event.matching.TmfEventDependency.Depen
 import org.eclipse.tracecompass.tmf.core.event.matching.TmfEventMatching;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
 import org.eclipse.tracecompass.tmf.core.trace.TmfTraceUtils;
+import org.eclipse.tracecompass.tmf.core.util.Pair;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
@@ -66,8 +65,9 @@ public class TraceEventHandlerExecutionGraph extends BaseHandler {
 
     private final Table<String, Integer, OsWorker> fKernel;
     private final IMatchProcessingUnit fMatchProcessing;
-    private Map<DependencyEvent, TmfVertex> fTcpNodes;
+    private Map<DependencyEvent, ITmfVertex> fTcpNodes;
     private TmfEventMatching fTcpMatching;
+    private Map<OsWorker, Pair<ITmfVertex, ITmfVertex>> fLatestReceivedNetworkLink = new HashMap<>();
 
     /**
      * Constructor
@@ -100,10 +100,12 @@ public class TraceEventHandlerExecutionGraph extends BaseHandler {
                 if (match == null) {
                     return;
                 }
-                TmfVertex output = fTcpNodes.remove(match.getSource());
-                TmfVertex input = fTcpNodes.remove(match.getDestination());
+                ITmfGraph graph = NonNullUtils.checkNotNull(getProvider().getGraph());
+                ITmfVertex output = fTcpNodes.remove(match.getSource());
+                ITmfVertex input = fTcpNodes.remove(match.getDestination());
                 if (output != null && input != null) {
-                    output.linkVertical(input).setType(EdgeType.NETWORK);
+                    fLatestReceivedNetworkLink.put((OsWorker) graph.getParentOf(input), new Pair<>(output, input));
+                    // graph.linkVertical(output, input, EdgeType.NETWORK, null);
                 }
             }
 
@@ -152,19 +154,19 @@ public class TraceEventHandlerExecutionGraph extends BaseHandler {
         }
     }
 
-    private TmfVertex stateExtend(OsWorker task, long ts) {
-        TmfGraph graph = NonNullUtils.checkNotNull(getProvider().getAssignedGraph());
-        TmfVertex node = new TmfVertex(ts);
+    private ITmfVertex stateExtend(OsWorker task, long ts) {
+        ITmfGraph graph = NonNullUtils.checkNotNull(getProvider().getGraph());
+        ITmfVertex node = graph.createVertex(task, ts);
         ProcessStatus status = task.getStatus();
-        graph.append(task, node, resolveProcessStatus(status));
+        appendInGraph(graph, task, node, resolveProcessStatus(status), null);
         return node;
     }
 
-    private TmfVertex stateChange(OsWorker task, long ts) {
-        TmfGraph graph = NonNullUtils.checkNotNull(getProvider().getAssignedGraph());
-        TmfVertex node = new TmfVertex(ts);
+    private ITmfVertex stateChange(OsWorker task, long ts) {
+        ITmfGraph graph = NonNullUtils.checkNotNull(getProvider().getGraph());
+        ITmfVertex node = graph.createVertex(task, ts);
         ProcessStatus status = task.getOldStatus();
-        graph.append(task, node, resolveProcessStatus(status));
+        appendInGraph(graph, task, node, resolveProcessStatus(status), null);
         return node;
     }
 
@@ -202,19 +204,20 @@ public class TraceEventHandlerExecutionGraph extends BaseHandler {
     private void handleSchedSwitch(ITmfEvent event) {
         String host = event.getTrace().getHostId();
         long ts = event.getTimestamp().getValue();
+        Integer cpu = NonNullUtils.checkNotNull(TmfTraceUtils.resolveIntEventAspectOfClassForEvent(event.getTrace(), TmfCpuAspect.class, event));
         IKernelAnalysisEventLayout eventLayout = getProvider().getEventLayout(event.getTrace());
         OsSystemModel system = getProvider().getSystem();
         ITmfEventField content = event.getContent();
 
         Integer next = content.getFieldValue(Integer.class, eventLayout.fieldNextTid());
-        Integer prev =content.getFieldValue(Integer.class, eventLayout.fieldPrevTid());
+        Integer prev = content.getFieldValue(Integer.class, eventLayout.fieldPrevTid());
 
         if (next == null || prev == null) {
             return;
         }
 
-        OsWorker nextTask = system.findWorker(new HostThread(host, next));
-        OsWorker prevTask = system.findWorker(new HostThread(host, prev));
+        OsWorker nextTask = system.findWorker(new HostThread(host, next), cpu);
+        OsWorker prevTask = system.findWorker(new HostThread(host, prev), cpu);
 
         if (prevTask == null || nextTask == null) {
             return;
@@ -224,7 +227,7 @@ public class TraceEventHandlerExecutionGraph extends BaseHandler {
     }
 
     private void handleSchedWakeup(ITmfEvent event) {
-        TmfGraph graph = NonNullUtils.checkNotNull(getProvider().getAssignedGraph());
+        ITmfGraph graph = NonNullUtils.checkNotNull(getProvider().getGraph());
         String host = event.getTrace().getHostId();
         Integer cpu = NonNullUtils.checkNotNull(TmfTraceUtils.resolveIntEventAspectOfClassForEvent(event.getTrace(), TmfCpuAspect.class, event));
         IKernelAnalysisEventLayout eventLayout = getProvider().getEventLayout(event.getTrace());
@@ -236,7 +239,7 @@ public class TraceEventHandlerExecutionGraph extends BaseHandler {
             return;
         }
 
-        OsWorker target = system.findWorker(new HostThread(host, tid));
+        OsWorker target = system.findWorker(new HostThread(host, tid), cpu);
         OsWorker current = system.getWorkerOnCpu(host, cpu);
         if (target == null) {
             return;
@@ -264,12 +267,21 @@ public class TraceEventHandlerExecutionGraph extends BaseHandler {
         }
     }
 
-    private void waitBlocked(ITmfEvent event, TmfGraph graph, String host, Integer cpu, IKernelAnalysisEventLayout eventLayout, OsSystemModel system, long ts, OsWorker target, @Nullable OsWorker current) {
+    private void appendInGraph(ITmfGraph graph, OsWorker target, ITmfVertex vertex, EdgeType type, @Nullable String qualifier) {
+        Pair<ITmfVertex, ITmfVertex> link = this.fLatestReceivedNetworkLink.remove(target);
+        if (link != null) {
+            // Add the latest vertical link to this worker in the graph so the new edge can be append properly
+            graph.edgeVertical(link.getFirst(), link.getSecond(), EdgeType.NETWORK, null);
+        }
+        graph.append(vertex, type, qualifier);
+    }
+
+    private void waitBlocked(ITmfEvent event, ITmfGraph graph, String host, Integer cpu, IKernelAnalysisEventLayout eventLayout, OsSystemModel system, long ts, OsWorker target, @Nullable OsWorker current) {
         OsInterruptContext context = system.peekContextStack(host, cpu);
         switch (context.getContext()) {
         case HRTIMER:
             // shortcut of appendTaskNode: resolve blocking source in situ
-            graph.append(target, new TmfVertex(ts), EdgeType.TIMER);
+            appendInGraph(graph, target, graph.createVertex(target, ts), EdgeType.TIMER, null);
             break;
         case IRQ:
         case COMPLETE_IRQ:
@@ -279,10 +291,10 @@ public class TraceEventHandlerExecutionGraph extends BaseHandler {
             softIrq(event, graph, cpu, eventLayout, ts, target, context);
             break;
         case IPI:
-            graph.append(target, new TmfVertex(ts), EdgeType.IPI);
+            appendInGraph(graph, target, graph.createVertex(target, ts), EdgeType.IPI, null);
             break;
         case NONE:
-            none(ts, target, current);
+            none(graph, ts, target, current);
             break;
         case PACKET_RECEPTION:
             receivingFromNetwork(event, host, cpu, system, graph, ts, target, current);
@@ -292,7 +304,7 @@ public class TraceEventHandlerExecutionGraph extends BaseHandler {
         }
     }
 
-    private void receivingFromNetwork(ITmfEvent event, String host, Integer cpu, OsSystemModel system, TmfGraph graph, long ts, OsWorker target, @Nullable OsWorker current) {
+    private void receivingFromNetwork(ITmfEvent event, String host, Integer cpu, OsSystemModel system, ITmfGraph graph, long ts, OsWorker target, @Nullable OsWorker current) {
         // Look at the inner context to see if the current worker is the
         // receptor or if we are in irq context
         Context innerCtx = peekInnerContext(host, cpu, system);
@@ -302,23 +314,16 @@ public class TraceEventHandlerExecutionGraph extends BaseHandler {
         }
 
         // Append a vertex to the target and set the edge type to network
-        TmfVertex wupTarget = new TmfVertex(ts);
-        TmfEdge netLink = graph.append(target, wupTarget);
-        if (netLink != null) {
-            if (source != null && innerCtx != Context.SOFTIRQ && innerCtx != Context.IRQ) {
-                netLink.setType(EdgeType.NETWORK, source.getName());
-            } else {
-                netLink.setType(EdgeType.NETWORK);
-            }
-        }
+        ITmfVertex wupTarget = graph.createVertex(target, ts);
+        appendInGraph(graph, target, wupTarget, EdgeType.NETWORK, (source != null && innerCtx != Context.SOFTIRQ && innerCtx != Context.IRQ) ? source.getName() : null);
 
         if (source == null) {
             return;
         }
         // See if we can directly link from the packet reception.
-        TmfVertex tail = graph.getTail(source);
+        ITmfVertex tail = graph.getTail(source);
         if (tail != null) {
-            replaceIncomingNetworkEdge(tail, wupTarget);
+            replaceIncomingNetworkEdge(graph, source, tail, wupTarget);
         }
     }
 
@@ -328,6 +333,7 @@ public class TraceEventHandlerExecutionGraph extends BaseHandler {
      * that incoming edge point to the target instead of passing through the
      * current worker and being woken up later. Because we know from context
      * that it's the packet who caused the wakeup and not the current process
+     * @param graph
      *
      * @param tail
      *            The last vertex of the wakeup source
@@ -338,35 +344,42 @@ public class TraceEventHandlerExecutionGraph extends BaseHandler {
      *         packet couldn't be identified, so proper wakeup link should be
      *         done
      */
-    private static boolean replaceIncomingNetworkEdge(TmfVertex tail, TmfVertex wupTarget) {
-        TmfEdge edge = tail.getEdge(EdgeDirection.INCOMING_VERTICAL_EDGE);
-
-        if (edge == null || edge.getType() != EdgeType.NETWORK) {
+    private boolean replaceIncomingNetworkEdge(ITmfGraph graph, OsWorker tailWorker, ITmfVertex tail, ITmfVertex wupTarget) {
+        Pair<ITmfVertex, ITmfVertex> link = fLatestReceivedNetworkLink.remove(tailWorker);
+        if (link == null) {
             return false;
         }
-        TmfEdge newLink = edge.getVertexFrom().linkVertical(wupTarget);
-        newLink.setType(EdgeType.NETWORK);
-        tail.removeEdge(EdgeDirection.INCOMING_VERTICAL_EDGE);
+        graph.edgeVertical(link.getFirst(), wupTarget, EdgeType.NETWORK, null);
         return true;
+        // Update incoming network edge. Update
+//        ITmfEdge edge = graph.getEdgeFrom(tail, EdgeDirection.INCOMING_VERTICAL_EDGE);
+//
+//        if (edge == null || edge.getEdgeType() != EdgeType.NETWORK) {
+//            return false;
+//        }
+//        graph.updateEdge(edge, wupTarget);
+
+//        TmfEdge newLink = edge.getVertexFrom().linkVertical(wupTarget);
+//        newLink.setType(EdgeType.NETWORK);
+//        tail.removeEdge(EdgeDirection.INCOMING_VERTICAL_EDGE);
+//        return true;
     }
 
     /* Extend the source worker to ts, and add a vertical link to the target vertex */
-    private void extendAndLink(OsWorker worker, long ts, TmfVertex targetVertex) {
+    private void extendAndLink(ITmfGraph graph, OsWorker worker, long ts, ITmfVertex targetVertex) {
         // Extend the source worker to the timestamp
-        TmfVertex wupSource = stateExtend(worker, ts);
+        ITmfVertex wupSource = stateExtend(worker, ts);
         // Add a vertical link to target
-        wupSource.linkVertical(targetVertex);
+        graph.edgeVertical(wupSource, targetVertex, EdgeType.DEFAULT, null);
     }
 
-    private void softIrq(ITmfEvent event, TmfGraph graph, Integer cpu, IKernelAnalysisEventLayout eventLayout, long ts, OsWorker target, OsInterruptContext context) {
-        TmfVertex wupTarget = new TmfVertex(ts);
-        TmfEdge hLink = graph.append(target, wupTarget);
+    private void softIrq(ITmfEvent event, ITmfGraph graph, Integer cpu, IKernelAnalysisEventLayout eventLayout, long ts, OsWorker target, OsInterruptContext context) {
+        ITmfVertex wupTarget = graph.createVertex(target, ts);
+
         ITmfEventField content = context.getEvent().getContent();
         Long vec = content.getFieldValue(Long.class, eventLayout.fieldVec());
-        if (hLink != null) {
-            // Try to resolve the type of the target edge to the softirq's source
-            hLink.setType(resolveSoftirq(vec));
-        }
+        appendInGraph(graph, target, wupTarget, resolveSoftirq(vec), null);
+
         /*
          * special case for network related softirq. This code supports network
          * drivers that receive packets within softirq. The newer
@@ -376,45 +389,42 @@ public class TraceEventHandlerExecutionGraph extends BaseHandler {
         if (vec != null && (vec == LinuxValues.SOFTIRQ_NET_RX || vec == LinuxValues.SOFTIRQ_NET_TX)) {
             // create edge if wake up is caused by incoming packet
             OsWorker k = getOrCreateKernelWorker(event, cpu);
-            TmfVertex tail = graph.getTail(k);
+            ITmfVertex tail = graph.getTail(k);
             if (tail != null) {
-                replaceIncomingNetworkEdge(tail, wupTarget);
+                replaceIncomingNetworkEdge(graph, k, tail, wupTarget);
             }
         }
     }
 
-    private void none(long ts, OsWorker target, @Nullable OsWorker current) {
+    private void none(ITmfGraph graph, long ts, OsWorker target, @Nullable OsWorker current) {
         // task context wakeup
         if (current != null) {
-            TmfVertex n1 = stateChange(target, ts);
-            extendAndLink(current, ts, n1);
+            ITmfVertex n1 = stateChange(target, ts);
+            extendAndLink(graph, current, ts, n1);
         } else {
             stateChange(target, ts);
         }
     }
 
-    private static void irq(TmfGraph graph, IKernelAnalysisEventLayout eventLayout, long ts, OsWorker target, OsInterruptContext context) {
-        TmfVertex wup = new TmfVertex(ts);
-        TmfEdge link = graph.append(target, wup);
-        if (link != null) {
-            ITmfEventField content = context.getEvent().getContent();
-            Integer vec = content.getFieldValue(Integer.class, eventLayout.fieldIrq());
-            EdgeType edgeType = resolveIRQ(vec);
-            if (edgeType.equals(EdgeType.BLOCKED)) {
-                // Blocked for unknown reason, add the irq name as qualifier
-                String irqName = content.getFieldValue(String.class, eventLayout.fieldName());
-                link.setType(edgeType, irqName);
-            } else {
-                link.setType(edgeType);
-            }
+    private void irq(ITmfGraph graph, IKernelAnalysisEventLayout eventLayout, long ts, OsWorker target, OsInterruptContext context) {
+        ITmfVertex wup = graph.createVertex(target, ts);
+        ITmfEventField content = context.getEvent().getContent();
+        Integer vec = content.getFieldValue(Integer.class, eventLayout.fieldIrq());
+        EdgeType edgeType = resolveIRQ(vec);
+        if (edgeType.equals(EdgeType.BLOCKED)) {
+            // Blocked for unknown reason, add the irq name as qualifier
+            String irqName = content.getFieldValue(String.class, eventLayout.fieldName());
+            appendInGraph(graph, target, wup, edgeType, irqName);
+        } else {
+            appendInGraph(graph, target, wup, edgeType, null);
         }
     }
 
-    private void waitFork(TmfGraph graph, long ts, OsWorker target, @Nullable OsWorker current) {
+    private void waitFork(ITmfGraph graph, long ts, OsWorker target, @Nullable OsWorker current) {
         if (current != null) {
-            TmfVertex n0 = stateExtend(current, ts);
-            TmfVertex n1 = stateChange(target, ts);
-            graph.link(n0, n1);
+            ITmfVertex n0 = stateExtend(current, ts);
+            ITmfVertex n1 = stateChange(target, ts);
+            graph.edge(n0, n1);
         } else {
             stateChange(target, ts);
         }
@@ -493,8 +503,7 @@ public class TraceEventHandlerExecutionGraph extends BaseHandler {
         if (receiver == null) {
             return;
         }
-        TmfVertex endpoint;
-        endpoint = stateExtend(receiver, event.getTimestamp().getValue());
+        ITmfVertex endpoint = stateExtend(receiver, event.getTimestamp().getValue());
         fTcpNodes.put(new DependencyEvent(event), endpoint);
         fTcpMatching.matchEvent(event, event.getTrace(), DEFAULT_PROGRESS_MONITOR);
     }
@@ -519,7 +528,7 @@ public class TraceEventHandlerExecutionGraph extends BaseHandler {
         if (sender == null) {
             return;
         }
-        TmfVertex endpoint = stateExtend(sender, event.getTimestamp().getValue());
+        ITmfVertex endpoint = stateExtend(sender, event.getTimestamp().getValue());
         fTcpNodes.put(new DependencyEvent(event), endpoint);
         // TODO, add actual progress monitor
         fTcpMatching.matchEvent(event, event.getTrace(), DEFAULT_PROGRESS_MONITOR);
@@ -527,12 +536,12 @@ public class TraceEventHandlerExecutionGraph extends BaseHandler {
 
     private void handleSoftirqEntry(ITmfEvent event) {
         IKernelAnalysisEventLayout eventLayout = getProvider().getEventLayout(event.getTrace());
-        TmfGraph graph = NonNullUtils.checkNotNull(getProvider().getAssignedGraph());
+        ITmfGraph graph = NonNullUtils.checkNotNull(getProvider().getGraph());
         Long vec = event.getContent().getFieldValue(Long.class, eventLayout.fieldVec());
         if (vec != null && (vec == LinuxValues.SOFTIRQ_NET_RX || vec == LinuxValues.SOFTIRQ_NET_TX)) {
             Integer cpu = NonNullUtils.checkNotNull(TmfTraceUtils.resolveIntEventAspectOfClassForEvent(event.getTrace(), TmfCpuAspect.class, event));
             OsWorker k = getOrCreateKernelWorker(event, cpu);
-            graph.add(k, new TmfVertex(event.getTimestamp().getValue()));
+            graph.add(graph.createVertex(k, event.getTimestamp().getValue()));
         }
     }
 

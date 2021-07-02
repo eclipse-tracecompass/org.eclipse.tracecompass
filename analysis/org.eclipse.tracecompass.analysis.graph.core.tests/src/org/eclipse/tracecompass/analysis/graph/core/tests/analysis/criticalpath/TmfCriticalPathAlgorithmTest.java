@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 École Polytechnique de Montréal
+ * Copyright (c) 2015, 2022 École Polytechnique de Montréal
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -15,8 +15,8 @@ import static org.junit.Assert.assertNotNull;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.tracecompass.analysis.graph.core.base.IGraphWorker;
-import org.eclipse.tracecompass.analysis.graph.core.base.TmfGraph;
-import org.eclipse.tracecompass.analysis.graph.core.base.TmfVertex;
+import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfGraph;
+import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfVertex;
 import org.eclipse.tracecompass.analysis.graph.core.tests.stubs.GraphBuilder;
 import org.eclipse.tracecompass.analysis.graph.core.tests.stubs.GraphFactory;
 import org.eclipse.tracecompass.analysis.graph.core.tests.stubs.GraphOps;
@@ -39,7 +39,7 @@ public abstract class TmfCriticalPathAlgorithmTest {
      *            The start vertex from which to calculate the path
      * @return The computed critical path with the tested algorithm
      */
-    protected abstract TmfGraph computeCriticalPath(TmfGraph graph, @NonNull TmfVertex start);
+    protected abstract ITmfGraph computeCriticalPath(ITmfGraph graph, @NonNull ITmfVertex start);
 
     /**
      * Get the expected critical path from the builder data
@@ -48,26 +48,20 @@ public abstract class TmfCriticalPathAlgorithmTest {
      *            The Graph builder object for this use case
      * @return The actual critical path
      */
-    protected abstract TmfGraph getExpectedCriticalPath(GraphBuilder builder);
+    protected abstract ITmfGraph getExpectedCriticalPath(GraphBuilder builder);
 
-    private void testCriticalPath(GraphBuilder builder, IGraphWorker obj) {
+    private void testCriticalPath(GraphBuilder builder, @NonNull IGraphWorker obj) {
         /* Get the base graph */
-        TmfGraph main = builder.build();
+        ITmfGraph main = builder.build();
         assertNotNull(main);
 
         /* The expected critical path */
-        TmfGraph expected = getExpectedCriticalPath(builder);
+        ITmfGraph expected = getExpectedCriticalPath(builder);
         assertNotNull(expected);
 
         /* The actual critical path */
-        TmfVertex head = null;
-        if (obj == null) {
-            head = main.getHead();
-        } else {
-            head = main.getHead(obj);
-        }
-        assertNotNull(head);
-        TmfGraph actual = computeCriticalPath(main, head);
+        ITmfVertex head = main.getHead(obj);
+        ITmfGraph actual = computeCriticalPath(main, head);
         assertNotNull(actual);
 
         /* Check the 2 graphs are equivalent */
@@ -79,7 +73,7 @@ public abstract class TmfCriticalPathAlgorithmTest {
      */
     @Test
     public void testCriticalPathBasic() {
-        testCriticalPath(GraphFactory.GRAPH_BASIC, null);
+        testCriticalPath(GraphFactory.GRAPH_BASIC, GraphFactory.Actor0);
     }
 
     /**
@@ -87,7 +81,7 @@ public abstract class TmfCriticalPathAlgorithmTest {
      */
     @Test
     public void testCriticalPathWakeupSelf() {
-        testCriticalPath(GraphFactory.GRAPH_WAKEUP_SELF, null);
+        testCriticalPath(GraphFactory.GRAPH_WAKEUP_SELF, GraphFactory.Actor0);
     }
 
     /**
@@ -95,7 +89,7 @@ public abstract class TmfCriticalPathAlgorithmTest {
      */
     @Test
     public void testCriticalPathWakeupNew() {
-        testCriticalPath(GraphFactory.GRAPH_WAKEUP_NEW, null);
+        testCriticalPath(GraphFactory.GRAPH_WAKEUP_NEW, GraphFactory.Actor0);
     }
 
     /**
@@ -103,7 +97,7 @@ public abstract class TmfCriticalPathAlgorithmTest {
      */
     @Test
     public void testCriticalPathWakeupUnknown() {
-        testCriticalPath(GraphFactory.GRAPH_WAKEUP_UNKNOWN, null);
+        testCriticalPath(GraphFactory.GRAPH_WAKEUP_UNKNOWN, GraphFactory.Actor0);
     }
 
     /**
@@ -111,7 +105,7 @@ public abstract class TmfCriticalPathAlgorithmTest {
      */
     @Test
     public void testCriticalPathWakeupMutual() {
-        testCriticalPath(GraphFactory.GRAPH_WAKEUP_MUTUAL, null);
+        testCriticalPath(GraphFactory.GRAPH_WAKEUP_MUTUAL, GraphFactory.Actor0);
     }
 
     /**
@@ -127,7 +121,7 @@ public abstract class TmfCriticalPathAlgorithmTest {
      */
     @Test
     public void testCriticalPathWakeupOpened() {
-        testCriticalPath(GraphFactory.GRAPH_OPENED, null);
+        testCriticalPath(GraphFactory.GRAPH_OPENED, GraphFactory.Actor0);
     }
 
     /**
@@ -135,7 +129,7 @@ public abstract class TmfCriticalPathAlgorithmTest {
      */
     @Test
     public void testCriticalPathWakeupOpenedDelay() {
-        testCriticalPath(GraphFactory.GRAPH_OPENED_DELAY, null);
+        testCriticalPath(GraphFactory.GRAPH_OPENED_DELAY, GraphFactory.Actor0);
     }
 
     /**
@@ -143,7 +137,7 @@ public abstract class TmfCriticalPathAlgorithmTest {
      */
     @Test
     public void testCriticalPathWakeupMissing() {
-        testCriticalPath(GraphFactory.GRAPH_WAKEUP_MISSING, null);
+        testCriticalPath(GraphFactory.GRAPH_WAKEUP_MISSING, GraphFactory.Actor0);
     }
 
     /**

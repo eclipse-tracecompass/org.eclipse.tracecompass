@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 École Polytechnique de Montréal
+ * Copyright (c) 2015, 2022 École Polytechnique de Montréal
  *
  * All rights reserved. This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0 which
@@ -16,8 +16,10 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.analysis.graph.core.base.TmfGraph;
+import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfGraph;
 import org.eclipse.tracecompass.tmf.core.event.ITmfEvent;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
 import com.google.common.annotations.VisibleForTesting;
@@ -52,6 +54,7 @@ public abstract class AbstractTmfGraphProvider implements ITmfGraphProvider {
 
     /** Graph in which to insert the state changes */
     private @Nullable TmfGraph fGraph = null;
+    private @Nullable ITmfGraph fNewGraph = null;
 
     /**
      * Instantiate a new graph builder plugin.
@@ -77,15 +80,28 @@ public abstract class AbstractTmfGraphProvider implements ITmfGraphProvider {
         return fTrace.getStartTime().toNanos();
     }
 
+    @Deprecated
     @Override
     public void assignTargetGraph(TmfGraph graph) {
         fGraph = graph;
         fGraphAssigned = true;
     }
 
+    @Deprecated
     @Override
     public @Nullable TmfGraph getAssignedGraph() {
         return fGraph;
+    }
+
+    @Override
+    public void assignGraph(@NonNull ITmfGraph graph) {
+        fNewGraph = graph;
+        fGraphAssigned = true;
+    }
+
+    @Override
+    public @Nullable ITmfGraph getGraph() {
+        return fNewGraph;
     }
 
     @Override
@@ -101,6 +117,7 @@ public abstract class AbstractTmfGraphProvider implements ITmfGraphProvider {
     public void dispose() {
         fGraphAssigned = false;
         fGraph = null;
+        fNewGraph = null;
     }
 
     @Override

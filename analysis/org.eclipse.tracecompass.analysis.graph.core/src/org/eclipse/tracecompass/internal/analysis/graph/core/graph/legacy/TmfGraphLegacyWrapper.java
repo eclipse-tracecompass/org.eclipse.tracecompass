@@ -35,6 +35,7 @@ import org.eclipse.tracecompass.tmf.core.timestamp.ITmfTimestamp;
  *
  * @author Geneviève Bastien
  */
+@SuppressWarnings("deprecation")
 public class TmfGraphLegacyWrapper implements ITmfGraph {
 
     /* Latch tracking if the graph is done building or not */

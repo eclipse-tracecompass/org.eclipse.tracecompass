@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 École Polytechnique de Montréal
+ * Copyright (c) 2015, 2022 École Polytechnique de Montréal
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -17,19 +17,18 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.tracecompass.analysis.graph.core.base.IGraphWorker;
-import org.eclipse.tracecompass.analysis.graph.core.base.TmfEdge;
-import org.eclipse.tracecompass.analysis.graph.core.base.TmfEdge.EdgeType;
-import org.eclipse.tracecompass.analysis.graph.core.base.TmfGraph;
-import org.eclipse.tracecompass.analysis.graph.core.base.TmfVertex;
-import org.eclipse.tracecompass.analysis.graph.core.base.TmfVertex.EdgeDirection;
 import org.eclipse.tracecompass.analysis.graph.core.building.TmfGraphBuilderModule;
+import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfEdge;
+import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfEdge.EdgeType;
+import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfGraph;
+import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfVertex;
 import org.eclipse.tracecompass.analysis.os.linux.core.execution.graph.OsWorker;
 import org.eclipse.tracecompass.analysis.os.linux.core.tests.stubs.trace.TmfXmlKernelTraceStub;
 import org.eclipse.tracecompass.lttng2.kernel.core.tests.Activator;
@@ -40,6 +39,8 @@ import org.eclipse.tracecompass.tmf.core.signal.TmfTraceOpenedSignal;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
 import org.eclipse.tracecompass.tmf.core.trace.TmfTraceUtils;
 import org.junit.Test;
+
+import com.google.common.collect.ImmutableList;
 
 /**
  * Test that the execution graph is built correctly
@@ -95,10 +96,10 @@ public class LttngExecutionGraphTest {
         module.schedule();
         assertTrue(module.waitForCompletion());
 
-        TmfGraph graph = module.getGraph();
+        ITmfGraph graph = module.getTmfGraph();
         assertNotNull(graph);
 
-        Set<IGraphWorker> workers = graph.getWorkers();
+        Collection<IGraphWorker> workers = graph.getWorkers();
         assertEquals(2, workers.size());
         for (IGraphWorker worker: workers) {
             assertTrue(worker instanceof OsWorker);
@@ -106,94 +107,94 @@ public class LttngExecutionGraphTest {
             switch(lttngWorker.getHostThread().getTid()) {
             case 1:
             {
-                List<TmfVertex> nodesOf = graph.getNodesOf(lttngWorker);
+                List<ITmfVertex> nodesOf = ImmutableList.copyOf(graph.getNodesOf(lttngWorker));
                 assertEquals(4, nodesOf.size());
                 /* Check first vertice has outgoing edge preempted */
-                TmfVertex v = nodesOf.get(0);
-                assertEquals(10, v.getTs());
-                assertNull(v.getEdge(EdgeDirection.INCOMING_HORIZONTAL_EDGE));
-                assertNull(v.getEdge(EdgeDirection.INCOMING_VERTICAL_EDGE));
-                assertNull(v.getEdge(EdgeDirection.OUTGOING_VERTICAL_EDGE));
-                TmfEdge edge = v.getEdge(EdgeDirection.OUTGOING_HORIZONTAL_EDGE);
+                ITmfVertex v = nodesOf.get(0);
+                assertEquals(10, v.getTimestamp());
+                assertNull(graph.getEdgeFrom(v, ITmfGraph.EdgeDirection.INCOMING_HORIZONTAL_EDGE));
+                assertNull(graph.getEdgeFrom(v, ITmfGraph.EdgeDirection.INCOMING_VERTICAL_EDGE));
+                assertNull(graph.getEdgeFrom(v, ITmfGraph.EdgeDirection.OUTGOING_VERTICAL_EDGE));
+                ITmfEdge edge = graph.getEdgeFrom(v, ITmfGraph.EdgeDirection.OUTGOING_HORIZONTAL_EDGE);
                 assertNotNull(edge);
-                assertEquals(EdgeType.PREEMPTED, edge.getType());
+                assertEquals(EdgeType.PREEMPTED, edge.getEdgeType());
                 v = nodesOf.get(1);
                 assertEquals(v, edge.getVertexTo());
 
                 /* Check second vertice has outgoing edge running */
-                assertEquals(20, v.getTs());
-                assertNull(v.getEdge(EdgeDirection.INCOMING_VERTICAL_EDGE));
-                assertNull(v.getEdge(EdgeDirection.OUTGOING_VERTICAL_EDGE));
-                assertNotNull(v.getEdge(EdgeDirection.INCOMING_HORIZONTAL_EDGE));
-                edge = v.getEdge(EdgeDirection.OUTGOING_HORIZONTAL_EDGE);
+                assertEquals(20, v.getTimestamp());
+                assertNull(graph.getEdgeFrom(v, ITmfGraph.EdgeDirection.INCOMING_VERTICAL_EDGE));
+                assertNull(graph.getEdgeFrom(v, ITmfGraph.EdgeDirection.OUTGOING_VERTICAL_EDGE));
+                assertNotNull(graph.getEdgeFrom(v, ITmfGraph.EdgeDirection.INCOMING_HORIZONTAL_EDGE));
+                edge = graph.getEdgeFrom(v, ITmfGraph.EdgeDirection.OUTGOING_HORIZONTAL_EDGE);
                 assertNotNull(edge);
-                assertEquals(EdgeType.RUNNING, edge.getType());
+                assertEquals(EdgeType.RUNNING, edge.getEdgeType());
                 v = nodesOf.get(2);
                 assertEquals(v, edge.getVertexTo());
 
                 /* Check third vertice has outgoing edge preempted */
-                assertEquals(30, v.getTs());
-                assertNull(v.getEdge(EdgeDirection.INCOMING_VERTICAL_EDGE));
-                assertNull(v.getEdge(EdgeDirection.OUTGOING_VERTICAL_EDGE));
-                assertNotNull(v.getEdge(EdgeDirection.INCOMING_HORIZONTAL_EDGE));
-                edge = v.getEdge(EdgeDirection.OUTGOING_HORIZONTAL_EDGE);
+                assertEquals(30, v.getTimestamp());
+                assertNull(graph.getEdgeFrom(v, ITmfGraph.EdgeDirection.INCOMING_VERTICAL_EDGE));
+                assertNull(graph.getEdgeFrom(v, ITmfGraph.EdgeDirection.OUTGOING_VERTICAL_EDGE));
+                assertNotNull(graph.getEdgeFrom(v, ITmfGraph.EdgeDirection.INCOMING_HORIZONTAL_EDGE));
+                edge = graph.getEdgeFrom(v, ITmfGraph.EdgeDirection.OUTGOING_HORIZONTAL_EDGE);
                 assertNotNull(edge);
-                assertEquals(EdgeType.PREEMPTED, edge.getType());
+                assertEquals(EdgeType.PREEMPTED, edge.getEdgeType());
                 v = nodesOf.get(3);
                 assertEquals(v, edge.getVertexTo());
 
                 /* Check 4th vertice */
-                assertEquals(40, v.getTs());
-                assertNull(v.getEdge(EdgeDirection.INCOMING_VERTICAL_EDGE));
-                assertNull(v.getEdge(EdgeDirection.OUTGOING_VERTICAL_EDGE));
-                assertNotNull(v.getEdge(EdgeDirection.INCOMING_HORIZONTAL_EDGE));
-                assertNull(v.getEdge(EdgeDirection.OUTGOING_HORIZONTAL_EDGE));
+                assertEquals(40, v.getTimestamp());
+                assertNull(graph.getEdgeFrom(v, ITmfGraph.EdgeDirection.INCOMING_VERTICAL_EDGE));
+                assertNull(graph.getEdgeFrom(v, ITmfGraph.EdgeDirection.OUTGOING_VERTICAL_EDGE));
+                assertNotNull(graph.getEdgeFrom(v, ITmfGraph.EdgeDirection.INCOMING_HORIZONTAL_EDGE));
+                assertNull(graph.getEdgeFrom(v, ITmfGraph.EdgeDirection.OUTGOING_HORIZONTAL_EDGE));
             }
                 break;
             case 2:
             {
-                List<TmfVertex> nodesOf = graph.getNodesOf(lttngWorker);
+                List<ITmfVertex> nodesOf = ImmutableList.copyOf(graph.getNodesOf(lttngWorker));
                 assertEquals(4, nodesOf.size());
                 /* Check first vertice has outgoing edge preempted */
-                TmfVertex v = nodesOf.get(0);
-                assertEquals(10, v.getTs());
-                assertNull(v.getEdge(EdgeDirection.INCOMING_HORIZONTAL_EDGE));
-                assertNull(v.getEdge(EdgeDirection.INCOMING_VERTICAL_EDGE));
-                assertNull(v.getEdge(EdgeDirection.OUTGOING_VERTICAL_EDGE));
-                TmfEdge edge = v.getEdge(EdgeDirection.OUTGOING_HORIZONTAL_EDGE);
+                ITmfVertex v = nodesOf.get(0);
+                assertEquals(10, v.getTimestamp());
+                assertNull(graph.getEdgeFrom(v, ITmfGraph.EdgeDirection.INCOMING_HORIZONTAL_EDGE));
+                assertNull(graph.getEdgeFrom(v, ITmfGraph.EdgeDirection.INCOMING_VERTICAL_EDGE));
+                assertNull(graph.getEdgeFrom(v, ITmfGraph.EdgeDirection.OUTGOING_VERTICAL_EDGE));
+                ITmfEdge edge = graph.getEdgeFrom(v, ITmfGraph.EdgeDirection.OUTGOING_HORIZONTAL_EDGE);
                 assertNotNull(edge);
-                assertEquals(EdgeType.RUNNING, edge.getType());
+                assertEquals(EdgeType.RUNNING, edge.getEdgeType());
                 v = nodesOf.get(1);
                 assertEquals(v, edge.getVertexTo());
 
                 /* Check second vertice has outgoing edge running */
-                assertEquals(20, v.getTs());
-                assertNull(v.getEdge(EdgeDirection.INCOMING_VERTICAL_EDGE));
-                assertNull(v.getEdge(EdgeDirection.OUTGOING_VERTICAL_EDGE));
-                assertNotNull(v.getEdge(EdgeDirection.INCOMING_HORIZONTAL_EDGE));
-                edge = v.getEdge(EdgeDirection.OUTGOING_HORIZONTAL_EDGE);
+                assertEquals(20, v.getTimestamp());
+                assertNull(graph.getEdgeFrom(v, ITmfGraph.EdgeDirection.INCOMING_VERTICAL_EDGE));
+                assertNull(graph.getEdgeFrom(v, ITmfGraph.EdgeDirection.OUTGOING_VERTICAL_EDGE));
+                assertNotNull(graph.getEdgeFrom(v, ITmfGraph.EdgeDirection.INCOMING_HORIZONTAL_EDGE));
+                edge = graph.getEdgeFrom(v, ITmfGraph.EdgeDirection.OUTGOING_HORIZONTAL_EDGE);
                 assertNotNull(edge);
-                assertEquals(EdgeType.BLOCKED, edge.getType());
+                assertEquals(EdgeType.BLOCKED, edge.getEdgeType());
                 v = nodesOf.get(2);
                 assertEquals(v, edge.getVertexTo());
 
                 /* Check third vertice has outgoing edge preempted */
-                assertEquals(30, v.getTs());
-                assertNull(v.getEdge(EdgeDirection.INCOMING_VERTICAL_EDGE));
-                assertNull(v.getEdge(EdgeDirection.OUTGOING_VERTICAL_EDGE));
-                assertNotNull(v.getEdge(EdgeDirection.INCOMING_HORIZONTAL_EDGE));
-                edge = v.getEdge(EdgeDirection.OUTGOING_HORIZONTAL_EDGE);
+                assertEquals(30, v.getTimestamp());
+                assertNull(graph.getEdgeFrom(v, ITmfGraph.EdgeDirection.INCOMING_VERTICAL_EDGE));
+                assertNull(graph.getEdgeFrom(v, ITmfGraph.EdgeDirection.OUTGOING_VERTICAL_EDGE));
+                assertNotNull(graph.getEdgeFrom(v, ITmfGraph.EdgeDirection.INCOMING_HORIZONTAL_EDGE));
+                edge = graph.getEdgeFrom(v, ITmfGraph.EdgeDirection.OUTGOING_HORIZONTAL_EDGE);
                 assertNotNull(edge);
-                assertEquals(EdgeType.RUNNING, edge.getType());
+                assertEquals(EdgeType.RUNNING, edge.getEdgeType());
                 v = nodesOf.get(3);
                 assertEquals(v, edge.getVertexTo());
 
                 /* Check 4th vertice */
-                assertEquals(40, v.getTs());
-                assertNull(v.getEdge(EdgeDirection.INCOMING_VERTICAL_EDGE));
-                assertNull(v.getEdge(EdgeDirection.OUTGOING_VERTICAL_EDGE));
-                assertNotNull(v.getEdge(EdgeDirection.INCOMING_HORIZONTAL_EDGE));
-                assertNull(v.getEdge(EdgeDirection.OUTGOING_HORIZONTAL_EDGE));
+                assertEquals(40, v.getTimestamp());
+                assertNull(graph.getEdgeFrom(v, ITmfGraph.EdgeDirection.INCOMING_VERTICAL_EDGE));
+                assertNull(graph.getEdgeFrom(v, ITmfGraph.EdgeDirection.OUTGOING_VERTICAL_EDGE));
+                assertNotNull(graph.getEdgeFrom(v, ITmfGraph.EdgeDirection.INCOMING_HORIZONTAL_EDGE));
+                assertNull(graph.getEdgeFrom(v, ITmfGraph.EdgeDirection.OUTGOING_HORIZONTAL_EDGE));
             }
                 break;
             default:

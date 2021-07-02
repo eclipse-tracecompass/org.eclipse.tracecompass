@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 École Polytechnique de Montréal
+ * Copyright (c) 2015, 2022 École Polytechnique de Montréal
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -13,11 +13,10 @@ package org.eclipse.tracecompass.internal.analysis.graph.core.criticalpath;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.analysis.graph.core.base.IGraphWorker;
-import org.eclipse.tracecompass.analysis.graph.core.base.TmfEdge;
-import org.eclipse.tracecompass.analysis.graph.core.base.TmfGraph;
-import org.eclipse.tracecompass.analysis.graph.core.base.TmfVertex;
-import org.eclipse.tracecompass.analysis.graph.core.base.TmfVertex.EdgeDirection;
 import org.eclipse.tracecompass.analysis.graph.core.criticalpath.ICriticalPathAlgorithm;
+import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfEdge;
+import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfGraph;
+import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfVertex;
 
 /**
  * Abstract class for critical path algorithms
@@ -26,7 +25,7 @@ import org.eclipse.tracecompass.analysis.graph.core.criticalpath.ICriticalPathAl
  */
 public abstract class AbstractCriticalPathAlgorithm implements ICriticalPathAlgorithm {
 
-    private final TmfGraph fGraph;
+    private final ITmfGraph fGraph;
 
     /**
      * Constructor
@@ -34,7 +33,7 @@ public abstract class AbstractCriticalPathAlgorithm implements ICriticalPathAlgo
      * @param graph
      *            The graph on which to calculate critical path
      */
-    public AbstractCriticalPathAlgorithm(TmfGraph graph) {
+    public AbstractCriticalPathAlgorithm(ITmfGraph graph) {
         fGraph = graph;
     }
 
@@ -43,7 +42,7 @@ public abstract class AbstractCriticalPathAlgorithm implements ICriticalPathAlgo
      *
      * @return the graph
      */
-    public TmfGraph getGraph() {
+    public ITmfGraph getGraph() {
         return fGraph;
     }
 
@@ -69,18 +68,16 @@ public abstract class AbstractCriticalPathAlgorithm implements ICriticalPathAlgo
      *            An optional qualifier for the link
      * @return The destination vertex in the path graph
      */
-    protected TmfVertex copyLink(TmfGraph criticalPath, TmfGraph graph, TmfVertex anchor, TmfVertex from, TmfVertex to, long ts, TmfEdge.EdgeType type, @Nullable String string) {
-        IGraphWorker parentFrom = graph.getParentOf(from);
+    protected ITmfVertex copyLink(ITmfGraph criticalPath, ITmfGraph graph, ITmfVertex anchor, ITmfVertex from, ITmfVertex to, long ts, ITmfEdge.EdgeType type, @Nullable String string) {
         IGraphWorker parentTo = graph.getParentOf(to);
         if (parentTo == null) {
             throw new NullPointerException();
         }
-        TmfVertex tmp = new TmfVertex(ts);
-        criticalPath.add(parentTo, tmp);
-        if (parentFrom == parentTo) {
-            anchor.linkHorizontal(tmp, type, string);
+        ITmfVertex tmp = criticalPath.createVertex(parentTo, ts);
+        if (string == null) {
+            criticalPath.edge(anchor, tmp, type);
         } else {
-            anchor.linkVertical(tmp, type, string);
+            criticalPath.edge(anchor, tmp, type, string);
         }
         return tmp;
     }
@@ -95,20 +92,33 @@ public abstract class AbstractCriticalPathAlgorithm implements ICriticalPathAlgo
      *            The direction in which to search
      * @return The next incoming vertex
      */
-    public static @Nullable TmfVertex findIncoming(TmfVertex vertex, EdgeDirection dir) {
-        TmfVertex currentVertex = vertex;
+    public @Nullable ITmfVertex findIncoming(ITmfVertex vertex, ITmfGraph.EdgeDirection dir) {
+        ITmfVertex currentVertex = vertex;
         while (true) {
-            TmfEdge incoming = currentVertex.getEdge(EdgeDirection.INCOMING_VERTICAL_EDGE);
+            ITmfEdge incoming = fGraph.getEdgeFrom(vertex, ITmfGraph.EdgeDirection.INCOMING_VERTICAL_EDGE);
             if (incoming != null) {
                 return currentVertex;
             }
-            TmfEdge edge = currentVertex.getEdge(dir);
-            if (edge == null || edge.getType() != TmfEdge.EdgeType.EPS) {
+            ITmfEdge edge = fGraph.getEdgeFrom(vertex, dir);
+            if (edge == null || edge.getEdgeType() != ITmfEdge.EdgeType.EPS) {
                 break;
             }
-            currentVertex = TmfVertex.getNeighborFromEdge(edge, dir);
+            currentVertex = getNeighborFromEdge(edge, dir);
         }
         return null;
+    }
+
+    private static ITmfVertex getNeighborFromEdge(ITmfEdge edge, ITmfGraph.EdgeDirection dir) {
+        switch (dir) {
+        case OUTGOING_VERTICAL_EDGE:
+        case OUTGOING_HORIZONTAL_EDGE:
+            return edge.getVertexTo();
+        case INCOMING_VERTICAL_EDGE:
+        case INCOMING_HORIZONTAL_EDGE:
+            return edge.getVertexFrom();
+        default:
+            throw new IllegalStateException("Unknown direction: " + dir); //$NON-NLS-1$
+        }
     }
 
     @Override

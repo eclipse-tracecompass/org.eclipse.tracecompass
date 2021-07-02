@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018 École Polytechnique de Montréal
+ * Copyright (c) 2018, 2022 École Polytechnique de Montréal
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -16,20 +16,20 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.tracecompass.analysis.graph.core.base.IGraphWorker;
-import org.eclipse.tracecompass.analysis.graph.core.base.TmfEdge;
-import org.eclipse.tracecompass.analysis.graph.core.base.TmfEdge.EdgeType;
-import org.eclipse.tracecompass.analysis.graph.core.base.TmfGraph;
-import org.eclipse.tracecompass.analysis.graph.core.base.TmfVertex;
 import org.eclipse.tracecompass.analysis.graph.core.building.TmfGraphBuilderModule;
 import org.eclipse.tracecompass.analysis.graph.core.criticalpath.CriticalPathModule;
+import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfEdge.EdgeType;
+import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfGraph;
+import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfVertex;
+import org.eclipse.tracecompass.analysis.graph.core.graph.TmfGraphFactory;
 import org.eclipse.tracecompass.analysis.graph.core.tests.stubs.GraphOps;
 import org.eclipse.tracecompass.analysis.os.linux.core.execution.graph.OsExecutionGraph;
 import org.eclipse.tracecompass.analysis.os.linux.core.execution.graph.OsWorker;
@@ -44,6 +44,8 @@ import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
 import org.eclipse.tracecompass.tmf.core.trace.TmfTraceUtils;
 import org.eclipse.tracecompass.tmf.core.trace.experiment.TmfExperiment;
 import org.junit.Test;
+
+import com.google.common.collect.ImmutableList;
 
 /**
  * Test the distributed critical path, when traced machines communicate with one
@@ -118,10 +120,10 @@ public class DistributedCriticalPathTest {
         TmfGraphBuilderModule module = TmfTraceUtils.getAnalysisModuleOfClass(experiment, TmfGraphBuilderModule.class, TEST_ANALYSIS_ID);
         assertNotNull(module);
 
-        TmfGraph graph = module.getGraph();
+        ITmfGraph graph = module.getTmfGraph();
         assertNotNull(graph);
 
-        Set<IGraphWorker> workers = graph.getWorkers();
+        Collection<IGraphWorker> workers = graph.getWorkers();
         assertEquals(6, workers.size());
 
         // Prepare a worker map
@@ -136,94 +138,90 @@ public class DistributedCriticalPathTest {
             workerMap.put(((OsWorker) worker).getHostThread().getTid(), worker);
         }
         // Build the expected graph
-        TmfGraph expected = new TmfGraph();
+        ITmfGraph expected = TmfGraphFactory.createSimpleGraph();
 
         // other thread on client side
         IGraphWorker worker = workerMap.get(otherClient);
         assertNotNull(worker);
-        expected.add(worker, new TmfVertex(10));
-        expected.append(worker, new TmfVertex(15), EdgeType.PREEMPTED);
-        expected.append(worker, new TmfVertex(60), EdgeType.RUNNING);
+        expected.add(expected.createVertex(worker, 10));
+        expected.append(expected.createVertex(worker, 15), EdgeType.PREEMPTED);
+        expected.append(expected.createVertex(worker, 60), EdgeType.RUNNING);
 
         // client thread
         worker = workerMap.get(clientThread);
         assertNotNull(worker);
-        expected.add(worker, new TmfVertex(10));
-        TmfVertex packet1Sent = new TmfVertex(13);
-        expected.append(worker, packet1Sent, EdgeType.RUNNING);
-        expected.append(worker, new TmfVertex(15), EdgeType.RUNNING);
-        TmfVertex packet2Received = new TmfVertex(70);
-        expected.append(worker, packet2Received, EdgeType.NETWORK, "irq/30-handler");
-        expected.append(worker, new TmfVertex(75), EdgeType.PREEMPTED);
+        expected.add(expected.createVertex(worker, 10));
+        ITmfVertex packet1Sent = expected.createVertex(worker, 13);
+        expected.append(packet1Sent, EdgeType.RUNNING);
+        expected.append(expected.createVertex(worker, 15), EdgeType.RUNNING);
+        ITmfVertex packet2Received = expected.createVertex(worker, 70);
+        expected.append(packet2Received, EdgeType.NETWORK, "irq/30-handler");
+        expected.append(expected.createVertex(worker, 75), EdgeType.PREEMPTED);
 
         // irq thread
         worker = workerMap.get(irqThread);
         assertNotNull(worker);
-        expected.add(worker, new TmfVertex(55));
-        expected.append(worker, new TmfVertex(60), EdgeType.PREEMPTED);
-        expected.append(worker, new TmfVertex(65), EdgeType.RUNNING);
-        expected.append(worker, new TmfVertex(75), EdgeType.RUNNING);
+        expected.add(expected.createVertex(worker, 55));
+        expected.append(expected.createVertex(worker, 60), EdgeType.PREEMPTED);
+        expected.append(expected.createVertex(worker, 65), EdgeType.RUNNING);
+        expected.append(expected.createVertex(worker, 75), EdgeType.RUNNING);
 
         // Other thread on server side
         worker = workerMap.get(otherServer);
         assertNotNull(worker);
-        expected.add(worker, new TmfVertex(5));
-        expected.append(worker, new TmfVertex(40), EdgeType.RUNNING);
-        expected.append(worker, new TmfVertex(55), EdgeType.PREEMPTED);
+        expected.add(expected.createVertex(worker, 5));
+        expected.append(expected.createVertex(worker, 40), EdgeType.RUNNING);
+        expected.append(expected.createVertex(worker, 55), EdgeType.PREEMPTED);
 
         // Server thread
         worker = workerMap.get(serverThread);
         assertNotNull(worker);
-        expected.add(worker, new TmfVertex(5));
-        TmfVertex packet1Received = new TmfVertex(35);
-        expected.append(worker, packet1Received, EdgeType.NETWORK);
-        expected.append(worker, new TmfVertex(40), EdgeType.PREEMPTED);
-        TmfVertex packet2Sent = new TmfVertex(45);
-        expected.append(worker, packet2Sent, EdgeType.RUNNING);
-        expected.append(worker, new TmfVertex(55), EdgeType.RUNNING);
+        expected.add(expected.createVertex(worker, 5));
+        ITmfVertex packet1Received = expected.createVertex(worker, 35);
+        expected.append(packet1Received, EdgeType.NETWORK);
+        expected.append(expected.createVertex(worker, 40), EdgeType.PREEMPTED);
+        ITmfVertex packet2Sent = expected.createVertex(worker, 45);
+        expected.append(packet2Sent, EdgeType.RUNNING);
+        expected.append(expected.createVertex(worker, 55), EdgeType.RUNNING);
 
         // Create the vertical links
-        TmfEdge link = packet1Sent.linkVertical(packet1Received);
-        link.setType(EdgeType.NETWORK);
-        link = packet2Sent.linkVertical(packet2Received);
-        link.setType(EdgeType.NETWORK);
+        expected.edgeVertical(packet1Sent, packet1Received, EdgeType.NETWORK, null);
+        expected.edgeVertical(packet2Sent, packet2Received, EdgeType.NETWORK, null);
 
         // kernel worker on server side
         worker = workerMap.get(kernelThread);
         assertNotNull(worker);
-        expected.add(worker, new TmfVertex(30));
-        expected.append(worker, new TmfVertex(33), EdgeType.RUNNING);
+        expected.add(expected.createVertex(worker, 30));
+        expected.append(expected.createVertex(worker, 33), EdgeType.RUNNING);
 
         GraphOps.checkEquality(expected, graph);
 
         /* Test the critical path */
 
         // Build the expected critical path
-        expected = new TmfGraph();
+        expected = TmfGraphFactory.createSimpleGraph();
         // Client worker
         worker = workerMap.get(clientThread);
         assertNotNull(worker);
-        expected.add(worker, new TmfVertex(10));
-        expected.append(worker, new TmfVertex(13), EdgeType.RUNNING);
-        packet1Sent = new TmfVertex(15);
-        expected.append(worker, packet1Sent, EdgeType.RUNNING);
-        packet2Received = new TmfVertex(70);
-        expected.add(worker, packet2Received);
-        expected.append(worker, new TmfVertex(75), EdgeType.PREEMPTED);
+        expected.add(expected.createVertex(worker, 10));
+        expected.append(expected.createVertex(worker, 13), EdgeType.RUNNING);
+        packet1Sent = expected.createVertex(worker, 15);
+        expected.append(packet1Sent, EdgeType.RUNNING);
+        packet2Received = expected.createVertex(worker, 70);
+        expected.add(packet2Received);
+        expected.append(expected.createVertex(worker, 75), EdgeType.PREEMPTED);
 
         // Server worker
         worker = workerMap.get(serverThread);
         assertNotNull(worker);
-        packet1Received = new TmfVertex(35);
-        expected.add(worker, packet1Received);
-        expected.append(worker, new TmfVertex(40), EdgeType.PREEMPTED);
-        packet2Sent = new TmfVertex(45);
-        expected.append(worker, packet2Sent, EdgeType.RUNNING);
+        packet1Received = expected.createVertex(worker, 35);
+        expected.add(packet1Received);
+        expected.append(expected.createVertex(worker, 40), EdgeType.PREEMPTED);
+        packet2Sent = expected.createVertex(worker, 45);
+        expected.append(packet2Sent, EdgeType.RUNNING);
 
-        link = packet1Sent.linkVertical(packet1Received);
-        link.setType(EdgeType.NETWORK);
-        link = packet2Sent.linkVertical(packet2Received);
-        link.setType(EdgeType.NETWORK);
+        expected.edgeVertical(packet1Sent, packet1Received, EdgeType.NETWORK, null);
+        expected.edgeVertical(packet2Sent, packet2Received, EdgeType.NETWORK, null);
 
         // Execute the critical path module and compare equality
         CriticalPathModule critPathModule = new CriticalPathModule(module);
@@ -233,7 +231,7 @@ public class DistributedCriticalPathTest {
             critPathModule.schedule();
             assertTrue(critPathModule.waitForCompletion());
 
-            TmfGraph criticalPath = critPathModule.getCriticalPath();
+            ITmfGraph criticalPath = critPathModule.getCriticalPathGraph();
             assertNotNull(criticalPath);
 
             GraphOps.checkEquality(expected, criticalPath);
@@ -266,10 +264,10 @@ public class DistributedCriticalPathTest {
         TmfGraphBuilderModule module = TmfTraceUtils.getAnalysisModuleOfClass(experiment, TmfGraphBuilderModule.class, TEST_ANALYSIS_ID);
         assertNotNull(module);
 
-        TmfGraph graph = module.getGraph();
+        ITmfGraph graph = module.getTmfGraph();
         assertNotNull(graph);
 
-        Set<IGraphWorker> workers = graph.getWorkers();
+        Collection<IGraphWorker> workers = graph.getWorkers();
         assertEquals(7, workers.size());
 
         // Prepare a worker map
@@ -293,108 +291,104 @@ public class DistributedCriticalPathTest {
             workerMap.put(osWorker.getHostThread().getTid(), worker);
         }
         // Make the expected graph
-        TmfGraph expected = new TmfGraph();
+        ITmfGraph expected = TmfGraphFactory.createSimpleGraph();
 
         // other thread on client side
         IGraphWorker worker = workerMap.get(otherClient);
         assertNotNull(worker);
-        expected.add(worker, new TmfVertex(7));
-        expected.append(worker, new TmfVertex(10), EdgeType.RUNNING);
-        expected.append(worker, new TmfVertex(15), EdgeType.PREEMPTED);
-        expected.append(worker, new TmfVertex(75), EdgeType.RUNNING);
+        expected.add(expected.createVertex(worker, 7));
+        expected.append(expected.createVertex(worker, 10), EdgeType.RUNNING);
+        expected.append(expected.createVertex(worker, 15), EdgeType.PREEMPTED);
+        expected.append(expected.createVertex(worker, 75), EdgeType.RUNNING);
 
         // client thread
         worker = workerMap.get(clientThread);
         assertNotNull(worker);
-        expected.add(worker, new TmfVertex(10));
-        TmfVertex packet1Sent = new TmfVertex(13);
-        expected.append(worker, packet1Sent, EdgeType.RUNNING);
-        expected.append(worker, new TmfVertex(15), EdgeType.RUNNING);
-        TmfVertex packet2Received = new TmfVertex(70);
-        expected.append(worker, packet2Received, EdgeType.NETWORK);
-        expected.append(worker, new TmfVertex(75), EdgeType.PREEMPTED);
-        TmfVertex wakeupSource = new TmfVertex(90);
-        expected.append(worker, wakeupSource, EdgeType.RUNNING);
-        expected.append(worker, new TmfVertex(95), EdgeType.RUNNING);
+        expected.add(expected.createVertex(worker, 10));
+        ITmfVertex packet1Sent = expected.createVertex(worker, 13);
+        expected.append(packet1Sent, EdgeType.RUNNING);
+        expected.append(expected.createVertex(worker, 15), EdgeType.RUNNING);
+        ITmfVertex packet2Received = expected.createVertex(worker, 70);
+        expected.append(packet2Received, EdgeType.NETWORK);
+        expected.append(expected.createVertex(worker, 75), EdgeType.PREEMPTED);
+        ITmfVertex wakeupSource = expected.createVertex(worker, 90);
+        expected.append(wakeupSource, EdgeType.RUNNING);
+        expected.append(expected.createVertex(worker, 95), EdgeType.RUNNING);
 
         // client kernel worker
         worker = clientWorker;
         assertNotNull(worker);
-        expected.add(worker, new TmfVertex(60));
-        expected.append(worker, new TmfVertex(65), EdgeType.RUNNING);
+        expected.add(expected.createVertex(worker, 60));
+        expected.append(expected.createVertex(worker, 65), EdgeType.RUNNING);
 
         // thread on client waiting for client process
         worker = workerMap.get(depClient);
         assertNotNull(worker);
-        expected.add(worker, new TmfVertex(7));
-        TmfVertex wakeupTarget = new TmfVertex(90);
-        expected.append(worker, wakeupTarget, EdgeType.BLOCKED);
-        expected.append(worker, new TmfVertex(95), EdgeType.PREEMPTED);
-        wakeupSource.linkVertical(wakeupTarget);
+        expected.add(expected.createVertex(worker, 7));
+        ITmfVertex wakeupTarget = expected.createVertex(worker, 90);
+        expected.append(wakeupTarget, EdgeType.BLOCKED);
+        expected.append(expected.createVertex(worker, 95), EdgeType.PREEMPTED);
+        expected.edgeVertical(wakeupSource, wakeupTarget, EdgeType.DEFAULT, null);
 
         // Other thread on server side
         worker = workerMap.get(otherServer);
         assertNotNull(worker);
-        expected.add(worker, new TmfVertex(5));
-        expected.append(worker, new TmfVertex(40), EdgeType.RUNNING);
-        expected.append(worker, new TmfVertex(55), EdgeType.PREEMPTED);
+        expected.add(expected.createVertex(worker, 5));
+        expected.append(expected.createVertex(worker, 40), EdgeType.RUNNING);
+        expected.append(expected.createVertex(worker, 55), EdgeType.PREEMPTED);
 
         // Server thread
         worker = workerMap.get(serverThread);
         assertNotNull(worker);
-        expected.add(worker, new TmfVertex(5));
-        TmfVertex packet1Received = new TmfVertex(35);
-        expected.append(worker, packet1Received, EdgeType.NETWORK);
-        expected.append(worker, new TmfVertex(40), EdgeType.PREEMPTED);
-        TmfVertex packet2Sent = new TmfVertex(45);
-        expected.append(worker, packet2Sent, EdgeType.RUNNING);
-        expected.append(worker, new TmfVertex(55), EdgeType.RUNNING);
+        expected.add(expected.createVertex(worker, 5));
+        ITmfVertex packet1Received = expected.createVertex(worker, 35);
+        expected.append(packet1Received, EdgeType.NETWORK);
+        expected.append(expected.createVertex(worker, 40), EdgeType.PREEMPTED);
+        ITmfVertex packet2Sent = expected.createVertex(worker, 45);
+        expected.append(packet2Sent, EdgeType.RUNNING);
+        expected.append(expected.createVertex(worker, 55), EdgeType.RUNNING);
 
         // Create the vertical links
-        TmfEdge link = packet1Sent.linkVertical(packet1Received);
-        link.setType(EdgeType.NETWORK);
-        link = packet2Sent.linkVertical(packet2Received);
-        link.setType(EdgeType.NETWORK);
+        expected.edgeVertical(packet1Sent, packet1Received, EdgeType.NETWORK, null);
+        expected.edgeVertical(packet2Sent, packet2Received, EdgeType.NETWORK, null);
 
         // kernel worker on server side
         worker = serverWorker;
         assertNotNull(worker);
-        expected.add(worker, new TmfVertex(30));
-        expected.append(worker, new TmfVertex(33), EdgeType.RUNNING);
+        expected.add(expected.createVertex(worker, 30));
+        expected.append(expected.createVertex(worker, 33), EdgeType.RUNNING);
 
         GraphOps.checkEquality(expected, graph);
 
         /* Test the critical path */
 
         // Build the expected critical path
-        expected = new TmfGraph();
+        expected = TmfGraphFactory.createSimpleGraph();
 
         // Client worker
         worker = workerMap.get(clientThread);
         assertNotNull(worker);
-        expected.add(worker, new TmfVertex(10));
-        expected.append(worker, new TmfVertex(13), EdgeType.RUNNING);
-        packet1Sent = new TmfVertex(15);
-        expected.append(worker, packet1Sent, EdgeType.RUNNING);
-        packet2Received = new TmfVertex(70);
-        expected.add(worker, packet2Received);
-        expected.append(worker, new TmfVertex(75), EdgeType.PREEMPTED);
-        expected.append(worker, new TmfVertex(90), EdgeType.RUNNING);
-        expected.append(worker, new TmfVertex(95), EdgeType.RUNNING);
+        expected.add(expected.createVertex(worker, 10));
+        expected.append(expected.createVertex(worker, 13), EdgeType.RUNNING);
+        packet1Sent = expected.createVertex(worker, 15);
+        expected.append(packet1Sent, EdgeType.RUNNING);
+        packet2Received = expected.createVertex(worker, 70);
+        expected.add(packet2Received);
+        expected.append(expected.createVertex(worker, 75), EdgeType.PREEMPTED);
+        expected.append(expected.createVertex(worker, 90), EdgeType.RUNNING);
+        expected.append(expected.createVertex(worker, 95), EdgeType.RUNNING);
 
         // Server worker
         worker = workerMap.get(serverThread);
         assertNotNull(worker);
-        packet1Received = new TmfVertex(35);
-        expected.add(worker, packet1Received);
-        expected.append(worker, new TmfVertex(40), EdgeType.PREEMPTED);
-        packet2Sent = new TmfVertex(45);
-        expected.append(worker, packet2Sent, EdgeType.RUNNING);
+        packet1Received = expected.createVertex(worker, 35);
+        expected.add(packet1Received);
+        expected.append(expected.createVertex(worker, 40), EdgeType.PREEMPTED);
+        packet2Sent = expected.createVertex(worker, 45);
+        expected.append(packet2Sent, EdgeType.RUNNING);
 
-        link = packet1Sent.linkVertical(packet1Received);
-        link.setType(EdgeType.NETWORK);
-        link = packet2Sent.linkVertical(packet2Received);
-        link.setType(EdgeType.NETWORK);
+        expected.edgeVertical(packet1Sent, packet1Received, EdgeType.NETWORK, null);
+        expected.edgeVertical(packet2Sent, packet2Received, EdgeType.NETWORK, null);
 
         // Execute the critical path module and compare equality
         CriticalPathModule critPathModule = new CriticalPathModule(module);
@@ -404,7 +398,7 @@ public class DistributedCriticalPathTest {
             critPathModule.schedule();
             assertTrue(critPathModule.waitForCompletion());
 
-            TmfGraph criticalPath = critPathModule.getCriticalPath();
+            ITmfGraph criticalPath = critPathModule.getCriticalPathGraph();
             assertNotNull(criticalPath);
 
             GraphOps.checkEquality(expected, criticalPath);
@@ -437,10 +431,10 @@ public class DistributedCriticalPathTest {
         TmfGraphBuilderModule module = TmfTraceUtils.getAnalysisModuleOfClass(experiment, TmfGraphBuilderModule.class, TEST_ANALYSIS_ID);
         assertNotNull(module);
 
-        TmfGraph graph = module.getGraph();
+        ITmfGraph graph = module.getTmfGraph();
         assertNotNull(graph);
 
-        Set<IGraphWorker> workers = graph.getWorkers();
+        Collection<IGraphWorker> workers = graph.getWorkers();
         assertEquals(3, workers.size());
 
         // Prepare a worker map
@@ -452,45 +446,45 @@ public class DistributedCriticalPathTest {
             workerMap.put(((OsWorker) worker).getHostThread().getTid(), worker);
         }
         // Make the expected graph
-        TmfGraph expected = new TmfGraph();
+        ITmfGraph expected = TmfGraphFactory.createSimpleGraph();
 
         // other thread on client side
         IGraphWorker worker = workerMap.get(otherClient);
         assertNotNull(worker);
-        expected.add(worker, new TmfVertex(10));
-        expected.append(worker, new TmfVertex(15), EdgeType.PREEMPTED);
-        expected.append(worker, new TmfVertex(60), EdgeType.RUNNING);
+        expected.add(expected.createVertex(worker, 10));
+        expected.append(expected.createVertex(worker, 15), EdgeType.PREEMPTED);
+        expected.append(expected.createVertex(worker, 60), EdgeType.RUNNING);
 
         // client thread
         worker = workerMap.get(clientThread);
         assertNotNull(worker);
-        expected.add(worker, new TmfVertex(10));
-        TmfVertex packet1Sent = new TmfVertex(13);
-        expected.append(worker, packet1Sent, EdgeType.RUNNING);
-        expected.append(worker, new TmfVertex(15), EdgeType.RUNNING);
-        TmfVertex packet2Received = new TmfVertex(70);
-        expected.append(worker, packet2Received, EdgeType.NETWORK, "irq/30-handler");
-        expected.append(worker, new TmfVertex(75), EdgeType.PREEMPTED);
+        expected.add(expected.createVertex(worker, 10));
+        ITmfVertex packet1Sent = expected.createVertex(worker, 13);
+        expected.append(packet1Sent, EdgeType.RUNNING);
+        expected.append(expected.createVertex(worker, 15), EdgeType.RUNNING);
+        ITmfVertex packet2Received = expected.createVertex(worker, 70);
+        expected.append(packet2Received, EdgeType.NETWORK, "irq/30-handler");
+        expected.append(expected.createVertex(worker, 75), EdgeType.PREEMPTED);
 
         // irq thread
         worker = workerMap.get(irqThread);
         assertNotNull(worker);
-        expected.add(worker, new TmfVertex(55));
-        expected.append(worker, new TmfVertex(60), EdgeType.PREEMPTED);
-        expected.append(worker, new TmfVertex(65), EdgeType.RUNNING);
-        expected.append(worker, new TmfVertex(75), EdgeType.RUNNING);
+        expected.add(expected.createVertex(worker, 55));
+        expected.append(expected.createVertex(worker, 60), EdgeType.PREEMPTED);
+        expected.append(expected.createVertex(worker, 65), EdgeType.RUNNING);
+        expected.append(expected.createVertex(worker, 75), EdgeType.RUNNING);
 
         GraphOps.checkEquality(expected, graph);
 
         /* Test the critical path */
         // Build the expected graph: it should be the client thread only
-        expected = new TmfGraph();
+        ITmfGraph expectedCritPath = TmfGraphFactory.createSimpleGraph();
 
         worker = workerMap.get(clientThread);
         assertNotNull(worker);
 
-        for (TmfVertex vertex : graph.getNodesOf(worker)) {
-            expected.add(worker, vertex);
+        for (ITmfVertex vertex : ImmutableList.copyOf(expected.getNodesOf(worker))) {
+            expectedCritPath.add(vertex);
         }
 
         // Execute the critical path module and compare equality
@@ -501,10 +495,10 @@ public class DistributedCriticalPathTest {
             critPathModule.schedule();
             assertTrue(critPathModule.waitForCompletion());
 
-            TmfGraph criticalPath = critPathModule.getCriticalPath();
+            ITmfGraph criticalPath = critPathModule.getCriticalPathGraph();
             assertNotNull(criticalPath);
 
-            GraphOps.checkEquality(expected, criticalPath);
+            GraphOps.checkEquality(expectedCritPath, criticalPath);
         } finally {
             critPathModule.dispose();
         }
@@ -534,10 +528,10 @@ public class DistributedCriticalPathTest {
         TmfGraphBuilderModule module = TmfTraceUtils.getAnalysisModuleOfClass(experiment, TmfGraphBuilderModule.class, TEST_ANALYSIS_ID);
         assertNotNull(module);
 
-        TmfGraph graph = module.getGraph();
+        ITmfGraph graph = module.getTmfGraph();
         assertNotNull(graph);
 
-        Set<IGraphWorker> workers = graph.getWorkers();
+        Collection<IGraphWorker> workers = graph.getWorkers();
         assertEquals(4, workers.size());
 
         // Prepare a worker map
@@ -554,65 +548,65 @@ public class DistributedCriticalPathTest {
             workerMap.put(osWorker.getHostThread().getTid(), worker);
         }
         // Make the expected graph
-        TmfGraph expected = new TmfGraph();
+        ITmfGraph expected = TmfGraphFactory.createSimpleGraph();
 
         // other thread on client side
         IGraphWorker worker = workerMap.get(otherClient);
         assertNotNull(worker);
-        expected.add(worker, new TmfVertex(7));
-        expected.append(worker, new TmfVertex(10), EdgeType.RUNNING);
-        expected.append(worker, new TmfVertex(15), EdgeType.PREEMPTED);
-        expected.append(worker, new TmfVertex(75), EdgeType.RUNNING);
+        expected.add(expected.createVertex(worker, 7));
+        expected.append(expected.createVertex(worker, 10), EdgeType.RUNNING);
+        expected.append(expected.createVertex(worker, 15), EdgeType.PREEMPTED);
+        expected.append(expected.createVertex(worker, 75), EdgeType.RUNNING);
 
         // client thread
         worker = workerMap.get(clientThread);
         assertNotNull(worker);
-        expected.add(worker, new TmfVertex(10));
-        TmfVertex packet1Sent = new TmfVertex(13);
-        expected.append(worker, packet1Sent, EdgeType.RUNNING);
-        expected.append(worker, new TmfVertex(15), EdgeType.RUNNING);
-        TmfVertex packet2Received = new TmfVertex(70);
-        expected.append(worker, packet2Received, EdgeType.NETWORK);
-        expected.append(worker, new TmfVertex(75), EdgeType.PREEMPTED);
-        TmfVertex wakeupSource = new TmfVertex(90);
-        expected.append(worker, wakeupSource, EdgeType.RUNNING);
-        expected.append(worker, new TmfVertex(95), EdgeType.RUNNING);
+        expected.add(expected.createVertex(worker, 10));
+        ITmfVertex packet1Sent = expected.createVertex(worker, 13);
+        expected.append(packet1Sent, EdgeType.RUNNING);
+        expected.append(expected.createVertex(worker, 15), EdgeType.RUNNING);
+        ITmfVertex packet2Received = expected.createVertex(worker, 70);
+        expected.append(packet2Received, EdgeType.NETWORK);
+        expected.append(expected.createVertex(worker, 75), EdgeType.PREEMPTED);
+        ITmfVertex wakeupSource = expected.createVertex(worker, 90);
+        expected.append(wakeupSource, EdgeType.RUNNING);
+        expected.append(expected.createVertex(worker, 95), EdgeType.RUNNING);
 
         // client kernel worker
         worker = clientWorker;
         assertNotNull(worker);
-        expected.add(worker, new TmfVertex(60));
-        expected.append(worker, new TmfVertex(65), EdgeType.RUNNING);
+        expected.add(expected.createVertex(worker, 60));
+        expected.append(expected.createVertex(worker, 65), EdgeType.RUNNING);
 
         // thread on client waiting for client process
         worker = workerMap.get(depClient);
         assertNotNull(worker);
-        expected.add(worker, new TmfVertex(7));
-        TmfVertex wakeupTarget = new TmfVertex(90);
-        expected.append(worker, wakeupTarget, EdgeType.BLOCKED);
-        expected.append(worker, new TmfVertex(95), EdgeType.PREEMPTED);
-        wakeupSource.linkVertical(wakeupTarget);
+        expected.add(expected.createVertex(worker, 7));
+        ITmfVertex wakeupTarget = expected.createVertex(worker, 90);
+        expected.append(wakeupTarget, EdgeType.BLOCKED);
+        expected.append(expected.createVertex(worker, 95), EdgeType.PREEMPTED);
+        expected.edgeVertical(wakeupSource, wakeupTarget, EdgeType.DEFAULT, null);
 
         GraphOps.checkEquality(expected, graph);
 
         /* Test the critical path */
 
         // Build the expected critical path
-        expected = new TmfGraph();
+        expected = TmfGraphFactory.createSimpleGraph();
 
         // Client worker
         IGraphWorker cWorker = workerMap.get(clientThread);
         assertNotNull(cWorker);
-        expected.add(cWorker, new TmfVertex(10));
-        expected.append(cWorker, new TmfVertex(13), EdgeType.RUNNING);
-        packet1Sent = new TmfVertex(15);
-        expected.append(cWorker, packet1Sent, EdgeType.RUNNING);
-        packet2Received = new TmfVertex(70);
-        expected.append(cWorker, packet2Received, EdgeType.NETWORK);
-        expected.append(cWorker, new TmfVertex(75), EdgeType.PREEMPTED);
-        wakeupSource = new TmfVertex(90);
-        expected.append(cWorker, wakeupSource, EdgeType.RUNNING);
-        expected.append(cWorker, new TmfVertex(95), EdgeType.RUNNING);
+        expected.add(expected.createVertex(cWorker, 10));
+        expected.append(expected.createVertex(cWorker, 13), EdgeType.RUNNING);
+        packet1Sent = expected.createVertex(cWorker, 15);
+        expected.append(packet1Sent, EdgeType.RUNNING);
+        packet2Received = expected.createVertex(cWorker, 70);
+        expected.append(packet2Received, EdgeType.NETWORK);
+        expected.append(expected.createVertex(cWorker, 75), EdgeType.PREEMPTED);
+        wakeupSource = expected.createVertex(cWorker, 90);
+        expected.append(wakeupSource, EdgeType.RUNNING);
+        expected.append(expected.createVertex(cWorker, 95), EdgeType.RUNNING);
 
         // Execute the critical path module and compare equality
         CriticalPathModule critPathModule = new CriticalPathModule(module);
@@ -622,44 +616,44 @@ public class DistributedCriticalPathTest {
             critPathModule.schedule();
             assertTrue(critPathModule.waitForCompletion());
 
-            TmfGraph criticalPath = critPathModule.getCriticalPath();
+            ITmfGraph criticalPath = critPathModule.getCriticalPathGraph();
             assertNotNull(criticalPath);
 
             GraphOps.checkEquality(expected, criticalPath);
 
             // Test the critical path for the dependent thread
             // Critical path for the dependent worker
-            expected = new TmfGraph();
+            expected = TmfGraphFactory.createSimpleGraph();
             worker = workerMap.get(depClient);
             assertNotNull(worker);
-            TmfVertex begin = new TmfVertex(7);
-            expected.add(worker, begin);
-            wakeupTarget = new TmfVertex(90);
-            expected.add(worker, wakeupTarget);
-            expected.append(worker, new TmfVertex(95), EdgeType.PREEMPTED);
+            ITmfVertex begin = expected.createVertex(worker, 7);
+            expected.add(begin);
+            wakeupTarget = expected.createVertex(worker, 90);
+            expected.add(wakeupTarget);
+            expected.append(expected.createVertex(worker, 95), EdgeType.PREEMPTED);
 
             // Copy the critical path of the client worker
-            TmfVertex start = new TmfVertex(7);
-            expected.add(cWorker, start);
-            expected.append(cWorker, new TmfVertex(10), EdgeType.UNKNOWN);
-            expected.append(cWorker, new TmfVertex(13), EdgeType.RUNNING);
-            packet1Sent = new TmfVertex(15);
-            expected.append(cWorker, packet1Sent, EdgeType.RUNNING);
-            packet2Received = new TmfVertex(70);
-            expected.append(cWorker, packet2Received, EdgeType.NETWORK);
-            expected.append(cWorker, new TmfVertex(75), EdgeType.PREEMPTED);
-            wakeupSource = new TmfVertex(90);
-            expected.append(cWorker, wakeupSource, EdgeType.RUNNING);
+            ITmfVertex start = expected.createVertex(cWorker, 7);
+            expected.add(start);
+            expected.append(expected.createVertex(cWorker, 10), EdgeType.UNKNOWN);
+            expected.append(expected.createVertex(cWorker, 13), EdgeType.RUNNING);
+            packet1Sent = expected.createVertex(cWorker, 15);
+            expected.append(packet1Sent, EdgeType.RUNNING);
+            packet2Received = expected.createVertex(cWorker, 70);
+            expected.append(packet2Received, EdgeType.NETWORK);
+            expected.append(expected.createVertex(cWorker, 75), EdgeType.PREEMPTED);
+            wakeupSource = expected.createVertex(cWorker, 90);
+            expected.append(wakeupSource, EdgeType.RUNNING);
 
             // Add the links
-            begin.linkVertical(start);
-            wakeupSource.linkVertical(wakeupTarget);
+            expected.edgeVertical(begin, start, EdgeType.DEFAULT, null);
+            expected.edgeVertical(wakeupSource, wakeupTarget, EdgeType.DEFAULT, null);
 
             critPathModule.setParameter(CriticalPathModule.PARAM_WORKER, worker);
             critPathModule.schedule();
             assertTrue(critPathModule.waitForCompletion());
 
-            criticalPath = critPathModule.getCriticalPath();
+            criticalPath = critPathModule.getCriticalPathGraph();
             assertNotNull(criticalPath);
 
             GraphOps.checkEquality(expected, criticalPath);

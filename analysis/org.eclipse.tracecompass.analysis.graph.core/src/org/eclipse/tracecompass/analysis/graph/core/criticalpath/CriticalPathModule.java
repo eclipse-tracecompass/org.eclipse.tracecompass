@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 École Polytechnique de Montréal
+ * Copyright (c) 2015, 2022 École Polytechnique de Montréal
  *
  * All rights reserved. This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0 which
@@ -17,8 +17,10 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.tracecompass.analysis.graph.core.base.IGraphWorker;
 import org.eclipse.tracecompass.analysis.graph.core.base.TmfGraph;
-import org.eclipse.tracecompass.analysis.graph.core.base.TmfVertex;
 import org.eclipse.tracecompass.analysis.graph.core.building.TmfGraphBuilderModule;
+import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfGraph;
+import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfVertex;
+import org.eclipse.tracecompass.analysis.graph.core.graph.TmfGraphFactory;
 import org.eclipse.tracecompass.common.core.NonNullUtils;
 import org.eclipse.tracecompass.internal.analysis.graph.core.Activator;
 import org.eclipse.tracecompass.internal.analysis.graph.core.criticalpath.CriticalPathAlgorithmBounded;
@@ -47,7 +49,7 @@ public class CriticalPathModule extends TmfAbstractAnalysisModule implements ICr
 
     private final TmfGraphBuilderModule fGraphModule;
 
-    private volatile @Nullable TmfGraph fCriticalPath;
+    private volatile @Nullable ITmfGraph fCriticalPath;
     private volatile boolean fScheduleOnParameterChange = true;
 
     /**
@@ -106,26 +108,32 @@ public class CriticalPathModule extends TmfAbstractAnalysisModule implements ICr
             Activator.getInstance().logInfo("Critical path execution: graph building was cancelled.  Results may not be accurate."); //$NON-NLS-1$
             return false;
         }
-        TmfGraph graph = graphModule.getGraph();
+        ITmfGraph graph = graphModule.getTmfGraph();
         if (graph == null) {
             throw new TmfAnalysisException("Critical Path analysis: graph " + graphModule.getName() + " is null"); //$NON-NLS-1$//$NON-NLS-2$
         }
 
-        TmfVertex head = graph.getHead(worker);
+        ITmfVertex head = graph.getHead(worker);
         if (head == null) {
             /* Nothing happens with this worker, return an empty graph */
-            fCriticalPath = new TmfGraph();
+            fCriticalPath = null;
             return true;
         }
 
         ICriticalPathAlgorithm cp = getAlgorithm(graph);
         try {
-            fCriticalPath = cp.compute(head, null);
+            ITmfGraph criticalPath = createGraph();
+            cp.computeCriticalPath(criticalPath, head, null);
+            fCriticalPath = criticalPath;
             return true;
         } catch (CriticalPathAlgorithmException e) {
             Activator.getInstance().logError(NonNullUtils.nullToEmptyString(e.getMessage()), e);
         }
         return false;
+    }
+
+    private static @Nullable ITmfGraph createGraph() {
+        return TmfGraphFactory.createSimpleGraph();
     }
 
     @Override
@@ -143,7 +151,13 @@ public class CriticalPathModule extends TmfAbstractAnalysisModule implements ICr
         }
     }
 
-    private static ICriticalPathAlgorithm getAlgorithm(TmfGraph graph) {
+    @Override
+    public void dispose() {
+        super.dispose();
+        fCriticalPath = null;
+    }
+
+    private static ICriticalPathAlgorithm getAlgorithm(ITmfGraph graph) {
         return new CriticalPathAlgorithmBounded(graph);
     }
 
@@ -160,9 +174,21 @@ public class CriticalPathModule extends TmfAbstractAnalysisModule implements ICr
      * Gets the graph for the critical path
      *
      * @return The critical path graph
+     * @deprecated Use the {@link #getCriticalPathGraph()} method instead.
      */
+    @Deprecated
     @Override
     public @Nullable TmfGraph getCriticalPath() {
+        return null;
+    }
+
+    /**
+     * Gets the graph for the critical path
+     *
+     * @return The critical path graph
+     */
+    @Override
+    public @Nullable ITmfGraph getCriticalPathGraph() {
         return fCriticalPath;
     }
 

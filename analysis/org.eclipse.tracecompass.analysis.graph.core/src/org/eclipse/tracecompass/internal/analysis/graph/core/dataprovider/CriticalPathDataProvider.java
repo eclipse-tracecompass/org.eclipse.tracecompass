@@ -1,5 +1,5 @@
 /**********************************************************************
- * Copyright (c) 2018 Ericsson
+ * Copyright (c) 2018, 2022 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -27,14 +27,14 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.analysis.graph.core.base.IGraphWorker;
-import org.eclipse.tracecompass.analysis.graph.core.base.TmfEdge;
-import org.eclipse.tracecompass.analysis.graph.core.base.TmfEdge.EdgeType;
-import org.eclipse.tracecompass.analysis.graph.core.base.TmfGraph;
-import org.eclipse.tracecompass.analysis.graph.core.base.TmfVertex;
 import org.eclipse.tracecompass.analysis.graph.core.criticalpath.CriticalPathModule;
+import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfEdge;
+import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfEdge.EdgeType;
+import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfGraph;
+import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfGraphVisitor;
+import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfVertex;
 import org.eclipse.tracecompass.internal.analysis.graph.core.base.CriticalPathPalette;
-import org.eclipse.tracecompass.internal.analysis.graph.core.base.TmfGraphStatistics;
-import org.eclipse.tracecompass.internal.analysis.graph.core.base.TmfGraphVisitor;
+import org.eclipse.tracecompass.internal.analysis.graph.core.graph.TmfGraphStatistics;
 import org.eclipse.tracecompass.internal.tmf.core.model.AbstractTmfTraceDataProvider;
 import org.eclipse.tracecompass.internal.tmf.core.model.filters.FetchParametersUtils;
 import org.eclipse.tracecompass.tmf.core.dataprovider.DataProviderParameterUtils;
@@ -118,7 +118,7 @@ public class CriticalPathDataProvider extends AbstractTmfTraceDataProvider imple
 
                 @Override
                 public CriticalPathVisitor load(IGraphWorker key) throws Exception {
-                    TmfGraph criticalPath = fCriticalPathModule.getCriticalPath();
+                    ITmfGraph criticalPath = fCriticalPathModule.getCriticalPathGraph();
                     return new CriticalPathVisitor(criticalPath, key);
                 }
             });
@@ -148,7 +148,7 @@ public class CriticalPathDataProvider extends AbstractTmfTraceDataProvider imple
     @Override
     public synchronized @NonNull TmfModelResponse<@NonNull TmfTreeModel<@NonNull CriticalPathEntry>> fetchTree(
             Map<String, Object> fetchParameters, @Nullable IProgressMonitor monitor) {
-        TmfGraph graph = fCriticalPathModule.getCriticalPath();
+        ITmfGraph graph = fCriticalPathModule.getCriticalPathGraph();
         if (graph == null) {
             return new TmfModelResponse<>(null, Status.RUNNING, CommonStatusMessage.RUNNING);
         }
@@ -283,8 +283,8 @@ public class CriticalPathDataProvider extends AbstractTmfTraceDataProvider imple
         return new TmfModelResponse<>(info, Status.COMPLETED, CommonStatusMessage.COMPLETED);
     }
 
-    private final class CriticalPathVisitor extends TmfGraphVisitor {
-        private final TmfGraph fGraph;
+    private final class CriticalPathVisitor implements ITmfGraphVisitor {
+        private final ITmfGraph fGraph;
         /**
          * The {@link IGraphWorker} for which the view (tree / states) are computed
          */
@@ -306,18 +306,18 @@ public class CriticalPathDataProvider extends AbstractTmfTraceDataProvider imple
          */
         private @Nullable List<@NonNull ITimeGraphArrow> fGraphLinks;
 
-        private CriticalPathVisitor(TmfGraph graph, IGraphWorker worker) {
+        private CriticalPathVisitor(ITmfGraph graph, IGraphWorker worker) {
             fGraph = graph;
             fStart = getTrace().getStartTime().toNanos();
             fEnd = getTrace().getEndTime().toNanos();
 
-            TmfVertex head = graph.getHead();
+            ITmfVertex head = graph.getHead();
             if (head != null) {
-                fStart = Long.min(fStart, head.getTs());
+                fStart = Long.min(fStart, head.getTimestamp());
                 for (IGraphWorker w : graph.getWorkers()) {
-                    TmfVertex tail = graph.getTail(w);
+                    ITmfVertex tail = graph.getTail(w);
                     if (tail != null) {
-                        fEnd = Long.max(fEnd, tail.getTs());
+                        fEnd = Long.max(fEnd, tail.getTimestamp());
                     }
                 }
             }
@@ -325,7 +325,7 @@ public class CriticalPathDataProvider extends AbstractTmfTraceDataProvider imple
         }
 
         @Override
-        public void visitHead(TmfVertex node) {
+        public void visitHead(ITmfVertex node) {
             IGraphWorker owner = fGraph.getParentOf(node);
             if (owner == null) {
                 return;
@@ -333,13 +333,13 @@ public class CriticalPathDataProvider extends AbstractTmfTraceDataProvider imple
             if (fWorkers.containsKey(owner)) {
                 return;
             }
-            TmfVertex first = fGraph.getHead(owner);
-            TmfVertex last = fGraph.getTail(owner);
+            ITmfVertex first = fGraph.getHead(owner);
+            ITmfVertex last = fGraph.getTail(owner);
             if (first == null || last == null) {
                 return;
             }
-            fStart = Long.min(getTrace().getStartTime().toNanos(), first.getTs());
-            fEnd = Long.max(getTrace().getEndTime().toNanos(), last.getTs());
+            fStart = Long.min(getTrace().getStartTime().toNanos(), first.getTimestamp());
+            fEnd = Long.max(getTrace().getEndTime().toNanos(), last.getTimestamp());
             Long sum = fStatistics.getSum(owner);
             Double percent = fStatistics.getPercent(owner);
 
@@ -355,13 +355,13 @@ public class CriticalPathDataProvider extends AbstractTmfTraceDataProvider imple
         }
 
         @Override
-        public void visit(TmfEdge link, boolean horizontal) {
+        public void visit(ITmfEdge link, boolean horizontal) {
             if (horizontal) {
                 IGraphWorker parent = fGraph.getParentOf(link.getVertexFrom());
                 Long id = fWorkerToEntryId.get(parent);
                 if (id != null) {
                     String linkQualifier = link.getLinkQualifier();
-                    ITimeGraphState ev = new TimeGraphState(link.getVertexFrom().getTs(), link.getDuration(), linkQualifier, getMatchingState(link.getType(), false));
+                    ITimeGraphState ev = new TimeGraphState(link.getVertexFrom().getTimestamp(), link.getDuration(), linkQualifier, getMatchingState(link.getEdgeType(), false));
                     fStates.put(id, ev);
                 }
             } else {
@@ -371,8 +371,8 @@ public class CriticalPathDataProvider extends AbstractTmfTraceDataProvider imple
                 CriticalPathEntry entryTo = fWorkers.get(parentTo);
                 List<ITimeGraphArrow> graphLinks = fGraphLinks;
                 if (graphLinks != null && entryFrom != null && entryTo != null) {
-                    ITimeGraphArrow lk = new TimeGraphArrow(entryFrom.getId(), entryTo.getId(), link.getVertexFrom().getTs(),
-                            link.getVertexTo().getTs() - link.getVertexFrom().getTs(), getMatchingState(link.getType(), true));
+                    ITimeGraphArrow lk = new TimeGraphArrow(entryFrom.getId(), entryTo.getId(), link.getVertexFrom().getTimestamp(),
+                            link.getVertexTo().getTimestamp() - link.getVertexFrom().getTimestamp(), getMatchingState(link.getEdgeType(), true));
                     graphLinks.add(lk);
                 }
             }
@@ -397,6 +397,11 @@ public class CriticalPathDataProvider extends AbstractTmfTraceDataProvider imple
                 fGraph.scanLineTraverse(fGraph.getHead(), this);
             }
             return fGraphLinks;
+        }
+
+        @Override
+        public void visit(@NonNull ITmfVertex vertex) {
+            // Nothing to do
         }
     }
 

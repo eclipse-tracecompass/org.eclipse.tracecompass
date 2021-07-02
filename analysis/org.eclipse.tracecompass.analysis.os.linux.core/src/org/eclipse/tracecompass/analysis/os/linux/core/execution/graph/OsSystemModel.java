@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 École Polytechnique de Montréal
+ * Copyright (c) 2015, 2022 École Polytechnique de Montréal
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -42,6 +42,7 @@ public class OsSystemModel {
     private final Table<String, Integer, HostThread> fCurrentTids = HashBasedTable.create();
     private final Table<String, Integer, Deque<OsInterruptContext>> fIntCtxStacks = HashBasedTable.create();
     private final Map<HostThread, OsWorker> fWorkerMap = new HashMap<>();
+    private final Map<Integer, OsWorker> fSwapperWorkers = new HashMap<>();
 
     /**
      * Cache the TID currently on the CPU of a host, for easier access later on
@@ -70,7 +71,7 @@ public class OsSystemModel {
         if (ht == null) {
             return null;
         }
-        return findWorker(ht);
+        return findWorker(ht, cpu);
     }
 
     /**
@@ -79,8 +80,28 @@ public class OsSystemModel {
      * @param ht
      *            The host thread associated with a worker
      * @return The {@link OsWorker} associated with a host thread
+     * @deprecated Use the {@link #findWorker(HostThread, Integer)} instead with a null CPU
      */
+    @Deprecated
     public @Nullable OsWorker findWorker(HostThread ht) {
+        return fWorkerMap.get(ht);
+    }
+
+    /**
+     * Return the worker associated with this host TID
+     *
+     * @param ht
+     *            The host thread associated with a worker
+     * @param cpu
+     *            The CPU this worker is on (important for per-cpu threads, like
+     *            swappers)
+     * @return The {@link OsWorker} associated with a host thread
+     * @since 6.0
+     */
+    public @Nullable OsWorker findWorker(HostThread ht, @Nullable Integer cpu) {
+        if (ht.getTid() == 0 && cpu != null) {
+            return fSwapperWorkers.get(cpu);
+        }
         return fWorkerMap.get(ht);
     }
 
@@ -89,9 +110,29 @@ public class OsSystemModel {
      *
      * @param worker
      *            The worker to add
+     * @deprecated Use the {@link #addWorker(OsWorker, Integer)} instead
      */
+    @Deprecated
     public void addWorker(OsWorker worker) {
         fWorkerMap.put(worker.getHostThread(), worker);
+    }
+
+    /**
+     * Add a new worker to the system
+     *
+     * @param worker
+     *            The worker to add
+     * @param cpu
+     *            The CPU this worker is on (important for per-cpu threads, like
+     *            swappers)
+     * @since 6.0
+     */
+    public void addWorker(OsWorker worker, @Nullable Integer cpu) {
+        if (worker.getHostThread().getTid() == 0 && cpu != null) {
+            fSwapperWorkers.put(cpu, worker);
+        } else {
+            fWorkerMap.put(worker.getHostThread(), worker);
+        }
     }
 
     /**
