@@ -12,10 +12,12 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.resources,
  org.eclipse.tracecompass.common.core,
  org.eclipse.tracecompass.tmf.core,
- org.eclipse.jdt.annotation;bundle-version="[2.0.0,3.0.0)";resolution:=optional
+ org.eclipse.jdt.annotation;bundle-version="[2.0.0,3.0.0)";resolution:=optional,
+ org.eclipse.tracecompass.datastore.core
 Export-Package: org.eclipse.tracecompass.analysis.graph.core.base,
  org.eclipse.tracecompass.analysis.graph.core.building,
  org.eclipse.tracecompass.analysis.graph.core.criticalpath,
+ org.eclipse.tracecompass.analysis.graph.core.graph,
  org.eclipse.tracecompass.internal.analysis.graph.core;x-internal=true;uses:="org.eclipse.tracecompass.common.core",
  org.eclipse.tracecompass.internal.analysis.graph.core.base;x-friends:="org.eclipse.tracecompass.analysis.graph.ui,org.eclipse.tracecompass.analysis.graph.core.tests",
  org.eclipse.tracecompass.internal.analysis.graph.core.criticalpath;x-friends:="org.eclipse.tracecompass.analysis.graph.ui,org.eclipse.tracecompass.analysis.graph.core.tests",
@@ -23,5 +25,6 @@ Export-Package: org.eclipse.tracecompass.analysis.graph.core.base,
 Import-Package: com.google.common.annotations,
  com.google.common.cache,
  com.google.common.collect,
- com.google.common.hash
+ com.google.common.hash,
+ org.apache.commons.lang3;version="3.1.0"
 Automatic-Module-Name: org.eclipse.tracecompass.analysis.graph.core
