@@ -16,6 +16,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -41,6 +42,7 @@ import org.eclipse.tracecompass.tmf.core.exceptions.TmfAnalysisException;
 import org.eclipse.tracecompass.tmf.core.exceptions.TmfTraceException;
 import org.eclipse.tracecompass.tmf.core.signal.TmfTraceOpenedSignal;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
+import org.eclipse.tracecompass.tmf.core.trace.TmfTraceManager;
 import org.eclipse.tracecompass.tmf.core.trace.TmfTraceUtils;
 import org.eclipse.tracecompass.tmf.core.trace.experiment.TmfExperiment;
 import org.junit.Test;
@@ -58,6 +60,16 @@ public class DistributedCriticalPathTest {
     private static final String EXPERIMENT = "CritPathExperiment";
     private static int BLOCK_SIZE = 1000;
     private static final @NonNull String TEST_ANALYSIS_ID = OsExecutionGraph.ANALYSIS_ID;
+
+    private static void deleteSupplementaryFiles(@NonNull ITmfTrace trace) {
+        /*
+         * Delete the supplementary files at the end of the tests
+         */
+        File suppDir = new File(TmfTraceManager.getSupplementaryFileDir(trace));
+        for (File file : suppDir.listFiles()) {
+            file.delete();
+        }
+    }
 
     /**
      * Setup the experiment for the tests
@@ -113,6 +125,7 @@ public class DistributedCriticalPathTest {
             internalTestNetworkExchangeWithWifi(experiment);
         } finally {
             experiment.dispose();
+            deleteSupplementaryFiles(experiment);
         }
     }
 
@@ -257,6 +270,7 @@ public class DistributedCriticalPathTest {
             internalTestNetworkExchange(experiment);
         } finally {
             experiment.dispose();
+            deleteSupplementaryFiles(experiment);
         }
     }
 
@@ -424,6 +438,7 @@ public class DistributedCriticalPathTest {
             internalTestNetworkExchangeOneTrace(experiment);
         } finally {
             experiment.dispose();
+            deleteSupplementaryFiles(experiment);
         }
     }
 
@@ -521,6 +536,7 @@ public class DistributedCriticalPathTest {
             internalTestNetworkExchangeOneTraceSoftirq(experiment);
         } finally {
             experiment.dispose();
+            deleteSupplementaryFiles(experiment);
         }
     }
 

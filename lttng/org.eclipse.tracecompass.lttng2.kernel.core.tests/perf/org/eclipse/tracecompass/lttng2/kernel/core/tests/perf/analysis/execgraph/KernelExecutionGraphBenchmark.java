@@ -32,12 +32,14 @@ import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfGraph;
 import org.eclipse.tracecompass.analysis.os.linux.core.execution.graph.OsExecutionGraph;
 import org.eclipse.tracecompass.analysis.os.linux.core.execution.graph.OsWorker;
 import org.eclipse.tracecompass.ctf.core.tests.shared.CtfBenchmarkTrace;
+import org.eclipse.tracecompass.internal.analysis.graph.core.graph.historytree.HistoryTreeTmfGraph;
 import org.eclipse.tracecompass.lttng2.kernel.core.trace.LttngKernelTrace;
 import org.eclipse.tracecompass.testtraces.ctf.CtfTestTrace;
 import org.eclipse.tracecompass.tmf.core.analysis.IAnalysisModule;
 import org.eclipse.tracecompass.tmf.core.exceptions.TmfAnalysisException;
 import org.eclipse.tracecompass.tmf.core.exceptions.TmfTraceException;
 import org.eclipse.tracecompass.tmf.core.tests.shared.TmfTestHelper;
+import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
 import org.eclipse.tracecompass.tmf.core.trace.TmfTraceManager;
 import org.eclipse.tracecompass.tmf.ctf.core.event.CtfTmfEvent;
 import org.junit.Test;
@@ -59,7 +61,6 @@ public class KernelExecutionGraphBenchmark {
     public static final String TEST_ID = "org.eclipse.tracecompass#Kernel Execution Graph#";
     private static final String CRIT_PATH_TEST_ID = "org.eclipse.tracecompass#Critical Path#";
     private static final String TEST_BUILD = "Building Graph (%s)";
-    private static final String TEST_MEMORY = "Memory Usage (%s)";
 
     private static final int LOOP_COUNT = 25;
 
@@ -73,13 +74,15 @@ public class KernelExecutionGraphBenchmark {
         pm.stop();
     };
 
-    private RunMethod memory = (pm, module) -> {
-        System.gc();
-        pm.start();
-        TmfTestHelper.executeAnalysis(module);
-        System.gc();
-        pm.stop();
-    };
+    private static void deleteSupplementaryFiles(@NonNull ITmfTrace trace) {
+        /*
+         * Delete the supplementary files at the end of the benchmarks
+         */
+        File suppDir = new File(TmfTraceManager.getSupplementaryFileDir(trace));
+        for (File file : suppDir.listFiles()) {
+            file.delete();
+        }
+    }
 
     /**
      * @return The arrays of parameters
@@ -129,20 +132,6 @@ public class KernelExecutionGraphBenchmark {
     }
 
     /**
-     * Run the memory benchmarks
-     */
-    @Test
-    public void runMemoryBenchmarks() {
-        // For memory benchmarks, one iteration is enough as there is no real
-        // variation
-        runOneBenchmark(String.format(TEST_MEMORY, fTestName),
-                memory,
-                Dimension.USED_JAVA_HEAP,
-                1);
-
-    }
-
-    /**
      * Run the CPU benchmarks
      */
     @Test
@@ -172,6 +161,12 @@ public class KernelExecutionGraphBenchmark {
                 module.setTrace(trace);
 
                 method.execute(pm, module);
+                // Print file size at first iteration
+                if (i == 0) {
+                    HistoryTreeTmfGraph graph = (HistoryTreeTmfGraph) module.getTmfGraph();
+                    assertNotNull(graph);
+                    System.out.println("Graph size: " + graph.getFileSize() + ", usage: " + graph.getAverageNodeUsage(1000));
+                }
 
                 // If a thread is specified, benchmark the critical path
                 if (fThreadId > 0) {
@@ -195,6 +190,7 @@ public class KernelExecutionGraphBenchmark {
                 }
                 if (trace != null) {
                     trace.dispose();
+                    deleteSupplementaryFiles(trace);
                 }
             }
         }

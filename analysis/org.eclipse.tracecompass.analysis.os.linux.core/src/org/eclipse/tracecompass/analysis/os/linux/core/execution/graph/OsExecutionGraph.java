@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 École Polytechnique de Montréal
+ * Copyright (c) 2015, 2022 École Polytechnique de Montréal
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -11,8 +11,12 @@
 
 package org.eclipse.tracecompass.analysis.os.linux.core.execution.graph;
 
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.tracecompass.analysis.graph.core.base.IGraphWorker;
 import org.eclipse.tracecompass.analysis.graph.core.building.ITmfGraphProvider;
 import org.eclipse.tracecompass.analysis.graph.core.building.TmfGraphBuilderModule;
+import org.eclipse.tracecompass.analysis.graph.core.graph.WorkerSerializer;
+import org.eclipse.tracecompass.analysis.os.linux.core.model.HostThread;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
 
 /**
@@ -28,6 +32,29 @@ public class OsExecutionGraph extends TmfGraphBuilderModule {
      * Analysis id of this module
      */
     public static final String ANALYSIS_ID = "org.eclipse.tracecompass.analysis.os.linux.execgraph"; //$NON-NLS-1$
+
+    private static class OsWorkerSerializer implements WorkerSerializer {
+
+        private static final String SERIALIZER_SEPARATOR = "///"; //$NON-NLS-1$
+
+        @Override
+        public String serialize(IGraphWorker worker) {
+            if (!(worker instanceof OsWorker)) {
+                throw new IllegalArgumentException("Unexpected type of worker: " + worker); //$NON-NLS-1$
+            }
+            OsWorker osWorker = (OsWorker) worker;
+            return osWorker.getHostThread().getTid() + SERIALIZER_SEPARATOR + osWorker.getStart() + SERIALIZER_SEPARATOR + osWorker.getHostId() + SERIALIZER_SEPARATOR + osWorker.getName();
+        }
+
+        @Override
+        public IGraphWorker deserialize(String serializedWorker) {
+            @NonNull String[] workerParts = serializedWorker.split(SERIALIZER_SEPARATOR, 4);
+            return new OsWorker(new HostThread(workerParts[2], Integer.decode(workerParts[0])), workerParts[3], Long.decode(workerParts[1]));
+        }
+
+    }
+
+    private static WorkerSerializer WORKER_SERIALIZER = new OsWorkerSerializer();
 
     @Override
     public boolean canExecute(ITmfTrace trace) {
@@ -60,6 +87,14 @@ public class OsExecutionGraph extends TmfGraphBuilderModule {
     @Override
     protected String getTraceCannotExecuteHelpText(ITmfTrace trace) {
         return "The trace must have events 'sched_switch' and 'sched_wakeup' enabled"; //$NON-NLS-1$
+    }
+
+    /**
+     * @since 6.0
+     */
+    @Override
+    public WorkerSerializer getWorkerSerializer() {
+        return WORKER_SERIALIZER;
     }
 
 }

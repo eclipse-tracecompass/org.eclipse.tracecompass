@@ -129,4 +129,15 @@ public interface ITmfGraphProvider {
         throw new UnsupportedOperationException("This graph provider hasn't been udpated to the new graph API yet"); //$NON-NLS-1$
     }
 
+    /**
+     * Return the version of this execution graph. Increment this version number
+     * when the structure of the graph changes.
+     *
+     * @return The graph version
+     * @since 3.1
+     */
+    default int getGraphFileVersion() {
+        return 1;
+    }
+
 }

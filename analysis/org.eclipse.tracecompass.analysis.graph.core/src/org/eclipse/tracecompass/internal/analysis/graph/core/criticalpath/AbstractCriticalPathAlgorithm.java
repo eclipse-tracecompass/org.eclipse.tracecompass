@@ -74,6 +74,9 @@ public abstract class AbstractCriticalPathAlgorithm implements ICriticalPathAlgo
             throw new NullPointerException();
         }
         ITmfVertex tmp = criticalPath.createVertex(parentTo, ts);
+        if (tmp.equals(anchor)) {
+            return anchor;
+        }
         if (string == null) {
             criticalPath.edge(anchor, tmp, type);
         } else {

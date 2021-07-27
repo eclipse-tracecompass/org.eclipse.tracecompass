@@ -11,14 +11,19 @@
 
 package org.eclipse.tracecompass.analysis.graph.core.building;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.tracecompass.analysis.graph.core.base.IGraphWorker;
 import org.eclipse.tracecompass.analysis.graph.core.base.TmfGraph;
 import org.eclipse.tracecompass.analysis.graph.core.criticalpath.CriticalPathModule;
 import org.eclipse.tracecompass.analysis.graph.core.criticalpath.ICriticalPathProvider;
 import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfGraph;
 import org.eclipse.tracecompass.analysis.graph.core.graph.TmfGraphFactory;
+import org.eclipse.tracecompass.analysis.graph.core.graph.WorkerSerializer;
 import org.eclipse.tracecompass.internal.analysis.graph.core.Activator;
 import org.eclipse.tracecompass.internal.analysis.graph.core.graph.legacy.TmfGraphLegacyWrapper;
 import org.eclipse.tracecompass.tmf.core.analysis.TmfAbstractAnalysisModule;
@@ -29,6 +34,7 @@ import org.eclipse.tracecompass.tmf.core.request.ITmfEventRequest;
 import org.eclipse.tracecompass.tmf.core.request.TmfEventRequest;
 import org.eclipse.tracecompass.tmf.core.timestamp.TmfTimeRange;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
+import org.eclipse.tracecompass.tmf.core.trace.TmfTraceManager;
 
 /**
  * Base class for all modules building graphs
@@ -143,10 +149,55 @@ public abstract class TmfGraphBuilderModule extends TmfAbstractAnalysisModule im
     // ------------------------------------------------------------------------
 
     private void createGraph(ITmfGraphProvider provider) {
-        ITmfGraph graph = TmfGraphFactory.createSimpleGraph();
-        provider.assignGraph(graph);
+        ITmfTrace trace = getTrace();
+        if (trace == null) {
+            throw new NullPointerException("The graph shouuld not be created if there is no trace set"); //$NON-NLS-1$
+        }
+        String fileDirectory = TmfTraceManager.getSupplementaryFileDir(trace);
+        String id = getId();
+        Path htFile = Paths.get(fileDirectory + id + ".ht"); //$NON-NLS-1$
+
+        ITmfGraph graph = TmfGraphFactory.createOnDiskGraph(htFile, getWorkerSerializer(), provider.getStartTime(), provider.getGraphFileVersion());
         fNewGraph = graph;
+        fGraph = new TmfGraph();
+        if (graph != null) {
+            provider.assignGraph(graph);
+        }
+        if (graph != null && graph.isDoneBuilding()) {
+            return;
+        }
+
         build(provider, graph);
+
+    }
+
+    private static class DefaultWorkerSerializer implements WorkerSerializer {
+
+        @Override
+        public String serialize(IGraphWorker worker) {
+            return worker.toString();
+        }
+
+        @Override
+        public IGraphWorker deserialize(String serializedWorker) {
+            throw new UnsupportedOperationException("Implementatiosn nee");
+        }
+
+    }
+
+    /**
+     * Get the specific worker serializer for this analysis. The worker
+     * serializer is responsible to serialize/deserialize the worker map. Since
+     * each analysis can implement their own workers, it is also its
+     * responsibility to be able to write them to disk and read them afterwards.
+     * The default implementation of this method returns a worker serializer
+     * that does not serialize anything and deserializes an empty map.
+     *
+     * @return The worker serializer object
+     * @since 3.1
+     */
+    public WorkerSerializer getWorkerSerializer() {
+        return new DefaultWorkerSerializer();
     }
 
     private void build(ITmfGraphProvider provider, ITmfGraph graph) {

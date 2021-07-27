@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 École Polytechnique de Montréal
+ * Copyright (c) 2015, 2022 École Polytechnique de Montréal
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -35,6 +35,22 @@ public class TestGraphWorker implements IGraphWorker {
         fValue = i;
     }
 
+    /**
+     * Default constructor (for deserialization)
+     */
+    public TestGraphWorker() {
+        fValue = 0;
+    }
+
+    /**
+     * Get the value of this worker
+     *
+     * @return The worker value
+     */
+    public int getValue() {
+        return fValue;
+    }
+
     @Override
     public String getHostId() {
         return "test";
@@ -52,4 +68,11 @@ public class TestGraphWorker implements IGraphWorker {
         }
         return false;
     }
+
+    @Override
+    public String toString() {
+        return "workerValue: " + fValue;
+    }
+
+
 }

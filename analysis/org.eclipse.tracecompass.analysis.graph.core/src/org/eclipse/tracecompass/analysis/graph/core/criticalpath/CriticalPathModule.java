@@ -11,6 +11,9 @@
 
 package org.eclipse.tracecompass.analysis.graph.core.criticalpath;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
@@ -28,6 +31,7 @@ import org.eclipse.tracecompass.internal.analysis.graph.core.criticalpath.Messag
 import org.eclipse.tracecompass.tmf.core.analysis.TmfAbstractAnalysisModule;
 import org.eclipse.tracecompass.tmf.core.exceptions.TmfAnalysisException;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
+import org.eclipse.tracecompass.tmf.core.trace.TmfTraceManager;
 
 import com.google.common.annotations.VisibleForTesting;
 
@@ -46,6 +50,8 @@ public class CriticalPathModule extends TmfAbstractAnalysisModule implements ICr
 
     /** Worker_id parameter name */
     public static final String PARAM_WORKER = "workerid"; //$NON-NLS-1$
+
+    private static final int CRITICAL_PATH_GRAPH_VERSION = 1;
 
     private final TmfGraphBuilderModule fGraphModule;
 
@@ -132,8 +138,20 @@ public class CriticalPathModule extends TmfAbstractAnalysisModule implements ICr
         return false;
     }
 
-    private static @Nullable ITmfGraph createGraph() {
-        return TmfGraphFactory.createSimpleGraph();
+    private @Nullable ITmfGraph createGraph() {
+        TmfGraphBuilderModule graphModule = fGraphModule;
+        ITmfTrace trace = graphModule.getTrace();
+        if (trace == null) {
+            throw new NullPointerException("The graph shouuld not be created if there is no trace set"); //$NON-NLS-1$
+        }
+        String fileDirectory = TmfTraceManager.getSupplementaryFileDir(trace);
+
+        // FIXME Move somewhere where both graph and crit path module can use
+        String id = graphModule.getId() + ".critPath"; //$NON-NLS-1$
+        Path htFile = Paths.get(fileDirectory + id + ".ht"); //$NON-NLS-1$
+
+        // Path segFile = Files.createFile(path);
+        return TmfGraphFactory.createOnDiskGraph(htFile, graphModule.getWorkerSerializer(), trace.getStartTime().toNanos(), CRITICAL_PATH_GRAPH_VERSION);
     }
 
     @Override

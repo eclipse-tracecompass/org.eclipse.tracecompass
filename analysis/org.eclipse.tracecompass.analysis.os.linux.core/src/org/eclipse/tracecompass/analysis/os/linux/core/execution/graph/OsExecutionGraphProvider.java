@@ -51,6 +51,8 @@ public class OsExecutionGraphProvider extends AbstractTmfGraphProvider {
     private static final String ATTRIBUTE_CLASS = "class"; //$NON-NLS-1$
     private static final String ATTRIBUTE_PRIORITY = "priority"; //$NON-NLS-1$
     private static final int DEFAULT_PRIORITY = 10;
+    // Increment when the graph structure changes (new edges, etc)
+    private static final int GRAPH_VERSION = 1;
 
     private final OsSystemModel fSystem;
 
@@ -139,6 +141,11 @@ public class OsExecutionGraphProvider extends AbstractTmfGraphProvider {
      */
     public OsSystemModel getSystem() {
         return fSystem;
+    }
+
+    @Override
+    public int getGraphFileVersion() {
+        return GRAPH_VERSION;
     }
 
 }
