@@ -21,9 +21,6 @@ echo Changing copyright year to $newYear
 #Update year in product file
 sed -i -e "s/\([0-9]\{4\}\)\sEricsson/$newYear Ericsson/g" ../../rcp/org.eclipse.tracecompass.rcp.product/tracing.product
 
-#Update year in legacy product file
-sed -i -e "s/\([0-9]\{4\}\)\sEricsson/$newYear Ericsson/g" ../../rcp/org.eclipse.tracecompass.rcp.product/legacy/tracing.product
-
 #Update branding plugin.xml
 sed -i -e "s/\([0-9]\{4\}\)\sEricsson/$newYear Ericsson/g" ../../rcp/org.eclipse.tracecompass.rcp.branding/plugin.xml
 
