@@ -9,6 +9,7 @@ Bundle-Activator: org.eclipse.tracecompass.internal.lttng2.ust.core.Activator
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: org.eclipse.tracecompass.internal.lttng2.ust.core;x-friends:="org.eclipse.tracecompass.lttng2.ust.core.tests,org.eclipse.tracecompass.lttng2.ust.ui",
+ org.eclipse.tracecompass.internal.lttng2.ust.core.analysis.cpu;x-friends:="org.eclipse.tracecompass.lttng2.ust.core.tests",
  org.eclipse.tracecompass.internal.lttng2.ust.core.analysis.debuginfo;x-friends:="org.eclipse.tracecompass.lttng2.ust.core.tests,org.eclipse.tracecompass.lttng2.ust.ui",
  org.eclipse.tracecompass.internal.lttng2.ust.core.analysis.memory;x-friends:="org.eclipse.tracecompass.lttng2.ust.ui,org.eclipse.tracecompass.lttng2.ust.core.tests",
  org.eclipse.tracecompass.internal.lttng2.ust.core.callstack;x-friends:="org.eclipse.tracecompass.lttng2.ust.ui,org.eclipse.tracecompass.lttng2.ust.core.tests,org.eclipse.tracecompass.lttng2.ust.ui.swtbot.tests",
@@ -31,7 +32,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.tracecompass.analysis.timing.core,
  org.eclipse.tracecompass.segmentstore.core,
  org.eclipse.tracecompass.datastore.core,
- org.eclipse.jdt.annotation;bundle-version="[2.0.0,3.0.0)";resolution:=optional
+ org.eclipse.jdt.annotation;bundle-version="[2.0.0,3.0.0)";resolution:=optional,
+ org.apache.commons.lang
 Import-Package: com.google.common.annotations;version="15.0.0",
  com.google.common.base,
  com.google.common.cache,
