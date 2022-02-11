@@ -578,7 +578,7 @@ public class HTNode {
          */
         ISafeByteBufferReader readBuffer = SafeByteBufferFactory.wrapReader(buffer, res - buffer.position());
         for (int i = 0; i < intervalCount; i++) {
-            TmfEdgeInterval interval = TmfEdgeInterval.READER.readInterval(readBuffer);
+            TmfEdgeInterval interval = objectReader.readInterval(readBuffer);
             newNode.addNoCheck(interval);
         }
 

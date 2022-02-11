@@ -35,7 +35,7 @@ public interface ICriticalPathProvider {
      * Get the critical path
      *
      * @return The critical path
-     * @since 3.1
+     * @since 4.0
      */
    default @Nullable ITmfGraph getCriticalPathGraph() {
        TmfGraph criticalPath = getCriticalPath();

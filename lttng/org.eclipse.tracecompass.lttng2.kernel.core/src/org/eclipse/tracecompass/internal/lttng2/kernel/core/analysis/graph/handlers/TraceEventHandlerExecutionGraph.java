@@ -18,7 +18,7 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfEdge.EdgeType;
+import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfEdgeContextState;
 import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfGraph;
 import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfVertex;
 import org.eclipse.tracecompass.analysis.os.linux.core.execution.graph.OsExecutionGraphProvider;
@@ -31,6 +31,8 @@ import org.eclipse.tracecompass.analysis.os.linux.core.model.HostThread;
 import org.eclipse.tracecompass.analysis.os.linux.core.model.ProcessStatus;
 import org.eclipse.tracecompass.analysis.os.linux.core.trace.IKernelAnalysisEventLayout;
 import org.eclipse.tracecompass.common.core.NonNullUtils;
+import org.eclipse.tracecompass.internal.analysis.graph.core.graph.legacy.OSEdgeContextState;
+import org.eclipse.tracecompass.internal.analysis.graph.core.graph.legacy.OSEdgeContextState.OSEdgeContextEnum;
 import org.eclipse.tracecompass.internal.lttng2.kernel.core.TcpEventStrings;
 import org.eclipse.tracecompass.tmf.core.event.ITmfEvent;
 import org.eclipse.tracecompass.tmf.core.event.ITmfEventField;
@@ -170,8 +172,8 @@ public class TraceEventHandlerExecutionGraph extends BaseHandler {
         return node;
     }
 
-    private static EdgeType resolveProcessStatus(ProcessStatus status) {
-        EdgeType ret = EdgeType.UNKNOWN;
+    private static ITmfEdgeContextState resolveProcessStatus(ProcessStatus status) {
+        ITmfEdgeContextState ret = new OSEdgeContextState(OSEdgeContextEnum.UNKNOWN);
         switch (status) {
         case NOT_ALIVE:
             break;
@@ -179,21 +181,21 @@ public class TraceEventHandlerExecutionGraph extends BaseHandler {
         case RUN:
         case RUN_SYTEMCALL:
         case INTERRUPTED:
-            ret = EdgeType.RUNNING;
+            ret.setContextEnum(OSEdgeContextEnum.RUNNING);
             break;
         case UNKNOWN:
-            ret = EdgeType.UNKNOWN;
+            ret.setContextEnum(OSEdgeContextEnum.UNKNOWN);
             break;
         case WAIT_BLOCKED:
-            ret = EdgeType.BLOCKED;
+            ret.setContextEnum(OSEdgeContextEnum.BLOCKED);
             break;
         case WAIT_CPU:
         case WAIT_FORK:
         case WAIT_UNKNOWN:
-            ret = EdgeType.PREEMPTED;
+            ret.setContextEnum(OSEdgeContextEnum.PREEMPTED);
             break;
         case ZOMBIE:
-            ret = EdgeType.UNKNOWN;
+            ret.setContextEnum(OSEdgeContextEnum.UNKNOWN);
             break;
         default:
             break;
@@ -267,13 +269,13 @@ public class TraceEventHandlerExecutionGraph extends BaseHandler {
         }
     }
 
-    private void appendInGraph(ITmfGraph graph, OsWorker target, ITmfVertex vertex, EdgeType type, @Nullable String qualifier) {
+    private void appendInGraph(ITmfGraph graph, OsWorker target, ITmfVertex vertex, ITmfEdgeContextState contextState, @Nullable String qualifier) {
         Pair<ITmfVertex, ITmfVertex> link = this.fLatestReceivedNetworkLink.remove(target);
         if (link != null) {
             // Add the latest vertical link to this worker in the graph so the new edge can be append properly
-            graph.edgeVertical(link.getFirst(), link.getSecond(), EdgeType.NETWORK, null);
+            graph.edgeVertical(link.getFirst(), link.getSecond(), new OSEdgeContextState(OSEdgeContextEnum.NETWORK), null);
         }
-        graph.append(vertex, type, qualifier);
+        graph.append(vertex, contextState, qualifier);
     }
 
     private void waitBlocked(ITmfEvent event, ITmfGraph graph, String host, Integer cpu, IKernelAnalysisEventLayout eventLayout, OsSystemModel system, long ts, OsWorker target, @Nullable OsWorker current) {
@@ -281,7 +283,7 @@ public class TraceEventHandlerExecutionGraph extends BaseHandler {
         switch (context.getContext()) {
         case HRTIMER:
             // shortcut of appendTaskNode: resolve blocking source in situ
-            appendInGraph(graph, target, graph.createVertex(target, ts), EdgeType.TIMER, null);
+            appendInGraph(graph, target, graph.createVertex(target, ts), new OSEdgeContextState(OSEdgeContextEnum.TIMER), null);
             break;
         case IRQ:
         case COMPLETE_IRQ:
@@ -291,7 +293,7 @@ public class TraceEventHandlerExecutionGraph extends BaseHandler {
             softIrq(event, graph, cpu, eventLayout, ts, target, context);
             break;
         case IPI:
-            appendInGraph(graph, target, graph.createVertex(target, ts), EdgeType.IPI, null);
+            appendInGraph(graph, target, graph.createVertex(target, ts), new OSEdgeContextState(OSEdgeContextEnum.IPI), null);
             break;
         case NONE:
             none(graph, ts, target, current);
@@ -315,7 +317,7 @@ public class TraceEventHandlerExecutionGraph extends BaseHandler {
 
         // Append a vertex to the target and set the edge type to network
         ITmfVertex wupTarget = graph.createVertex(target, ts);
-        appendInGraph(graph, target, wupTarget, EdgeType.NETWORK, (source != null && innerCtx != Context.SOFTIRQ && innerCtx != Context.IRQ) ? source.getName() : null);
+        appendInGraph(graph, target, wupTarget, new OSEdgeContextState(OSEdgeContextEnum.NETWORK), (source != null && innerCtx != Context.SOFTIRQ && innerCtx != Context.IRQ) ? source.getName() : null);
 
         if (source == null) {
             return;
@@ -349,7 +351,7 @@ public class TraceEventHandlerExecutionGraph extends BaseHandler {
         if (link == null) {
             return false;
         }
-        graph.edgeVertical(link.getFirst(), wupTarget, EdgeType.NETWORK, null);
+        graph.edgeVertical(link.getFirst(), wupTarget, new OSEdgeContextState(OSEdgeContextEnum.NETWORK), null);
         return true;
         // Update incoming network edge. Update
 //        ITmfEdge edge = graph.getEdgeFrom(tail, EdgeDirection.INCOMING_VERTICAL_EDGE);
@@ -370,7 +372,7 @@ public class TraceEventHandlerExecutionGraph extends BaseHandler {
         // Extend the source worker to the timestamp
         ITmfVertex wupSource = stateExtend(worker, ts);
         // Add a vertical link to target
-        graph.edgeVertical(wupSource, targetVertex, EdgeType.DEFAULT, null);
+        graph.edgeVertical(wupSource, targetVertex, new OSEdgeContextState(OSEdgeContextEnum.DEFAULT), null);
     }
 
     private void softIrq(ITmfEvent event, ITmfGraph graph, Integer cpu, IKernelAnalysisEventLayout eventLayout, long ts, OsWorker target, OsInterruptContext context) {
@@ -410,13 +412,13 @@ public class TraceEventHandlerExecutionGraph extends BaseHandler {
         ITmfVertex wup = graph.createVertex(target, ts);
         ITmfEventField content = context.getEvent().getContent();
         Integer vec = content.getFieldValue(Integer.class, eventLayout.fieldIrq());
-        EdgeType edgeType = resolveIRQ(vec);
-        if (edgeType.equals(EdgeType.BLOCKED)) {
+        ITmfEdgeContextState contextState = resolveIRQ(vec);
+        if (contextState.equals(OSEdgeContextEnum.BLOCKED)) {
             // Blocked for unknown reason, add the irq name as qualifier
             String irqName = content.getFieldValue(String.class, eventLayout.fieldName());
-            appendInGraph(graph, target, wup, edgeType, irqName);
+            appendInGraph(graph, target, wup, contextState, irqName);
         } else {
-            appendInGraph(graph, target, wup, edgeType, null);
+            appendInGraph(graph, target, wup, contextState, null);
         }
     }
 
@@ -430,45 +432,45 @@ public class TraceEventHandlerExecutionGraph extends BaseHandler {
         }
     }
 
-    private static EdgeType resolveIRQ(@Nullable Integer vec) {
-        EdgeType ret = EdgeType.UNKNOWN;
+    private static ITmfEdgeContextState resolveIRQ(@Nullable Integer vec) {
+        ITmfEdgeContextState ret = new OSEdgeContextState(OSEdgeContextEnum.UNKNOWN);
         if (vec == null) {
             return ret;
         }
         switch (vec) {
         case IRQ_TIMER:
-            ret = EdgeType.INTERRUPTED;
+            ret.setContextEnum(OSEdgeContextEnum.INTERRUPTED);
             break;
         default:
-            ret = EdgeType.BLOCKED;
+            ret.setContextEnum(OSEdgeContextEnum.BLOCKED);
             break;
         }
         return ret;
     }
 
-    private static EdgeType resolveSoftirq(@Nullable Long vec) {
-        EdgeType ret = EdgeType.UNKNOWN;
+    private static ITmfEdgeContextState resolveSoftirq(@Nullable Long vec) {
+        ITmfEdgeContextState ret = new OSEdgeContextState(OSEdgeContextEnum.UNKNOWN);
         if (vec == null) {
             return ret;
         }
         switch (vec.intValue()) {
         case LinuxValues.SOFTIRQ_HRTIMER:
         case LinuxValues.SOFTIRQ_TIMER:
-            ret = EdgeType.TIMER;
+            ret.setContextEnum(OSEdgeContextEnum.TIMER);
             break;
         case LinuxValues.SOFTIRQ_BLOCK:
         case LinuxValues.SOFTIRQ_BLOCK_IOPOLL:
-            ret = EdgeType.BLOCK_DEVICE;
+            ret.setContextEnum(OSEdgeContextEnum.BLOCK_DEVICE);
             break;
         case LinuxValues.SOFTIRQ_NET_RX:
         case LinuxValues.SOFTIRQ_NET_TX:
-            ret = EdgeType.NETWORK;
+            ret.setContextEnum(OSEdgeContextEnum.NETWORK);
             break;
         case LinuxValues.SOFTIRQ_SCHED:
-            ret = EdgeType.INTERRUPTED;
+            ret.setContextEnum(OSEdgeContextEnum.INTERRUPTED);
             break;
         default:
-            ret = EdgeType.BLOCKED;
+            ret.setContextEnum(OSEdgeContextEnum.BLOCKED);
             break;
         }
         return ret;

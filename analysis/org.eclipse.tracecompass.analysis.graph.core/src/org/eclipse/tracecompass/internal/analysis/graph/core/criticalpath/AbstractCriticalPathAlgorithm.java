@@ -15,6 +15,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.analysis.graph.core.base.IGraphWorker;
 import org.eclipse.tracecompass.analysis.graph.core.criticalpath.ICriticalPathAlgorithm;
 import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfEdge;
+import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfEdgeContextState;
 import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfGraph;
 import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfVertex;
 
@@ -62,13 +63,13 @@ public abstract class AbstractCriticalPathAlgorithm implements ICriticalPathAlgo
      *            The destination vertex in the main graph
      * @param ts
      *            The timestamp of the edge
-     * @param type
-     *            The type of the edge to create
+     * @param contextState
+     *            The context which defines the underlying state which is represented by the edge
      * @param string
      *            An optional qualifier for the link
      * @return The destination vertex in the path graph
      */
-    protected ITmfVertex copyLink(ITmfGraph criticalPath, ITmfGraph graph, ITmfVertex anchor, ITmfVertex from, ITmfVertex to, long ts, ITmfEdge.EdgeType type, @Nullable String string) {
+    protected ITmfVertex copyLink(ITmfGraph criticalPath, ITmfGraph graph, ITmfVertex anchor, ITmfVertex from, ITmfVertex to, long ts, @Nullable ITmfEdgeContextState contextState, @Nullable String string) {
         IGraphWorker parentTo = graph.getParentOf(to);
         if (parentTo == null) {
             throw new NullPointerException();
@@ -77,10 +78,12 @@ public abstract class AbstractCriticalPathAlgorithm implements ICriticalPathAlgo
         if (tmp.equals(anchor)) {
             return anchor;
         }
-        if (string == null) {
-            criticalPath.edge(anchor, tmp, type);
+        if (contextState == null) {
+            criticalPath.edge(anchor, tmp);
+        } else if (string == null) {
+            criticalPath.edge(anchor, tmp, contextState);
         } else {
-            criticalPath.edge(anchor, tmp, type, string);
+            criticalPath.edge(anchor, tmp, contextState, string);
         }
         return tmp;
     }
@@ -103,7 +106,7 @@ public abstract class AbstractCriticalPathAlgorithm implements ICriticalPathAlgo
                 return currentVertex;
             }
             ITmfEdge edge = fGraph.getEdgeFrom(vertex, dir);
-            if (edge == null || edge.getEdgeType() != ITmfEdge.EdgeType.EPS) {
+            if (edge == null) {
                 break;
             }
             currentVertex = getNeighborFromEdge(edge, dir);
@@ -111,7 +114,14 @@ public abstract class AbstractCriticalPathAlgorithm implements ICriticalPathAlgo
         return null;
     }
 
-    private static ITmfVertex getNeighborFromEdge(ITmfEdge edge, ITmfGraph.EdgeDirection dir) {
+    /**
+     * Gets the neighbor vertex from an edge and a direction.
+     *
+     * @param edge The edge from which we get the neighbor
+     * @param dir The direction used
+     * @return the neighbor vertex
+     */
+    protected ITmfVertex getNeighborFromEdge(ITmfEdge edge, ITmfGraph.EdgeDirection dir) {
         switch (dir) {
         case OUTGOING_VERTICAL_EDGE:
         case OUTGOING_HORIZONTAL_EDGE:

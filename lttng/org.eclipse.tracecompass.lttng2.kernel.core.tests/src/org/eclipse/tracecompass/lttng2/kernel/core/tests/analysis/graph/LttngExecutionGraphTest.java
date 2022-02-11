@@ -24,13 +24,13 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.tracecompass.analysis.graph.core.base.IGraphWorker;
-import org.eclipse.tracecompass.analysis.graph.core.building.TmfGraphBuilderModule;
+import org.eclipse.tracecompass.analysis.graph.core.building.AbstractTmfGraphBuilderModule;
 import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfEdge;
-import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfEdge.EdgeType;
 import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfGraph;
 import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfVertex;
 import org.eclipse.tracecompass.analysis.os.linux.core.execution.graph.OsWorker;
 import org.eclipse.tracecompass.analysis.os.linux.core.tests.stubs.trace.TmfXmlKernelTraceStub;
+import org.eclipse.tracecompass.internal.analysis.graph.core.graph.legacy.OSEdgeContextState.OSEdgeContextEnum;
 import org.eclipse.tracecompass.lttng2.kernel.core.tests.Activator;
 import org.eclipse.tracecompass.tmf.core.analysis.IAnalysisModule;
 import org.eclipse.tracecompass.tmf.core.event.TmfEvent;
@@ -72,7 +72,7 @@ public class LttngExecutionGraphTest {
         }
         trace.traceOpened(new TmfTraceOpenedSignal(this, trace, null));
         IAnalysisModule module = null;
-        for (IAnalysisModule mod : TmfTraceUtils.getAnalysisModulesOfClass(trace, TmfGraphBuilderModule.class)) {
+        for (IAnalysisModule mod : TmfTraceUtils.getAnalysisModulesOfClass(trace, AbstractTmfGraphBuilderModule.class)) {
             module = mod;
         }
         assertNotNull(module);
@@ -91,7 +91,7 @@ public class LttngExecutionGraphTest {
         ITmfTrace trace = setUpTrace("testfiles/graph/sched_only.xml");
         assertNotNull(trace);
 
-        TmfGraphBuilderModule module = TmfTraceUtils.getAnalysisModuleOfClass(trace, TmfGraphBuilderModule.class, TEST_ANALYSIS_ID);
+        AbstractTmfGraphBuilderModule module = TmfTraceUtils.getAnalysisModuleOfClass(trace, AbstractTmfGraphBuilderModule.class, TEST_ANALYSIS_ID);
         assertNotNull(module);
         module.schedule();
         assertTrue(module.waitForCompletion());
@@ -117,7 +117,7 @@ public class LttngExecutionGraphTest {
                 assertNull(graph.getEdgeFrom(v, ITmfGraph.EdgeDirection.OUTGOING_VERTICAL_EDGE));
                 ITmfEdge edge = graph.getEdgeFrom(v, ITmfGraph.EdgeDirection.OUTGOING_HORIZONTAL_EDGE);
                 assertNotNull(edge);
-                assertEquals(EdgeType.PREEMPTED, edge.getEdgeType());
+                assertEquals(OSEdgeContextEnum.PREEMPTED, edge.getEdgeContextState().getContextEnum());
                 v = nodesOf.get(1);
                 assertEquals(v, edge.getVertexTo());
 
@@ -128,7 +128,7 @@ public class LttngExecutionGraphTest {
                 assertNotNull(graph.getEdgeFrom(v, ITmfGraph.EdgeDirection.INCOMING_HORIZONTAL_EDGE));
                 edge = graph.getEdgeFrom(v, ITmfGraph.EdgeDirection.OUTGOING_HORIZONTAL_EDGE);
                 assertNotNull(edge);
-                assertEquals(EdgeType.RUNNING, edge.getEdgeType());
+                assertEquals(OSEdgeContextEnum.RUNNING, edge.getEdgeContextState().getContextEnum());
                 v = nodesOf.get(2);
                 assertEquals(v, edge.getVertexTo());
 
@@ -139,7 +139,7 @@ public class LttngExecutionGraphTest {
                 assertNotNull(graph.getEdgeFrom(v, ITmfGraph.EdgeDirection.INCOMING_HORIZONTAL_EDGE));
                 edge = graph.getEdgeFrom(v, ITmfGraph.EdgeDirection.OUTGOING_HORIZONTAL_EDGE);
                 assertNotNull(edge);
-                assertEquals(EdgeType.PREEMPTED, edge.getEdgeType());
+                assertEquals(OSEdgeContextEnum.PREEMPTED, edge.getEdgeContextState().getContextEnum());
                 v = nodesOf.get(3);
                 assertEquals(v, edge.getVertexTo());
 
@@ -163,7 +163,7 @@ public class LttngExecutionGraphTest {
                 assertNull(graph.getEdgeFrom(v, ITmfGraph.EdgeDirection.OUTGOING_VERTICAL_EDGE));
                 ITmfEdge edge = graph.getEdgeFrom(v, ITmfGraph.EdgeDirection.OUTGOING_HORIZONTAL_EDGE);
                 assertNotNull(edge);
-                assertEquals(EdgeType.RUNNING, edge.getEdgeType());
+                assertEquals(OSEdgeContextEnum.RUNNING, edge.getEdgeContextState().getContextEnum());
                 v = nodesOf.get(1);
                 assertEquals(v, edge.getVertexTo());
 
@@ -174,7 +174,7 @@ public class LttngExecutionGraphTest {
                 assertNotNull(graph.getEdgeFrom(v, ITmfGraph.EdgeDirection.INCOMING_HORIZONTAL_EDGE));
                 edge = graph.getEdgeFrom(v, ITmfGraph.EdgeDirection.OUTGOING_HORIZONTAL_EDGE);
                 assertNotNull(edge);
-                assertEquals(EdgeType.BLOCKED, edge.getEdgeType());
+                assertEquals(OSEdgeContextEnum.BLOCKED, edge.getEdgeContextState().getContextEnum());
                 v = nodesOf.get(2);
                 assertEquals(v, edge.getVertexTo());
 
@@ -185,7 +185,7 @@ public class LttngExecutionGraphTest {
                 assertNotNull(graph.getEdgeFrom(v, ITmfGraph.EdgeDirection.INCOMING_HORIZONTAL_EDGE));
                 edge = graph.getEdgeFrom(v, ITmfGraph.EdgeDirection.OUTGOING_HORIZONTAL_EDGE);
                 assertNotNull(edge);
-                assertEquals(EdgeType.RUNNING, edge.getEdgeType());
+                assertEquals(OSEdgeContextEnum.RUNNING, edge.getEdgeContextState().getContextEnum());
                 v = nodesOf.get(3);
                 assertEquals(v, edge.getVertexTo());
 

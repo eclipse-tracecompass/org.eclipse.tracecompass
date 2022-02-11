@@ -29,6 +29,7 @@ import java.util.function.Predicate;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.common.core.NonNullUtils;
+import org.eclipse.tracecompass.datastore.core.interval.IHTIntervalReader;
 import org.eclipse.tracecompass.internal.analysis.graph.core.Activator;
 import org.eclipse.tracecompass.internal.analysis.graph.core.graph.historytree.HTNode.NodeType;
 import org.eclipse.tracecompass.internal.analysis.graph.core.graph.historytree.TmfEdgeInterval.EdgeIntervalType;
@@ -78,6 +79,7 @@ public class GraphHistoryTree {
     private final int fMaxChildren;
     private final int fProviderVersion;
     private final long fTreeStart;
+    private final IHTIntervalReader<TmfEdgeInterval> fEdgeIntervalReader;
 
     /** Reader/writer object */
     private HtIo fTreeIO;
@@ -118,6 +120,8 @@ public class GraphHistoryTree {
      *            uselessly.
      * @param treeStart
      *            The start time of the history
+     * @param edgeIntervalReader
+     *            The edge interval reader to deserialize edges written on disk
      * @throws IOException
      *             If an error happens trying to open/write to the file
      *             specified in the config
@@ -126,7 +130,8 @@ public class GraphHistoryTree {
             int blockSize,
             int maxChildren,
             int providerVersion,
-            long treeStart) throws IOException {
+            long treeStart,
+            IHTIntervalReader<TmfEdgeInterval> edgeIntervalReader) throws IOException {
         /*
          * Simple check to make sure we have enough place in the 0th block for
          * the tree configuration
@@ -140,6 +145,7 @@ public class GraphHistoryTree {
         fMaxChildren = maxChildren;
         fProviderVersion = providerVersion;
         fTreeStart = treeStart;
+        fEdgeIntervalReader = edgeIntervalReader;
 
         fTreeEnd = treeStart;
         fNodeCount = 0;
@@ -150,7 +156,8 @@ public class GraphHistoryTree {
                 blockSize,
                 maxChildren,
                 true,
-                getNodeFactory());
+                getNodeFactory(),
+                fEdgeIntervalReader);
 
         /* Add the first node to the tree */
         GraphTreeNode firstNode = initNewLeafNode(-1, treeStart);
@@ -165,11 +172,13 @@ public class GraphHistoryTree {
      *            Path/filename of the history-file we are to open
      * @param expectedProviderVersion
      *            The expected version of the state provider
+     * @param edgeIntervalReader
+     *            Interval reader
      * @throws IOException
      *             If an error happens reading the file
      */
     public GraphHistoryTree(File existingStateFile,
-            int expectedProviderVersion) throws IOException {
+            int expectedProviderVersion, IHTIntervalReader<TmfEdgeInterval> edgeIntervalReader) throws IOException {
         /*
          * Open the file ourselves, get the tree header information we need,
          * then pass on the descriptor to the TreeIO object.
@@ -239,10 +248,11 @@ public class GraphHistoryTree {
             fMaxChildren = maxc;
             fProviderVersion = expectedProviderVersion;
             fTreeStart = startTime;
+            fEdgeIntervalReader = edgeIntervalReader;
         }
 
         /*
-         * FIXME We close fis here and the TreeIO will then reopen the same
+         * FIXME We close this here and the TreeIO will then reopen the same
          * file, not extremely elegant. But how to pass the information here to
          * the SHT otherwise?
          */
@@ -250,7 +260,8 @@ public class GraphHistoryTree {
                 fBlockSize,
                 fMaxChildren,
                 false,
-                getNodeFactory());
+                getNodeFactory(),
+                fEdgeIntervalReader);
 
         fLatestBranch = buildLatestBranch(rootNodeSeqNb);
         fTreeEnd = getRootNode().getNodeEnd();
@@ -543,7 +554,8 @@ public class GraphHistoryTree {
                     fBlockSize,
                     fMaxChildren,
                     true,
-                    getNodeFactory());
+                    getNodeFactory(),
+                    fEdgeIntervalReader);
 
             clearContent();
             /* Add the first node to the tree */

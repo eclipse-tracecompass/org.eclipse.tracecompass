@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 École Polytechnique de Montréal
+ * Copyright (c) 2015, 2022 École Polytechnique de Montréal
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -11,7 +11,8 @@
 
 package org.eclipse.tracecompass.internal.lttng2.kernel.ui.criticalpath;
 
-import org.eclipse.tracecompass.analysis.graph.core.criticalpath.CriticalPathModule;
+import org.eclipse.tracecompass.analysis.graph.core.criticalpath.AbstractCriticalPathModule;
+import org.eclipse.tracecompass.analysis.graph.core.criticalpath.OSCriticalPathModule;
 import org.eclipse.tracecompass.analysis.os.linux.core.execution.graph.OsWorker;
 import org.eclipse.tracecompass.analysis.os.linux.core.model.HostThread;
 import org.eclipse.tracecompass.analysis.os.linux.core.signals.TmfThreadSelectedSignal;
@@ -55,14 +56,14 @@ public class CriticalPathParameterProvider extends TmfAbstractAnalysisParamProvi
 
     @Override
     public Object getParameter(String name) {
-        if (name.equals(CriticalPathModule.PARAM_WORKER)) {
+        if (name.equals(AbstractCriticalPathModule.PARAM_WORKER)) {
             final HostThread currentHostThread = fCurrentHostThread;
             if (currentHostThread == null) {
                 return null;
             }
             /* Try to find the worker for the critical path */
             IAnalysisModule mod = getModule();
-            if (mod instanceof CriticalPathModule) {
+            if (mod instanceof OSCriticalPathModule) {
                 OsWorker worker = new OsWorker(currentHostThread, "", 0); //$NON-NLS-1$
                 return worker;
             }
@@ -78,7 +79,7 @@ public class CriticalPathParameterProvider extends TmfAbstractAnalysisParamProvi
     private void setCurrentHostThread(HostThread hostThread) {
         if (!hostThread.equals(fCurrentHostThread)) {
             fCurrentHostThread = hostThread;
-            notifyParameterChanged(CriticalPathModule.PARAM_WORKER);
+            notifyParameterChanged(AbstractCriticalPathModule.PARAM_WORKER);
         }
     }
 

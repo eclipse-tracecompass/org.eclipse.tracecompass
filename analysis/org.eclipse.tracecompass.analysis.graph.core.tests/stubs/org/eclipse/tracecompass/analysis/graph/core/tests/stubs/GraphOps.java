@@ -63,7 +63,7 @@ public class GraphOps {
                         continue;
                     }
                     assertNotNull("Expected non null edge for " + graphObject + ", node " + v1 + " and dir " + dir, edge2);
-                    assertEquals("Edge type for " + graphObject + ", node " + v1 + " and dir " + dir, edge1.getEdgeType(), edge2.getEdgeType());
+                    assertEquals("Edge type for " + graphObject + ", node " + v1 + " and dir " + dir, edge1.getEdgeContextState().getContextEnum(), edge2.getEdgeContextState().getContextEnum());
                     assertEquals("Edge duration for " + graphObject + ", node " + v1 + " edge direction " + dir, edge1.getDuration(), edge2.getDuration());
                     assertEquals("From objects for " + graphObject + ", node " + v1 + " and dir " + dir, g1.getParentOf(edge1.getVertexFrom()), g2.getParentOf(edge2.getVertexFrom()));
                     assertEquals("To objects for " + graphObject + ", node " + v1 + " and dir " + dir, g1.getParentOf(edge1.getVertexTo()), g2.getParentOf(edge2.getVertexTo()));

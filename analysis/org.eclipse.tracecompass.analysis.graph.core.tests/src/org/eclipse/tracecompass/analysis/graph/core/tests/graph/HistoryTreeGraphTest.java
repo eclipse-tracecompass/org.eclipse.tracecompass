@@ -18,18 +18,18 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Iterator;
-import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.tracecompass.analysis.graph.core.base.IGraphWorker;
 import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfEdge;
-import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfEdge.EdgeType;
 import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfGraph;
 import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfVertex;
-import org.eclipse.tracecompass.analysis.graph.core.graph.TmfGraphFactory;
 import org.eclipse.tracecompass.analysis.graph.core.graph.WorkerSerializer;
 import org.eclipse.tracecompass.analysis.graph.core.tests.stubs.TestGraphWorker;
 import org.eclipse.tracecompass.internal.analysis.graph.core.graph.historytree.HistoryTreeTmfGraph;
+import org.eclipse.tracecompass.internal.analysis.graph.core.graph.historytree.OsHistoryTreeGraph;
+import org.eclipse.tracecompass.internal.analysis.graph.core.graph.legacy.OSEdgeContextState;
+import org.eclipse.tracecompass.internal.analysis.graph.core.graph.legacy.OSEdgeContextState.OSEdgeContextEnum;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -70,7 +70,12 @@ public class HistoryTreeGraphTest extends ITmfGraphTest {
 
     @Override
     protected ITmfGraph createNewGraph() {
-        return Objects.requireNonNull(TmfGraphFactory.createOnDiskGraph(fGraphFile, new TestWorkerSerializer(), 0, 1));
+        try {
+            return new OsHistoryTreeGraph(fGraphFile, 1, new TestWorkerSerializer(), 0);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @Override
@@ -81,10 +86,17 @@ public class HistoryTreeGraphTest extends ITmfGraphTest {
 
     /**
      * Test the graph constructor
+     * @throws IOException
      */
     @Test
     public void testDefaultConstructor() {
-        ITmfGraph graph = TmfGraphFactory.createOnDiskGraph(fGraphFile, new TestWorkerSerializer(), 0, 1);
+        ITmfGraph graph;
+        try {
+            graph = new OsHistoryTreeGraph(fGraphFile, 1, new TestWorkerSerializer(), 0);
+        } catch (IOException e) {
+            graph = null;
+            e.printStackTrace();
+        }
         assertNotNull(graph);
         Iterator<ITmfVertex> it = graph.getNodesOf(WORKER1);
         assertEquals(0, ImmutableList.copyOf(it).size());
@@ -106,13 +118,13 @@ public class HistoryTreeGraphTest extends ITmfGraphTest {
         ITmfEdge edge = graph.edge(v0, v1);
 
         ITmfVertex v2 = graph.createVertex(WORKER1, 2);
-        edge = graph.edge(v1, v2, EdgeType.NETWORK);
+        edge = graph.edge(v1, v2, new OSEdgeContextState(OSEdgeContextEnum.NETWORK));
 
         ITmfVertex v3 = graph.createVertex(WORKER2, 3);
-        edge = graph.edge(v2, v3, EdgeType.NETWORK);
+        edge = graph.edge(v2, v3, new OSEdgeContextState(OSEdgeContextEnum.NETWORK));
 
         ITmfVertex v4 = graph.createVertex(WORKER3, 3);
-        edge = graph.edge(v3, v4, EdgeType.NETWORK, "test");
+        edge = graph.edge(v3, v4, new OSEdgeContextState(OSEdgeContextEnum.NETWORK), "test");
 
         graph.closeGraph(3);
         graph = null;
@@ -128,7 +140,7 @@ public class HistoryTreeGraphTest extends ITmfGraphTest {
 
         edge = reOpenedGraph.getEdgeFrom(v0, ITmfGraph.EdgeDirection.OUTGOING_HORIZONTAL_EDGE);
         assertNotNull(edge);
-        assertEquals(EdgeType.DEFAULT, edge.getEdgeType());
+        assertEquals(OSEdgeContextEnum.DEFAULT, edge.getEdgeContextState().getContextEnum());
         assertEquals(v1, edge.getVertexTo());
         assertEquals(v0, edge.getVertexFrom());
         assertEquals(v1.getTimestamp() - v0.getTimestamp(), edge.getDuration());
@@ -139,7 +151,7 @@ public class HistoryTreeGraphTest extends ITmfGraphTest {
         edge = reOpenedGraph.getEdgeFrom(v2, ITmfGraph.EdgeDirection.INCOMING_HORIZONTAL_EDGE);
         assertNotNull(edge);
         assertEquals(v1, edge.getVertexFrom());
-        assertEquals(EdgeType.NETWORK, edge.getEdgeType());
+        assertEquals(OSEdgeContextEnum.NETWORK, edge.getEdgeContextState().getContextEnum());
         edge = reOpenedGraph.getEdgeFrom(v1, ITmfGraph.EdgeDirection.OUTGOING_HORIZONTAL_EDGE);
         assertNotNull(edge);
         assertEquals(v2, edge.getVertexTo());
@@ -147,7 +159,7 @@ public class HistoryTreeGraphTest extends ITmfGraphTest {
         edge = reOpenedGraph.getEdgeFrom(v2, ITmfGraph.EdgeDirection.OUTGOING_VERTICAL_EDGE);
         assertNotNull(edge);
         assertEquals(v3, edge.getVertexTo());
-        assertEquals(EdgeType.NETWORK, edge.getEdgeType());
+        assertEquals(OSEdgeContextEnum.NETWORK, edge.getEdgeContextState().getContextEnum());
         edge = reOpenedGraph.getEdgeFrom(v3, ITmfGraph.EdgeDirection.INCOMING_VERTICAL_EDGE);
         assertNotNull(edge);
         assertEquals(v2, edge.getVertexFrom());
@@ -191,7 +203,7 @@ public class HistoryTreeGraphTest extends ITmfGraphTest {
         ITmfVertex v3 = graph.createVertex(WORKER2, 1);
         ITmfVertex v4 = graph.createVertex(WORKER2, 2);
         graph.add(v4);
-        graph.edge(v3, v4, EdgeType.RUNNING);
+        graph.edge(v3, v4, new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
     }
 
 }

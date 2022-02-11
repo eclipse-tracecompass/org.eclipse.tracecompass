@@ -19,7 +19,6 @@ import java.util.Iterator;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.analysis.graph.core.base.IGraphWorker;
-import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfEdge.EdgeType;
 import org.eclipse.tracecompass.tmf.core.timestamp.ITmfTimestamp;
 
 /**
@@ -30,7 +29,7 @@ import org.eclipse.tracecompass.tmf.core.timestamp.ITmfTimestamp;
  * belongs to an object at a given time.
  *
  * @author Geneviève Bastien
- * @since 3.1
+ * @since 4.0
  */
 public interface ITmfGraph {
 
@@ -77,6 +76,20 @@ public interface ITmfGraph {
 
     /**
      * Add the vertex to the graph and make horizontal link with the latest
+     * vertex of this worker with an unknown type
+     *
+     * @param worker
+     *            The key of the object the vertex belongs to
+     * @param vertex
+     *            The new vertex
+     * @param type
+     *            The type of edge to create
+     * @return The edge constructed
+     */
+    @Nullable ITmfEdge appendUnknown(ITmfVertex vertex);
+
+    /**
+     * Add the vertex to the graph and make horizontal link with the latest
      * vertex of this worker
      *
      * @param vertex
@@ -97,7 +110,7 @@ public interface ITmfGraph {
      *            The type of edge to create
      * @return The edge constructed
      */
-    @Nullable ITmfEdge append(ITmfVertex vertex, EdgeType type);
+    @Nullable ITmfEdge append(ITmfVertex vertex, ITmfEdgeContextState type);
 
     /**
      * Add the vertex to the graph and make horizontal link with the latest
@@ -113,7 +126,26 @@ public interface ITmfGraph {
      *            An optional qualifier to identify this link
      * @return The edge constructed
      */
-    @Nullable ITmfEdge append(ITmfVertex vertex, EdgeType type, @Nullable String linkQualifier);
+    @Nullable ITmfEdge append(ITmfVertex vertex, ITmfEdgeContextState type, @Nullable String linkQualifier);
+
+    /**
+     * Add an edge between two vertices of the graph. The from vertex must be in
+     * the graph. If the 'to' vertex is not in the graph, it will be appended to
+     * the worker it belongs to. Otherwise a vertical or horizontal link will be
+     * created between the vertices, depending if the vertices are from the same
+     * worker or not.
+     *
+     * Caution: If a link already exist in the corresponding direction, the
+     * behavior is implementation dependent. Ideally, this method should not be
+     * called twice for a same vertex.
+     *
+     * @param from
+     *            The source vertex
+     * @param to
+     *            The destination vertex
+     * @return The newly created edge
+     */
+    @Nullable ITmfEdge edgeUnknown(ITmfVertex from, ITmfVertex to);
 
     /**
      * Add an edge between two vertices of the graph. The from vertex must be in
@@ -153,7 +185,7 @@ public interface ITmfGraph {
      *            The type of edge to create
      * @return The newly created edge
      */
-    @Nullable ITmfEdge edge(ITmfVertex from, ITmfVertex to, EdgeType type);
+    @Nullable ITmfEdge edge(ITmfVertex from, ITmfVertex to, ITmfEdgeContextState type);
 
     /**
      * Add an edge between two vertices of the graph. The from vertex must be in
@@ -176,7 +208,7 @@ public interface ITmfGraph {
      *            An optional qualifier to identify this link
      * @return The newly created edge
      */
-    @Nullable ITmfEdge edge(ITmfVertex from, ITmfVertex to, EdgeType type, String linkQualifier);
+    @Nullable ITmfEdge edge(ITmfVertex from, ITmfVertex to, ITmfEdgeContextState type, String linkQualifier);
 
     /**
      * Add a vertical edge between two vertices of the graph. This method adds a
@@ -194,7 +226,7 @@ public interface ITmfGraph {
      *            An optional qualifier to identify this link
      * @return The newly created edge
      */
-    @Nullable ITmfEdge edgeVertical(ITmfVertex from, ITmfVertex to, EdgeType type, @Nullable String linkQualifier);
+    @Nullable ITmfEdge edgeVertical(ITmfVertex from, ITmfVertex to, ITmfEdgeContextState type, @Nullable String linkQualifier);
 
     /**
      * Returns tail vertex of the provided worker

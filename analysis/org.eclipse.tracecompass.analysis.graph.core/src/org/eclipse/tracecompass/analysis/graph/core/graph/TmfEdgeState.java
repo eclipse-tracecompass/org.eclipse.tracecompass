@@ -11,24 +11,23 @@
 
 package org.eclipse.tracecompass.analysis.graph.core.graph;
 
-import org.eclipse.tracecompass.internal.analysis.graph.core.graph.legacy.TmfGraphLegacyWrapper;
-
 /**
- * The factory to create execution graphs
- *
- * @author Geneviève Bastien
+ * @author Arnaud Fiorini
  * @since 4.0
+ *
  */
-public class TmfGraphFactory {
-
+public enum TmfEdgeState {
     /**
-     * Create an in-memory graph. If the trace is too large, building it may
-     * cause OutOfMemoryExceptions.
-     *
-     * @return A new in-memory graph
+     * Defines a state which explains the wait cause by itself.
      */
-    public static ITmfGraph createSimpleGraph() {
-        return new TmfGraphLegacyWrapper();
-    }
-
+    PASS,
+    /**
+     * Defines a state which can be explored further by a backward iteration
+     * in the critical path algorithm.
+     */
+    BLOCK,
+    /**
+     * Other state which can be used for implementation purposes, or error handling.
+     */
+    UNKNOWN;
 }

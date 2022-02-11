@@ -18,11 +18,12 @@ import org.eclipse.tracecompass.analysis.graph.core.base.IGraphWorker;
 import org.eclipse.tracecompass.analysis.graph.core.building.AbstractTmfGraphProvider;
 import org.eclipse.tracecompass.analysis.graph.core.building.AbstractTraceEventHandler;
 import org.eclipse.tracecompass.analysis.graph.core.building.ITraceEventHandler;
-import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfEdge.EdgeType;
 import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfGraph;
 import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfVertex;
 import org.eclipse.tracecompass.analysis.graph.core.tests.stubs.TestGraphWorker;
 import org.eclipse.tracecompass.common.core.NonNullUtils;
+import org.eclipse.tracecompass.internal.analysis.graph.core.graph.legacy.OSEdgeContextState;
+import org.eclipse.tracecompass.internal.analysis.graph.core.graph.legacy.OSEdgeContextState.OSEdgeContextEnum;
 import org.eclipse.tracecompass.tmf.core.event.ITmfEvent;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
 
@@ -74,7 +75,7 @@ public class GraphProviderStub extends AbstractTmfGraphProvider {
                 ITmfVertex vTo = graph.createVertex(playerTo, event.getTimestamp().getValue());
                 graph.append(vFrom);
                 graph.add(vTo);
-                graph.edge(vFrom, vTo, EdgeType.NETWORK);
+                graph.edge(vFrom, vTo, new OSEdgeContextState(OSEdgeContextEnum.NETWORK));
                 break;
             }
             case "kick": {

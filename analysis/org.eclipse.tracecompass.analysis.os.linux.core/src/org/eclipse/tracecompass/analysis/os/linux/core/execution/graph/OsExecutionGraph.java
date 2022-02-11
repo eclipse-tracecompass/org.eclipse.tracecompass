@@ -11,12 +11,21 @@
 
 package org.eclipse.tracecompass.analysis.os.linux.core.execution.graph;
 
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.Objects;
+
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.analysis.graph.core.base.IGraphWorker;
 import org.eclipse.tracecompass.analysis.graph.core.building.ITmfGraphProvider;
-import org.eclipse.tracecompass.analysis.graph.core.building.TmfGraphBuilderModule;
+import org.eclipse.tracecompass.analysis.graph.core.criticalpath.AbstractCriticalPathModule;
+import org.eclipse.tracecompass.analysis.graph.core.criticalpath.OSCriticalPathModule;
+import org.eclipse.tracecompass.analysis.graph.core.building.AbstractTmfGraphBuilderModule;
+import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfGraph;
 import org.eclipse.tracecompass.analysis.graph.core.graph.WorkerSerializer;
 import org.eclipse.tracecompass.analysis.os.linux.core.model.HostThread;
+import org.eclipse.tracecompass.internal.analysis.graph.core.graph.historytree.OsHistoryTreeGraph;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
 
 /**
@@ -26,12 +35,14 @@ import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
  * @author Geneviève Bastien
  * @since 2.4
  */
-public class OsExecutionGraph extends TmfGraphBuilderModule {
+public class OsExecutionGraph extends AbstractTmfGraphBuilderModule {
 
     /**
      * Analysis id of this module
      */
     public static final String ANALYSIS_ID = "org.eclipse.tracecompass.analysis.os.linux.execgraph"; //$NON-NLS-1$
+
+    private @Nullable OSCriticalPathModule fCriticalPathModule;
 
     private static class OsWorkerSerializer implements WorkerSerializer {
 
@@ -72,6 +83,26 @@ public class OsExecutionGraph extends TmfGraphBuilderModule {
             throw new NullPointerException();
         }
         return new OsExecutionGraphProvider(trace);
+    }
+
+    @Override
+    protected @Nullable ITmfGraph createGraphInstance(Path htFile, WorkerSerializer workerSerializer, long startTime, int version) {
+        OsHistoryTreeGraph graph;
+        try {
+            graph = new OsHistoryTreeGraph(htFile, version, workerSerializer, startTime);
+        } catch (IOException e) {
+            return null;
+        }
+
+        return graph;
+    }
+
+    @Override
+    protected AbstractCriticalPathModule getCriticalPathModule() {
+        if (fCriticalPathModule == null) {
+            fCriticalPathModule = new OSCriticalPathModule(this);
+        }
+        return Objects.requireNonNull(fCriticalPathModule);
     }
 
     @Override

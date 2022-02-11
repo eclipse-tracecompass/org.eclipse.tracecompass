@@ -51,7 +51,7 @@ public interface ICriticalPathAlgorithm {
      * @return The graph of the critical path
      * @throws CriticalPathAlgorithmException
      *             an exception in the calculation occurred
-     * @since 3.1
+     * @since 4.0
      */
     default ITmfGraph computeCriticalPath(ITmfGraph criticalPath, ITmfVertex start, @Nullable ITmfVertex end) throws CriticalPathAlgorithmException {
         throw new UnsupportedOperationException();

@@ -13,6 +13,7 @@ package org.eclipse.tracecompass.internal.analysis.graph.core.graph.historytree;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfEdge;
+import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfEdgeContextState;
 import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfVertex;
 
 /**
@@ -25,7 +26,7 @@ public class TmfEdge implements ITmfEdge {
 
     private final TmfVertex fVertexFrom;
     private final TmfVertex fVertexTo;
-    private final EdgeType fType;
+    private final ITmfEdgeContextState fContextState;
     private final @Nullable String fQualifier;
 
     /**
@@ -35,11 +36,11 @@ public class TmfEdge implements ITmfEdge {
      *            The vertex this edge leaves from
      * @param to
      *            The vertex the edge leads to
-     * @param edgeType
+     * @param contextState
      *            The type of this edge
      */
-    public TmfEdge(TmfVertex from, TmfVertex to, EdgeType edgeType) {
-        this(from, to, edgeType, null);
+    public TmfEdge(TmfVertex from, TmfVertex to, ITmfEdgeContextState contextState) {
+        this(from, to, contextState, null);
     }
 
     /**
@@ -49,15 +50,15 @@ public class TmfEdge implements ITmfEdge {
      *            The vertex this edge leaves from
      * @param to
      *            The vertex the edge leads to
-     * @param edgeType
+     * @param contextState
      *            The type of this edge
      * @param qualifier
      *            The qualifier accompanying this edge
      */
-    public TmfEdge(TmfVertex from, TmfVertex to, EdgeType edgeType, @Nullable String qualifier) {
+    public TmfEdge(TmfVertex from, TmfVertex to, ITmfEdgeContextState contextState, @Nullable String qualifier) {
         fVertexFrom = from;
         fVertexTo = to;
-        fType = edgeType;
+        fContextState = contextState;
         fQualifier = qualifier;
     }
 
@@ -72,8 +73,8 @@ public class TmfEdge implements ITmfEdge {
     }
 
     @Override
-    public EdgeType getEdgeType() {
-        return fType;
+    public ITmfEdgeContextState getEdgeContextState() {
+        return fContextState;
     }
 
     @Override
@@ -88,7 +89,7 @@ public class TmfEdge implements ITmfEdge {
 
     @Override
     public String toString() {
-        return "[" + fVertexFrom + "--" + fType + "->" + fVertexTo + "]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+        return "[" + fVertexFrom + "--" + fContextState.getContextEnum() + "->" + fVertexTo + "]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
     }
 
 }

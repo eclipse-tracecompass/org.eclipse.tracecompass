@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017 École Polytechnique de Montréal
+ * Copyright (c) 2017, 2022 École Polytechnique de Montréal
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -12,7 +12,7 @@
 package org.eclipse.tracecompass.internal.analysis.graph.ui.criticalpath.view;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.tracecompass.analysis.graph.core.building.TmfGraphBuilderModule;
+import org.eclipse.tracecompass.analysis.graph.core.building.AbstractTmfGraphBuilderModule;
 import org.eclipse.tracecompass.tmf.core.analysis.IAnalysisModule;
 import org.eclipse.tracecompass.tmf.core.analysis.ITmfNewAnalysisModuleListener;
 import org.eclipse.tracecompass.tmf.ui.analysis.TmfAnalysisViewOutput;
@@ -31,7 +31,7 @@ public class CriticalPathModuleListener implements ITmfNewAnalysisModuleListener
 
     @Override
     public void moduleCreated(@Nullable IAnalysisModule module) {
-        if (module instanceof TmfGraphBuilderModule) {
+        if (module instanceof AbstractTmfGraphBuilderModule) {
             module.registerOutput(new TmfAnalysisViewOutput(CriticalPathView.ID, module.getId()));
         }
     }

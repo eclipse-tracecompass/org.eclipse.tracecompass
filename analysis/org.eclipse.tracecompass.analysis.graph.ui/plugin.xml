@@ -19,7 +19,7 @@
             class="org.eclipse.tracecompass.tmf.ui.analysis.TmfAnalysisViewOutput"
             id="org.eclipse.linuxtools.tmf.analysis.graph.ui.criticalpath.view.criticalpathview">
          <analysisModuleClass
-               class="org.eclipse.tracecompass.analysis.graph.core.criticalpath.CriticalPathModule">
+               class="org.eclipse.tracecompass.analysis.graph.core.criticalpath.OSCriticalPathModule">
          </analysisModuleClass>
       </output>
       <listener

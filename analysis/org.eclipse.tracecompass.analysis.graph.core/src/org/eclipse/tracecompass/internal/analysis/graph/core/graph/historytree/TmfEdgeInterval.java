@@ -13,10 +13,11 @@ package org.eclipse.tracecompass.internal.analysis.graph.core.graph.historytree;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfEdge.EdgeType;
+import org.eclipse.tracecompass.analysis.graph.core.graph.IEdgeContextStateFactory;
+import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfEdgeContextState;
 import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfVertex;
 import org.eclipse.tracecompass.datastore.core.interval.IHTInterval;
-import org.eclipse.tracecompass.datastore.core.interval.IHTIntervalReader;
+import org.eclipse.tracecompass.datastore.core.serialization.ISafeByteBufferReader;
 import org.eclipse.tracecompass.datastore.core.serialization.ISafeByteBufferWriter;
 import org.eclipse.tracecompass.datastore.core.serialization.SafeByteBufferFactory;
 
@@ -40,17 +41,17 @@ public abstract class TmfEdgeInterval implements IHTInterval {
      * Edge interval reader to deserialize intervals on disk. package-private to
      * share with the tree nodes.
      */
-    static final IHTIntervalReader<TmfEdgeInterval> READER = buffer -> {
+    static final TmfEdgeInterval readBuffer(ISafeByteBufferReader buffer, IEdgeContextStateFactory contextStateFactory) {
         byte b = buffer.get();
         switch (b) {
         case 0: {
             return new TmfNullEdgeInterval(buffer.getLong(), buffer.getLong(), buffer.getInt());
         }
         case 1: {
-            return new TmfHorizontalEdgeInterval(buffer.getLong(), buffer.getLong(), buffer.getInt(), EdgeType.values()[buffer.getInt()], buffer.getString());
+            return new TmfHorizontalEdgeInterval(buffer.getLong(), buffer.getLong(), buffer.getInt(), contextStateFactory.createContextState(buffer.getInt()), buffer.getString());
         }
         case 2: {
-            return new TmfVerticalEdgeInterval(buffer.getLong(), buffer.getLong(), buffer.getInt(), buffer.getInt(), EdgeType.values()[buffer.getInt()], buffer.getString());
+            return new TmfVerticalEdgeInterval(buffer.getLong(), buffer.getLong(), buffer.getInt(), buffer.getInt(), contextStateFactory.createContextState(buffer.getInt()), buffer.getString());
         }
         case 3: {
             return new TmfFillerInterval(buffer.getLong(), buffer.getLong(), buffer.getInt());
@@ -59,7 +60,7 @@ public abstract class TmfEdgeInterval implements IHTInterval {
             throw new IllegalArgumentException("Type of data " + b + " cannot be read"); //$NON-NLS-1$ //$NON-NLS-2$
         }
 
-    };
+    }
 
     /**
      * Create a new null edge between 2 vertices. A null edge means there is no
@@ -91,8 +92,8 @@ public abstract class TmfEdgeInterval implements IHTInterval {
      *            A qualifier for this link, can be <code>null</code>
      * @return A {@link TmfEdgeInterval} object of the proper sub-type
      */
-    public static TmfEdgeInterval horizontalEdge(TmfVertex vertexFrom, TmfVertex vertexTo, EdgeType edgeType, @Nullable String edgeQualifier) {
-        return new TmfHorizontalEdgeInterval(vertexFrom.getTimestamp(), vertexTo.getTimestamp(), vertexFrom.getWorkerId(), edgeType, edgeQualifier);
+    public static TmfEdgeInterval horizontalEdge(TmfVertex vertexFrom, TmfVertex vertexTo, ITmfEdgeContextState contextState, @Nullable String edgeQualifier) {
+        return new TmfHorizontalEdgeInterval(vertexFrom.getTimestamp(), vertexTo.getTimestamp(), vertexFrom.getWorkerId(), contextState, edgeQualifier);
     }
 
     /**
@@ -110,8 +111,8 @@ public abstract class TmfEdgeInterval implements IHTInterval {
      *            A qualifier for this link, can be <code>null</code>
      * @return A {@link TmfEdgeInterval} object of the proper sub-type
      */
-    public static TmfEdgeInterval verticalEdge(TmfVertex vertexFrom, TmfVertex vertexTo, EdgeType edgeType, @Nullable String edgeQualifier) {
-        return new TmfVerticalEdgeInterval(vertexFrom.getTimestamp(), vertexTo.getTimestamp(), vertexFrom.getWorkerId(), vertexTo.getWorkerId(), edgeType, edgeQualifier);
+    public static TmfEdgeInterval verticalEdge(TmfVertex vertexFrom, TmfVertex vertexTo, ITmfEdgeContextState contextState, @Nullable String edgeQualifier) {
+        return new TmfVerticalEdgeInterval(vertexFrom.getTimestamp(), vertexTo.getTimestamp(), vertexFrom.getWorkerId(), vertexTo.getWorkerId(), contextState, edgeQualifier);
     }
 
     /**
@@ -268,12 +269,12 @@ public abstract class TmfEdgeInterval implements IHTInterval {
 
     private static class TmfHorizontalEdgeInterval extends TmfEdgeInterval {
 
-        protected final EdgeType fEdgeType;
+        protected final ITmfEdgeContextState fContextState;
         protected final @Nullable String fQualifier;
 
-        public TmfHorizontalEdgeInterval(long start, long end, int attributeFrom, EdgeType edgeType, @Nullable String linkQualifier) {
+        public TmfHorizontalEdgeInterval(long start, long end, int attributeFrom, ITmfEdgeContextState contextState, @Nullable String linkQualifier) {
             super(start, end, attributeFrom);
-            fEdgeType = edgeType;
+            fContextState = contextState;
             fQualifier = linkQualifier;
         }
 
@@ -293,7 +294,7 @@ public abstract class TmfEdgeInterval implements IHTInterval {
             buffer.putLong(getStart());
             buffer.putLong(getEnd());
             buffer.putInt(getFromWorkerId());
-            buffer.putInt(fEdgeType.ordinal());
+            buffer.putInt(fContextState.serialize());
             buffer.putString(getQualifier());
         }
 
@@ -302,7 +303,7 @@ public abstract class TmfEdgeInterval implements IHTInterval {
             String qualifier = fQualifier;
             TmfVertex fromVertex = new TmfVertex(getStart(), getFromWorkerId());
             TmfVertex toVertex = new TmfVertex(getEnd(), getToWorkerId());
-            return (qualifier == null || qualifier.isEmpty()) ? new TmfEdge(fromVertex, toVertex, fEdgeType) : new TmfEdge(fromVertex, toVertex, fEdgeType, qualifier);
+            return (qualifier == null || qualifier.isEmpty()) ? new TmfEdge(fromVertex, toVertex, fContextState) : new TmfEdge(fromVertex, toVertex, fContextState, qualifier);
         }
 
         @Override
@@ -322,7 +323,7 @@ public abstract class TmfEdgeInterval implements IHTInterval {
         public String toString() {
             return "Horizontal edge [" + getStart() + ',' + getEnd() //$NON-NLS-1$
                     + "] from " + getFromWorkerId() //$NON-NLS-1$
-                    + ": " + fEdgeType + (fQualifier != null ? '(' + fQualifier + ')' : StringUtils.EMPTY); //$NON-NLS-1$
+                    + ": " + fContextState + (fQualifier != null ? '(' + fQualifier + ')' : StringUtils.EMPTY); //$NON-NLS-1$
         }
 
     }
@@ -331,8 +332,8 @@ public abstract class TmfEdgeInterval implements IHTInterval {
 
         private int fAttributeTo;
 
-        public TmfVerticalEdgeInterval(long start, long end, int attributeFrom, int attributeTo, EdgeType edgeType, @Nullable String linkQualifier) {
-            super(start, end, attributeFrom, edgeType, linkQualifier);
+        public TmfVerticalEdgeInterval(long start, long end, int attributeFrom, int attributeTo, ITmfEdgeContextState contextState, @Nullable String linkQualifier) {
+            super(start, end, attributeFrom, contextState, linkQualifier);
             fAttributeTo = attributeTo;
         }
 
@@ -348,7 +349,7 @@ public abstract class TmfEdgeInterval implements IHTInterval {
             buffer.putLong(getEnd());
             buffer.putInt(getFromWorkerId());
             buffer.putInt(fAttributeTo);
-            buffer.putInt(fEdgeType.ordinal());
+            buffer.putInt(fContextState.serialize());
             buffer.putString(getQualifier());
         }
 
@@ -373,7 +374,7 @@ public abstract class TmfEdgeInterval implements IHTInterval {
             return "Vertical edge [" + getStart() + ',' + getEnd() //$NON-NLS-1$
                     + "] from " + getFromWorkerId() //$NON-NLS-1$
                     + " to " + getToWorkerId() //$NON-NLS-1$
-                    + ": " + fEdgeType + (fQualifier != null ? '(' + fQualifier + ')' : StringUtils.EMPTY); //$NON-NLS-1$
+                    + ": " + fContextState + (fQualifier != null ? '(' + fQualifier + ')' : StringUtils.EMPTY); //$NON-NLS-1$
         }
 
     }

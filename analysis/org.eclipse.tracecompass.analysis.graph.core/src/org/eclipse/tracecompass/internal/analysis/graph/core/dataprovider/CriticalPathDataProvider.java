@@ -27,13 +27,12 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.analysis.graph.core.base.IGraphWorker;
-import org.eclipse.tracecompass.analysis.graph.core.criticalpath.CriticalPathModule;
+import org.eclipse.tracecompass.analysis.graph.core.criticalpath.AbstractCriticalPathModule;
 import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfEdge;
-import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfEdge.EdgeType;
+import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfEdgeContextState;
 import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfGraph;
 import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfGraphVisitor;
 import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfVertex;
-import org.eclipse.tracecompass.internal.analysis.graph.core.base.CriticalPathPalette;
 import org.eclipse.tracecompass.internal.analysis.graph.core.graph.TmfGraphStatistics;
 import org.eclipse.tracecompass.internal.tmf.core.model.AbstractTmfTraceDataProvider;
 import org.eclipse.tracecompass.internal.tmf.core.model.filters.FetchParametersUtils;
@@ -42,7 +41,6 @@ import org.eclipse.tracecompass.tmf.core.model.CommonStatusMessage;
 import org.eclipse.tracecompass.tmf.core.model.IOutputStyleProvider;
 import org.eclipse.tracecompass.tmf.core.model.OutputElementStyle;
 import org.eclipse.tracecompass.tmf.core.model.OutputStyleModel;
-import org.eclipse.tracecompass.tmf.core.model.StyleProperties;
 import org.eclipse.tracecompass.tmf.core.model.filters.SelectionTimeQueryFilter;
 import org.eclipse.tracecompass.tmf.core.model.filters.TimeQueryFilter;
 import org.eclipse.tracecompass.tmf.core.model.timegraph.ITimeGraphArrow;
@@ -65,7 +63,6 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.TreeMultimap;
@@ -81,28 +78,16 @@ public class CriticalPathDataProvider extends AbstractTmfTraceDataProvider imple
      * Extension point ID for the provider
      */
     public static final @NonNull String ID = "org.eclipse.tracecompass.analysis.graph.core.dataprovider.CriticalPathDataProvider"; //$NON-NLS-1$
-    private static final @NonNull String ARROW_SUFFIX = "arrow"; //$NON-NLS-1$
+
     /**
      * Atomic long to assign each entry the same unique ID every time the data
      * provider is queried
      */
     private static final AtomicLong ATOMIC_LONG = new AtomicLong();
 
-    private static final @NonNull Map<@NonNull String, @NonNull OutputElementStyle> STATE_MAP;
+    private @NonNull AbstractCriticalPathModule fCriticalPathModule;
 
-    private static final @NonNull Map<@NonNull String, @NonNull OutputElementStyle> STYLE_MAP = Collections.synchronizedMap(new HashMap<>());
-
-    static {
-        ImmutableMap.Builder<@NonNull String, @NonNull OutputElementStyle> builder = new ImmutableMap.Builder<>();
-        builder.putAll(CriticalPathPalette.getStyles());
-
-        // Add the arrow types
-        builder.put(EdgeType.DEFAULT.name() + ARROW_SUFFIX, new OutputElementStyle(EdgeType.UNKNOWN.name(), ImmutableMap.of(StyleProperties.STYLE_NAME, String.valueOf(Messages.CriticalPathDataProvider_UnknownArrow), StyleProperties.STYLE_GROUP, String.valueOf(Messages.CriticalPathDataProvider_GroupArrows))));
-        builder.put(EdgeType.NETWORK.name() + ARROW_SUFFIX, new OutputElementStyle(EdgeType.NETWORK.name(), ImmutableMap.of(StyleProperties.STYLE_NAME, String.valueOf(Messages.CriticalPathDataProvider_NetworkArrow), StyleProperties.STYLE_GROUP, String.valueOf(Messages.CriticalPathDataProvider_GroupArrows))));
-        STATE_MAP = builder.build();
-    }
-
-    private @NonNull CriticalPathModule fCriticalPathModule;
+    private static final @NonNull Map<@NonNull String, @NonNull OutputElementStyle> STATE_MAP = new HashMap<>();
 
     /**
      * Remember the unique mappings from hosts to their entry IDs
@@ -140,7 +125,7 @@ public class CriticalPathDataProvider extends AbstractTmfTraceDataProvider imple
      * @param criticalPathProvider
      *            the critical path module for this trace
      */
-    public CriticalPathDataProvider(@NonNull ITmfTrace trace, @NonNull CriticalPathModule criticalPathProvider) {
+    public CriticalPathDataProvider(@NonNull ITmfTrace trace, @NonNull AbstractCriticalPathModule criticalPathProvider) {
         super(trace);
         fCriticalPathModule = criticalPathProvider;
     }
@@ -171,13 +156,13 @@ public class CriticalPathDataProvider extends AbstractTmfTraceDataProvider imple
      * @return the current graph worker if it is set, else null.
      */
     private @Nullable IGraphWorker getCurrent() {
-        Object obj = fCriticalPathModule.getParameter(CriticalPathModule.PARAM_WORKER);
+        Object obj = fCriticalPathModule.getParameter(AbstractCriticalPathModule.PARAM_WORKER);
         if (obj == null) {
             return null;
         }
         if (!(obj instanceof IGraphWorker)) {
             throw new IllegalStateException("Wrong type for critical path module parameter " + //$NON-NLS-1$
-                    CriticalPathModule.PARAM_WORKER +
+                    AbstractCriticalPathModule.PARAM_WORKER +
                     " expected IGraphWorker got " + //$NON-NLS-1$
                     obj.getClass().getSimpleName());
         }
@@ -361,7 +346,7 @@ public class CriticalPathDataProvider extends AbstractTmfTraceDataProvider imple
                 Long id = fWorkerToEntryId.get(parent);
                 if (id != null) {
                     String linkQualifier = link.getLinkQualifier();
-                    ITimeGraphState ev = new TimeGraphState(link.getVertexFrom().getTimestamp(), link.getDuration(), linkQualifier, getMatchingState(link.getEdgeType(), false));
+                    ITimeGraphState ev = new TimeGraphState(link.getVertexFrom().getTimestamp(), link.getDuration(), linkQualifier, getMatchingState(link.getEdgeContextState(), false));
                     fStates.put(id, ev);
                 }
             } else {
@@ -372,7 +357,7 @@ public class CriticalPathDataProvider extends AbstractTmfTraceDataProvider imple
                 List<ITimeGraphArrow> graphLinks = fGraphLinks;
                 if (graphLinks != null && entryFrom != null && entryTo != null) {
                     ITimeGraphArrow lk = new TimeGraphArrow(entryFrom.getId(), entryTo.getId(), link.getVertexFrom().getTimestamp(),
-                            link.getVertexTo().getTimestamp() - link.getVertexFrom().getTimestamp(), getMatchingState(link.getEdgeType(), true));
+                            link.getVertexTo().getTimestamp() - link.getVertexFrom().getTimestamp(), getMatchingState(link.getEdgeContextState(), true));
                     graphLinks.add(lk);
                 }
             }
@@ -438,11 +423,19 @@ public class CriticalPathDataProvider extends AbstractTmfTraceDataProvider imple
         return linksInRange;
     }
 
-    private static @NonNull OutputElementStyle getMatchingState(EdgeType type, boolean arrow) {
-        String parentStyleName = type.name();
-        parentStyleName = STATE_MAP.containsKey(parentStyleName) ? parentStyleName : EdgeType.UNKNOWN.name();
-        parentStyleName = arrow ? parentStyleName + ARROW_SUFFIX : parentStyleName;
-        return STYLE_MAP.computeIfAbsent(type.name(), style -> new OutputElementStyle(style));
+    /**
+     * Get the styles of the edge context state when visiting the critical path graph.
+     *
+     * This is used to show the correct styles directly to the user.
+     *
+     * @param contextState Context state to return element style from the process state
+     * @param arrow specify if it is an arrow or not
+     * @return element style
+     */
+    protected @NonNull OutputElementStyle getMatchingState(ITmfEdgeContextState contextState, boolean arrow) {
+        OutputElementStyle outputElementStyle = new OutputElementStyle(null, contextState.getStyles());
+        STATE_MAP.put(contextState.getContextEnum().name(), outputElementStyle);
+        return outputElementStyle;
     }
 
     @Override
@@ -455,5 +448,4 @@ public class CriticalPathDataProvider extends AbstractTmfTraceDataProvider imple
     public @NonNull TmfModelResponse<@NonNull OutputStyleModel> fetchStyle(@NonNull Map<@NonNull String, @NonNull Object> fetchParameters, @Nullable IProgressMonitor monitor) {
         return new TmfModelResponse<>(new OutputStyleModel(STATE_MAP), ITmfResponse.Status.COMPLETED, CommonStatusMessage.COMPLETED);
     }
-
 }

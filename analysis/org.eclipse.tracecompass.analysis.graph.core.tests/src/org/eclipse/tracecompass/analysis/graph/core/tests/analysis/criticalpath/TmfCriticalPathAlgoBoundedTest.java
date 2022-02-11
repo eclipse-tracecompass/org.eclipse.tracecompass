@@ -20,6 +20,7 @@ import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfGraph;
 import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfVertex;
 import org.eclipse.tracecompass.analysis.graph.core.tests.stubs.GraphBuilder;
 import org.eclipse.tracecompass.internal.analysis.graph.core.criticalpath.CriticalPathAlgorithmBounded;
+import org.eclipse.tracecompass.internal.analysis.graph.core.criticalpath.OSCriticalPathAlgorithm;
 import org.eclipse.tracecompass.internal.analysis.graph.core.graph.legacy.TmfGraphLegacyWrapper;
 
 /**
@@ -33,7 +34,7 @@ public class TmfCriticalPathAlgoBoundedTest extends TmfCriticalPathAlgorithmTest
     @Override
     protected ITmfGraph computeCriticalPath(ITmfGraph graph, ITmfVertex start) {
         assertNotNull(graph);
-        ICriticalPathAlgorithm cp = new CriticalPathAlgorithmBounded(graph);
+        ICriticalPathAlgorithm cp = new OSCriticalPathAlgorithm(graph);
         try {
             return cp.computeCriticalPath(new TmfGraphLegacyWrapper(), start, null);
         } catch (CriticalPathAlgorithmException e) {

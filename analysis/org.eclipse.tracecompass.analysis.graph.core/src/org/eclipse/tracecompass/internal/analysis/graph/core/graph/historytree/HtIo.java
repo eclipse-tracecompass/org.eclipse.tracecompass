@@ -27,6 +27,7 @@ import java.util.logging.Logger;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.common.core.log.TraceCompassLog;
 import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils;
+import org.eclipse.tracecompass.datastore.core.interval.IHTIntervalReader;
 import org.eclipse.tracecompass.internal.analysis.graph.core.Activator;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -107,7 +108,7 @@ public class HtIo {
                         return HTNode.readNode(io.fBlockSize,
                                 io.fNodeMaxChildren,
                                 io.fFileChannelIn,
-                                TmfEdgeInterval.READER,
+                                io.fEdgeIntervalReader,
                                 io.fNodeFactory);
                     }
                 }
@@ -148,6 +149,7 @@ public class HtIo {
     private final int fBlockSize;
     private final int fNodeMaxChildren;
     private final HTNode.IHTNodeFactory<GraphTreeNode> fNodeFactory;
+    private final IHTIntervalReader<TmfEdgeInterval> fEdgeIntervalReader;
 
     /* Fields related to the file I/O */
     private final FileInputStream fFileInputStream;
@@ -174,6 +176,8 @@ public class HtIo {
      *            Flag indicating that the file must be created from scratch
      * @param nodeFactory
      *            The factory to create new nodes for this tree
+     * @param edgeIntervalReader
+     *            The reader to deserialize the edge intervals written on disk
      * @throws IOException
      *             An exception can be thrown when file cannot be accessed
      */
@@ -181,11 +185,13 @@ public class HtIo {
             int blockSize,
             int nodeMaxChildren,
             boolean newFile,
-            HTNode.IHTNodeFactory<GraphTreeNode> nodeFactory) throws IOException {
+            HTNode.IHTNodeFactory<GraphTreeNode> nodeFactory,
+            IHTIntervalReader<TmfEdgeInterval> edgeIntervalReader) throws IOException {
 
         fBlockSize = blockSize;
         fNodeMaxChildren = nodeMaxChildren;
         fNodeFactory = nodeFactory;
+        fEdgeIntervalReader = edgeIntervalReader;
 
         fStateHistoryFile = stateHistoryFile;
         if (newFile) {

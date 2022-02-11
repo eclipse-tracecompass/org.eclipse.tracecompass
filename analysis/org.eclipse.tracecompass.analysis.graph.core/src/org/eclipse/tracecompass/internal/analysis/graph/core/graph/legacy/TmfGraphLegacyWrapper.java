@@ -24,7 +24,7 @@ import org.eclipse.tracecompass.analysis.graph.core.base.TmfEdge;
 import org.eclipse.tracecompass.analysis.graph.core.base.TmfGraph;
 import org.eclipse.tracecompass.analysis.graph.core.base.TmfVertex;
 import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfEdge;
-import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfEdge.EdgeType;
+import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfEdgeContextState;
 import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfGraph;
 import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfVertex;
 import org.eclipse.tracecompass.tmf.core.timestamp.ITmfTimestamp;
@@ -75,46 +75,56 @@ public class TmfGraphLegacyWrapper implements ITmfGraph {
     }
 
     @Override
-    public @Nullable ITmfEdge append(ITmfVertex vertex) {
-        return append(vertex, EdgeType.DEFAULT, null);
+    public @Nullable ITmfEdge appendUnknown(ITmfVertex vertex) {
+        return append(vertex, new OSEdgeContextState(TmfEdge.EdgeType.UNKNOWN), null);
     }
 
     @Override
-    public @Nullable ITmfEdge append(ITmfVertex vertex, EdgeType type) {
+    public @Nullable ITmfEdge append(ITmfVertex vertex) {
+        return append(vertex, new OSEdgeContextState(TmfEdge.EdgeType.DEFAULT), null);
+    }
+
+    @Override
+    public @Nullable ITmfEdge append(ITmfVertex vertex, ITmfEdgeContextState contextState) {
         if (!(vertex instanceof TmfVertexLegacyWrapper)) {
             throw new IllegalArgumentException("Wrong vertex class"); //$NON-NLS-1$
         }
-        return append(vertex, type, null);
+        return append(vertex, contextState, null);
     }
 
     @Override
-    public @Nullable ITmfEdge append(ITmfVertex vertex, EdgeType type, @Nullable String linkQualifier) {
+    public @Nullable ITmfEdge append(ITmfVertex vertex, ITmfEdgeContextState contextState, @Nullable String linkQualifier) {
         if (!(vertex instanceof TmfVertexLegacyWrapper)) {
             throw new IllegalArgumentException("Wrong vertex class"); //$NON-NLS-1$
         }
         TmfVertexLegacyWrapper legacyVertex = (TmfVertexLegacyWrapper) vertex;
         TmfEdge edge = (linkQualifier == null) ? fGraph.append(legacyVertex.getWorker(),
                 legacyVertex.getVertex(),
-                TmfEdgeLegacyWrapper.newTypeToOldType(type))
+                TmfEdgeLegacyWrapper.newTypeToOldType((OSEdgeContextState) contextState))
                 : fGraph.append(legacyVertex.getWorker(),
                         legacyVertex.getVertex(),
-                        TmfEdgeLegacyWrapper.newTypeToOldType(type),
+                        TmfEdgeLegacyWrapper.newTypeToOldType((OSEdgeContextState) contextState),
                         linkQualifier);
         return (edge == null) ? null : new TmfEdgeLegacyWrapper(edge, new TmfVertexLegacyWrapper(legacyVertex.getWorker(), edge.getVertexFrom()), legacyVertex);
     }
 
     @Override
+    public @Nullable ITmfEdge edgeUnknown(ITmfVertex from, ITmfVertex to) {
+        return edge(from, to, new OSEdgeContextState(TmfEdge.EdgeType.UNKNOWN));
+    }
+
+    @Override
     public @Nullable ITmfEdge edge(ITmfVertex from, ITmfVertex to) {
-        return edge(from, to, EdgeType.DEFAULT);
+        return edge(from, to, new OSEdgeContextState(TmfEdge.EdgeType.DEFAULT));
     }
 
     @Override
-    public @Nullable ITmfEdge edge(ITmfVertex from, ITmfVertex to, EdgeType type) {
-        return edge(from, to, type, null);
+    public @Nullable ITmfEdge edge(ITmfVertex from, ITmfVertex to, ITmfEdgeContextState contextState) {
+        return edge(from, to, contextState, null);
     }
 
     @Override
-    public @Nullable ITmfEdge edge(ITmfVertex from, ITmfVertex to, EdgeType type, @Nullable String linkQualifier) {
+    public @Nullable ITmfEdge edge(ITmfVertex from, ITmfVertex to, ITmfEdgeContextState contextState, @Nullable String linkQualifier) {
         if (!(from instanceof TmfVertexLegacyWrapper) || !(to instanceof TmfVertexLegacyWrapper)) {
             throw new IllegalArgumentException("Wrong vertex class"); //$NON-NLS-1$
         }
@@ -129,13 +139,13 @@ public class TmfGraphLegacyWrapper implements ITmfGraph {
         if (parentOf == null) {
             fGraph.add(toVertex.getWorker(), toVertex.getVertex());
         }
-        TmfEdge link = (linkQualifier == null) ? fGraph.link(fromVertex.getVertex(), toVertex.getVertex(), TmfEdgeLegacyWrapper.newTypeToOldType(type))
-                : fGraph.link(fromVertex.getVertex(), toVertex.getVertex(), TmfEdgeLegacyWrapper.newTypeToOldType(type), linkQualifier);
+        TmfEdge link = (linkQualifier == null) ? fGraph.link(fromVertex.getVertex(), toVertex.getVertex(), TmfEdgeLegacyWrapper.newTypeToOldType((OSEdgeContextState) contextState))
+                : fGraph.link(fromVertex.getVertex(), toVertex.getVertex(), TmfEdgeLegacyWrapper.newTypeToOldType((OSEdgeContextState) contextState), linkQualifier);
         return new TmfEdgeLegacyWrapper(link, fromVertex, toVertex);
     }
 
     @Override
-    public @Nullable ITmfEdge edgeVertical(ITmfVertex from, ITmfVertex to, EdgeType type, @Nullable String linkQualifier) {
+    public @Nullable ITmfEdge edgeVertical(ITmfVertex from, ITmfVertex to, ITmfEdgeContextState contextState, @Nullable String linkQualifier) {
         if (!(from instanceof TmfVertexLegacyWrapper) || !(to instanceof TmfVertexLegacyWrapper)) {
             throw new IllegalArgumentException("Wrong vertex class"); //$NON-NLS-1$
         }
@@ -145,7 +155,7 @@ public class TmfGraphLegacyWrapper implements ITmfGraph {
         if (from.equals(to)) {
             throw new IllegalArgumentException("A node cannot link to itself"); //$NON-NLS-1$
         }
-        return new TmfEdgeLegacyWrapper(fromVertex.getVertex().linkVertical(toVertex.getVertex(), TmfEdgeLegacyWrapper.newTypeToOldType(type), linkQualifier), fromVertex, toVertex);
+        return new TmfEdgeLegacyWrapper(fromVertex.getVertex().linkVertical(toVertex.getVertex(), TmfEdgeLegacyWrapper.newTypeToOldType((OSEdgeContextState) contextState), linkQualifier), fromVertex, toVertex);
     }
 
     @Override

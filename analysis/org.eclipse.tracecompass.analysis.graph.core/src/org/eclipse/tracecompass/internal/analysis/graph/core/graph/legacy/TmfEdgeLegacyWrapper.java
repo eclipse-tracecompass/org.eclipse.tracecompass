@@ -33,41 +33,12 @@ public class TmfEdgeLegacyWrapper implements ITmfEdge {
     /**
      * Convert the new edge type enum values to the legacy API
      *
-     * @param type
+     * @param contextState
      *            The edge type from the new API
      * @return The edge type from the legacy API
      */
-    public static TmfEdge.EdgeType newTypeToOldType(ITmfEdge.EdgeType type) {
-        switch (type) {
-        case BLOCKED:
-            return TmfEdge.EdgeType.BLOCKED;
-        case BLOCK_DEVICE:
-            return TmfEdge.EdgeType.BLOCK_DEVICE;
-        case DEFAULT:
-            return TmfEdge.EdgeType.DEFAULT;
-        case EPS:
-            return TmfEdge.EdgeType.EPS;
-        case INTERRUPTED:
-            return TmfEdge.EdgeType.INTERRUPTED;
-        case IPI:
-            return TmfEdge.EdgeType.IPI;
-        case NETWORK:
-            return TmfEdge.EdgeType.NETWORK;
-        case NO_EDGE:
-            return TmfEdge.EdgeType.DEFAULT;
-        case PREEMPTED:
-            return TmfEdge.EdgeType.PREEMPTED;
-        case RUNNING:
-            return TmfEdge.EdgeType.RUNNING;
-        case TIMER:
-            return TmfEdge.EdgeType.TIMER;
-        case UNKNOWN:
-            return TmfEdge.EdgeType.UNKNOWN;
-        case USER_INPUT:
-            return TmfEdge.EdgeType.USER_INPUT;
-        default:
-            throw new IllegalArgumentException("Unknown edge type " + type); //$NON-NLS-1$
-        }
+    public static TmfEdge.EdgeType newTypeToOldType(OSEdgeContextState contextState) {
+        return contextState.getOldEdgeType();
     }
 
     /**
@@ -77,35 +48,8 @@ public class TmfEdgeLegacyWrapper implements ITmfEdge {
      *            The edge type from the legacy API
      * @return The edge type from the new API
      */
-    public static ITmfEdge.EdgeType oldTypeToNewType(TmfEdge.EdgeType type) {
-        switch (type) {
-        case BLOCKED:
-            return ITmfEdge.EdgeType.BLOCKED;
-        case BLOCK_DEVICE:
-            return ITmfEdge.EdgeType.BLOCK_DEVICE;
-        case DEFAULT:
-            return ITmfEdge.EdgeType.DEFAULT;
-        case EPS:
-            return ITmfEdge.EdgeType.EPS;
-        case INTERRUPTED:
-            return ITmfEdge.EdgeType.INTERRUPTED;
-        case IPI:
-            return ITmfEdge.EdgeType.IPI;
-        case NETWORK:
-            return ITmfEdge.EdgeType.NETWORK;
-        case PREEMPTED:
-            return ITmfEdge.EdgeType.PREEMPTED;
-        case RUNNING:
-            return ITmfEdge.EdgeType.RUNNING;
-        case TIMER:
-            return ITmfEdge.EdgeType.TIMER;
-        case UNKNOWN:
-            return ITmfEdge.EdgeType.UNKNOWN;
-        case USER_INPUT:
-            return ITmfEdge.EdgeType.USER_INPUT;
-        default:
-            throw new IllegalArgumentException("Unknown edge type " + type); //$NON-NLS-1$
-        }
+    public static OSEdgeContextState oldTypeToNewType(TmfEdge.EdgeType type) {
+        return new OSEdgeContextState(type);
     }
 
     /**
@@ -135,7 +79,7 @@ public class TmfEdgeLegacyWrapper implements ITmfEdge {
     }
 
     @Override
-    public EdgeType getEdgeType() {
+    public OSEdgeContextState getEdgeContextState() {
         return oldTypeToNewType(fLegacyEdge.getType());
     }
 

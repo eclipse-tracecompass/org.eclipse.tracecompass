@@ -96,7 +96,7 @@ public class OsSystemModel {
      *            The CPU this worker is on (important for per-cpu threads, like
      *            swappers)
      * @return The {@link OsWorker} associated with a host thread
-     * @since 6.0
+     * @since 7.0
      */
     public @Nullable OsWorker findWorker(HostThread ht, @Nullable Integer cpu) {
         if (ht.getTid() == 0 && cpu != null) {
@@ -125,7 +125,7 @@ public class OsSystemModel {
      * @param cpu
      *            The CPU this worker is on (important for per-cpu threads, like
      *            swappers)
-     * @since 6.0
+     * @since 7.0
      */
     public void addWorker(OsWorker worker, @Nullable Integer cpu) {
         if (worker.getHostThread().getTid() == 0 && cpu != null) {

@@ -27,7 +27,7 @@ import org.eclipse.test.performance.Dimension;
 import org.eclipse.test.performance.Performance;
 import org.eclipse.test.performance.PerformanceMeter;
 import org.eclipse.tracecompass.analysis.graph.core.base.IGraphWorker;
-import org.eclipse.tracecompass.analysis.graph.core.criticalpath.CriticalPathModule;
+import org.eclipse.tracecompass.analysis.graph.core.criticalpath.OSCriticalPathModule;
 import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfGraph;
 import org.eclipse.tracecompass.analysis.os.linux.core.execution.graph.OsExecutionGraph;
 import org.eclipse.tracecompass.analysis.os.linux.core.execution.graph.OsWorker;
@@ -200,7 +200,7 @@ public class KernelExecutionGraphBenchmark {
 
     private void benchmarkCriticalPath(String testName, RunMethod method, PerformanceMeter pm, @NonNull LttngKernelTrace trace, OsExecutionGraph module) {
 
-        CriticalPathModule critPathModule = null;
+        OSCriticalPathModule critPathModule = null;
         try {
             // Find the worker in the execution graph
             ITmfGraph graph = module.getTmfGraph();
@@ -219,7 +219,7 @@ public class KernelExecutionGraphBenchmark {
             assertNotNull("Requested worker for critical path not found: " + fThreadId, worker);
 
             // Create the critical path module and benchmark its execution
-            critPathModule = new CriticalPathModule(module, worker);
+            critPathModule = new OSCriticalPathModule(module, worker);
             critPathModule.setTrace(trace);
 
             method.execute(pm, critPathModule);

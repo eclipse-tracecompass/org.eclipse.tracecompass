@@ -11,24 +11,19 @@
 
 package org.eclipse.tracecompass.analysis.graph.core.graph;
 
-import org.eclipse.tracecompass.internal.analysis.graph.core.graph.legacy.TmfGraphLegacyWrapper;
+import org.eclipse.tracecompass.internal.analysis.graph.core.graph.historytree.TmfEdgeInterval;
 
 /**
- * The factory to create execution graphs
+ * Factory used to instantiate the context state in the {@link TmfEdgeInterval}.
+ * It is used to deserialize the context states when reading the execution graph on disk.
  *
- * @author Geneviève Bastien
+ * @author Arnaud Fiorini
  * @since 4.0
  */
-public class TmfGraphFactory {
-
+public interface IEdgeContextStateFactory {
     /**
-     * Create an in-memory graph. If the trace is too large, building it may
-     * cause OutOfMemoryExceptions.
-     *
-     * @return A new in-memory graph
+     * @param code Integer used to serialize/deserialize edge context state
+     * @return The corresponding ITmfEdgeContextState
      */
-    public static ITmfGraph createSimpleGraph() {
-        return new TmfGraphLegacyWrapper();
-    }
-
+    public abstract ITmfEdgeContextState createContextState(int code);
 }

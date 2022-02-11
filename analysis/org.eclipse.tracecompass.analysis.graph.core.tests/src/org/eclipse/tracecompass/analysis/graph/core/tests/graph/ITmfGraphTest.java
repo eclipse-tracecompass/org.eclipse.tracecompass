@@ -24,12 +24,14 @@ import java.util.Objects;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.tracecompass.analysis.graph.core.base.IGraphWorker;
 import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfEdge;
-import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfEdge.EdgeType;
+import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfEdgeContextState;
 import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfGraph;
 import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfGraphVisitor;
 import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfVertex;
 import org.eclipse.tracecompass.analysis.graph.core.tests.stubs.TestGraphWorker;
 import org.eclipse.tracecompass.internal.analysis.graph.core.graph.TmfGraphStatistics;
+import org.eclipse.tracecompass.internal.analysis.graph.core.graph.legacy.OSEdgeContextState;
+import org.eclipse.tracecompass.internal.analysis.graph.core.graph.legacy.OSEdgeContextState.OSEdgeContextEnum;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -158,7 +160,7 @@ public abstract class ITmfGraphTest {
 
     /**
      * Test the {@link ITmfGraph#append(ITmfVertex)} and
-     * {@link ITmfGraph#append(ITmfVertex, ITmfEdge.EdgeType)} methods:
+     * {@link ITmfGraph#append(ITmfVertex, ITmfEdgeContextState)} methods:
      * vertices are added and links are created between them.
      */
     @Test
@@ -171,7 +173,7 @@ public abstract class ITmfGraphTest {
         ITmfVertex v1 = fGraph.createVertex(WORKER1, 1);
         edge = fGraph.append(v1);
         assertNotNull(edge);
-        assertEquals(EdgeType.DEFAULT, edge.getEdgeType());
+        assertEquals(OSEdgeContextEnum.DEFAULT, edge.getEdgeContextState().getContextEnum());
         assertEquals(v1, edge.getVertexTo());
         assertEquals(v0, edge.getVertexFrom());
         assertEquals(v1.getTimestamp() - v0.getTimestamp(), edge.getDuration());
@@ -183,9 +185,9 @@ public abstract class ITmfGraphTest {
 
         /* Append with a type */
         ITmfVertex v2 = fGraph.createVertex(WORKER1, 2);
-        edge = fGraph.append(v2, EdgeType.BLOCKED);
+        edge = fGraph.append(v2, new OSEdgeContextState(OSEdgeContextEnum.BLOCKED));
         assertNotNull(edge);
-        assertEquals(EdgeType.BLOCKED, edge.getEdgeType());
+        assertEquals(OSEdgeContextEnum.BLOCKED, edge.getEdgeContextState().getContextEnum());
         assertEquals(v2, edge.getVertexTo());
         assertEquals(v1, edge.getVertexFrom());
         assertEquals(v2.getTimestamp() - v1.getTimestamp(), edge.getDuration());
@@ -199,7 +201,7 @@ public abstract class ITmfGraphTest {
 
     /**
      * Test the {@link ITmfGraph#edge(ITmfVertex, ITmfVertex)} and
-     * {@link ITmfGraph#edge(ITmfVertex, ITmfVertex, EdgeType)} methods
+     * {@link ITmfGraph#edge(ITmfVertex, ITmfVertex, ITmfEdgeContextState)} methods
      */
     @Test
     public void testLink() {
@@ -211,7 +213,7 @@ public abstract class ITmfGraphTest {
         // Link with second node not in graph
         ITmfEdge edge = fGraph.edge(v0, v1);
         assertNotNull(edge);
-        assertEquals(EdgeType.DEFAULT, edge.getEdgeType());
+        assertEquals(OSEdgeContextEnum.DEFAULT, edge.getEdgeContextState().getContextEnum());
         assertEquals(v1, edge.getVertexTo());
         assertEquals(v0, edge.getVertexFrom());
         assertEquals(v1.getTimestamp() - v0.getTimestamp(), edge.getDuration());
@@ -229,9 +231,9 @@ public abstract class ITmfGraphTest {
 
         // Link with second node for the same object
         ITmfVertex v2 = fGraph.createVertex(WORKER1, 2);
-        edge = fGraph.edge(v1, v2, EdgeType.NETWORK);
+        edge = fGraph.edge(v1, v2, new OSEdgeContextState(OSEdgeContextEnum.NETWORK));
         assertNotNull(edge);
-        assertEquals(EdgeType.NETWORK, edge.getEdgeType());
+        assertEquals(OSEdgeContextEnum.NETWORK, edge.getEdgeContextState().getContextEnum());
         assertEquals(v2, edge.getVertexTo());
         assertEquals(v1, edge.getVertexFrom());
         assertEquals(v2.getTimestamp() - v1.getTimestamp(), edge.getDuration());
@@ -247,11 +249,11 @@ public abstract class ITmfGraphTest {
 
         // Link with second node for another object
         ITmfVertex v3 = fGraph.createVertex(WORKER2, 3);
-        edge = fGraph.edge(v2, v3, EdgeType.NETWORK);
+        edge = fGraph.edge(v2, v3, new OSEdgeContextState(OSEdgeContextEnum.NETWORK));
         assertNotNull(edge);
         assertEquals(v3, edge.getVertexTo());
         assertEquals(v2, edge.getVertexFrom());
-        assertEquals(EdgeType.NETWORK, edge.getEdgeType());
+        assertEquals(OSEdgeContextEnum.NETWORK, edge.getEdgeContextState().getContextEnum());
 
         it = fGraph.getNodesOf(WORKER1);
         assertEquals(3, ImmutableList.copyOf(it).size());
@@ -268,11 +270,11 @@ public abstract class ITmfGraphTest {
 
         // No duration vertical link with second node for another object
         ITmfVertex v4 = fGraph.createVertex(WORKER3, 3);
-        edge = fGraph.edge(v3, v4, EdgeType.NETWORK, "test");
+        edge = fGraph.edge(v3, v4, new OSEdgeContextState(OSEdgeContextEnum.NETWORK), "test");
         assertNotNull(edge);
         assertEquals(v4, edge.getVertexTo());
         assertEquals(v3, edge.getVertexFrom());
-        assertEquals(EdgeType.NETWORK, edge.getEdgeType());
+        assertEquals(OSEdgeContextEnum.NETWORK, edge.getEdgeContextState().getContextEnum());
 
         edge1 = fGraph.getEdgeFrom(v3, ITmfGraph.EdgeDirection.OUTGOING_VERTICAL_EDGE);
         assertNotNull(edge1);
@@ -285,7 +287,7 @@ public abstract class ITmfGraphTest {
 
     /**
      * Test the
-     * {@link ITmfGraph#edgeVertical(ITmfVertex, ITmfVertex, EdgeType, String)}
+     * {@link ITmfGraph#edgeVertical(ITmfVertex, ITmfVertex, ITmfEdgeContextState, String)}
      * method: vertices are added and links are created between them.
      */
     @Test
@@ -296,9 +298,9 @@ public abstract class ITmfGraphTest {
         fGraph.add(v0);
         ITmfVertex v1 = fGraph.createVertex(WORKER1, 1);
         fGraph.add(v1);
-        ITmfEdge edge = fGraph.edgeVertical(v0, v1, EdgeType.RUNNING, null);
+        ITmfEdge edge = fGraph.edgeVertical(v0, v1, new OSEdgeContextState(OSEdgeContextEnum.RUNNING), null);
         assertNotNull(edge);
-        assertEquals(EdgeType.RUNNING, edge.getEdgeType());
+        assertEquals(OSEdgeContextEnum.RUNNING, edge.getEdgeContextState().getContextEnum());
         assertEquals(v1, edge.getVertexTo());
         assertEquals(v0, edge.getVertexFrom());
         assertEquals(v1.getTimestamp() - v0.getTimestamp(), edge.getDuration());
@@ -336,7 +338,7 @@ public abstract class ITmfGraphTest {
             assertNotNull(edgeIn);
             assertEquals(v0, edgeIn.getVertexFrom());
             assertEquals(v1, edgeIn.getVertexTo());
-            assertEquals(edgeOut.getEdgeType(), edgeIn.getEdgeType());
+            assertEquals(edgeOut.getEdgeContextState().getContextEnum(), edgeIn.getEdgeContextState().getContextEnum());
             assertNull(graph.getEdgeFrom(v1, ITmfGraph.EdgeDirection.OUTGOING_VERTICAL_EDGE));
             assertNull(graph.getEdgeFrom(v1, ITmfGraph.EdgeDirection.INCOMING_VERTICAL_EDGE));
             assertNull(graph.getEdgeFrom(v0, ITmfGraph.EdgeDirection.OUTGOING_VERTICAL_EDGE));

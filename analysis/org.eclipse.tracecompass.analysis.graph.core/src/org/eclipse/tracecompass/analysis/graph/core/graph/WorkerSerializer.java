@@ -18,7 +18,7 @@ import org.eclipse.tracecompass.analysis.graph.core.base.IGraphWorker;
  * should be specific to a worker implementation.
  *
  * @author Geneviève Bastien
- * @since 3.1
+ * @since 4.0
  */
 public interface WorkerSerializer {
     /**

@@ -28,11 +28,15 @@ import java.util.concurrent.CountDownLatch;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.analysis.graph.core.base.TmfEdge.EdgeType;
 import org.eclipse.tracecompass.analysis.graph.core.base.TmfVertex.EdgeDirection;
+import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfEdge;
 import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfGraph;
+import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfVertex;
 import org.eclipse.tracecompass.analysis.graph.core.graph.TmfGraphFactory;
 import org.eclipse.tracecompass.common.core.NonNullUtils;
 import org.eclipse.tracecompass.internal.analysis.graph.core.base.Messages;
+import org.eclipse.tracecompass.internal.analysis.graph.core.graph.legacy.OSEdgeContextState;
 import org.eclipse.tracecompass.tmf.core.timestamp.ITmfTimestamp;
+import org.eclipse.tracecompass.tmf.core.timestamp.TmfTimestamp;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableSet;
@@ -67,6 +71,60 @@ public class TmfGraph {
     public TmfGraph() {
         fNodeMap = NonNullUtils.checkNotNull(ArrayListMultimap.create());
         fReverse = new HashMap<>();
+    }
+
+    private class MyVisitor implements org.eclipse.tracecompass.analysis.graph.core.graph.ITmfGraphVisitor {
+        private TmfGraph fOldGraph;
+        private ITmfGraph fNewGraph;
+
+        MyVisitor(TmfGraph oldGraph, ITmfGraph newGraph) {
+            fOldGraph = oldGraph;
+            fNewGraph = newGraph;
+        }
+
+        @Override
+        public void visitHead(ITmfVertex vertex) {
+            TmfVertex oldVertex = new TmfVertex(vertex.getTimestamp());
+            IGraphWorker worker = fNewGraph.getParentOf(vertex);
+            if (worker != null && fOldGraph.getVertexAt(TmfTimestamp.fromNanos(vertex.getTimestamp()), worker) == null) {
+                fOldGraph.add(worker, oldVertex);
+            }
+        }
+
+        @Override
+        public void visit(ITmfVertex vertex) {
+            TmfVertex oldVertex = new TmfVertex(vertex.getTimestamp());
+            IGraphWorker worker = fNewGraph.getParentOf(vertex);
+            if (worker != null && fOldGraph.getVertexAt(TmfTimestamp.fromNanos(vertex.getTimestamp()), worker) == null) {
+                fOldGraph.add(worker, oldVertex);
+            }
+        }
+
+        @Override
+        public void visit(ITmfEdge edge, boolean horizontal) {
+            IGraphWorker workerFrom = fNewGraph.getParentOf(edge.getVertexFrom());
+            IGraphWorker workerTo = fNewGraph.getParentOf(edge.getVertexTo());
+            if (workerFrom != null && workerTo != null) {
+                TmfVertex oldVertexFrom = fOldGraph.getVertexAt(TmfTimestamp.fromNanos(edge.getVertexFrom().getTimestamp()), workerFrom);
+                TmfVertex oldVertexTo = fOldGraph.getVertexAt(TmfTimestamp.fromNanos(edge.getVertexTo().getTimestamp()), workerTo);
+                if (oldVertexTo == null) {
+                    oldVertexTo = new TmfVertex(edge.getVertexTo().getTimestamp());
+                    fOldGraph.add(workerTo, oldVertexTo);
+                }
+                fOldGraph.link(oldVertexFrom, oldVertexTo, ((OSEdgeContextState) edge.getEdgeContextState()).getOldEdgeType());
+            }
+        }
+
+    }
+
+    /**
+     * @param criticalPath
+     * @since 4.0
+     */
+    public TmfGraph(ITmfGraph criticalPath) {
+         this();
+         ITmfVertex head = criticalPath.getHead();
+         criticalPath.scanLineTraverse(head, new MyVisitor(this, criticalPath));
     }
 
     /**

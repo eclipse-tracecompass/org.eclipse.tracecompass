@@ -21,7 +21,7 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.tracecompass.analysis.graph.core.building.AbstractTraceEventHandler;
 import org.eclipse.tracecompass.analysis.graph.core.building.ITraceEventHandler;
-import org.eclipse.tracecompass.analysis.graph.core.building.TmfGraphBuilderModule;
+import org.eclipse.tracecompass.analysis.graph.core.building.AbstractTmfGraphBuilderModule;
 import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfGraph;
 import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfVertex;
 import org.eclipse.tracecompass.analysis.graph.core.tests.Activator;
@@ -39,7 +39,7 @@ import org.junit.Test;
 import com.google.common.collect.ImmutableList;
 
 /**
- * Test suite for the {@link TmfGraphBuilderModule} class
+ * Test suite for the {@link AbstractTmfGraphBuilderModule} class
  *
  * @author Geneviève Bastien
  * @author Francis Giraldeau
@@ -78,7 +78,7 @@ public class TmfGraphBuilderModuleTest {
     public void testBuildGraph() {
         TmfXmlTraceStub trace = TmfXmlTraceStubNs.setupTrace(Activator.getAbsoluteFilePath(STUB_TRACE_FILE));
 
-        TmfGraphBuilderModule module = getModule(trace);
+        AbstractTmfGraphBuilderModule module = getModule(trace);
         module.schedule();
         module.waitForCompletion();
 

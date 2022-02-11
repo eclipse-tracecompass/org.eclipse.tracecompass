@@ -12,7 +12,8 @@
 package org.eclipse.tracecompass.analysis.graph.core.tests.stubs;
 
 import org.eclipse.tracecompass.analysis.graph.core.base.IGraphWorker;
-import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfEdge.EdgeType;
+import org.eclipse.tracecompass.internal.analysis.graph.core.graph.legacy.OSEdgeContextState;
+import org.eclipse.tracecompass.internal.analysis.graph.core.graph.legacy.OSEdgeContextState.OSEdgeContextEnum;
 import org.eclipse.tracecompass.internal.analysis.graph.core.graph.legacy.TmfGraphLegacyWrapper;
 import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfGraph;
 import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfVertex;
@@ -51,7 +52,7 @@ public class GraphFactory {
                     ITmfVertex v0 = graph.createVertex(Actor0, 0);
                     graph.add(v0);
                     ITmfVertex v1 = graph.createVertex(Actor0, 1);
-                    graph.append(v1, EdgeType.RUNNING);
+                    graph.append(v1, new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
                     return graph;
                 }
 
@@ -82,12 +83,12 @@ public class GraphFactory {
                     ITmfGraph graph = new TmfGraphLegacyWrapper();
                     graph.add(graph.createVertex(Actor0, 0));
                     ITmfVertex vStart = graph.createVertex(Actor0, 1);
-                    graph.append(vStart, EdgeType.RUNNING);
-                    graph.append(graph.createVertex(Actor0, 2), EdgeType.RUNNING, LINK_QUALIFIER);
+                    graph.append(vStart, new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
+                    graph.append(graph.createVertex(Actor0, 2), new OSEdgeContextState(OSEdgeContextEnum.RUNNING), LINK_QUALIFIER);
                     ITmfVertex vEnd = graph.createVertex(Actor0, 3);
-                    graph.append(vEnd, EdgeType.BLOCKED);
-                    graph.append(graph.createVertex(Actor0, 4), EdgeType.RUNNING);
-                    graph.edgeVertical(vStart, vEnd, EdgeType.TIMER, null);
+                    graph.append(vEnd, new OSEdgeContextState(OSEdgeContextEnum.BLOCKED));
+                    graph.append(graph.createVertex(Actor0, 4), new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
+                    graph.edgeVertical(vStart, vEnd, new OSEdgeContextState(OSEdgeContextEnum.TIMER), null);
                     return graph;
                 }
 
@@ -95,10 +96,10 @@ public class GraphFactory {
                 public ITmfGraph criticalPathBounded() {
                     ITmfGraph graph = new TmfGraphLegacyWrapper();
                     graph.add(graph.createVertex(Actor0, 0));
-                    graph.append(graph.createVertex(Actor0, 1), EdgeType.RUNNING);
-                    graph.append(graph.createVertex(Actor0, 2), EdgeType.RUNNING, LINK_QUALIFIER);
-                    graph.append(graph.createVertex(Actor0, 3), EdgeType.TIMER);
-                    graph.append(graph.createVertex(Actor0, 4), EdgeType.RUNNING);
+                    graph.append(graph.createVertex(Actor0, 1), new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
+                    graph.append(graph.createVertex(Actor0, 2), new OSEdgeContextState(OSEdgeContextEnum.RUNNING), LINK_QUALIFIER);
+                    graph.append(graph.createVertex(Actor0, 3), new OSEdgeContextState(OSEdgeContextEnum.TIMER));
+                    graph.append(graph.createVertex(Actor0, 4), new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
                     return graph;
                 }
 
@@ -106,9 +107,9 @@ public class GraphFactory {
                 public ITmfGraph criticalPathUnbounded() {
                     ITmfGraph graph = new TmfGraphLegacyWrapper();
                     graph.add(graph.createVertex(Actor0, 0));
-                    graph.append(graph.createVertex(Actor0, 1), EdgeType.RUNNING);
-                    graph.append(graph.createVertex(Actor0, 3), EdgeType.TIMER);
-                    graph.append(graph.createVertex(Actor0, 4), EdgeType.RUNNING);
+                    graph.append(graph.createVertex(Actor0, 1), new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
+                    graph.append(graph.createVertex(Actor0, 3), new OSEdgeContextState(OSEdgeContextEnum.TIMER));
+                    graph.append(graph.createVertex(Actor0, 4), new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
                     return graph;
                 }
 
@@ -127,9 +128,9 @@ public class GraphFactory {
                 public ITmfGraph build() {
                     ITmfGraph graph = new TmfGraphLegacyWrapper();
                     graph.add(graph.createVertex(Actor0, 0));
-                    graph.append(graph.createVertex(Actor0, 2), EdgeType.RUNNING);
-                    graph.append(graph.createVertex(Actor0, 4), EdgeType.BLOCKED, LINK_QUALIFIER);
-                    graph.append(graph.createVertex(Actor0, 6), EdgeType.RUNNING);
+                    graph.append(graph.createVertex(Actor0, 2), new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
+                    graph.append(graph.createVertex(Actor0, 4), new OSEdgeContextState(OSEdgeContextEnum.BLOCKED), LINK_QUALIFIER);
+                    graph.append(graph.createVertex(Actor0, 6), new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
                     return graph;
                 }
 
@@ -137,9 +138,9 @@ public class GraphFactory {
                 public ITmfGraph criticalPathBounded() {
                     ITmfGraph graph = new TmfGraphLegacyWrapper();
                     graph.add(graph.createVertex(Actor0, 0));
-                    graph.append(graph.createVertex(Actor0, 2), EdgeType.RUNNING);
-                    graph.append(graph.createVertex(Actor0, 4), EdgeType.BLOCKED, LINK_QUALIFIER);
-                    graph.append(graph.createVertex(Actor0, 6), EdgeType.RUNNING);
+                    graph.append(graph.createVertex(Actor0, 2), new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
+                    graph.append(graph.createVertex(Actor0, 4), new OSEdgeContextState(OSEdgeContextEnum.BLOCKED), LINK_QUALIFIER);
+                    graph.append(graph.createVertex(Actor0, 6), new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
                     return graph;
                 }
 
@@ -165,13 +166,13 @@ public class GraphFactory {
                     ITmfGraph graph = new TmfGraphLegacyWrapper();
                     ITmfVertex vIn = graph.createVertex(Actor0, 4);
                     graph.add(graph.createVertex(Actor0, 0));
-                    graph.append(graph.createVertex(Actor0, 2), EdgeType.RUNNING);
-                    graph.append( vIn, EdgeType.BLOCKED);
-                    graph.append(graph.createVertex(Actor0, 6), EdgeType.RUNNING);
+                    graph.append(graph.createVertex(Actor0, 2), new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
+                    graph.append( vIn, new OSEdgeContextState(OSEdgeContextEnum.BLOCKED));
+                    graph.append(graph.createVertex(Actor0, 6), new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
 
                     ITmfVertex vNet = graph.createVertex(Actor1, 3);
                     graph.add( vNet);
-                    graph.edge(vNet, vIn, EdgeType.NETWORK);
+                    graph.edge(vNet, vIn, new OSEdgeContextState(OSEdgeContextEnum.NETWORK));
                     return graph;
                 }
 
@@ -181,17 +182,17 @@ public class GraphFactory {
                     graph.add(graph.createVertex(Actor0, 0));
                     ITmfVertex vStartBlock = graph.createVertex(Actor0, 2);
                     ITmfVertex vEndBlock = graph.createVertex(Actor0, 4);
-                    graph.append(vStartBlock, EdgeType.RUNNING);
+                    graph.append(vStartBlock, new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
                     graph.add(vEndBlock);
-                    graph.append(graph.createVertex(Actor0, 6), EdgeType.RUNNING);
+                    graph.append(graph.createVertex(Actor0, 6), new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
 
                     ITmfVertex vStartOther = graph.createVertex(Actor1, 2);
                     ITmfVertex vEndOther = graph.createVertex(Actor1, 3);
                     graph.add(vStartOther);
-                    graph.append(vEndOther, EdgeType.UNKNOWN);
+                    graph.appendUnknown(vEndOther);
 
                     graph.edge(vStartBlock, vStartOther);
-                    graph.edge(vEndOther, vEndBlock, EdgeType.NETWORK);
+                    graph.edge(vEndOther, vEndBlock, new OSEdgeContextState(OSEdgeContextEnum.NETWORK));
                     return graph;
                 }
 
@@ -201,11 +202,11 @@ public class GraphFactory {
                     graph.add(graph.createVertex(Actor0, 0));
                     ITmfVertex vStartBlock = graph.createVertex(Actor0, 3);
                     ITmfVertex vEndBlock = graph.createVertex(Actor0, 4);
-                    graph.append(graph.createVertex(Actor0, 2), EdgeType.RUNNING);
-                    graph.append(vStartBlock, EdgeType.UNKNOWN);
+                    graph.append(graph.createVertex(Actor0, 2), new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
+                    graph.appendUnknown(vStartBlock);
                     graph.add(vEndBlock);
-                    graph.append(graph.createVertex(Actor0, 6), EdgeType.RUNNING);
-                    graph.edgeVertical(vStartBlock, vEndBlock, EdgeType.NETWORK, null);
+                    graph.append(graph.createVertex(Actor0, 6), new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
+                    graph.edgeVertical(vStartBlock, vEndBlock, new OSEdgeContextState(OSEdgeContextEnum.NETWORK), null);
 
                     return graph;
                 }
@@ -231,13 +232,13 @@ public class GraphFactory {
                     ITmfVertex vDstLink = graph.createVertex(Actor1, 3);
                     ITmfVertex vWakeup = graph.createVertex(Actor1, 6);
                     graph.add(graph.createVertex(Actor0, 0));
-                    graph.append(vSrcLink, EdgeType.RUNNING);
-                    graph.append(graph.createVertex(Actor0, 4), EdgeType.RUNNING, LINK_QUALIFIER);
-                    graph.append(vBlockEnd, EdgeType.BLOCKED);
-                    graph.append(graph.createVertex(Actor0, 8), EdgeType.RUNNING, LINK_QUALIFIER);
+                    graph.append(vSrcLink, new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
+                    graph.append(graph.createVertex(Actor0, 4), new OSEdgeContextState(OSEdgeContextEnum.RUNNING), LINK_QUALIFIER);
+                    graph.append(vBlockEnd, new OSEdgeContextState(OSEdgeContextEnum.BLOCKED));
+                    graph.append(graph.createVertex(Actor0, 8), new OSEdgeContextState(OSEdgeContextEnum.RUNNING), LINK_QUALIFIER);
 
                     graph.add(vDstLink);
-                    graph.append(vWakeup, EdgeType.RUNNING, LINK_QUALIFIER);
+                    graph.append(vWakeup, new OSEdgeContextState(OSEdgeContextEnum.RUNNING), LINK_QUALIFIER);
 
                     graph.edge(vSrcLink, vDstLink);
                     graph.edge(vWakeup, vBlockEnd);
@@ -252,13 +253,13 @@ public class GraphFactory {
                     ITmfVertex vDstLink = graph.createVertex(Actor1, 4);
                     ITmfVertex vWakeup = graph.createVertex(Actor1, 6);
                     graph.add(graph.createVertex(Actor0, 0));
-                    graph.append(graph.createVertex(Actor0, 2), EdgeType.RUNNING);
-                    graph.append(vBlockStart, EdgeType.RUNNING, LINK_QUALIFIER);
+                    graph.append(graph.createVertex(Actor0, 2), new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
+                    graph.append(vBlockStart, new OSEdgeContextState(OSEdgeContextEnum.RUNNING), LINK_QUALIFIER);
                     graph.add(vBlockEnd);
-                    graph.append(graph.createVertex(Actor0, 8), EdgeType.RUNNING, LINK_QUALIFIER);
+                    graph.append(graph.createVertex(Actor0, 8), new OSEdgeContextState(OSEdgeContextEnum.RUNNING), LINK_QUALIFIER);
 
                     graph.add(vDstLink);
-                    graph.append(vWakeup, EdgeType.RUNNING, LINK_QUALIFIER);
+                    graph.append(vWakeup, new OSEdgeContextState(OSEdgeContextEnum.RUNNING), LINK_QUALIFIER);
 
                     graph.edge(vBlockStart, vDstLink);
                     graph.edge(vWakeup, vBlockEnd);
@@ -273,12 +274,12 @@ public class GraphFactory {
                     ITmfVertex vDstLink = graph.createVertex(Actor1, 3);
                     ITmfVertex vWakeup = graph.createVertex(Actor1, 6);
                     graph.add(graph.createVertex(Actor0, 0));
-                    graph.append(vSrcLink, EdgeType.RUNNING);
+                    graph.append(vSrcLink, new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
                     graph.add(vBlockEnd);
-                    graph.append(graph.createVertex(Actor0, 8), EdgeType.RUNNING, LINK_QUALIFIER);
+                    graph.append(graph.createVertex(Actor0, 8), new OSEdgeContextState(OSEdgeContextEnum.RUNNING), LINK_QUALIFIER);
 
                     graph.add(vDstLink);
-                    graph.append(vWakeup, EdgeType.RUNNING, LINK_QUALIFIER);
+                    graph.append(vWakeup, new OSEdgeContextState(OSEdgeContextEnum.RUNNING), LINK_QUALIFIER);
 
                     graph.edge(vSrcLink, vDstLink);
                     graph.edge(vWakeup, vBlockEnd);
@@ -301,14 +302,14 @@ public class GraphFactory {
                 public ITmfGraph build() {
                     ITmfGraph graph = new TmfGraphLegacyWrapper();
                     graph.add(graph.createVertex(Actor0, 0));
-                    graph.append(graph.createVertex(Actor0, 3), EdgeType.RUNNING);
+                    graph.append(graph.createVertex(Actor0, 3), new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
                     ITmfVertex v1 = graph.createVertex(Actor0, 6);
-                    graph.append(v1, EdgeType.BLOCKED);
-                    graph.append(graph.createVertex(Actor0, 9), EdgeType.RUNNING);
+                    graph.append(v1, new OSEdgeContextState(OSEdgeContextEnum.BLOCKED));
+                    graph.append(graph.createVertex(Actor0, 9), new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
                     graph.add(graph.createVertex(Actor1, 0));
                     ITmfVertex v2 = graph.createVertex(Actor1, 2);
-                    graph.append(v2, EdgeType.RUNNING);
-                    graph.append(graph.createVertex(Actor1, 5), EdgeType.RUNNING);
+                    graph.append(v2, new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
+                    graph.append(graph.createVertex(Actor1, 5), new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
                     graph.edge(v2, v1);
                     return graph;
                 }
@@ -318,14 +319,14 @@ public class GraphFactory {
                     ITmfGraph graph = new TmfGraphLegacyWrapper();
                     graph.add(graph.createVertex(Actor0, 0));
                     ITmfVertex v1 = graph.createVertex(Actor0, 3);
-                    graph.append(v1, EdgeType.RUNNING);
+                    graph.append(v1, new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
                     ITmfVertex v2 = graph.createVertex(Actor1, 3);
                     ITmfVertex v3 = graph.createVertex(Actor0, 6);
                     graph.add(v2);
                     graph.add(v3);
                     graph.edge(v1, v2);
                     graph.edge(v2, v3);
-                    graph.append(graph.createVertex(Actor0, 9), EdgeType.RUNNING);
+                    graph.append(graph.createVertex(Actor0, 9), new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
                     return graph;
                 }
 
@@ -350,14 +351,14 @@ public class GraphFactory {
                 public ITmfGraph build() {
                     ITmfGraph graph = new TmfGraphLegacyWrapper();
                     graph.add(graph.createVertex(Actor0, 0));
-                    graph.append(graph.createVertex(Actor0, 3), EdgeType.RUNNING);
+                    graph.append(graph.createVertex(Actor0, 3), new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
                     ITmfVertex v1 = graph.createVertex(Actor0, 6);
-                    graph.append(v1, EdgeType.BLOCKED);
-                    graph.append(graph.createVertex(Actor0, 9), EdgeType.RUNNING);
+                    graph.append(v1, new OSEdgeContextState(OSEdgeContextEnum.BLOCKED));
+                    graph.append(graph.createVertex(Actor0, 9), new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
                     graph.add(graph.createVertex(Actor1, 0));
                     ITmfVertex v2 = graph.createVertex(Actor1, 6);
-                    graph.append(v2, EdgeType.RUNNING);
-                    graph.append(graph.createVertex(Actor1, 9), EdgeType.RUNNING);
+                    graph.append(v2, new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
+                    graph.append(graph.createVertex(Actor1, 9), new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
                     graph.edge(v2, v1);
                     return graph;
                 }
@@ -367,16 +368,16 @@ public class GraphFactory {
                     ITmfGraph graph = new TmfGraphLegacyWrapper();
                     graph.add(graph.createVertex(Actor0, 0));
                     ITmfVertex v1 = graph.createVertex(Actor0, 3);
-                    graph.append(v1, EdgeType.RUNNING);
+                    graph.append(v1, new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
                     ITmfVertex v2 = graph.createVertex(Actor1, 3);
                     ITmfVertex v3 = graph.createVertex(Actor1, 6);
                     graph.add(v2);
-                    graph.append(v3, EdgeType.RUNNING);
+                    graph.append(v3, new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
                     ITmfVertex v4 = graph.createVertex(Actor0, 6);
                     graph.add(v4);
                     graph.edge(v1, v2);
                     graph.edge(v3, v4);
-                    graph.append(graph.createVertex(Actor0, 9), EdgeType.RUNNING);
+                    graph.append(graph.createVertex(Actor0, 9), new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
                     return graph;
                 }
 
@@ -407,19 +408,19 @@ public class GraphFactory {
 
                     /* Add actor 0's vertices and edges */
                     graph.add(graph.createVertex(Actor0, 0));
-                    graph.append(graph.createVertex(Actor0, 1), EdgeType.RUNNING);
-                    graph.append(v0Wakeup, EdgeType.RUNNING);
-                    graph.append(graph.createVertex(Actor0, 3), EdgeType.RUNNING);
-                    graph.append(v0Unblock, EdgeType.BLOCKED);
-                    graph.append(graph.createVertex(Actor0, 5), EdgeType.RUNNING);
+                    graph.append(graph.createVertex(Actor0, 1), new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
+                    graph.append(v0Wakeup, new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
+                    graph.append(graph.createVertex(Actor0, 3), new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
+                    graph.append(v0Unblock, new OSEdgeContextState(OSEdgeContextEnum.BLOCKED));
+                    graph.append(graph.createVertex(Actor0, 5), new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
 
                     /* Add actor 1's vertices and edges */
                     graph.add(graph.createVertex(Actor1, 0));
-                    graph.append(graph.createVertex(Actor1, 1), EdgeType.RUNNING);
-                    graph.append(v1Unblock, EdgeType.BLOCKED);
-                    graph.append(graph.createVertex(Actor1, 3), EdgeType.RUNNING);
-                    graph.append(v1Wakeup, EdgeType.RUNNING);
-                    graph.append(graph.createVertex(Actor1, 5), EdgeType.RUNNING);
+                    graph.append(graph.createVertex(Actor1, 1), new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
+                    graph.append(v1Unblock, new OSEdgeContextState(OSEdgeContextEnum.BLOCKED));
+                    graph.append(graph.createVertex(Actor1, 3), new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
+                    graph.append(v1Wakeup, new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
+                    graph.append(graph.createVertex(Actor1, 5), new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
 
                     /* Add vertical links */
                     graph.edge(v0Wakeup, v1Unblock);
@@ -437,15 +438,15 @@ public class GraphFactory {
 
                     /* Add actor 0's vertices and edges */
                     graph.add(graph.createVertex(Actor0, 0));
-                    graph.append(graph.createVertex(Actor0, 1), EdgeType.RUNNING);
-                    graph.append(graph.createVertex(Actor0, 2), EdgeType.RUNNING);
-                    graph.append(v0StartBlock, EdgeType.RUNNING);
+                    graph.append(graph.createVertex(Actor0, 1), new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
+                    graph.append(graph.createVertex(Actor0, 2), new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
+                    graph.append(v0StartBlock, new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
                     graph.add(v0EndBlock);
-                    graph.append(graph.createVertex(Actor0, 5), EdgeType.RUNNING);
+                    graph.append(graph.createVertex(Actor0, 5), new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
 
                     /* Add actor 1's vertices and edges */
                     graph.add(v1StartBlock);
-                    graph.append(v1EndBlock, EdgeType.RUNNING);
+                    graph.append(v1EndBlock, new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
 
                     /* Add vertical links */
                     graph.edge(v0StartBlock, v1StartBlock);
@@ -463,15 +464,15 @@ public class GraphFactory {
 
                     /* Add actor 0's vertices and edges */
                     graph.add(graph.createVertex(Actor0, 0));
-                    graph.append(graph.createVertex(Actor0, 1), EdgeType.RUNNING);
-                    graph.append(v0Wakeup, EdgeType.RUNNING);
+                    graph.append(graph.createVertex(Actor0, 1), new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
+                    graph.append(v0Wakeup, new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
                     graph.add(v0Unblock);
-                    graph.append(graph.createVertex(Actor0, 5), EdgeType.RUNNING);
+                    graph.append(graph.createVertex(Actor0, 5), new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
 
                     /* Add actor 1's vertices and edges */
                     graph.add(v1Unblock);
-                    graph.append(graph.createVertex(Actor1, 3), EdgeType.RUNNING);
-                    graph.append(v1Wakeup, EdgeType.RUNNING);
+                    graph.append(graph.createVertex(Actor1, 3), new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
+                    graph.append(v1Wakeup, new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
 
                     /* Add vertical links */
                     graph.edge(v0Wakeup, v1Unblock);
@@ -511,20 +512,20 @@ public class GraphFactory {
 
                     /* Add actor 0's vertices and edges */
                     graph.add(graph.createVertex(Actor0, 0));
-                    graph.append(v0FirstFork, EdgeType.RUNNING);
-                    graph.append(v0SecondFork, EdgeType.RUNNING);
-                    graph.append(graph.createVertex(Actor0, 6), EdgeType.RUNNING);
-                    graph.append(v0FirstUnblock, EdgeType.BLOCKED);
-                    graph.append(v0SecondUnblock, EdgeType.BLOCKED);
-                    graph.append(graph.createVertex(Actor0, 12), EdgeType.RUNNING);
+                    graph.append(v0FirstFork, new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
+                    graph.append(v0SecondFork, new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
+                    graph.append(graph.createVertex(Actor0, 6), new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
+                    graph.append(v0FirstUnblock, new OSEdgeContextState(OSEdgeContextEnum.BLOCKED));
+                    graph.append(v0SecondUnblock, new OSEdgeContextState(OSEdgeContextEnum.BLOCKED));
+                    graph.append(graph.createVertex(Actor0, 12), new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
 
                     /* Add actor 1's vertices and edges */
                     graph.add(v1In);
-                    graph.append(v1Out, EdgeType.RUNNING);
+                    graph.append(v1Out, new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
 
                     /* Add actor 2's vertices and edges */
                     graph.add(v2In);
-                    graph.append(v2Out, EdgeType.RUNNING);
+                    graph.append(v2Out, new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
 
                     /* Add vertical links */
                     graph.edge(v0FirstFork, v2In);
@@ -548,20 +549,20 @@ public class GraphFactory {
 
                     /* Add actor 0's vertices and edges */
                     graph.add(graph.createVertex(Actor0, 0));
-                    graph.append(graph.createVertex(Actor0, 2), EdgeType.RUNNING);
-                    graph.append(graph.createVertex(Actor0, 4), EdgeType.RUNNING);
-                    graph.append(v0StartBlock, EdgeType.RUNNING);
+                    graph.append(graph.createVertex(Actor0, 2), new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
+                    graph.append(graph.createVertex(Actor0, 4), new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
+                    graph.append(v0StartBlock, new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
                     graph.add(v0FirstUnblock);
                     graph.add(v0SecondUnblock);
-                    graph.append(graph.createVertex(Actor0, 12), EdgeType.RUNNING);
+                    graph.append(graph.createVertex(Actor0, 12), new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
 
                     /* Add actor 1's vertices and edges */
                     graph.add(v1In);
-                    graph.append(v1Out, EdgeType.RUNNING);
+                    graph.append(v1Out, new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
 
                     /* Add actor 2's vertices and edges */
                     graph.add(v2In);
-                    graph.append(v2Out, EdgeType.RUNNING);
+                    graph.append(v2Out, new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
 
                     /* Add vertical links */
                     graph.edge(v0StartBlock, v1In);
@@ -607,20 +608,20 @@ public class GraphFactory {
 
                     /* Add actor 0's vertices and edges */
                     graph.add(graph.createVertex(Actor0, 0));
-                    graph.append(v0FirstFork, EdgeType.RUNNING);
-                    graph.append(v0SecondFork, EdgeType.RUNNING);
-                    graph.append(graph.createVertex(Actor0, 6), EdgeType.RUNNING);
-                    graph.append(v0FirstUnblock, EdgeType.BLOCKED);
-                    graph.append(v0SecondUnblock, EdgeType.BLOCKED);
-                    graph.append(graph.createVertex(Actor0, 12), EdgeType.RUNNING);
+                    graph.append(v0FirstFork, new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
+                    graph.append(v0SecondFork, new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
+                    graph.append(graph.createVertex(Actor0, 6), new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
+                    graph.append(v0FirstUnblock, new OSEdgeContextState(OSEdgeContextEnum.BLOCKED));
+                    graph.append(v0SecondUnblock, new OSEdgeContextState(OSEdgeContextEnum.BLOCKED));
+                    graph.append(graph.createVertex(Actor0, 12), new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
 
                     /* Add actor 1's vertices and edges */
                     graph.add(v1In);
-                    graph.append(v1Out, EdgeType.RUNNING);
+                    graph.append(v1Out, new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
 
                     /* Add actor 2's vertices and edges */
                     graph.add(v2In);
-                    graph.append(v2Out, EdgeType.RUNNING);
+                    graph.append(v2Out, new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
 
                     /* Add vertical links */
                     graph.edge(v0FirstFork, v1In);
@@ -644,20 +645,20 @@ public class GraphFactory {
 
                     /* Add actor 0's vertices and edges */
                     graph.add(graph.createVertex(Actor0, 0));
-                    graph.append(graph.createVertex(Actor0, 2), EdgeType.RUNNING);
-                    graph.append(graph.createVertex(Actor0, 4), EdgeType.RUNNING);
-                    graph.append(v0StartBlock, EdgeType.RUNNING);
+                    graph.append(graph.createVertex(Actor0, 2), new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
+                    graph.append(graph.createVertex(Actor0, 4), new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
+                    graph.append(v0StartBlock, new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
                     graph.add(v0FirstUnblock);
                     graph.add(v0SecondUnblock);
-                    graph.append(graph.createVertex(Actor0, 12), EdgeType.RUNNING);
+                    graph.append(graph.createVertex(Actor0, 12), new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
 
                     /* Add actor 1's vertices and edges */
                     graph.add(v1In);
-                    graph.append(v1Out, EdgeType.RUNNING);
+                    graph.append(v1Out, new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
 
                     /* Add actor 2's vertices and edges */
                     graph.add(v2In);
-                    graph.append(v2Out, EdgeType.RUNNING);
+                    graph.append(v2Out, new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
 
                     /* Add vertical links */
                     graph.edge(v0StartBlock, v1In);
@@ -711,25 +712,25 @@ public class GraphFactory {
 
                     /* Add actor 0's vertices and edges */
                     graph.add(graph.createVertex(Actor0, 0));
-                    graph.append(v0Fork, EdgeType.RUNNING);
-                    graph.append(v0Return, EdgeType.BLOCKED);
-                    graph.append(graph.createVertex(Actor0, 7), EdgeType.RUNNING);
+                    graph.append(v0Fork, new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
+                    graph.append(v0Return, new OSEdgeContextState(OSEdgeContextEnum.BLOCKED));
+                    graph.append(graph.createVertex(Actor0, 7), new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
 
                     /* Add actor 1's vertices and edges */
                     graph.add(v1In);
-                    graph.append(v1Fork, EdgeType.RUNNING);
-                    graph.append(v1Return, EdgeType.BLOCKED);
-                    graph.append(v1End, EdgeType.RUNNING);
+                    graph.append(v1Fork, new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
+                    graph.append(v1Return, new OSEdgeContextState(OSEdgeContextEnum.BLOCKED));
+                    graph.append(v1End, new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
 
                     /* Add actor 2's vertices and edges */
                     graph.add(v2In);
-                    graph.append(v2Fork, EdgeType.RUNNING);
-                    graph.append(v2Return, EdgeType.BLOCKED);
-                    graph.append(v2End, EdgeType.RUNNING);
+                    graph.append(v2Fork, new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
+                    graph.append(v2Return, new OSEdgeContextState(OSEdgeContextEnum.BLOCKED));
+                    graph.append(v2End, new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
 
                     /* Add actor 3's vertices and edges */
                     graph.add(v3In);
-                    graph.append(v3End, EdgeType.RUNNING);
+                    graph.append(v3End, new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
 
                     /* Add vertical links */
                     graph.edge(v0Fork, v1In);
@@ -760,25 +761,25 @@ public class GraphFactory {
 
                     /* Add actor 0's vertices and edges */
                     graph.add(graph.createVertex(Actor0, 0));
-                    graph.append(v0Fork, EdgeType.RUNNING);
+                    graph.append(v0Fork, new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
                     graph.add(v0Return);
-                    graph.append(graph.createVertex(Actor0, 7), EdgeType.RUNNING);
+                    graph.append(graph.createVertex(Actor0, 7), new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
 
                     /* Add actor 1's vertices and edges */
                     graph.add(v1In);
-                    graph.append(v1Fork, EdgeType.RUNNING);
+                    graph.append(v1Fork, new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
                     graph.add(v1Return);
-                    graph.append(v1End, EdgeType.RUNNING);
+                    graph.append(v1End, new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
 
                     /* Add actor 2's vertices and edges */
                     graph.add(v2In);
-                    graph.append(v2Fork, EdgeType.RUNNING);
+                    graph.append(v2Fork, new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
                     graph.add(v2Return);
-                    graph.append(v2End, EdgeType.RUNNING);
+                    graph.append(v2End, new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
 
                     /* Add actor 3's vertices and edges */
                     graph.add(v3In);
-                    graph.append(v3End, EdgeType.RUNNING);
+                    graph.append(v3End, new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
 
                     /* Add vertical links */
                     graph.edge(v0Fork, v1In);
@@ -827,28 +828,28 @@ public class GraphFactory {
 
                     /* Add actor 0's vertices and edges */
                     graph.add(graph.createVertex(Actor0, 0));
-                    graph.append(graph.createVertex(Actor0, 1), EdgeType.RUNNING);
-                    graph.append(v0Unblock, EdgeType.BLOCKED);
-                    graph.append(graph.createVertex(Actor0, 12), EdgeType.RUNNING);
+                    graph.append(graph.createVertex(Actor0, 1), new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
+                    graph.append(v0Unblock, new OSEdgeContextState(OSEdgeContextEnum.BLOCKED));
+                    graph.append(graph.createVertex(Actor0, 12), new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
 
                     /* Add actor 1's vertices and edges */
                     graph.add(graph.createVertex(Actor1, 3));
-                    graph.append(v1Send, EdgeType.RUNNING);
-                    graph.append(graph.createVertex(Actor1, 5), EdgeType.RUNNING);
+                    graph.append(v1Send, new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
+                    graph.append(graph.createVertex(Actor1, 5), new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
 
                     /* Add actor 2's vertices and edges */
                     graph.add(graph.createVertex(fActor2, 6));
-                    graph.append(v2Rcv, EdgeType.RUNNING);
-                    graph.append(v2Send, EdgeType.RUNNING);
+                    graph.append(v2Rcv, new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
+                    graph.append(v2Send, new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
 
                     /* Add actor 3's vertices and edges */
                     graph.add(graph.createVertex(fActor3, 9));
-                    graph.append(v3Rcv, EdgeType.RUNNING);
-                    graph.append(v3End, EdgeType.RUNNING);
+                    graph.append(v3Rcv, new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
+                    graph.append(v3End, new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
 
                     /* Add vertical links */
-                    graph.edge(v1Send, v2Rcv, EdgeType.NETWORK);
-                    graph.edge(v2Send, v3Rcv, EdgeType.NETWORK);
+                    graph.edge(v1Send, v2Rcv, new OSEdgeContextState(OSEdgeContextEnum.NETWORK));
+                    graph.edge(v2Send, v3Rcv, new OSEdgeContextState(OSEdgeContextEnum.NETWORK));
                     graph.edge(v3End, v0Unblock);
 
                     return graph;
@@ -869,27 +870,27 @@ public class GraphFactory {
 
                     /* Add actor 0's vertices and edges */
                     graph.add(graph.createVertex(Actor0, 0));
-                    graph.append(v0Fork, EdgeType.RUNNING);
+                    graph.append(v0Fork, new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
                     graph.add(v0Unblock);
-                    graph.append(graph.createVertex(Actor0, 12), EdgeType.RUNNING);
+                    graph.append(graph.createVertex(Actor0, 12), new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
 
                     /* Add actor 1's vertices and edges */
                     graph.add(v1Start);
-                    graph.append(graph.createVertex(Actor1, 3), EdgeType.UNKNOWN);
-                    graph.append(v1Send, EdgeType.RUNNING);
+                    graph.append(graph.createVertex(Actor1, 3), new OSEdgeContextState(OSEdgeContextEnum.UNKNOWN));
+                    graph.append(v1Send, new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
 
                     /* Add actor 2's vertices and edges */
                     graph.add(v2Rcv);
-                    graph.append(v2Send, EdgeType.RUNNING);
+                    graph.append(v2Send, new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
 
                     /* Add actor 3's vertices and edges */
                     graph.add(v3Rcv);
-                    graph.append(v3End, EdgeType.RUNNING);
+                    graph.append(v3End, new OSEdgeContextState(OSEdgeContextEnum.RUNNING));
 
                     /* Add vertical links */
                     graph.edge(v0Fork, v1Start);
-                    graph.edge(v1Send, v2Rcv, EdgeType.NETWORK);
-                    graph.edge(v2Send, v3Rcv, EdgeType.NETWORK);
+                    graph.edge(v1Send, v2Rcv, new OSEdgeContextState(OSEdgeContextEnum.NETWORK));
+                    graph.edge(v2Send, v3Rcv, new OSEdgeContextState(OSEdgeContextEnum.NETWORK));
                     graph.edge(v3End, v0Unblock);
 
                     return graph;
