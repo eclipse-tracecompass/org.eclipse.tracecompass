@@ -22,6 +22,7 @@ import org.eclipse.tracecompass.analysis.counters.core.aspects.CounterAspect;
 import org.eclipse.tracecompass.analysis.counters.core.aspects.ITmfCounterAspect;
 import org.eclipse.tracecompass.common.core.log.TraceCompassLog;
 import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils;
+import org.eclipse.tracecompass.internal.analysis.counters.core.Activator;
 import org.eclipse.tracecompass.statesystem.core.ITmfStateSystemBuilder;
 import org.eclipse.tracecompass.statesystem.core.StateSystemBuilderUtils;
 import org.eclipse.tracecompass.statesystem.core.exceptions.StateValueTypeException;
@@ -58,8 +59,8 @@ public class CounterStateProvider extends AbstractTmfStateProvider {
     private final Set<ITmfEventAspect<?>> fCounterAspects;
 
     /*
-     * Map linking a class to an implemented object. Used for retrieving the name of
-     * the grouping aspect during resolve.
+     * Map linking a class to an implemented object. Used for retrieving the
+     * name of the grouping aspect during resolve.
      */
     private final Map<Class<? extends ITmfEventAspect<?>>, ITmfEventAspect<?>> fGroupingAspectImpls;
 
@@ -82,8 +83,8 @@ public class CounterStateProvider extends AbstractTmfStateProvider {
                     // Avoid creating the same aggregated aspect multiple times
                     if (parentAspectClass != null && !aspectImpls.containsKey(parentAspectClass)) {
                         /*
-                         * Aggregated aspect if more than one are available for a given
-                         * ITmfEventAspect<?> class.
+                         * Aggregated aspect if more than one are available for
+                         * a given ITmfEventAspect<?> class.
                          */
                         ITmfEventAspect<?> goldenAspect = MultiAspect.create(TmfTraceUtils.getEventAspects(trace, parentAspectClass), parentAspectClass.getClass());
                         if (goldenAspect != null) {
@@ -135,8 +136,8 @@ public class CounterStateProvider extends AbstractTmfStateProvider {
     }
 
     /**
-     * Add the field value of a grouped counter aspect to the state system (override
-     * in specific implementations)
+     * Add the field value of a grouped counter aspect to the state system
+     * (override in specific implementations)
      *
      * @param event
      *            Event to process
@@ -149,9 +150,9 @@ public class CounterStateProvider extends AbstractTmfStateProvider {
      */
     protected void handleGroupedCounterAspect(ITmfEvent event, ITmfStateSystemBuilder ss, CounterAspect aspect, int rootQuark) {
         /*
-         * Retrieve the child quark of the counter aspect by going through its attribute
-         * tree in the state system. The concatenation of the aspect's groups form a
-         * single entry in the state system.
+         * Retrieve the child quark of the counter aspect by going through its
+         * attribute tree in the state system. The concatenation of the aspect's
+         * groups form a single entry in the state system.
          */
         int quark = rootQuark;
         for (Class<? extends ITmfEventAspect<?>> groupClass : aspect.getGroups()) {
@@ -174,11 +175,22 @@ public class CounterStateProvider extends AbstractTmfStateProvider {
 
     private static void handleCounterAspect(ITmfEvent event, ITmfStateSystemBuilder ss, CounterAspect aspect, int rootQuark) {
         int quark = ss.getQuarkRelativeAndAdd(rootQuark, aspect.getName());
-        Long eventContent = aspect.resolve(event);
+        Number eventContent = aspect.resolve(event);
         if (eventContent != null) {
             if (!aspect.isCumulative()) {
                 try {
-                    StateSystemBuilderUtils.incrementAttributeLong(ss, event.getTimestamp().toNanos(), quark, eventContent);
+                    switch (aspect.getType()) {
+                    case LONG:
+                        StateSystemBuilderUtils.incrementAttributeLong(ss, event.getTimestamp().toNanos(), quark, eventContent.longValue());
+                        break;
+                    case DOUBLE:
+                        StateSystemBuilderUtils.incrementAttributeDouble(ss, event.getTimestamp().toNanos(), quark, eventContent.doubleValue());
+                        break;
+                    default:
+                        Activator.getInstance().logWarning("This CounterType (" + aspect.getType().toString() //$NON-NLS-1$
+                                + ") is not supported in the CounterAnalysis."); //$NON-NLS-1$
+                        break;
+                    }
                 } catch (StateValueTypeException e) {
                     TraceCompassLogUtils.traceInstant(LOGGER, Level.WARNING, "HandleCounterAspect:Exception", e); //$NON-NLS-1$
                 }

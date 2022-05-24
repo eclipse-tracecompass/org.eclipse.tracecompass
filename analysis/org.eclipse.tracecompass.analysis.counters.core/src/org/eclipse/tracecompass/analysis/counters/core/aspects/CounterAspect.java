@@ -15,14 +15,16 @@ import java.util.Arrays;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.tracecompass.analysis.counters.core.CounterType;
 import org.eclipse.tracecompass.tmf.core.event.aspect.ITmfEventAspect;
 
 /**
  * Counter aspect that can be grouped and associated to a given resource such as
- * a CPU, a thread, a disk, a GPU or a DSP.
- * <br><br>
+ * a CPU, a thread, a disk, a GPU or a DSP.<br>
+ * <br>
  * The concatenation of the aspect's groups form a single entry in the state
  * system:
+ *
  * <pre>
  * {root}
  *   +- {group id}
@@ -52,6 +54,25 @@ public class CounterAspect extends AbstractCounterAspect {
     @SafeVarargs
     public CounterAspect(String fieldName, String label, Class<? extends ITmfEventAspect<?>>... groups) {
         super(fieldName, label);
+        fGroups = Arrays.copyOf(groups, groups.length);
+    }
+
+    /**
+     * Counter aspect constructor
+     *
+     * @param fieldName
+     *            the field to follow
+     * @param label
+     *            display name
+     * @param type
+     *            the type of this counter
+     * @param groups
+     *            the groups, empty means ungrouped
+     * @since 3.0
+     */
+    @SafeVarargs
+    public CounterAspect(String fieldName, String label, CounterType type, Class<? extends ITmfEventAspect<?>>... groups) {
+        super(fieldName, label, type);
         fGroups = Arrays.copyOf(groups, groups.length);
     }
 
@@ -86,5 +107,4 @@ public class CounterAspect extends AbstractCounterAspect {
         CounterAspect other = (CounterAspect) obj;
         return Arrays.deepEquals(fGroups, other.getGroups());
     }
-
 }

@@ -71,8 +71,8 @@ public class CounterDataProvider extends AbstractTreeCommonXDataProvider<Counter
     private static final String TITLE = Objects.requireNonNull(Messages.CounterDataProvider_ChartTitle);
 
     /**
-     * Create an instance of {@link CounterDataProvider}. Returns a null instance if
-     * the analysis module is not found.
+     * Create an instance of {@link CounterDataProvider}. Returns a null
+     * instance if the analysis module is not found.
      *
      * @param trace
      *            A trace on which we are interested to fetch a model
@@ -126,7 +126,8 @@ public class CounterDataProvider extends AbstractTreeCommonXDataProvider<Counter
     }
 
     /**
-     * Recursively add all child entries of a parent branch from the state system.
+     * Recursively add all child entries of a parent branch from the state
+     * system.
      */
     private void addTreeViewerEntries(ITmfStateSystem ss, long parentId, int quark, List<TmfTreeDataModel> entries) {
         for (int childQuark : ss.getSubAttributes(quark, false)) {
@@ -203,9 +204,9 @@ public class CounterDataProvider extends AbstractTreeCommonXDataProvider<Counter
     }
 
     /**
-     * Extracts an array of times that will be used for a 2D query. It extracts the
-     * times based on the state system bounds, the requested time of the query
-     * filter and the current end time
+     * Extracts an array of times that will be used for a 2D query. It extracts
+     * the times based on the state system bounds, the requested time of the
+     * query filter and the current end time
      *
      * @param ss
      *            The state system
@@ -226,15 +227,15 @@ public class CounterDataProvider extends AbstractTreeCommonXDataProvider<Counter
         /* We only need the previous time for differential mode */
         if (!filter.isCumulative() && xValues.length > 1) {
             /*
-             * For differential mode, we need to get the time before query start. To do so,
-             * we subtract to query start the delta between xValues[1] and query start
+             * For differential mode, we need to get the time before query
+             * start. To do so, we subtract to query start the delta between
+             * xValues[1] and query start
              */
             long prevTime = Long.max(stateSystemStartTime, 2 * queryStart - xValues[1]);
             if (prevTime <= currentEndTime) {
                 times.add(prevTime);
             }
         }
-
         return times;
     }
 
@@ -244,11 +245,11 @@ public class CounterDataProvider extends AbstractTreeCommonXDataProvider<Counter
         boolean isCumulative = filter.isCumulative();
 
         double[] yValues = new double[times.length];
-        long prevValue = 0L;
+        Number prevValue = 0;
         if (!countersIntervals.isEmpty()) {
             Object value = countersIntervals.first().getValue();
             if (value instanceof Number) {
-                prevValue = ((Number) value).longValue();
+                prevValue = ((Number) value);
             }
         }
         int to = 0;
@@ -257,21 +258,21 @@ public class CounterDataProvider extends AbstractTreeCommonXDataProvider<Counter
             int from = Arrays.binarySearch(times, interval.getStartTime());
             from = (from >= 0) ? from : -1 - from;
             Number value = (Number) interval.getValue();
-            long l = value != null ? value.longValue() : 0l;
+            double d = value != null ? value.doubleValue() : 0.0;
             if (isCumulative) {
                 /* Fill in all the time stamps that the interval overlaps */
                 to = Arrays.binarySearch(times, interval.getEndTime());
                 to = (to >= 0) ? to + 1 : -1 - to;
-                Arrays.fill(yValues, from, to, l);
+                Arrays.fill(yValues, from, to, d);
             } else {
-                yValues[from] = (l - prevValue);
+                yValues[from] = (d - prevValue.doubleValue());
             }
-            prevValue = l;
+            prevValue = d;
         }
 
         /* Fill the time stamps after the state system, if any. */
         if (isCumulative) {
-            Arrays.fill(yValues, to, yValues.length, prevValue);
+            Arrays.fill(yValues, to, yValues.length, prevValue.doubleValue());
         }
 
         return yValues;
@@ -294,5 +295,4 @@ public class CounterDataProvider extends AbstractTreeCommonXDataProvider<Counter
     protected boolean isCacheable() {
         return true;
     }
-
 }

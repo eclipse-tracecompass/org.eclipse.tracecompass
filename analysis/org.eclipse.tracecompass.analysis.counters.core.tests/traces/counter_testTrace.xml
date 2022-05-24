@@ -1,5 +1,5 @@
-<!-- Simple Kernel Memory trace with simple events (kmem_mm_page_alloc and 
-	kmem_mm_page_free). -->
+<!-- Simple Kernel Memory trace with simple events (kmem_mm_page_alloc, 
+	kmem_mm_page_free and real_time). -->
 
 <trace>
 	<set_aspects>
@@ -12,5 +12,9 @@
 	<event timestamp="2" name="kmem_mm_page_free">
 		<field name="cpu" value="1" type="int" />
 		<field name="counter" value="0" type="long" />
+	</event>
+	<event timestamp="3" name="real_time">
+		<field name="cpu" value="0" type="int" />
+		<field name="doubleCounter" value="0.1" type="double" />
 	</event>
 </trace>

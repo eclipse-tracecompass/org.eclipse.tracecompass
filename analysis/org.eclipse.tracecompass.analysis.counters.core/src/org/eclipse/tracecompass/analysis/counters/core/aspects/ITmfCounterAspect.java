@@ -20,7 +20,7 @@ import org.eclipse.tracecompass.tmf.core.event.aspect.ITmfEventAspect;
  * @author Mikael Ferland
  * @since 3.1
  */
-public interface ITmfCounterAspect extends ITmfEventAspect<Long> {
+public interface ITmfCounterAspect extends ITmfEventAspect<Number> {
 
     /**
      * Avoid cluttering the trace's event table if there are too many counters.
@@ -52,5 +52,4 @@ public interface ITmfCounterAspect extends ITmfEventAspect<Long> {
     default boolean isCumulative() {
         return true;
     }
-
 }

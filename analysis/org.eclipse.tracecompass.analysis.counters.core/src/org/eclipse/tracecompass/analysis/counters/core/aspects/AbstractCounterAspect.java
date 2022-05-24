@@ -15,6 +15,7 @@ import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.tracecompass.analysis.counters.core.CounterType;
 import org.eclipse.tracecompass.internal.analysis.counters.core.Messages;
 import org.eclipse.tracecompass.tmf.core.event.ITmfEvent;
 
@@ -28,9 +29,10 @@ import org.eclipse.tracecompass.tmf.core.event.ITmfEvent;
 public abstract class AbstractCounterAspect implements ITmfCounterAspect {
     private final String fFieldName;
     private final String fLabel;
+    private final CounterType fType;
 
     /**
-     * Counter aspect
+     * Abstract Counter aspect constructor
      *
      * @param fieldName
      *            The name of the counter field in an event
@@ -40,6 +42,24 @@ public abstract class AbstractCounterAspect implements ITmfCounterAspect {
     public AbstractCounterAspect(String fieldName, String label) {
         fFieldName = fieldName;
         fLabel = label;
+        fType = CounterType.LONG;
+    }
+
+    /**
+     * Abstract Counter aspect constructor with type
+     *
+     * @param fieldName
+     *            The name of the counter field in an event
+     * @param label
+     *            The label to display in "help"
+     * @param type
+     *            The type of the counter
+     * @since 3.0
+     */
+    public AbstractCounterAspect(String fieldName, String label, CounterType type) {
+        fFieldName = fieldName;
+        fLabel = label;
+        fType = type;
     }
 
     @Override
@@ -52,9 +72,25 @@ public abstract class AbstractCounterAspect implements ITmfCounterAspect {
         return Messages.CounterAspect_HelpPrefix + ' ' + getName();
     }
 
+    /**
+     * Resolve the value of the counter recorded in this event. The returned
+     * class type depends on which type was defined for this counter aspect
+     *
+     * @param event
+     *            The event to process
+     * @return The counter value or null if the counter type is not supported
+     * @since 3.0
+     */
     @Override
-    public @Nullable Long resolve(@NonNull ITmfEvent event) {
-        return event.getContent().getFieldValue(Long.class, fFieldName);
+    public @Nullable Number resolve(@NonNull ITmfEvent event) {
+        switch (fType) {
+        case DOUBLE:
+            return event.getContent().getFieldValue(Double.class, fFieldName);
+        case LONG:
+            return event.getContent().getFieldValue(Long.class, fFieldName);
+        default:
+            return null;
+        }
     }
 
     @Override
@@ -87,4 +123,13 @@ public abstract class AbstractCounterAspect implements ITmfCounterAspect {
         return Objects.equals(fFieldName, other.fFieldName) && Objects.equals(fLabel, other.fLabel);
     }
 
+    /**
+     * Gets the type of this counter
+     *
+     * @return the type of this counter
+     * @since 3.0
+     */
+    public CounterType getType() {
+        return fType;
+    }
 }
