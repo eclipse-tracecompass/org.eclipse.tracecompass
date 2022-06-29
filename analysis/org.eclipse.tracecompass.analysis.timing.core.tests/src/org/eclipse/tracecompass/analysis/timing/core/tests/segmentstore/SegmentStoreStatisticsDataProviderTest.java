@@ -50,7 +50,6 @@ import org.junit.Test;
  *
  * @author Bernd Hufmann
  */
-@SuppressWarnings("restriction")
 public class SegmentStoreStatisticsDataProviderTest {
 
     // ------------------------------------------------------------------------

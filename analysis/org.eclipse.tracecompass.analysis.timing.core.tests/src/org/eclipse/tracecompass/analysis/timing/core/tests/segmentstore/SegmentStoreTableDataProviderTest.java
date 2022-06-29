@@ -17,6 +17,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +25,7 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.tracecompass.internal.analysis.timing.core.segmentstore.SegmentStoreTableDataProvider;
 import org.eclipse.tracecompass.internal.analysis.timing.core.segmentstore.SegmentStoreTableLine;
+import org.eclipse.tracecompass.internal.provisional.tmf.core.model.events.TmfEventTableDataProvider.Direction;
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.filters.VirtualTableQueryFilter;
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.table.ITmfVirtualTableDataProvider;
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.table.ITmfVirtualTableModel;
@@ -31,7 +33,7 @@ import org.eclipse.tracecompass.internal.provisional.tmf.core.model.table.TmfVir
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.table.VirtualTableCell;
 import org.eclipse.tracecompass.internal.tmf.core.model.filters.FetchParametersUtils;
 import org.eclipse.tracecompass.tmf.core.exceptions.TmfAnalysisException;
-import org.eclipse.tracecompass.tmf.core.exceptions.TmfTraceException;
+import org.eclipse.tracecompass.tmf.core.model.CoreFilterProperty;
 import org.eclipse.tracecompass.tmf.core.model.filters.TimeQueryFilter;
 import org.eclipse.tracecompass.tmf.core.model.tree.TmfTreeDataModel;
 import org.eclipse.tracecompass.tmf.core.model.tree.TmfTreeModel;
@@ -44,7 +46,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-/*
+/**
  * Tests the {@Link SegmentStoreTableDataProvider}
  *
  * @author: Kyrollos Bekhet
@@ -58,13 +60,20 @@ public class SegmentStoreTableDataProviderTest {
     private static final String DURATION_COLUMN_NAME = "Duration";
     private static Map<String, Long> fColumns = Collections.emptyMap();
     private static TmfXmlTraceStub fTrace;
+    private static final String TABLE_SEARCH_EXPRESSION_KEY = "table_search_expressions"; //$NON-NLS-1$
+    private static final String TABLE_SEARCH_DIRECTION_KEY = "table_search_direction"; //$NON-NLS-1$
 
+    /**
+     * Set-up resources
+     *
+     * @throws TmfAnalysisException
+     *             Trace exception should not happen
+     */
+    @SuppressWarnings("null")
     @BeforeClass
-    public static void init() throws TmfTraceException, TmfAnalysisException {
+    public static void init() throws TmfAnalysisException {
         fTrace = new TmfXmlTraceStubNs();
-        @NonNull
-        StubSegmentStoreProvider fixture = getValidSegment(fTrace);
-
+        @NonNull StubSegmentStoreProvider fixture = getValidSegment(fTrace);
         ITmfTrace trace = fTrace;
         assertNotNull(trace);
         fDataProvider = new SegmentStoreTableDataProvider(fTrace, fixture, "org.eclipse.tracecompass.analysis.timing.core.tests.segmentstore");
@@ -84,7 +93,7 @@ public class SegmentStoreTableDataProviderTest {
         if (columns == null) {
             return Collections.emptyMap();
         }
-        List<TmfTreeDataModel> columnEntries = columns.getEntries();
+        List<@NonNull TmfTreeDataModel> columnEntries = columns.getEntries();
         assertEquals(START_TIME_COLUMN_NAME, columnEntries.get(0).getName());
         assertEquals(END_TIME_COLUMN_NAME, columnEntries.get(1).getName());
         assertEquals(DURATION_COLUMN_NAME, columnEntries.get(2).getName());
@@ -96,6 +105,9 @@ public class SegmentStoreTableDataProviderTest {
         return expectedColumns;
     }
 
+    /**
+     * Disposes resources
+     */
     @AfterClass
     public static void tearDown() {
         fTrace.dispose();
@@ -105,6 +117,13 @@ public class SegmentStoreTableDataProviderTest {
     // Tests
     // ---------------------------------------------------------------------------
 
+    /**
+     * Test column returned by the provider.
+     *
+     * @throws InterruptedException
+     *             Exception thrown if test takes longer than 200ms.
+     */
+    @SuppressWarnings("null")
     @Test(timeout = 200)
     public void testDataProviderFetchColumn() throws InterruptedException {
         Long startTimeColumnId = fColumns.get(START_TIME_COLUMN_NAME);
@@ -115,7 +134,7 @@ public class SegmentStoreTableDataProviderTest {
         assertNotNull(endTimeColumnId);
         assertNotNull(durationColumnId);
 
-        List<TmfTreeDataModel> expectedColumnEntries = Arrays.asList(
+        List<@NonNull TmfTreeDataModel> expectedColumnEntries = Arrays.asList(
                 new TmfTreeDataModel(startTimeColumnId, -1, Collections.singletonList(START_TIME_COLUMN_NAME)),
                 new TmfTreeDataModel(endTimeColumnId, -1, Collections.singletonList(END_TIME_COLUMN_NAME)),
                 new TmfTreeDataModel(durationColumnId, -1, Collections.singletonList(DURATION_COLUMN_NAME)));
@@ -123,14 +142,22 @@ public class SegmentStoreTableDataProviderTest {
         TmfModelResponse<TmfTreeModel<@NonNull TmfTreeDataModel>> response = fDataProvider.fetchTree(FetchParametersUtils.timeQueryToMap(new TimeQueryFilter(0, 0, 1)), null);
         TmfTreeModel<@NonNull TmfTreeDataModel> currentColumnModel = response.getModel();
         assertNotNull(currentColumnModel);
-        List<TmfTreeDataModel> currentColumnEntries = currentColumnModel.getEntries();
+        List<@NonNull TmfTreeDataModel> currentColumnEntries = currentColumnModel.getEntries();
         assertEquals(expectedColumnEntries, currentColumnEntries);
     }
 
+    /**
+     * Test lines returned by the provider if the query starts from index zero.
+     *
+     * @throws InterruptedException
+     *             Exception thrown if test takes longer than 200ms
+     */
+    @SuppressWarnings("null")
     @Test(timeout = 200)
     public void testDataProviderFetchLineZeroIndex() throws InterruptedException {
         VirtualTableQueryFilter queryFilter = new VirtualTableQueryFilter(Collections.emptyList(), 0, 5);
-        List<SegmentStoreTableLine> expectedData = Arrays.asList(
+        @NonNull
+        List<@NonNull SegmentStoreTableLine> expectedData = Arrays.asList(
                 new SegmentStoreTableLine(Arrays.asList(new VirtualTableCell(lineTime(0)), new VirtualTableCell(lineTime(0)), new VirtualTableCell(lineDuration(0))), 0),
                 new SegmentStoreTableLine(Arrays.asList(new VirtualTableCell(lineTime(0)), new VirtualTableCell(lineTime(1)), new VirtualTableCell(lineDuration(1))), 1),
                 new SegmentStoreTableLine(Arrays.asList(new VirtualTableCell(lineTime(0)), new VirtualTableCell(lineTime(2)), new VirtualTableCell(lineDuration(2))), 2),
@@ -143,10 +170,18 @@ public class SegmentStoreTableDataProviderTest {
         assertEquals(expectedModel, currentModel);
     }
 
+    /**
+     * Test lines returned by the provider if the query starts from a non zero
+     * index.
+     *
+     * @throws InterruptedException
+     *             Exception thrown if test takes longer than 200ms.
+     */
+    @SuppressWarnings("null")
     @Test(timeout = 200)
     public void testDataProviderFetchLineNonZeroIndex() throws InterruptedException {
         VirtualTableQueryFilter queryFilter = new VirtualTableQueryFilter(Collections.emptyList(), 10, 5);
-        List<SegmentStoreTableLine> expectedData = Arrays.asList(
+        List<@NonNull SegmentStoreTableLine> expectedData = Arrays.asList(
                 new SegmentStoreTableLine(Arrays.asList(new VirtualTableCell(lineTime(7)), new VirtualTableCell(lineTime(10)), new VirtualTableCell(lineDuration(3))), 10),
                 new SegmentStoreTableLine(Arrays.asList(new VirtualTableCell(lineTime(7)), new VirtualTableCell(lineTime(11)), new VirtualTableCell(lineDuration(4))), 11),
                 new SegmentStoreTableLine(Arrays.asList(new VirtualTableCell(lineTime(7)), new VirtualTableCell(lineTime(12)), new VirtualTableCell(lineDuration(5))), 12),
@@ -159,10 +194,18 @@ public class SegmentStoreTableDataProviderTest {
         assertEquals(expectedModel, currentModel);
     }
 
+    /**
+     * Test the performance and efficiency of the fetch method of the provider
+     * by requesting a segment with a big rank in the segment store.
+     *
+     * @throws InterruptedException
+     *             Exception thrown if test takes longer than 200ms.
+     */
+    @SuppressWarnings("null")
     @Test(timeout = 200)
     public void testDataProviderFetchLineTimeOut() throws InterruptedException {
         VirtualTableQueryFilter queryFilter = new VirtualTableQueryFilter(Collections.emptyList(), 3200, 5);
-        List<SegmentStoreTableLine> expectedData = Arrays.asList(
+        List<@NonNull SegmentStoreTableLine> expectedData = Arrays.asList(
                 new SegmentStoreTableLine(Arrays.asList(new VirtualTableCell(lineTime(3199)), new VirtualTableCell(lineTime(3200)), new VirtualTableCell(lineDuration(1))), 3200),
                 new SegmentStoreTableLine(Arrays.asList(new VirtualTableCell(lineTime(3199)), new VirtualTableCell(lineTime(3201)), new VirtualTableCell(lineDuration(2))), 3201),
                 new SegmentStoreTableLine(Arrays.asList(new VirtualTableCell(lineTime(3199)), new VirtualTableCell(lineTime(3202)), new VirtualTableCell(lineDuration(3))), 3202),
@@ -175,12 +218,17 @@ public class SegmentStoreTableDataProviderTest {
         assertEquals(expectedModel, currentModel);
     }
 
-    // a test to make sure it can fetch from an index that corresponds to our
-    // step
+    /**
+     * Test lines returned by the provider.
+     *
+     * @throws InterruptedException
+     *             Exception thrown if test takes longer than 200ms.
+     */
+    @SuppressWarnings("null")
     @Test(timeout = 200)
     public void testDataProviderFetchLineCornerIndex() throws InterruptedException {
         VirtualTableQueryFilter queryFilter = new VirtualTableQueryFilter(Collections.emptyList(), 1000, 5);
-        List<SegmentStoreTableLine> expectedData = Arrays.asList(
+        List<@NonNull SegmentStoreTableLine> expectedData = Arrays.asList(
                 new SegmentStoreTableLine(Arrays.asList(new VirtualTableCell(lineTime(994)), new VirtualTableCell(lineTime(1000)), new VirtualTableCell(lineDuration(6))), 1000),
                 new SegmentStoreTableLine(Arrays.asList(new VirtualTableCell(lineTime(1001)), new VirtualTableCell(lineTime(1001)), new VirtualTableCell(lineDuration(0))), 1001),
                 new SegmentStoreTableLine(Arrays.asList(new VirtualTableCell(lineTime(1001)), new VirtualTableCell(lineTime(1002)), new VirtualTableCell(lineDuration(1))), 1002),
@@ -193,19 +241,44 @@ public class SegmentStoreTableDataProviderTest {
         assertEquals(expectedModel, currentModel);
     }
 
-    /*
-     * This test test the case if we went beyond the endtime stored in the index
-     * To test this case, the count of the query must be big ex 2000 so in this
-     * way there will be some missing segments because segment number 1999 have
-     * a start time of 1998 that doesn't intersect with end time 999
+    /**
+     * Test lines returned by the provider starting from a given index and with
+     * a search filter applied.
      */
+    @SuppressWarnings("null")
+    @Test
+    public void testDataProviderFetchLineWithSearch() {
+        VirtualTableQueryFilter queryFilter = new VirtualTableQueryFilter(Collections.emptyList(), 0, 5);
+        Map<String, Object> fetchParameters = FetchParametersUtils.virtualTableQueryToMap(queryFilter);
+        Map<Long, String> searchMap = new HashMap<>();
+        searchMap.put(fColumns.get(START_TIME_COLUMN_NAME), lineTime(7000));
+        fetchParameters.put(TABLE_SEARCH_EXPRESSION_KEY, searchMap);
+        fetchParameters.put(TABLE_SEARCH_DIRECTION_KEY, Direction.NEXT);
+        List<@NonNull SegmentStoreTableLine> expectedData = Arrays.asList(
+                new SegmentStoreTableLine(Arrays.asList(new VirtualTableCell(lineTime(7000)), new VirtualTableCell(lineTime(7000)), new VirtualTableCell(lineDuration(0))), 7000),
+                new SegmentStoreTableLine(Arrays.asList(new VirtualTableCell(lineTime(7000)), new VirtualTableCell(lineTime(7001)), new VirtualTableCell(lineDuration(1))), 7001),
+                new SegmentStoreTableLine(Arrays.asList(new VirtualTableCell(lineTime(7000)), new VirtualTableCell(lineTime(7002)), new VirtualTableCell(lineDuration(2))), 7002),
+                new SegmentStoreTableLine(Arrays.asList(new VirtualTableCell(lineTime(7000)), new VirtualTableCell(lineTime(7003)), new VirtualTableCell(lineDuration(3))), 7003),
+                new SegmentStoreTableLine(Arrays.asList(new VirtualTableCell(lineTime(7000)), new VirtualTableCell(lineTime(7004)), new VirtualTableCell(lineDuration(4))), 7004));
+        expectedData.forEach(sl -> sl.setActiveProperties(CoreFilterProperty.HIGHLIGHT));
+        TmfModelResponse<ITmfVirtualTableModel<@NonNull SegmentStoreTableLine>> response = fDataProvider.fetchLines(fetchParameters, null);
+        ITmfVirtualTableModel<@NonNull SegmentStoreTableLine> currentModel = response.getModel();
+        assertNotNull(currentModel);
+        ITmfVirtualTableModel<@NonNull SegmentStoreTableLine> expectedModel = new TmfVirtualTableModel<>(new ArrayList<>(fColumns.values()), expectedData, 7000, 65535);
+        assertEquals(expectedModel, currentModel);
+    }
+
+    /**
+     * This test test the case if we went beyond the end time stored in the index
+     */
+    @SuppressWarnings("null")
     @Test
     public void testDataProviderFetchLineCrossIndexes() {
         final int count = 2000;
-        int previousStartTime = 0;
-        List<SegmentStoreTableLine> expectedData = new ArrayList<>();
+        long previousStartTime = 0;
+        List<@NonNull SegmentStoreTableLine> expectedData = new ArrayList<>();
         VirtualTableQueryFilter queryFilter = new VirtualTableQueryFilter(Collections.emptyList(), 0, count);
-        for (int i = 0; i < count; i++) {
+        for (long i = 0; i < count; i++) {
             if (i % 7 == 0) {
                 previousStartTime = i;
             }
