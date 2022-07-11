@@ -86,6 +86,12 @@ public class DataProviderManagerTest {
                 .setId("org.eclipse.tracecompass.analysis.timing.core.segmentstore.SegmentStoreTableDataProvider:lttng.analysis.futex");
         EXPECTED_KERNEL_DP_DESCRIPTORS.add(builder.build());
         builder = new DataProviderDescriptor.Builder();
+        builder.setName("Futex Contention Analysis - Function Density")
+                .setDescription("Show function density provided by Analysis module: Futex Contention Analysis")
+                .setProviderType(ProviderType.TREE_TIME_XY)
+                .setId("org.eclipse.tracecompass.internal.analysis.timing.core.segmentstore.SegmentStoreDensityDataProvider:lttng.analysis.futex");
+        EXPECTED_KERNEL_DP_DESCRIPTORS.add(builder.build());
+        builder = new DataProviderDescriptor.Builder();
         builder.setName("Futex Contention Analysis - Latency vs Time")
                 .setDescription("Show latencies provided by Analysis module: Futex Contention Analysis")
                 .setProviderType(ProviderType.TREE_TIME_XY)
@@ -108,6 +114,12 @@ public class DataProviderManagerTest {
                 .setDescription("Show latency table provided by Analysis module: IRQ Analysis")
                 .setProviderType(ProviderType.TABLE)
                 .setId("org.eclipse.tracecompass.analysis.timing.core.segmentstore.SegmentStoreTableDataProvider:lttng.analysis.irq");
+        EXPECTED_KERNEL_DP_DESCRIPTORS.add(builder.build());
+        builder = new DataProviderDescriptor.Builder();
+        builder.setName("IRQ Analysis - Function Density")
+                .setDescription("Show function density provided by Analysis module: IRQ Analysis")
+                .setProviderType(ProviderType.TREE_TIME_XY)
+                .setId("org.eclipse.tracecompass.internal.analysis.timing.core.segmentstore.SegmentStoreDensityDataProvider:lttng.analysis.irq");
         EXPECTED_KERNEL_DP_DESCRIPTORS.add(builder.build());
         builder = new DataProviderDescriptor.Builder();
         builder.setName("IRQ Analysis - Latency vs Time")
@@ -138,6 +150,12 @@ public class DataProviderManagerTest {
                 .setDescription("Show latency table provided by Analysis module: System Call Latency")
                 .setProviderType(ProviderType.TABLE)
                 .setId("org.eclipse.tracecompass.analysis.timing.core.segmentstore.SegmentStoreTableDataProvider:org.eclipse.tracecompass.analysis.os.linux.latency.syscall");
+        EXPECTED_KERNEL_DP_DESCRIPTORS.add(builder.build());
+        builder = new DataProviderDescriptor.Builder();
+        builder.setName("System Call Latency - Function Density")
+                .setDescription("Show function density provided by Analysis module: System Call Latency")
+                .setProviderType(ProviderType.TREE_TIME_XY)
+                .setId("org.eclipse.tracecompass.internal.analysis.timing.core.segmentstore.SegmentStoreDensityDataProvider:org.eclipse.tracecompass.analysis.os.linux.latency.syscall");
         EXPECTED_KERNEL_DP_DESCRIPTORS.add(builder.build());
         builder = new DataProviderDescriptor.Builder();
         builder.setName("System Call Latency - Latency vs Time")
@@ -188,6 +206,12 @@ public class DataProviderManagerTest {
                 .setDescription("Show latency table provided by Analysis module: LTTng-UST CallStack")
                 .setProviderType(ProviderType.TABLE)
                 .setId("org.eclipse.tracecompass.analysis.timing.core.segmentstore.SegmentStoreTableDataProvider:org.eclipse.linuxtools.lttng2.ust.analysis.callstack");
+        EXPECTED_UST_DP_DESCRIPTORS.add(builder.build());
+        builder = new DataProviderDescriptor.Builder();
+        builder.setName("LTTng-UST CallStack - Function Density")
+                .setDescription("Show function density provided by Analysis module: LTTng-UST CallStack")
+                .setProviderType(ProviderType.TREE_TIME_XY)
+                .setId("org.eclipse.tracecompass.internal.analysis.timing.core.segmentstore.SegmentStoreDensityDataProvider:org.eclipse.linuxtools.lttng2.ust.analysis.callstack");
         EXPECTED_UST_DP_DESCRIPTORS.add(builder.build());
         builder = new DataProviderDescriptor.Builder();
         builder.setName("LTTng-UST CallStack - Latency vs Time")

@@ -88,6 +88,29 @@ public class StubSegmentStoreProvider extends AbstractSegmentStoreAnalysisModule
         fPreFixture = builder.build();
     }
 
+    /**
+     * Constructor to initialize segments
+     *
+     * @param nullSegments
+     *            : to decide on null or not null segments
+     */
+    public StubSegmentStoreProvider(boolean nullSegments) {
+        ImmutableList.Builder<@NonNull ISegment> builder = new Builder<>();
+        if (nullSegments) {
+            fPreFixture = builder.build();
+        } else {
+            int previousStartTime = 0;
+            for (int i = 0; i < SIZE; i++) {
+                if (i % 7 == 0) {
+                    previousStartTime = i;
+                }
+                ISegment segment = new BasicSegment(previousStartTime, i);
+                builder.add(segment);
+            }
+            fPreFixture = builder.build();
+        }
+    }
+
     @Override
     protected boolean buildAnalysisSegments(@NonNull ISegmentStore<@NonNull ISegment> segmentStore, @NonNull IProgressMonitor monitor) throws TmfAnalysisException {
         return segmentStore.addAll(fPreFixture);

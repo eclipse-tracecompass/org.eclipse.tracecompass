@@ -139,6 +139,16 @@ public class Messages extends NLS {
      */
     public static @Nullable String SegmentStoreTableDataProvider_description;
 
+    /**
+     * Segment store density title
+     */
+    public static @Nullable String SegmentStoreDensityDataProvider_title;
+
+    /**
+     * Segment store density total
+     */
+    public static @Nullable String SegmentStoreDensity_TotalLabel;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, Messages.class);
