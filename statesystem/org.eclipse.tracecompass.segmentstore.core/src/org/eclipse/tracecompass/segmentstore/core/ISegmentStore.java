@@ -150,7 +150,14 @@ public interface ISegmentStore<E extends ISegment> extends Collection<E> {
      * @since 3.0
      */
     default List<E> getIntersectingElements(long start, long end, Comparator<ISegment> order, Predicate<ISegment> filter) {
-        Iterable<E> segments = getIntersectingElements(start, end, order);
+        long startTime = start;
+        long endTime = end;
+        if(start > end) {
+            long tmp = endTime;
+            endTime = startTime;
+            startTime = tmp;
+        }
+        Iterable<E> segments = getIntersectingElements(startTime, endTime, order);
         List ret;
         long i = 0;
         for (E segment : segments) {
@@ -161,7 +168,6 @@ public interface ISegmentStore<E extends ISegment> extends Collection<E> {
         }
         if (segments instanceof ArrayList<?>) {
             ret = ((ArrayList) segments).subList((int) i, ((ArrayList) segments).size());
-            ret.stream().filter(filter);
         } else {
             List tmp = Lists.newArrayList(segments);
             ret = tmp.subList((int) i, tmp.size());

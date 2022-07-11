@@ -60,6 +60,8 @@ import org.eclipse.tracecompass.tmf.core.model.tree.TmfTreeModel;
 import org.eclipse.tracecompass.tmf.core.response.ITmfResponse;
 import org.eclipse.tracecompass.tmf.core.response.TmfModelResponse;
 import org.eclipse.tracecompass.tmf.core.segment.ISegmentAspect;
+import org.eclipse.tracecompass.tmf.core.segment.SegmentDurationAspect;
+import org.eclipse.tracecompass.tmf.core.segment.SegmentEndTimeAspect;
 import org.eclipse.tracecompass.tmf.core.timestamp.TmfTimestamp;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
 
@@ -83,10 +85,12 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTraceDataProvider 
     private static class SegmentStoreIndex {
         private long fCounter;
         private long fStartTimestamp;
+        private long fLength;
 
-        public SegmentStoreIndex(long startTimeStamp, long counter) {
+        public SegmentStoreIndex(long startTimeStamp, long counter, long length) {
             fStartTimestamp = startTimeStamp;
             fCounter = counter;
+            fLength = length;
         }
 
         public long getStartTimestamp() {
@@ -95,6 +99,10 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTraceDataProvider 
 
         public long getCounter() {
             return fCounter;
+        }
+
+        public long getLength() {
+            return fLength;
         }
     }
 
@@ -108,26 +116,41 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTraceDataProvider 
     private static class SegmentPredicate implements Predicate<ISegment> {
         private final long fStartTime;
         private long fCount;
+        private long fLength;
+        private boolean fDurationComparator;
 
-        public SegmentPredicate(SegmentStoreIndex segmentIndex) {
+        public SegmentPredicate(SegmentStoreIndex segmentIndex, String aspectName) {
             fStartTime = segmentIndex.getStartTimestamp();
             fCount = segmentIndex.getCounter();
+            fLength = segmentIndex.getLength();
+            fDurationComparator = aspectName.equals(SegmentDurationAspect.SEGMENT_DURATION_ASPECT.getName());
         }
 
         @Override
         public boolean test(ISegment segment) {
-            if (segment.getStart() > fStartTime) {
-                return true;
-            }
-            if (segment.getStart() == fStartTime) {
-                if (fCount == 0) {
+            if (isDurationValid(segment.getLength())) {
+                if (segment.getStart() > fStartTime) {
                     return true;
                 }
-                fCount--;
+                if (segment.getStart() == fStartTime) {
+                    if (fCount == 0) {
+                        return true;
+                    }
+                    fCount--;
+                }
             }
             return false;
         }
 
+        private boolean isDurationValid(long segmentLength) {
+            if (!fDurationComparator) {
+                return true;
+            }
+            if (segmentLength == fLength) {
+                return true;
+            }
+            return false;
+        }
     }
 
     /**
@@ -162,6 +185,44 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTraceDataProvider 
     }
 
     /**
+     * A wrapper class to encapsulate the indexes with the comparator that was
+     * used to create the indexes.
+     *
+     * @author Kyrollos Bekhet
+     *
+     */
+    private class SegmentIndexesComparatorWrapper {
+        private List<SegmentStoreIndex> fIndexes;
+        private Comparator<ISegment> fComparator;
+        private String fAspectName;
+
+        @SuppressWarnings("null")
+        public SegmentIndexesComparatorWrapper() {
+            fComparator = SegmentComparators.INTERVAL_START_COMPARATOR.thenComparing(Comparator.comparingLong(ISegment::getLength));
+            fIndexes = new ArrayList<>();
+            fAspectName = StringUtils.EMPTY;
+        }
+
+        public SegmentIndexesComparatorWrapper(List<SegmentStoreIndex> indexes, Comparator<ISegment> comparator, String aspectName) {
+            fIndexes = indexes;
+            fComparator = comparator;
+            fAspectName = aspectName;
+        }
+
+        public List<SegmentStoreIndex> getIndexes() {
+            return fIndexes;
+        }
+
+        public Comparator<ISegment> getComparator() {
+            return fComparator;
+        }
+
+        public String getAspectName() {
+            return fAspectName;
+        }
+    }
+
+    /**
      * The id of the data provider
      */
     public static final String ID = "org.eclipse.tracecompass.analysis.timing.core.segmentstore.SegmentStoreTableDataProvider"; //$NON-NLS-1$
@@ -172,12 +233,14 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTraceDataProvider 
     private static final Logger LOGGER = TraceCompassLog.getLogger(SegmentStoreTableDataProvider.class);
     private static final String TABLE_SEARCH_EXPRESSION_KEY = "table_search_expressions"; //$NON-NLS-1$
     private static final String TABLE_SEARCH_DIRECTION_KEY = "table_search_direction"; //$NON-NLS-1$
+    private static final String TABLE_COMPARATOR_EXPRESSION_KEY = "table_comparator_expression"; //$NON-NLS-1$
 
-    private final Object fLock = new Object();
+    private Map<Long, SegmentIndexesComparatorWrapper> fAllIndexes;
+    private SegmentIndexesComparatorWrapper fDefaultWrapper;
     private final String fId;
-    private final Comparator<ISegment> fComparator;
-    private List<SegmentStoreIndex> fIndexes = new ArrayList<>();
     private @Nullable ISegmentStoreProvider fSegmentProvider = null;
+    private boolean fIsFirstAspect;
+    private final int fSegmentStoreSize;
 
     /**
      * Constructor
@@ -191,22 +254,21 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTraceDataProvider 
      * @param analysisId
      *            The analysis identifier.
      */
-    @SuppressWarnings("null")
     public SegmentStoreTableDataProvider(ITmfTrace trace, ISegmentStoreProvider segmentProvider, String analysisId) {
         super(trace);
         TraceCompassLogUtils.traceObjectCreation(LOGGER, Level.FINE, this);
         fId = analysisId;
-        fComparator = SegmentComparators.INTERVAL_START_COMPARATOR.thenComparing(Comparator.comparingLong(ISegment::getLength));
-        ISegmentStore<ISegment> segments = segmentProvider.getSegmentStore();
-        if (segments == null && segmentProvider instanceof IAnalysisModule) {
+        fIsFirstAspect = true;
+        fAllIndexes = new HashMap<>();
+        fDefaultWrapper = new SegmentIndexesComparatorWrapper();
+        ISegmentStore<ISegment> segmentStore = segmentProvider.getSegmentStore();
+        if (segmentStore == null && segmentProvider instanceof IAnalysisModule) {
             ((IAnalysisModule) segmentProvider).schedule();
             ((IAnalysisModule) segmentProvider).waitForCompletion();
+            segmentStore = segmentProvider.getSegmentStore();
         }
         fSegmentProvider = segmentProvider;
-        segments = segmentProvider.getSegmentStore();
-        if (segments != null) {
-            buildIndex(segments);
-        }
+        fSegmentStoreSize = segmentStore != null? segmentStore.size() : 0;
     }
 
     @Override
@@ -217,20 +279,38 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTraceDataProvider 
     /**
      * Build the indexes which will act like checkpoints for the data provider.
      *
-     * @param segmentProvider
-     *            The segment provider to use.
+     * @param id
+     *            the id of the aspect in the {@link fAspectToIdMap}.
+     * @param comparator
+     *            The comparator used to build the indexes array
+     * @param aspectName
+     *            The name of the aspect.
      */
-    private void buildIndex(ISegmentStore<ISegment> segments) {
-        TraceCompassLogUtils.traceAsyncStart(LOGGER, Level.FINE, "SegmentStoreTableDataProvider#buildIndex", fId, 0); //$NON-NLS-1$
-        synchronized (fLock) {
-            try (FlowScopeLog scope = new FlowScopeLogBuilder(LOGGER, Level.FINE, "SegmentStoreTableDataProvider#buildIndex.buildingIndexes").build()) { //$NON-NLS-1$
-                TraceCompassLogUtils.traceObjectCreation(LOGGER, Level.FINE, fLock);
-                Iterable<ISegment> sortedSegmentStore = segments.iterator(fComparator);
-                fIndexes = getIndexes(sortedSegmentStore);
-            } catch (Exception ex) {
-                TraceCompassLogUtils.traceInstant(LOGGER, Level.SEVERE, "error build index", ex.getMessage()); //$NON-NLS-1$
-            } finally {
-                TraceCompassLogUtils.traceObjectDestruction(LOGGER, Level.FINE, fLock);
+    private void buildIndex(long id, Comparator<ISegment> comparator, String aspectName) {
+        if (fAllIndexes.containsKey(id)) {
+            return;
+        }
+        if (fSegmentProvider != null) {
+            ISegmentStore<ISegment> segStore = fSegmentProvider.getSegmentStore();
+            if (segStore != null) {
+                synchronized (fAllIndexes) {
+                    try (FlowScopeLog scope = new FlowScopeLogBuilder(LOGGER, Level.FINE, "SegmentStoreTableDataProvider#buildIndex.buildingIndexes").build()) { //$NON-NLS-1$
+                        TraceCompassLogUtils.traceObjectCreation(LOGGER, Level.FINE, fAllIndexes);
+                        Iterable<ISegment> sortedSegmentStore = segStore.iterator(comparator);
+                        List<SegmentStoreIndex> indexes = getIndexes(sortedSegmentStore);
+                        if (fIsFirstAspect) {
+                            fDefaultWrapper = new SegmentIndexesComparatorWrapper(indexes, comparator, aspectName);
+                            fIsFirstAspect = false;
+                            fAllIndexes.put(id, fDefaultWrapper);
+                        } else {
+                            fAllIndexes.put(id, new SegmentIndexesComparatorWrapper(indexes, comparator, aspectName));
+                        }
+                    } catch (Exception ex) {
+                        TraceCompassLogUtils.traceInstant(LOGGER, Level.SEVERE, "error build index", ex.getMessage()); //$NON-NLS-1$
+                    } finally {
+                        TraceCompassLogUtils.traceObjectDestruction(LOGGER, Level.FINE, fAllIndexes);
+                    }
+                }
             }
         }
     }
@@ -248,7 +328,7 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTraceDataProvider 
                 counter = 0;
             }
             if (i % STEP == 0) {
-                indexes.add(new SegmentStoreIndex(segment.getStart(), counter));
+                indexes.add(new SegmentStoreIndex(segment.getStart(), counter, segment.getLength()));
             }
             i++;
         }
@@ -260,12 +340,20 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTraceDataProvider 
         return fId;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public TmfModelResponse<TmfTreeModel<TmfTreeDataModel>> fetchTree(Map<String, Object> fetchParameters, @Nullable IProgressMonitor monitor) {
         List<TmfTreeDataModel> model = new ArrayList<>();
         for (final ISegmentAspect aspect : ISegmentStoreProvider.getBaseSegmentAspects()) {
             synchronized (fAspectToIdMap) {
                 long id = fAspectToIdMap.computeIfAbsent(aspect, a -> fAtomicLong.getAndIncrement());
+                Comparator<ISegment> comparator = (Comparator<ISegment>) aspect.getComparator();
+                if (comparator != null && aspect.getName().equals(SegmentEndTimeAspect.SEGMENT_END_TIME_ASPECT.getName())) {
+                    comparator = comparator.reversed();
+                }
+                if (comparator != null) {
+                    buildIndex(id, comparator, aspect.getName());
+                }
                 model.add(new TmfTreeDataModel(id, -1, Collections.singletonList(aspect.getName())));
             }
         }
@@ -273,6 +361,10 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTraceDataProvider 
             synchronized (fAspectToIdMap) {
                 for (final ISegmentAspect aspect : fSegmentProvider.getSegmentAspects()) {
                     long id = fAspectToIdMap.computeIfAbsent(aspect, a -> fAtomicLong.getAndIncrement());
+                    Comparator<ISegment> comparator = (Comparator<ISegment>) aspect.getComparator();
+                    if (comparator != null) {
+                        buildIndex(id, comparator, aspect.getName());
+                    }
                     model.add(new TmfTreeDataModel(id, -1, Collections.singletonList(aspect.getName())));
                 }
             }
@@ -288,6 +380,7 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTraceDataProvider 
         if (queryFilter == null) {
             return new TmfModelResponse<>(null, ITmfResponse.Status.FAILED, CommonStatusMessage.INCORRECT_QUERY_PARAMETERS);
         }
+        SegmentIndexesComparatorWrapper indexesComparatorWrapper = getIndexesComparatorOrDefault(fetchParameters);
         Map<Long, ISegmentAspect> aspects = getAspectsFromColumnId(queryFilter.getColumnsId());
         if (aspects.isEmpty()) {
             return new TmfModelResponse<>(new TmfVirtualTableModel<>(Collections.emptyList(), Collections.emptyList(), queryFilter.getIndex(), 0), ITmfResponse.Status.COMPLETED, CommonStatusMessage.COMPLETED);
@@ -299,17 +392,17 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTraceDataProvider 
                 if (segStore.isEmpty()) {
                     return new TmfModelResponse<>(new TmfVirtualTableModel<>(columnIds, Collections.emptyList(), queryFilter.getIndex(), 0), ITmfResponse.Status.COMPLETED, CommonStatusMessage.COMPLETED);
                 }
-                if (queryFilter.getIndex() > segStore.size()) {
+                if (queryFilter.getIndex() >= fSegmentStoreSize) {
                     return new TmfModelResponse<>(null, ITmfResponse.Status.COMPLETED, CommonStatusMessage.COMPLETED);
                 }
-                synchronized (fLock) {
+                synchronized (fAllIndexes) {
                     try (FlowScopeLog scope = new FlowScopeLogBuilder(LOGGER, Level.FINE, "SegmentStoreTableDataProvider#fetchLines").build()) { //$NON-NLS-1$
-                        TraceCompassLogUtils.traceObjectCreation(LOGGER, Level.FINE, fLock);
-                        return extractRequestedLines(queryFilter, fetchParameters, segStore, aspects);
+                        TraceCompassLogUtils.traceObjectCreation(LOGGER, Level.FINE, fAllIndexes);
+                        return extractRequestedLines(queryFilter, fetchParameters, segStore, aspects, indexesComparatorWrapper);
                     } catch (Exception ex) {
                         TraceCompassLogUtils.traceInstant(LOGGER, Level.SEVERE, "error fetching lines ", ex.getMessage()); //$NON-NLS-1$
                     } finally {
-                        TraceCompassLogUtils.traceObjectDestruction(LOGGER, Level.FINE, fLock);
+                        TraceCompassLogUtils.traceObjectDestruction(LOGGER, Level.FINE, fAllIndexes);
                     }
                 }
             }
@@ -317,18 +410,19 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTraceDataProvider 
         return new TmfModelResponse<>(null, ITmfResponse.Status.FAILED, CommonStatusMessage.INCORRECT_QUERY_PARAMETERS);
     }
 
-    private TmfModelResponse<ITmfVirtualTableModel<SegmentStoreTableLine>> extractRequestedLines(VirtualTableQueryFilter queryFilter, Map<String, Object> fetchParameters, ISegmentStore<ISegment> segmentStore, Map<Long, ISegmentAspect> aspects) {
+    private static TmfModelResponse<ITmfVirtualTableModel<SegmentStoreTableLine>> extractRequestedLines(VirtualTableQueryFilter queryFilter, Map<String, Object> fetchParameters, ISegmentStore<ISegment> segmentStore, Map<Long, ISegmentAspect> aspects,
+            SegmentIndexesComparatorWrapper indexesComparatorWrapper) {
         VirtualTableQueryFilter localQueryFilter = queryFilter;
         @Nullable Predicate<ISegment> searchFilter = generateFilter(fetchParameters);
         List<Long> columnIds = new ArrayList<>(aspects.keySet());
         List<SegmentStoreTableLine> lines = new ArrayList<>();
         int startIndexRank = (int) (localQueryFilter.getIndex() / STEP);
-        int actualStartQueryIndex = (int) (queryFilter.getIndex() % STEP);
-        SegmentStoreIndex segIndex = fIndexes.get(startIndexRank);
+        int actualStartQueryIndex = (int) (localQueryFilter.getIndex() % STEP);
+        SegmentStoreIndex segIndex = indexesComparatorWrapper.getIndexes().get(startIndexRank);
         long start = segIndex.getStartTimestamp();
-        SegmentPredicate filter = new SegmentPredicate(segIndex);
+        SegmentPredicate filter = new SegmentPredicate(segIndex, indexesComparatorWrapper.getAspectName());
         int endIndexRank = (int) ((localQueryFilter.getIndex() + localQueryFilter.getCount() + STEP - 1) / STEP);
-        long end = getEndTimestamp(endIndexRank);
+        long end = getEndTimestamp(endIndexRank, indexesComparatorWrapper);
         /*
          * Search for the next or previous segment starting from the given
          * segment index
@@ -338,9 +432,9 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTraceDataProvider 
             Direction direction = directionValue.equals(Direction.PREVIOUS.name()) ? Direction.PREVIOUS : Direction.NEXT;
             @Nullable WrappedSegment segment = null;
             if (direction == Direction.NEXT) {
-                segment = getNextWrappedSegmentMatching(searchFilter, queryFilter.getIndex(), segmentStore);
+                segment = getNextWrappedSegmentMatching(searchFilter, queryFilter.getIndex(), segmentStore, indexesComparatorWrapper);
             } else {
-                segment = getPreviousWrappedSegmentMatching(searchFilter, queryFilter.getIndex(), segmentStore);
+                segment = getPreviousWrappedSegmentMatching(searchFilter, queryFilter.getIndex(), segmentStore, indexesComparatorWrapper);
             }
             if (segment != null) {
                 lines.add(buildSegmentStoreTableLine(aspects, segment.getOriginalSegment(), segment.getRank(), searchFilter));
@@ -348,16 +442,16 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTraceDataProvider 
                 long nextSegmentRank = segment.getRank() + 1;
                 startIndexRank = (int) (nextSegmentRank / STEP);
                 actualStartQueryIndex = (int) (nextSegmentRank % STEP);
-                segIndex = fIndexes.get(startIndexRank);
+                segIndex = indexesComparatorWrapper.getIndexes().get(startIndexRank);
                 start = segIndex.getStartTimestamp();
                 endIndexRank = (int) ((nextSegmentRank + localQueryFilter.getCount() + STEP - 1) / STEP);
-                end = getEndTimestamp(endIndexRank);
+                end = getEndTimestamp(endIndexRank, indexesComparatorWrapper);
             }
             if ((queryFilter.getCount() == 1) || (segment == null)) {
                 return new TmfModelResponse<>(new TmfVirtualTableModel<>(columnIds, lines, localQueryFilter.getIndex(), segmentStore.size()), ITmfResponse.Status.COMPLETED, CommonStatusMessage.COMPLETED);
             }
         }
-        List<ISegment> newSegStore = segmentStore.getIntersectingElements(start, end, fComparator, filter);
+        List<ISegment> newSegStore = segmentStore.getIntersectingElements(start, end, indexesComparatorWrapper.getComparator(), filter);
         for (int i = actualStartQueryIndex; i < newSegStore.size(); i++) {
             if (queryFilter.getCount() == lines.size()) {
                 break;
@@ -367,6 +461,11 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTraceDataProvider 
             lines.add(newLine);
         }
         return new TmfModelResponse<>(new TmfVirtualTableModel<>(columnIds, lines, localQueryFilter.getIndex(), segmentStore.size()), ITmfResponse.Status.COMPLETED, CommonStatusMessage.COMPLETED);
+    }
+
+    private SegmentIndexesComparatorWrapper getIndexesComparatorOrDefault(Map<String, Object> fetchParameters) {
+        @Nullable Long key = extractColumnId(fetchParameters.get(TABLE_COMPARATOR_EXPRESSION_KEY));
+        return fAllIndexes.getOrDefault(key, fDefaultWrapper);
     }
 
     /**
@@ -383,15 +482,16 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTraceDataProvider 
      * @return A {@link WrappedSegment} that contains the matching next segment
      *         found after a given index.
      */
-    private @Nullable WrappedSegment getNextWrappedSegmentMatching(Predicate<ISegment> searchFilter, long startQueryIndex, ISegmentStore<ISegment> segmentStore) {
+    private static @Nullable WrappedSegment getNextWrappedSegmentMatching(Predicate<ISegment> searchFilter, long startQueryIndex, ISegmentStore<ISegment> segmentStore, SegmentIndexesComparatorWrapper indexesComparatorWrapper) {
         int startTimeIndexRank = (int) (startQueryIndex / STEP);
         int actualStartQueryIndex = (int) (startQueryIndex % STEP);
         int endTimeIndexRank = startTimeIndexRank + 1;
-        while (startTimeIndexRank < fIndexes.size()) {
-            SegmentStoreIndex segIndex = fIndexes.get(startTimeIndexRank);
-            SegmentPredicate filter = new SegmentPredicate(segIndex);
-            long end = getEndTimestamp(endTimeIndexRank);
-            List<ISegment> segments = segmentStore.getIntersectingElements(segIndex.getStartTimestamp(), end, fComparator, filter);
+        List<SegmentStoreIndex> indexes = indexesComparatorWrapper.getIndexes();
+        while (startTimeIndexRank < indexes.size()) {
+            SegmentStoreIndex segIndex = indexes.get(startTimeIndexRank);
+            SegmentPredicate filter = new SegmentPredicate(segIndex, indexesComparatorWrapper.getAspectName());
+            long end = getEndTimestamp(endTimeIndexRank, indexesComparatorWrapper);
+            List<ISegment> segments = segmentStore.getIntersectingElements(segIndex.getStartTimestamp(), end, indexesComparatorWrapper.getComparator(), filter);
             for (int i = actualStartQueryIndex; i < segments.size(); i++) {
                 ISegment segment = segments.get(i);
                 if (searchFilter.test(segment)) {
@@ -420,15 +520,16 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTraceDataProvider 
      * @return A {@link WrappedSegment} that contains the matching previous
      *         segment found before a given index.
      */
-    private @Nullable WrappedSegment getPreviousWrappedSegmentMatching(Predicate<ISegment> searchFilter, long endQueryIndex, ISegmentStore<ISegment> segmentStore) {
+
+    private static @Nullable WrappedSegment getPreviousWrappedSegmentMatching(Predicate<ISegment> searchFilter, long endQueryIndex, ISegmentStore<ISegment> segmentStore, SegmentIndexesComparatorWrapper indexesWrapper) {
         int actualEndQueryIndex = (int) (endQueryIndex % STEP);
         int startTimeIndexRank = (int) (endQueryIndex / STEP);
         int endTimeIndexRank = startTimeIndexRank + 1;
         while (endTimeIndexRank > 0) {
-            SegmentStoreIndex segIndex = fIndexes.get(startTimeIndexRank);
-            SegmentPredicate filter = new SegmentPredicate(segIndex);
-            long end = getEndTimestamp(endTimeIndexRank);
-            List<ISegment> segments = segmentStore.getIntersectingElements(segIndex.getStartTimestamp(), end, fComparator, filter);
+            SegmentStoreIndex segIndex = indexesWrapper.getIndexes().get(startTimeIndexRank);
+            SegmentPredicate filter = new SegmentPredicate(segIndex, indexesWrapper.getAspectName());
+            long end = getEndTimestamp(endTimeIndexRank, indexesWrapper);
+            List<ISegment> segments = segmentStore.getIntersectingElements(segIndex.getStartTimestamp(), end, indexesWrapper.getComparator(), filter);
             for (int i = Math.min(segments.size() - 1, actualEndQueryIndex); i >= 0; i--) {
                 if (searchFilter.test(segments.get(i))) {
                     long rank = i + ((long) startTimeIndexRank * STEP);
@@ -600,11 +701,16 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTraceDataProvider 
         return aspectParsed;
     }
 
-    private long getEndTimestamp(int index) {
-        if (index >= fIndexes.size()) {
+    private static long getEndTimestamp(int position, SegmentIndexesComparatorWrapper indexComparatorWrapper) {
+        List<SegmentStoreIndex> indexes = indexComparatorWrapper.getIndexes();
+        if (position >= indexes.size()) {
+            boolean isEndTimeComparatorUsed = indexComparatorWrapper.getAspectName().equals(SegmentEndTimeAspect.SEGMENT_END_TIME_ASPECT.getName());
+            if (isEndTimeComparatorUsed) {
+                return 0;
+            }
             return Long.MAX_VALUE;
         }
-        return fIndexes.get(index).getStartTimestamp();
+        return indexes.get(position).getStartTimestamp();
     }
 
 }
