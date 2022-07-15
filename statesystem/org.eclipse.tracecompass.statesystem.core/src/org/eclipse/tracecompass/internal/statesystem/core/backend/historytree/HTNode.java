@@ -32,8 +32,10 @@ import java.util.logging.Logger;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.tracecompass.common.core.log.TraceCompassLog;
 import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils;
+import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils.ScopeLog;
 import org.eclipse.tracecompass.internal.provisional.datastore.core.condition.IntegerRangeCondition;
 import org.eclipse.tracecompass.internal.provisional.datastore.core.condition.TimeRangeCondition;
+import org.eclipse.tracecompass.internal.statesystem.core.backend.historytree.IHistoryTree.IHTNodeFactory;
 import org.eclipse.tracecompass.statesystem.core.exceptions.TimeRangeException;
 import org.eclipse.tracecompass.statesystem.core.interval.ITmfStateInterval;
 
@@ -181,11 +183,20 @@ public abstract class HTNode {
 
     /**
      * Reader factory method. Build a Node object (of the right type) by reading
-     * a block in the file.
+     * a block in the file. The file channel access is not thread-safe. It is recommended
+     * for multi-threaded access to use the following flow instead.
+     *
+     * <pre>
+     * {@link #allocateNode(HTConfig)}
+     * Synchronized{
+     *  {@link #readToBuffer(FileChannel, int, long, ByteBuffer)}
+     * }
+     * {@link #parseNode(HTConfig, ByteBuffer, IHTNodeFactory)}
+     * </pre>
      *
      * @param config
      *            Configuration of the History Tree
-     * @param fc
+     * @param channel
      *            FileChannel to the history file, ALREADY SEEKED at the start
      *            of the node.
      * @param nodeFactory
@@ -194,78 +205,28 @@ public abstract class HTNode {
      * @throws IOException
      *             If there was an error reading from the file channel
      */
-    public static final @NonNull HTNode readNode(HTConfig config, FileChannel fc, IHistoryTree.IHTNodeFactory nodeFactory)
+    public static final @NonNull HTNode readNode(HTConfig config, FileChannel channel, IHistoryTree.IHTNodeFactory nodeFactory)
             throws IOException {
-        HTNode newNode = null;
 
-        ByteBuffer buffer = ByteBuffer.allocate(config.getBlockSize());
-        buffer.order(ByteOrder.LITTLE_ENDIAN);
-        buffer.clear();
-        int res = fc.read(buffer);
+        ByteBuffer buffer = allocateNode(config);
+        int res = channel.read(buffer);
         if (res != config.getBlockSize()) {
             throw new IOException("Expected " + config.getBlockSize() + " block size, but got " + res); //$NON-NLS-1$//$NON-NLS-2$
         }
         buffer.flip();
-
-        /* Read the common header part */
-        byte typeByte = buffer.get();
-        NodeType type = NodeType.fromByte(typeByte);
-        long start = buffer.getLong();
-        long end = buffer.getLong();
-        int min = buffer.getInt();
-        int max = buffer.getInt();
-        int seqNb = buffer.getInt();
-        int parentSeqNb = buffer.getInt();
-        int intervalCount = buffer.getInt();
-
-        /* Now the rest of the header depends on the node type */
-        switch (type) {
-        case CORE:
-            /* Core nodes */
-            newNode = nodeFactory.createCoreNode(config, seqNb, parentSeqNb, start);
-            newNode.readSpecificHeader(buffer);
-            break;
-
-        case LEAF:
-            /* Leaf nodes */
-            newNode = nodeFactory.createLeafNode(config, seqNb, parentSeqNb, start);
-            newNode.readSpecificHeader(buffer);
-            break;
-
-        default:
-            /* Unrecognized node type */
-            throw new IOException();
-        }
-
-        /*
-         * At this point, we should be done reading the header and 'buffer'
-         * should only have the intervals left
-         */
-        for (int i = 0; i < intervalCount; i++) {
-            HTInterval interval = HTInterval.readFrom(buffer, start);
-            newNode.fIntervals.add(interval);
-            newNode.fSizeOfIntervalSection += interval.getSizeOnDisk();
-        }
-
-        /* Assign the node's other information we have read previously */
-        newNode.fNodeEnd = end;
-        newNode.fMinQuark = min;
-        newNode.fMaxQuark = max;
-        newNode.fIsOnDisk = true;
-
-        return newNode;
+        return parseNode(config, buffer, nodeFactory);
     }
 
     /**
      * Write this node to the given file channel.
      *
-     * @param fc
+     * @param channel
      *            The file channel to write to (should be sought to be correct
      *            position)
      * @throws IOException
      *             If there was an error writing
      */
-    public final void writeSelf(FileChannel fc) throws IOException {
+    public final void writeSelf(FileChannel channel) throws IOException {
         /*
          * Yes, we are taking the *read* lock here, because we are reading the
          * information in the node to write it to disk.
@@ -274,9 +235,7 @@ public abstract class HTNode {
         try {
             final int blockSize = fConfig.getBlockSize();
 
-            ByteBuffer buffer = ByteBuffer.allocate(blockSize);
-            buffer.order(ByteOrder.LITTLE_ENDIAN);
-            buffer.clear();
+            ByteBuffer buffer = allocateNode(fConfig);
 
             /* Write the common header part */
             buffer.put(getNodeType().toByte());
@@ -307,7 +266,7 @@ public abstract class HTNode {
 
             /* Finally, write everything in the Buffer to disk */
             buffer.flip();
-            int res = fc.write(buffer);
+            int res = channel.write(buffer);
             if (res != blockSize) {
                 throw new IllegalStateException("Wrong size of block written: Actual: " + res + ", Expected: " + blockSize); //$NON-NLS-1$ //$NON-NLS-2$
             }
@@ -756,4 +715,104 @@ public abstract class HTNode {
      */
     protected abstract String toStringSpecific();
 
+    /**
+     * Allocate a node, get an empty buffer of the correct size
+     *
+     * @param config
+     *            the historyTree configuration
+     * @return the {@link ByteBuffer}, uninitialized
+     */
+    public static ByteBuffer allocateNode(HTConfig config) {
+        ByteBuffer buffer = ByteBuffer.allocate(config.getBlockSize());
+        buffer.order(ByteOrder.LITTLE_ENDIAN);
+        buffer.clear();
+        return buffer;
+    }
+
+    /**
+     * Read the data to a buffer. Note, the file channel access is not thread-safe.
+     *
+     * @param channel
+     *            The file channel to read from
+     * @param seqNb
+     *            the number of the sequence
+     * @param blockSize
+     *            the size of a block (fixed)
+     * @param buffer
+     *            the buffer to read to
+     * @return the position
+     * @throws IOException
+     *             If some other I/O error occurs
+     */
+    public static int readToBuffer(FileChannel channel, int seqNb, long blockSize, ByteBuffer buffer) throws IOException {
+        try (ScopeLog readNode = new ScopeLog(LOGGER, Level.FINEST, "HTNode#readToBuffer")) { //$NON-NLS-1$
+            IHistoryTree.seekFCToNodePos(channel, blockSize, seqNb);
+            return channel.read(buffer);
+        }
+    }
+
+    /**
+     * Parse a node in the buffer, make an HTNode so that
+     * {@link ITmfStateInterval}s may be read.
+     *
+     * @param config
+     *            The history tree configuration
+     * @param buffer
+     *            the buffer containing a node
+     * @param nodeFactory
+     *            the node factory (used for custom values)
+     * @return a Node full of {@link ITmfStateInterval}s
+     * @throws IOException
+     *             If some other I/O error occurs
+     */
+    public static @NonNull HTNode parseNode(HTConfig config, ByteBuffer buffer, IHTNodeFactory nodeFactory) throws IOException {
+        HTNode newNode = null;
+        /* Read the common header part */
+        byte typeByte = buffer.get();
+        NodeType type = NodeType.fromByte(typeByte);
+        long start = buffer.getLong();
+        long end = buffer.getLong();
+        int min = buffer.getInt();
+        int max = buffer.getInt();
+        int seqNb = buffer.getInt();
+        int parentSeqNb = buffer.getInt();
+        int intervalCount = buffer.getInt();
+
+        /* Now the rest of the header depends on the node type */
+        switch (type) {
+        case CORE:
+            /* Core nodes */
+            newNode = nodeFactory.createCoreNode(config, seqNb, parentSeqNb, start);
+            newNode.readSpecificHeader(buffer);
+            break;
+
+        case LEAF:
+            /* Leaf nodes */
+            newNode = nodeFactory.createLeafNode(config, seqNb, parentSeqNb, start);
+            newNode.readSpecificHeader(buffer);
+            break;
+
+        default:
+            /* Unrecognized node type */
+            throw new IOException();
+        }
+
+        /*
+         * At this point, we should be done reading the header and 'buffer'
+         * should only have the intervals left
+         */
+        for (int i = 0; i < intervalCount; i++) {
+            HTInterval interval = HTInterval.readFrom(buffer, start);
+            newNode.fIntervals.add(interval);
+            newNode.fSizeOfIntervalSection += interval.getSizeOnDisk();
+        }
+
+        /* Assign the node's other information we have read previously */
+        newNode.fNodeEnd = end;
+        newNode.fMinQuark = min;
+        newNode.fMaxQuark = max;
+        newNode.fIsOnDisk = true;
+
+        return newNode;
+    }
 }

@@ -18,6 +18,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.FileChannel;
 import java.nio.file.Files;
@@ -100,10 +101,19 @@ public class HT_IO {
 
             TraceCompassLogUtils.traceInstant(LOGGER, Level.FINEST, "Ht_Io:CacheMiss", "seqNum", seqNb); //$NON-NLS-1$ //$NON-NLS-2$
 
+            HTConfig config = io.fConfig;
+            /* Allocate buffer */
+            ByteBuffer buffer = HTNode.allocateNode(config);
+            /* read buffer */
+            int res = -1;
             synchronized (io) {
-                io.seekFCToNodePos(io.fFileChannelIn, seqNb);
-                return HTNode.readNode(io.fConfig, io.fFileChannelIn, key.fStateHistory.fNodeFactory);
+                res = HTNode.readToBuffer(io.fFileChannelIn, seqNb, config.getBlockSize(), buffer);
             }
+            if (res != config.getBlockSize()) {
+                throw new IOException("Expected " + config.getBlockSize() + " block size, but got " + res); //$NON-NLS-1$//$NON-NLS-2$
+            }
+            buffer.flip();
+            return HTNode.parseNode(config, buffer, key.fStateHistory.fNodeFactory);
         }
     }
 
@@ -258,7 +268,7 @@ public class HT_IO {
 
             /* Position ourselves at the start of the node and write it */
             synchronized (this) {
-                seekFCToNodePos(fFileChannelOut, seqNumber);
+                IHistoryTree.seekFCToNodePos(fFileChannelOut, fConfig.getBlockSize(), seqNumber);
                 node.writeSelf(fFileChannelOut);
             }
         } catch (IOException e) {
@@ -290,7 +300,7 @@ public class HT_IO {
              * Position ourselves at the start of the Mapping section in the
              * file (which is right after the Blocks)
              */
-            seekFCToNodePos(fFileChannelIn, nodeOffset);
+            IHistoryTree.seekFCToNodePos(fFileChannelIn, fConfig.getBlockSize(), nodeOffset);
         } catch (IOException e) {
             Activator.getDefault().logError(e.getMessage(), e);
         }
@@ -320,23 +330,6 @@ public class HT_IO {
             /* We didn't succeed in deleting the file */
             Activator.getDefault().logError("Failed to delete" + historyTreeFile.getName()); //$NON-NLS-1$
         }
-    }
-
-    /**
-     * Seek the given FileChannel to the position corresponding to the node that
-     * has seqNumber
-     *
-     * @param fc
-     *            the channel to seek
-     * @param seqNumber
-     *            the node sequence number to seek the channel to
-     * @throws IOException
-     *             If some other I/O error occurs
-     */
-    private void seekFCToNodePos(FileChannel fc, long seqNumber)
-            throws IOException {
-        fc.position(IHistoryTree.TREE_HEADER_SIZE
-                + seqNumber * fConfig.getBlockSize());
     }
 
 }

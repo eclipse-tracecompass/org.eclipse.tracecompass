@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.channels.ClosedChannelException;
+import java.nio.channels.FileChannel;
 import java.util.Deque;
 
 import org.eclipse.tracecompass.statesystem.core.exceptions.TimeRangeException;
@@ -210,5 +211,24 @@ public interface IHistoryTree {
      * @return The history file size
      */
     long getFileSize();
+
+    /**
+     * Seek the given FileChannel to the position corresponding to the node that
+     * has seqNumber
+     *
+     * @param channel
+     *            the channel to seek
+     * @param blockSize
+     *            the size of a given block
+     * @param blockNb
+     *            the node sequence number to seek the channel to
+     * @throws IOException
+     *             If some other I/O error occurs
+     */
+    static void seekFCToNodePos(FileChannel channel, long blockSize, long blockNb)
+            throws IOException {
+        channel.position(TREE_HEADER_SIZE
+                + blockNb * blockSize);
+    }
 
 }
