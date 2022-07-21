@@ -35,6 +35,7 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.tracecompass.internal.tmf.core.Activator;
 import org.eclipse.tracecompass.internal.tmf.core.project.model.Messages;
@@ -282,6 +283,40 @@ public final class TmfTraceType {
      */
     public static TraceTypeHelper getTraceType(String id) {
         return TRACE_TYPES.get(id);
+    }
+
+    /**
+     * Gets a trace type for a given canonical id
+     *
+     * @param traceTypeId
+     *            the ID of the trace
+     * @return {@link ITmfTrace} instance or null if trace type Id doesn't exist
+     * @throws CoreException
+     *             if trace cannot be instantiated
+     * @since 8.2
+     */
+    public static @Nullable ITmfTrace instantiateTrace(@NonNull String traceTypeId) throws CoreException {
+        if (CustomTxtTrace.isCustomTraceTypeId(traceTypeId)) {
+            for (CustomTxtTraceDefinition def : CustomTxtTraceDefinition.loadAll()) {
+                String id = CustomTxtTrace.buildTraceTypeId(def.categoryName, def.definitionName);
+                if (traceTypeId.equals(id)) {
+                    return new CustomTxtTrace(def);
+                }
+            }
+        }
+        if (CustomXmlTrace.isCustomTraceTypeId(traceTypeId)) {
+            for (CustomXmlTraceDefinition def : CustomXmlTraceDefinition.loadAll()) {
+                String id = CustomXmlTrace.buildTraceTypeId(def.categoryName, def.definitionName);
+                if (traceTypeId.equals(id)) {
+                    return new CustomXmlTrace(def);
+                }
+            }
+        }
+        IConfigurationElement ce = TRACE_TYPE_ATTRIBUTES.get(traceTypeId);
+        if (ce == null) {
+            return null;
+        }
+        return (ITmfTrace) ce.createExecutableExtension(TmfTraceType.TRACE_TYPE_ATTR);
     }
 
     private static void enableTraceTypes() {
@@ -575,5 +610,4 @@ public final class TmfTraceType {
         }
         return count == 0;
     }
-
 }

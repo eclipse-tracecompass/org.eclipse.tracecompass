@@ -278,28 +278,7 @@ public class TmfTraceElement extends TmfCommonProjectElement implements IActionF
 
             String traceTypeId = getTraceType();
             if (traceTypeId != null) {
-                if (CustomTxtTrace.isCustomTraceTypeId(traceTypeId)) {
-                    for (CustomTxtTraceDefinition def : CustomTxtTraceDefinition.loadAll()) {
-                        String id = CustomTxtTrace.buildTraceTypeId(def.categoryName, def.definitionName);
-                        if (traceTypeId.equals(id)) {
-                            return new CustomTxtTrace(def);
-                        }
-                    }
-                }
-                if (CustomXmlTrace.isCustomTraceTypeId(traceTypeId)) {
-                    for (CustomXmlTraceDefinition def : CustomXmlTraceDefinition.loadAll()) {
-                        String id = CustomXmlTrace.buildTraceTypeId(def.categoryName, def.definitionName);
-                        if (traceTypeId.equals(id)) {
-                            return new CustomXmlTrace(def);
-                        }
-                    }
-                }
-                IConfigurationElement ce = TRACE_TYPE_ATTRIBUTES.get(traceTypeId);
-                if (ce == null) {
-                    return null;
-                }
-                ITmfTrace trace = (ITmfTrace) ce.createExecutableExtension(TmfTraceType.TRACE_TYPE_ATTR);
-                return trace;
+                return TmfTraceType.instantiateTrace(traceTypeId);
             }
         } catch (CoreException e) {
             Activator.getDefault().logError("Error instantiating ITmfTrace object for trace " + getName(), e); //$NON-NLS-1$
