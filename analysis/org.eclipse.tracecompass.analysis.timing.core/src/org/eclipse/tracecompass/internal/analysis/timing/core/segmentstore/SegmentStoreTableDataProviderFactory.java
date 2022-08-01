@@ -24,19 +24,18 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.tracecompass.analysis.timing.core.segmentstore.ISegmentStoreProvider;
+import org.eclipse.tracecompass.analysis.timing.core.segmentstore.SegmentStoreAnalysisModule;
 import org.eclipse.tracecompass.internal.tmf.core.model.DataProviderDescriptor;
-import org.eclipse.tracecompass.internal.tmf.core.model.tree.TmfTreeCompositeDataProvider;
 import org.eclipse.tracecompass.tmf.core.analysis.IAnalysisModule;
 import org.eclipse.tracecompass.tmf.core.component.DataProviderConstants;
 import org.eclipse.tracecompass.tmf.core.dataprovider.IDataProviderDescriptor;
 import org.eclipse.tracecompass.tmf.core.dataprovider.IDataProviderDescriptor.ProviderType;
 import org.eclipse.tracecompass.tmf.core.dataprovider.IDataProviderFactory;
+import org.eclipse.tracecompass.tmf.core.exceptions.TmfAnalysisException;
 import org.eclipse.tracecompass.tmf.core.model.tree.ITmfTreeDataModel;
 import org.eclipse.tracecompass.tmf.core.model.tree.ITmfTreeDataProvider;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
-import org.eclipse.tracecompass.tmf.core.trace.TmfTraceManager;
 import org.eclipse.tracecompass.tmf.core.trace.TmfTraceUtils;
-import org.eclipse.tracecompass.tmf.core.trace.experiment.TmfExperiment;
 
 /**
  * Segment store table data provider factory to create
@@ -54,17 +53,16 @@ public class SegmentStoreTableDataProviderFactory implements IDataProviderFactor
 
     @Override
     public @Nullable ITmfTreeDataProvider<? extends ITmfTreeDataModel> createProvider(@NonNull ITmfTrace trace, @NonNull String secondaryId) {
-        IAnalysisModule m = trace.getAnalysisModule(secondaryId);
-        String composedId = SegmentStoreTableDataProvider.ID + ':' + secondaryId;
-        if (!(m instanceof ISegmentStoreProvider)) {
-            if (!(trace instanceof TmfExperiment)) {
-                return null;
-            }
-            return TmfTreeCompositeDataProvider.create(TmfTraceManager.getTraceSet(trace), composedId);
+        IAnalysisModule m = new SegmentStoreAnalysisModule(trace, secondaryId);
+        try {
+            m.setTrace(trace);
+            String composedId = SegmentStoreTableDataProvider.ID + ":" + secondaryId; //$NON-NLS-1$
+            m.schedule();
+            return new SegmentStoreTableDataProvider(trace, (ISegmentStoreProvider) m, composedId);
+        } catch (TmfAnalysisException ex) {
+            m.dispose();
+            return null;
         }
-        m.schedule();
-        return new SegmentStoreTableDataProvider(trace, (ISegmentStoreProvider) m, composedId);
-
     }
 
     @Override

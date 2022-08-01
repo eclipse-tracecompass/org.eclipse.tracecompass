@@ -146,10 +146,7 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTraceDataProvider 
             if (!fDurationComparator) {
                 return true;
             }
-            if (segmentLength == fLength) {
-                return true;
-            }
-            return false;
+            return segmentLength == fLength;
         }
     }
 
@@ -238,9 +235,9 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTraceDataProvider 
     private Map<Long, SegmentIndexesComparatorWrapper> fAllIndexes;
     private SegmentIndexesComparatorWrapper fDefaultWrapper;
     private final String fId;
-    private @Nullable ISegmentStoreProvider fSegmentProvider = null;
+    private ISegmentStoreProvider fSegmentProvider;
     private boolean fIsFirstAspect;
-    private final int fSegmentStoreSize;
+    private int fSegmentStoreSize;
 
     /**
      * Constructor
@@ -261,14 +258,7 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTraceDataProvider 
         fIsFirstAspect = true;
         fAllIndexes = new HashMap<>();
         fDefaultWrapper = new SegmentIndexesComparatorWrapper();
-        ISegmentStore<ISegment> segmentStore = segmentProvider.getSegmentStore();
-        if (segmentStore == null && segmentProvider instanceof IAnalysisModule) {
-            ((IAnalysisModule) segmentProvider).schedule();
-            ((IAnalysisModule) segmentProvider).waitForCompletion();
-            segmentStore = segmentProvider.getSegmentStore();
-        }
         fSegmentProvider = segmentProvider;
-        fSegmentStoreSize = segmentStore != null? segmentStore.size() : 0;
     }
 
     @Override
@@ -290,26 +280,24 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTraceDataProvider 
         if (fAllIndexes.containsKey(id)) {
             return;
         }
-        if (fSegmentProvider != null) {
-            ISegmentStore<ISegment> segStore = fSegmentProvider.getSegmentStore();
-            if (segStore != null) {
-                synchronized (fAllIndexes) {
-                    try (FlowScopeLog scope = new FlowScopeLogBuilder(LOGGER, Level.FINE, "SegmentStoreTableDataProvider#buildIndex.buildingIndexes").build()) { //$NON-NLS-1$
-                        TraceCompassLogUtils.traceObjectCreation(LOGGER, Level.FINE, fAllIndexes);
-                        Iterable<ISegment> sortedSegmentStore = segStore.iterator(comparator);
-                        List<SegmentStoreIndex> indexes = getIndexes(sortedSegmentStore);
-                        if (fIsFirstAspect) {
-                            fDefaultWrapper = new SegmentIndexesComparatorWrapper(indexes, comparator, aspectName);
-                            fIsFirstAspect = false;
-                            fAllIndexes.put(id, fDefaultWrapper);
-                        } else {
-                            fAllIndexes.put(id, new SegmentIndexesComparatorWrapper(indexes, comparator, aspectName));
-                        }
-                    } catch (Exception ex) {
-                        TraceCompassLogUtils.traceInstant(LOGGER, Level.SEVERE, "error build index", ex.getMessage()); //$NON-NLS-1$
-                    } finally {
-                        TraceCompassLogUtils.traceObjectDestruction(LOGGER, Level.FINE, fAllIndexes);
+        ISegmentStore<ISegment> segStore = fSegmentProvider.getSegmentStore();
+        if (segStore != null) {
+            synchronized (fAllIndexes) {
+                try (FlowScopeLog scope = new FlowScopeLogBuilder(LOGGER, Level.FINE, "SegmentStoreTableDataProvider#buildIndex.buildingIndexes").build()) { //$NON-NLS-1$
+                    TraceCompassLogUtils.traceObjectCreation(LOGGER, Level.FINE, fAllIndexes);
+                    Iterable<ISegment> sortedSegmentStore = segStore.iterator(comparator);
+                    List<SegmentStoreIndex> indexes = getIndexes(sortedSegmentStore);
+                    if (fIsFirstAspect) {
+                        fDefaultWrapper = new SegmentIndexesComparatorWrapper(indexes, comparator, aspectName);
+                        fIsFirstAspect = false;
+                        fAllIndexes.put(id, fDefaultWrapper);
+                    } else {
+                        fAllIndexes.put(id, new SegmentIndexesComparatorWrapper(indexes, comparator, aspectName));
                     }
+                } catch (Exception ex) {
+                    TraceCompassLogUtils.traceInstant(LOGGER, Level.SEVERE, "error build index", ex.getMessage()); //$NON-NLS-1$
+                } finally {
+                    TraceCompassLogUtils.traceObjectDestruction(LOGGER, Level.FINE, fAllIndexes);
                 }
             }
         }
@@ -343,8 +331,13 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTraceDataProvider 
     @SuppressWarnings("unchecked")
     @Override
     public TmfModelResponse<TmfTreeModel<TmfTreeDataModel>> fetchTree(Map<String, Object> fetchParameters, @Nullable IProgressMonitor monitor) {
+        if (fSegmentProvider instanceof IAnalysisModule) {
+            ((IAnalysisModule) fSegmentProvider).waitForCompletion();
+            ISegmentStore<ISegment> segmentStore = fSegmentProvider.getSegmentStore();
+            fSegmentStoreSize = segmentStore != null ? segmentStore.size() : 0;
+        }
         List<TmfTreeDataModel> model = new ArrayList<>();
-        for (final ISegmentAspect aspect : ISegmentStoreProvider.getBaseSegmentAspects()) {
+        for (ISegmentAspect aspect : ISegmentStoreProvider.getBaseSegmentAspects()) {
             synchronized (fAspectToIdMap) {
                 long id = fAspectToIdMap.computeIfAbsent(aspect, a -> fAtomicLong.getAndIncrement());
                 Comparator<ISegment> comparator = (Comparator<ISegment>) aspect.getComparator();
@@ -357,16 +350,14 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTraceDataProvider 
                 model.add(new TmfTreeDataModel(id, -1, Collections.singletonList(aspect.getName())));
             }
         }
-        if (fSegmentProvider != null) {
+        for (ISegmentAspect aspect : fSegmentProvider.getSegmentAspects()) {
             synchronized (fAspectToIdMap) {
-                for (final ISegmentAspect aspect : fSegmentProvider.getSegmentAspects()) {
-                    long id = fAspectToIdMap.computeIfAbsent(aspect, a -> fAtomicLong.getAndIncrement());
-                    Comparator<ISegment> comparator = (Comparator<ISegment>) aspect.getComparator();
-                    if (comparator != null) {
-                        buildIndex(id, comparator, aspect.getName());
-                    }
-                    model.add(new TmfTreeDataModel(id, -1, Collections.singletonList(aspect.getName())));
+                long id = fAspectToIdMap.computeIfAbsent(aspect, a -> fAtomicLong.getAndIncrement());
+                Comparator<ISegment> comparator = (Comparator<ISegment>) aspect.getComparator();
+                if (comparator != null) {
+                    buildIndex(id, comparator, aspect.getName());
                 }
+                model.add(new TmfTreeDataModel(id, -1, Collections.singletonList(aspect.getName())));
             }
         }
         return new TmfModelResponse<>(new TmfTreeModel<>(Collections.emptyList(), model), ITmfResponse.Status.COMPLETED, CommonStatusMessage.COMPLETED);
@@ -386,24 +377,22 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTraceDataProvider 
             return new TmfModelResponse<>(new TmfVirtualTableModel<>(Collections.emptyList(), Collections.emptyList(), queryFilter.getIndex(), 0), ITmfResponse.Status.COMPLETED, CommonStatusMessage.COMPLETED);
         }
         List<Long> columnIds = new ArrayList<>(aspects.keySet());
-        if (fSegmentProvider != null) {
-            ISegmentStore<ISegment> segStore = fSegmentProvider.getSegmentStore();
-            if (segStore != null) {
-                if (segStore.isEmpty()) {
-                    return new TmfModelResponse<>(new TmfVirtualTableModel<>(columnIds, Collections.emptyList(), queryFilter.getIndex(), 0), ITmfResponse.Status.COMPLETED, CommonStatusMessage.COMPLETED);
-                }
-                if (queryFilter.getIndex() >= fSegmentStoreSize) {
-                    return new TmfModelResponse<>(null, ITmfResponse.Status.COMPLETED, CommonStatusMessage.COMPLETED);
-                }
-                synchronized (fAllIndexes) {
-                    try (FlowScopeLog scope = new FlowScopeLogBuilder(LOGGER, Level.FINE, "SegmentStoreTableDataProvider#fetchLines").build()) { //$NON-NLS-1$
-                        TraceCompassLogUtils.traceObjectCreation(LOGGER, Level.FINE, fAllIndexes);
-                        return extractRequestedLines(queryFilter, fetchParameters, segStore, aspects, indexesComparatorWrapper);
-                    } catch (Exception ex) {
-                        TraceCompassLogUtils.traceInstant(LOGGER, Level.SEVERE, "error fetching lines ", ex.getMessage()); //$NON-NLS-1$
-                    } finally {
-                        TraceCompassLogUtils.traceObjectDestruction(LOGGER, Level.FINE, fAllIndexes);
-                    }
+        ISegmentStore<ISegment> segStore = fSegmentProvider.getSegmentStore();
+        if (segStore != null) {
+            if (segStore.isEmpty()) {
+                return new TmfModelResponse<>(new TmfVirtualTableModel<>(columnIds, Collections.emptyList(), queryFilter.getIndex(), 0), ITmfResponse.Status.COMPLETED, CommonStatusMessage.COMPLETED);
+            }
+            if (queryFilter.getIndex() >= fSegmentStoreSize) {
+                return new TmfModelResponse<>(null, ITmfResponse.Status.COMPLETED, CommonStatusMessage.COMPLETED);
+            }
+            synchronized (fAllIndexes) {
+                try (FlowScopeLog scope = new FlowScopeLogBuilder(LOGGER, Level.FINE, "SegmentStoreTableDataProvider#fetchLines").build()) { //$NON-NLS-1$
+                    TraceCompassLogUtils.traceObjectCreation(LOGGER, Level.FINER, fAllIndexes);
+                    return extractRequestedLines(queryFilter, fetchParameters, segStore, aspects, indexesComparatorWrapper);
+                } catch (Exception ex) {
+                    TraceCompassLogUtils.traceInstant(LOGGER, Level.SEVERE, "error fetching lines ", ex.getMessage()); //$NON-NLS-1$
+                } finally {
+                    TraceCompassLogUtils.traceObjectDestruction(LOGGER, Level.FINER, fAllIndexes);
                 }
             }
         }

@@ -67,4 +67,8 @@ public class TmfXmlTraceStubNs extends TmfXmlTraceStub {
         return DEVELOPMENT_TRACE_PARSER_PATH;
     }
 
+    @Override
+    public void setName(String name) {
+        super.setName(name);
+    }
 }
