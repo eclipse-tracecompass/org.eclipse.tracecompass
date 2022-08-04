@@ -68,6 +68,31 @@
                     <classifier>tracecompass-e4.20</classifier>
                   </artifact>
                   <artifact>
+                    <file>tracecompass-e4.21.target</file>
+                    <type>target</type>
+                    <classifier>tracecompass-e4.21</classifier>
+                  </artifact>
+                  <artifact>
+                    <file>tracecompass-e4.22.target</file>
+                    <type>target</type>
+                    <classifier>tracecompass-e4.22</classifier>
+                  </artifact>
+                  <artifact>
+                    <file>tracecompass-e4.23.target</file>
+                    <type>target</type>
+                    <classifier>tracecompass-e4.23</classifier>
+                  </artifact>
+                  <artifact>
+                    <file>tracecompass-e4.24.target</file>
+                    <type>target</type>
+                    <classifier>tracecompass-e4.24</classifier>
+                  </artifact>
+                  <artifact>
+                    <file>tracecompass-e4.25.target</file>
+                    <type>target</type>
+                    <classifier>tracecompass-e4.25</classifier>
+                  </artifact>
+                  <artifact>
                     <file>tracecompass-eStaging.target</file>
                     <type>target</type>
                     <classifier>tracecompass-eStaging</classifier>

@@ -88,6 +88,7 @@
                 <plugin id="com.google.gson"/>
                 <plugin id="com.google.guava"/>
                 <plugin id="org.apache.commons.io"/>
+                <plugin id="org.eclipse.e4.ui.progress"/>
                 <plugin id="org.eclipse.remote.core"/>
                 <plugin id="org.eclipse.remote.jsch.core"/>
                 <plugin id="org.eclipse.remote.jsch.ui"/>
@@ -110,6 +111,7 @@
                 <plugin id="org.eclipse.wst.xml.ui"/>
                 <plugin id="org.eclipse.wst.xsd.core"/>
                 <plugin id="org.eclipse.xsd"/>
+                
               </excludes>
             </configuration>
           </execution>

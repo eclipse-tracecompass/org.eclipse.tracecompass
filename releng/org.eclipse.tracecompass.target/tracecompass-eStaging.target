@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><?pde version="3.8"?><target name="tracecompass-eStaging" sequenceNumber="187">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><?pde version="3.8"?><target name="tracecompass-eStaging" sequenceNumber="188">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.cdt.gnu.dsf.feature.group" version="0.0.0"/>
@@ -23,8 +23,9 @@
 <unit id="com.google.guava" version="27.1.0.v20190517-1946"/>
 <unit id="org.hamcrest" version="0.0.0"/>
 <unit id="jakarta.xml.bind" version="2.3.3.v20201118-1818"/>
-<repository location="https://download.eclipse.org/tools/orbit/downloads/drops/R20220531185310/repository/"/>
+<repository location="https://download.eclipse.org/tools/orbit/downloads/drops/I20220726195053/repository/"/>
 </location>
+<!-- Add dependencies that only exists with older orbit version -->
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="javax.activation" version="1.1.0.v201211130549"/>
 <unit id="javax.xml.bind" version="0.0.0"/>
@@ -55,7 +56,8 @@
 <unit id="org.eclipse.ui.trace" version="0.0.0"/>
 <unit id="org.eclipse.ui.views.log" version="0.0.0"/>
 <unit id="org.eclipse.jdt.junit4.runtime" version="0.0.0"/>
-<repository location="https://download.eclipse.org/eclipse/updates/4.24/R-4.24-202206070700/"/>
+<unit id="org.eclipse.e4.ui.progress" version="0.0.0"/>
+<repository location="https://download.eclipse.org/eclipse/updates/4.25-I-builds/I20220807-1800/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.tracecompass.testtraces.tracecompass-test-traces-ctf" version="1.7.2"/>
@@ -65,11 +67,11 @@
 <unit id="org.eclipse.wst.xml.core" version="0.0.0"/>
 <unit id="org.eclipse.wst.xml.ui" version="0.0.0"/>
 <unit id="org.eclipse.wst.xsd.core" version="0.0.0"/>
-<repository location="https://download.eclipse.org/webtools/downloads/drops/R3.26.0/R-3.26.0-20220526191850/repository/"/>
+<repository location="https://download.eclipse.org/webtools/downloads/drops/R3.27.0/S-3.27M2-20220729084414/repository/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.xsd" version="0.0.0"/>
-<repository location="https://download.eclipse.org/modeling/emf/emf/builds/release/2.30/"/>
+<repository location="https://download.eclipse.org/modeling/emf/emf/builds/milestone/S202207260617/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.swtchart.feature.feature.group" version="0.0.0"/>
