@@ -31,13 +31,13 @@ import org.eclipse.tracecompass.analysis.timing.core.segmentstore.AbstractSegmen
 import org.eclipse.tracecompass.analysis.timing.core.segmentstore.ISegmentStoreProvider;
 import org.eclipse.tracecompass.analysis.timing.core.segmentstore.SegmentStoreAnalysisModule;
 import org.eclipse.tracecompass.internal.analysis.timing.core.segmentstore.SegmentStoreTableDataProvider;
-import org.eclipse.tracecompass.internal.analysis.timing.core.segmentstore.SegmentStoreTableLine;
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.events.TmfEventTableDataProvider.Direction;
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.filters.VirtualTableQueryFilter;
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.table.ITmfVirtualTableDataProvider;
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.table.ITmfVirtualTableModel;
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.table.TmfVirtualTableModel;
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.table.VirtualTableCell;
+import org.eclipse.tracecompass.internal.provisional.tmf.core.model.table.VirtualTableLine;
 import org.eclipse.tracecompass.internal.tmf.core.model.filters.FetchParametersUtils;
 import org.eclipse.tracecompass.segmentstore.core.BasicSegment;
 import org.eclipse.tracecompass.segmentstore.core.ISegment;
@@ -108,9 +108,9 @@ public class SegmentStoreTableDataProviderExperimentTest {
         }
     }
 
-    private static ITmfVirtualTableDataProvider<@NonNull TmfTreeDataModel, @NonNull SegmentStoreTableLine> fMainDataProvider;
-    private static ITmfVirtualTableDataProvider<@NonNull TmfTreeDataModel, @NonNull SegmentStoreTableLine> fDataProvider;
-    private static ITmfVirtualTableDataProvider<@NonNull TmfTreeDataModel, @NonNull SegmentStoreTableLine> fInvalidDataProvider;
+    private static ITmfVirtualTableDataProvider<@NonNull TmfTreeDataModel, @NonNull VirtualTableLine> fMainDataProvider;
+    private static ITmfVirtualTableDataProvider<@NonNull TmfTreeDataModel, @NonNull VirtualTableLine> fDataProvider;
+    private static ITmfVirtualTableDataProvider<@NonNull TmfTreeDataModel, @NonNull VirtualTableLine> fInvalidDataProvider;
 
     private static final String START_TIME_COLUMN_NAME = "Start Time";
     private static final String END_TIME_COLUMN_NAME = "End Time";
@@ -202,7 +202,7 @@ public class SegmentStoreTableDataProviderExperimentTest {
         return expectedColumns;
     }
 
-    private static ITmfVirtualTableDataProvider<@NonNull TmfTreeDataModel, @NonNull SegmentStoreTableLine> getDataProvider(@NonNull TmfExperimentStub experiment) throws TmfAnalysisException {
+    private static ITmfVirtualTableDataProvider<@NonNull TmfTreeDataModel, @NonNull VirtualTableLine> getDataProvider(@NonNull TmfExperimentStub experiment) throws TmfAnalysisException {
         IAnalysisModule m = new SegmentStoreAnalysisModule(experiment);
         experiment.addAnalysisModule(m);
         m.schedule();
@@ -334,22 +334,22 @@ public class SegmentStoreTableDataProviderExperimentTest {
     @Test
     public void testFetchLinesFromDataProviderWithExperiment() {
         VirtualTableQueryFilter queryFilter = new VirtualTableQueryFilter(Collections.emptyList(), 0, 10);
-        @NonNull List<@NonNull SegmentStoreTableLine> expectedData = Arrays.asList(
-                new SegmentStoreTableLine(Arrays.asList(new VirtualTableCell(lineTime(0)), new VirtualTableCell(lineTime(0)), new VirtualTableCell(lineDuration(0)), new VirtualTableCell(MAIN_TRACE_NAME)), 0),
-                new SegmentStoreTableLine(Arrays.asList(new VirtualTableCell(lineTime(0)), new VirtualTableCell(lineTime(0)), new VirtualTableCell(lineDuration(0)), new VirtualTableCell(SECOND_TRACE_NAME)), 1),
-                new SegmentStoreTableLine(Arrays.asList(new VirtualTableCell(lineTime(0)), new VirtualTableCell(lineTime(1)), new VirtualTableCell(lineDuration(1)), new VirtualTableCell(MAIN_TRACE_NAME)), 2),
-                new SegmentStoreTableLine(Arrays.asList(new VirtualTableCell(lineTime(0)), new VirtualTableCell(lineTime(1)), new VirtualTableCell(lineDuration(1)), new VirtualTableCell(SECOND_TRACE_NAME)), 3),
-                new SegmentStoreTableLine(Arrays.asList(new VirtualTableCell(lineTime(0)), new VirtualTableCell(lineTime(2)), new VirtualTableCell(lineDuration(2)), new VirtualTableCell(MAIN_TRACE_NAME)), 4),
-                new SegmentStoreTableLine(Arrays.asList(new VirtualTableCell(lineTime(0)), new VirtualTableCell(lineTime(2)), new VirtualTableCell(lineDuration(2)), new VirtualTableCell(SECOND_TRACE_NAME)), 5),
-                new SegmentStoreTableLine(Arrays.asList(new VirtualTableCell(lineTime(0)), new VirtualTableCell(lineTime(3)), new VirtualTableCell(lineDuration(3)), new VirtualTableCell(MAIN_TRACE_NAME)), 6),
-                new SegmentStoreTableLine(Arrays.asList(new VirtualTableCell(lineTime(0)), new VirtualTableCell(lineTime(4)), new VirtualTableCell(lineDuration(4)), new VirtualTableCell(MAIN_TRACE_NAME)), 7),
-                new SegmentStoreTableLine(Arrays.asList(new VirtualTableCell(lineTime(0)), new VirtualTableCell(lineTime(5)), new VirtualTableCell(lineDuration(5)), new VirtualTableCell(MAIN_TRACE_NAME)), 8),
-                new SegmentStoreTableLine(Arrays.asList(new VirtualTableCell(lineTime(0)), new VirtualTableCell(lineTime(6)), new VirtualTableCell(lineDuration(6)), new VirtualTableCell(MAIN_TRACE_NAME)), 9));
+        @NonNull List<@NonNull VirtualTableLine> expectedData = Arrays.asList(
+                new VirtualTableLine(0, Arrays.asList(new VirtualTableCell(lineTime(0)), new VirtualTableCell(lineTime(0)), new VirtualTableCell(lineDuration(0)), new VirtualTableCell(MAIN_TRACE_NAME))),
+                new VirtualTableLine(1, Arrays.asList(new VirtualTableCell(lineTime(0)), new VirtualTableCell(lineTime(0)), new VirtualTableCell(lineDuration(0)), new VirtualTableCell(SECOND_TRACE_NAME))),
+                new VirtualTableLine(2, Arrays.asList(new VirtualTableCell(lineTime(0)), new VirtualTableCell(lineTime(1)), new VirtualTableCell(lineDuration(1)), new VirtualTableCell(MAIN_TRACE_NAME))),
+                new VirtualTableLine(3, Arrays.asList(new VirtualTableCell(lineTime(0)), new VirtualTableCell(lineTime(1)), new VirtualTableCell(lineDuration(1)), new VirtualTableCell(SECOND_TRACE_NAME))),
+                new VirtualTableLine(4, Arrays.asList(new VirtualTableCell(lineTime(0)), new VirtualTableCell(lineTime(2)), new VirtualTableCell(lineDuration(2)), new VirtualTableCell(MAIN_TRACE_NAME))),
+                new VirtualTableLine(5, Arrays.asList(new VirtualTableCell(lineTime(0)), new VirtualTableCell(lineTime(2)), new VirtualTableCell(lineDuration(2)), new VirtualTableCell(SECOND_TRACE_NAME))),
+                new VirtualTableLine(6, Arrays.asList(new VirtualTableCell(lineTime(0)), new VirtualTableCell(lineTime(3)), new VirtualTableCell(lineDuration(3)), new VirtualTableCell(MAIN_TRACE_NAME))),
+                new VirtualTableLine(7, Arrays.asList(new VirtualTableCell(lineTime(0)), new VirtualTableCell(lineTime(4)), new VirtualTableCell(lineDuration(4)), new VirtualTableCell(MAIN_TRACE_NAME))),
+                new VirtualTableLine(8, Arrays.asList(new VirtualTableCell(lineTime(0)), new VirtualTableCell(lineTime(5)), new VirtualTableCell(lineDuration(5)), new VirtualTableCell(MAIN_TRACE_NAME))),
+                new VirtualTableLine(9, Arrays.asList(new VirtualTableCell(lineTime(0)), new VirtualTableCell(lineTime(6)), new VirtualTableCell(lineDuration(6)), new VirtualTableCell(MAIN_TRACE_NAME))));
 
-        TmfModelResponse<@NonNull ITmfVirtualTableModel<@NonNull SegmentStoreTableLine>> response = fMainDataProvider.fetchLines(FetchParametersUtils.virtualTableQueryToMap(queryFilter), null);
-        ITmfVirtualTableModel<@NonNull SegmentStoreTableLine> currentModel = response.getModel();
+        TmfModelResponse<@NonNull ITmfVirtualTableModel<@NonNull VirtualTableLine>> response = fMainDataProvider.fetchLines(FetchParametersUtils.virtualTableQueryToMap(queryFilter), null);
+        ITmfVirtualTableModel<@NonNull VirtualTableLine> currentModel = response.getModel();
         assertNotNull(currentModel);
-        ITmfVirtualTableModel<@NonNull SegmentStoreTableLine> expectedModel = new TmfVirtualTableModel<>(new ArrayList<>(fColumns.values()), expectedData, 0, 66535);
+        ITmfVirtualTableModel<@NonNull VirtualTableLine> expectedModel = new TmfVirtualTableModel<>(new ArrayList<>(fColumns.values()), expectedData, 0, 66535);
         assertEquals(expectedModel, currentModel);
     }
 
@@ -360,8 +360,8 @@ public class SegmentStoreTableDataProviderExperimentTest {
     public void testFetchLinesFronmDataProviderWithEmptyExperiment() {
         VirtualTableQueryFilter queryFilter = new VirtualTableQueryFilter(Collections.emptyList(), 0, 5);
 
-        TmfModelResponse<@NonNull ITmfVirtualTableModel<@NonNull SegmentStoreTableLine>> response = fInvalidDataProvider.fetchLines(FetchParametersUtils.virtualTableQueryToMap(queryFilter), null);
-        ITmfVirtualTableModel<@NonNull SegmentStoreTableLine> currentModel = response.getModel();
+        TmfModelResponse<@NonNull ITmfVirtualTableModel<@NonNull VirtualTableLine>> response = fInvalidDataProvider.fetchLines(FetchParametersUtils.virtualTableQueryToMap(queryFilter), null);
+        ITmfVirtualTableModel<@NonNull VirtualTableLine> currentModel = response.getModel();
         assertNull(currentModel);
         assertEquals(response.getStatus(), ITmfResponse.Status.FAILED);
     }
@@ -373,22 +373,23 @@ public class SegmentStoreTableDataProviderExperimentTest {
     @Test
     public void testFetchLinesFromDataProviderWithSingleTraceExperiment() {
         VirtualTableQueryFilter queryFilter = new VirtualTableQueryFilter(new ArrayList<>(fSingleTraceColumns.values()), 0, 10);
-        @NonNull List<@NonNull SegmentStoreTableLine> expectedData = Arrays.asList(
-                new SegmentStoreTableLine(Arrays.asList(new VirtualTableCell(lineTime(0)), new VirtualTableCell(lineTime(0)), new VirtualTableCell(lineDuration(0))), 0),
-                new SegmentStoreTableLine(Arrays.asList(new VirtualTableCell(lineTime(0)), new VirtualTableCell(lineTime(1)), new VirtualTableCell(lineDuration(1))), 1),
-                new SegmentStoreTableLine(Arrays.asList(new VirtualTableCell(lineTime(0)), new VirtualTableCell(lineTime(2)), new VirtualTableCell(lineDuration(2))), 2),
-                new SegmentStoreTableLine(Arrays.asList(new VirtualTableCell(lineTime(0)), new VirtualTableCell(lineTime(3)), new VirtualTableCell(lineDuration(3))), 3),
-                new SegmentStoreTableLine(Arrays.asList(new VirtualTableCell(lineTime(0)), new VirtualTableCell(lineTime(4)), new VirtualTableCell(lineDuration(4))), 4),
-                new SegmentStoreTableLine(Arrays.asList(new VirtualTableCell(lineTime(0)), new VirtualTableCell(lineTime(5)), new VirtualTableCell(lineDuration(5))), 5),
-                new SegmentStoreTableLine(Arrays.asList(new VirtualTableCell(lineTime(0)), new VirtualTableCell(lineTime(6)), new VirtualTableCell(lineDuration(6))), 6),
-                new SegmentStoreTableLine(Arrays.asList(new VirtualTableCell(lineTime(7)), new VirtualTableCell(lineTime(7)), new VirtualTableCell(lineDuration(0))), 7),
-                new SegmentStoreTableLine(Arrays.asList(new VirtualTableCell(lineTime(7)), new VirtualTableCell(lineTime(8)), new VirtualTableCell(lineDuration(1))), 8),
-                new SegmentStoreTableLine(Arrays.asList(new VirtualTableCell(lineTime(7)), new VirtualTableCell(lineTime(9)), new VirtualTableCell(lineDuration(2))), 9));
 
-        TmfModelResponse<@NonNull ITmfVirtualTableModel<@NonNull SegmentStoreTableLine>> response = fDataProvider.fetchLines(FetchParametersUtils.virtualTableQueryToMap(queryFilter), null);
-        ITmfVirtualTableModel<@NonNull SegmentStoreTableLine> currentModel = response.getModel();
+        @NonNull List<@NonNull VirtualTableLine> expectedData = Arrays.asList(
+                new VirtualTableLine(0, Arrays.asList(new VirtualTableCell(lineTime(0)), new VirtualTableCell(lineTime(0)), new VirtualTableCell(lineDuration(0)))),
+                new VirtualTableLine(1, Arrays.asList(new VirtualTableCell(lineTime(0)), new VirtualTableCell(lineTime(1)), new VirtualTableCell(lineDuration(1)))),
+                new VirtualTableLine(2, Arrays.asList(new VirtualTableCell(lineTime(0)), new VirtualTableCell(lineTime(2)), new VirtualTableCell(lineDuration(2)))),
+                new VirtualTableLine(3, Arrays.asList(new VirtualTableCell(lineTime(0)), new VirtualTableCell(lineTime(3)), new VirtualTableCell(lineDuration(3)))),
+                new VirtualTableLine(4, Arrays.asList(new VirtualTableCell(lineTime(0)), new VirtualTableCell(lineTime(4)), new VirtualTableCell(lineDuration(4)))),
+                new VirtualTableLine(5, Arrays.asList(new VirtualTableCell(lineTime(0)), new VirtualTableCell(lineTime(5)), new VirtualTableCell(lineDuration(5)))),
+                new VirtualTableLine(6, Arrays.asList(new VirtualTableCell(lineTime(0)), new VirtualTableCell(lineTime(6)), new VirtualTableCell(lineDuration(6)))),
+                new VirtualTableLine(7, Arrays.asList(new VirtualTableCell(lineTime(7)), new VirtualTableCell(lineTime(7)), new VirtualTableCell(lineDuration(0)))),
+                new VirtualTableLine(8, Arrays.asList(new VirtualTableCell(lineTime(7)), new VirtualTableCell(lineTime(8)), new VirtualTableCell(lineDuration(1)))),
+                new VirtualTableLine(9, Arrays.asList(new VirtualTableCell(lineTime(7)), new VirtualTableCell(lineTime(9)), new VirtualTableCell(lineDuration(2)))));
+
+        TmfModelResponse<@NonNull ITmfVirtualTableModel<@NonNull VirtualTableLine>> response = fDataProvider.fetchLines(FetchParametersUtils.virtualTableQueryToMap(queryFilter), null);
+        ITmfVirtualTableModel<@NonNull VirtualTableLine> currentModel = response.getModel();
         assertNotNull(currentModel);
-        ITmfVirtualTableModel<@NonNull SegmentStoreTableLine> expectedModel = new TmfVirtualTableModel<>(new ArrayList<>(fSingleTraceColumns.values()), expectedData, 0, 65535);
+        ITmfVirtualTableModel<@NonNull VirtualTableLine> expectedModel = new TmfVirtualTableModel<>(new ArrayList<>(fSingleTraceColumns.values()), expectedData, 0, 65535);
         assertEquals(expectedModel, currentModel);
     }
 
@@ -405,19 +406,19 @@ public class SegmentStoreTableDataProviderExperimentTest {
         fetchParameters.put(TABLE_SEARCH_EXPRESSION_KEY, searchMap);
         fetchParameters.put(TABLE_SEARCH_DIRECTION_KEY, Direction.NEXT);
 
-        List<@NonNull SegmentStoreTableLine> expectedData = Arrays.asList(
-                new SegmentStoreTableLine(Arrays.asList(new VirtualTableCell(lineTime(21)), new VirtualTableCell(lineTime(21)), new VirtualTableCell(lineDuration(0)), new VirtualTableCell(MAIN_TRACE_NAME)), 42),
-                new SegmentStoreTableLine(Arrays.asList(new VirtualTableCell(lineTime(21)), new VirtualTableCell(lineTime(21)), new VirtualTableCell(lineDuration(0)), new VirtualTableCell(SECOND_TRACE_NAME)), 43),
-                new SegmentStoreTableLine(Arrays.asList(new VirtualTableCell(lineTime(21)), new VirtualTableCell(lineTime(22)), new VirtualTableCell(lineDuration(1)), new VirtualTableCell(MAIN_TRACE_NAME)), 44),
-                new SegmentStoreTableLine(Arrays.asList(new VirtualTableCell(lineTime(21)), new VirtualTableCell(lineTime(22)), new VirtualTableCell(lineDuration(1)), new VirtualTableCell(SECOND_TRACE_NAME)), 45),
-                new SegmentStoreTableLine(Arrays.asList(new VirtualTableCell(lineTime(21)), new VirtualTableCell(lineTime(23)), new VirtualTableCell(lineDuration(2)), new VirtualTableCell(MAIN_TRACE_NAME)), 46));
+        List<@NonNull VirtualTableLine> expectedData = Arrays.asList(
+                new VirtualTableLine(42, Arrays.asList(new VirtualTableCell(lineTime(21)), new VirtualTableCell(lineTime(21)), new VirtualTableCell(lineDuration(0)), new VirtualTableCell(MAIN_TRACE_NAME))),
+                new VirtualTableLine(43, Arrays.asList(new VirtualTableCell(lineTime(21)), new VirtualTableCell(lineTime(21)), new VirtualTableCell(lineDuration(0)), new VirtualTableCell(SECOND_TRACE_NAME))),
+                new VirtualTableLine(44, Arrays.asList(new VirtualTableCell(lineTime(21)), new VirtualTableCell(lineTime(22)), new VirtualTableCell(lineDuration(1)), new VirtualTableCell(MAIN_TRACE_NAME))),
+                new VirtualTableLine(45, Arrays.asList(new VirtualTableCell(lineTime(21)), new VirtualTableCell(lineTime(22)), new VirtualTableCell(lineDuration(1)), new VirtualTableCell(SECOND_TRACE_NAME))),
+                new VirtualTableLine(46, Arrays.asList(new VirtualTableCell(lineTime(21)), new VirtualTableCell(lineTime(23)), new VirtualTableCell(lineDuration(2)), new VirtualTableCell(MAIN_TRACE_NAME))));
 
         expectedData.forEach(sl -> sl.setActiveProperties(CoreFilterProperty.HIGHLIGHT));
 
-        TmfModelResponse<@NonNull ITmfVirtualTableModel<@NonNull SegmentStoreTableLine>> response = fMainDataProvider.fetchLines(fetchParameters, null);
-        ITmfVirtualTableModel<@NonNull SegmentStoreTableLine> currentModel = response.getModel();
+        TmfModelResponse<@NonNull ITmfVirtualTableModel<@NonNull VirtualTableLine>> response = fMainDataProvider.fetchLines(fetchParameters, null);
+        ITmfVirtualTableModel<@NonNull VirtualTableLine> currentModel = response.getModel();
         assertNotNull(currentModel);
-        ITmfVirtualTableModel<@NonNull SegmentStoreTableLine> expectedModel = new TmfVirtualTableModel<>(new ArrayList<>(fColumns.values()), expectedData, 42, 66535);
+        ITmfVirtualTableModel<@NonNull VirtualTableLine> expectedModel = new TmfVirtualTableModel<>(new ArrayList<>(fColumns.values()), expectedData, 42, 66535);
         assertEquals(expectedModel, currentModel);
     }
 
@@ -435,21 +436,21 @@ public class SegmentStoreTableDataProviderExperimentTest {
         fetchParameters.put(TABLE_SEARCH_EXPRESSION_KEY, searchMap);
         fetchParameters.put(TABLE_SEARCH_DIRECTION_KEY, Direction.NEXT);
 
-        List<@NonNull SegmentStoreTableLine> expectedData = Arrays.asList(
-                new SegmentStoreTableLine(Arrays.asList(new VirtualTableCell(lineTime(21)), new VirtualTableCell(lineTime(21)), new VirtualTableCell(lineDuration(0)), new VirtualTableCell(SECOND_TRACE_NAME)), 43),
-                new SegmentStoreTableLine(Arrays.asList(new VirtualTableCell(lineTime(21)), new VirtualTableCell(lineTime(22)), new VirtualTableCell(lineDuration(1)), new VirtualTableCell(MAIN_TRACE_NAME)), 44),
-                new SegmentStoreTableLine(Arrays.asList(new VirtualTableCell(lineTime(21)), new VirtualTableCell(lineTime(22)), new VirtualTableCell(lineDuration(1)), new VirtualTableCell(SECOND_TRACE_NAME)), 45),
-                new SegmentStoreTableLine(Arrays.asList(new VirtualTableCell(lineTime(21)), new VirtualTableCell(lineTime(23)), new VirtualTableCell(lineDuration(2)), new VirtualTableCell(MAIN_TRACE_NAME)), 46),
-                new SegmentStoreTableLine(Arrays.asList(new VirtualTableCell(lineTime(21)), new VirtualTableCell(lineTime(23)), new VirtualTableCell(lineDuration(2)), new VirtualTableCell(SECOND_TRACE_NAME)), 47));
+        List<@NonNull VirtualTableLine> expectedData = Arrays.asList(
+                new VirtualTableLine(43, Arrays.asList(new VirtualTableCell(lineTime(21)), new VirtualTableCell(lineTime(21)), new VirtualTableCell(lineDuration(0)), new VirtualTableCell(SECOND_TRACE_NAME))),
+                new VirtualTableLine(44, Arrays.asList(new VirtualTableCell(lineTime(21)), new VirtualTableCell(lineTime(22)), new VirtualTableCell(lineDuration(1)), new VirtualTableCell(MAIN_TRACE_NAME))),
+                new VirtualTableLine(45, Arrays.asList(new VirtualTableCell(lineTime(21)), new VirtualTableCell(lineTime(22)), new VirtualTableCell(lineDuration(1)), new VirtualTableCell(SECOND_TRACE_NAME))),
+                new VirtualTableLine(46, Arrays.asList(new VirtualTableCell(lineTime(21)), new VirtualTableCell(lineTime(23)), new VirtualTableCell(lineDuration(2)), new VirtualTableCell(MAIN_TRACE_NAME))),
+                new VirtualTableLine(47, Arrays.asList(new VirtualTableCell(lineTime(21)), new VirtualTableCell(lineTime(23)), new VirtualTableCell(lineDuration(2)), new VirtualTableCell(SECOND_TRACE_NAME))));
 
         expectedData.get(0).setActiveProperties(CoreFilterProperty.HIGHLIGHT);
         expectedData.get(2).setActiveProperties(CoreFilterProperty.HIGHLIGHT);
         expectedData.get(4).setActiveProperties(CoreFilterProperty.HIGHLIGHT);
 
-        TmfModelResponse<@NonNull ITmfVirtualTableModel<@NonNull SegmentStoreTableLine>> response = fMainDataProvider.fetchLines(fetchParameters, null);
-        ITmfVirtualTableModel<@NonNull SegmentStoreTableLine> currentModel = response.getModel();
+        TmfModelResponse<@NonNull ITmfVirtualTableModel<@NonNull VirtualTableLine>> response = fMainDataProvider.fetchLines(fetchParameters, null);
+        ITmfVirtualTableModel<@NonNull VirtualTableLine> currentModel = response.getModel();
         assertNotNull(currentModel);
-        ITmfVirtualTableModel<@NonNull SegmentStoreTableLine> expectedModel = new TmfVirtualTableModel<>(new ArrayList<>(fColumns.values()), expectedData, 43, 66535);
+        ITmfVirtualTableModel<@NonNull VirtualTableLine> expectedModel = new TmfVirtualTableModel<>(new ArrayList<>(fColumns.values()), expectedData, 43, 66535);
         assertEquals(expectedModel, currentModel);
     }
 
@@ -467,13 +468,12 @@ public class SegmentStoreTableDataProviderExperimentTest {
         searchMap.put(fColumns.get(TRACE_COLUMN_NAME), SECOND_TRACE_NAME);
         fetchParameters.put(TABLE_SEARCH_EXPRESSION_KEY, searchMap);
         fetchParameters.put(TABLE_SEARCH_DIRECTION_KEY, Direction.NEXT);
+        List<@NonNull VirtualTableLine> expectedData = Collections.emptyList();
 
-        List<@NonNull SegmentStoreTableLine> expectedData = Collections.emptyList();
-
-        TmfModelResponse<@NonNull ITmfVirtualTableModel<@NonNull SegmentStoreTableLine>> response = fDataProvider.fetchLines(fetchParameters, null);
-        ITmfVirtualTableModel<@NonNull SegmentStoreTableLine> currentModel = response.getModel();
+        TmfModelResponse<@NonNull ITmfVirtualTableModel<@NonNull VirtualTableLine>> response = fDataProvider.fetchLines(fetchParameters, null);
+        ITmfVirtualTableModel<@NonNull VirtualTableLine> currentModel = response.getModel();
         assertNotNull(currentModel);
-        ITmfVirtualTableModel<@NonNull SegmentStoreTableLine> expectedModel = new TmfVirtualTableModel<>(new ArrayList<>(fColumns.values()), expectedData, 0, 65535);
+        ITmfVirtualTableModel<@NonNull VirtualTableLine> expectedModel = new TmfVirtualTableModel<>(new ArrayList<>(fColumns.values()), expectedData, 0, 65535);
         assertEquals(expectedModel, currentModel);
     }
 
@@ -488,22 +488,23 @@ public class SegmentStoreTableDataProviderExperimentTest {
         Object traceNameColumnID = fColumns.get(TRACE_COLUMN_NAME);
         assertNotNull(traceNameColumnID);
         fetchParameters.put(TABLE_COMPARATOR_EXPRESSION_KEY, traceNameColumnID);
-        @NonNull List<@NonNull SegmentStoreTableLine> expectedData = Arrays.asList(
-                new SegmentStoreTableLine(Arrays.asList(new VirtualTableCell(lineTime(0)), new VirtualTableCell(lineTime(0)), new VirtualTableCell(lineDuration(0)), new VirtualTableCell(MAIN_TRACE_NAME)), 0),
-                new SegmentStoreTableLine(Arrays.asList(new VirtualTableCell(lineTime(0)), new VirtualTableCell(lineTime(1)), new VirtualTableCell(lineDuration(1)), new VirtualTableCell(MAIN_TRACE_NAME)), 1),
-                new SegmentStoreTableLine(Arrays.asList(new VirtualTableCell(lineTime(0)), new VirtualTableCell(lineTime(2)), new VirtualTableCell(lineDuration(2)), new VirtualTableCell(MAIN_TRACE_NAME)), 2),
-                new SegmentStoreTableLine(Arrays.asList(new VirtualTableCell(lineTime(0)), new VirtualTableCell(lineTime(3)), new VirtualTableCell(lineDuration(3)), new VirtualTableCell(MAIN_TRACE_NAME)), 3),
-                new SegmentStoreTableLine(Arrays.asList(new VirtualTableCell(lineTime(0)), new VirtualTableCell(lineTime(4)), new VirtualTableCell(lineDuration(4)), new VirtualTableCell(MAIN_TRACE_NAME)), 4),
-                new SegmentStoreTableLine(Arrays.asList(new VirtualTableCell(lineTime(0)), new VirtualTableCell(lineTime(5)), new VirtualTableCell(lineDuration(5)), new VirtualTableCell(MAIN_TRACE_NAME)), 5),
-                new SegmentStoreTableLine(Arrays.asList(new VirtualTableCell(lineTime(0)), new VirtualTableCell(lineTime(6)), new VirtualTableCell(lineDuration(6)), new VirtualTableCell(MAIN_TRACE_NAME)), 6),
-                new SegmentStoreTableLine(Arrays.asList(new VirtualTableCell(lineTime(7)), new VirtualTableCell(lineTime(7)), new VirtualTableCell(lineDuration(0)), new VirtualTableCell(MAIN_TRACE_NAME)), 7),
-                new SegmentStoreTableLine(Arrays.asList(new VirtualTableCell(lineTime(7)), new VirtualTableCell(lineTime(8)), new VirtualTableCell(lineDuration(1)), new VirtualTableCell(MAIN_TRACE_NAME)), 8),
-                new SegmentStoreTableLine(Arrays.asList(new VirtualTableCell(lineTime(7)), new VirtualTableCell(lineTime(9)), new VirtualTableCell(lineDuration(2)), new VirtualTableCell(MAIN_TRACE_NAME)), 9));
 
-        TmfModelResponse<@NonNull ITmfVirtualTableModel<@NonNull SegmentStoreTableLine>> response = fMainDataProvider.fetchLines(fetchParameters, null);
-        ITmfVirtualTableModel<@NonNull SegmentStoreTableLine> currentModel = response.getModel();
+        @NonNull List<@NonNull VirtualTableLine> expectedData = Arrays.asList(
+                new VirtualTableLine(0, Arrays.asList(new VirtualTableCell(lineTime(0)), new VirtualTableCell(lineTime(0)), new VirtualTableCell(lineDuration(0)), new VirtualTableCell(MAIN_TRACE_NAME))),
+                new VirtualTableLine(1, Arrays.asList(new VirtualTableCell(lineTime(0)), new VirtualTableCell(lineTime(1)), new VirtualTableCell(lineDuration(1)), new VirtualTableCell(MAIN_TRACE_NAME))),
+                new VirtualTableLine(2, Arrays.asList(new VirtualTableCell(lineTime(0)), new VirtualTableCell(lineTime(2)), new VirtualTableCell(lineDuration(2)), new VirtualTableCell(MAIN_TRACE_NAME))),
+                new VirtualTableLine(3, Arrays.asList(new VirtualTableCell(lineTime(0)), new VirtualTableCell(lineTime(3)), new VirtualTableCell(lineDuration(3)), new VirtualTableCell(MAIN_TRACE_NAME))),
+                new VirtualTableLine(4, Arrays.asList(new VirtualTableCell(lineTime(0)), new VirtualTableCell(lineTime(4)), new VirtualTableCell(lineDuration(4)), new VirtualTableCell(MAIN_TRACE_NAME))),
+                new VirtualTableLine(5, Arrays.asList(new VirtualTableCell(lineTime(0)), new VirtualTableCell(lineTime(5)), new VirtualTableCell(lineDuration(5)), new VirtualTableCell(MAIN_TRACE_NAME))),
+                new VirtualTableLine(6, Arrays.asList(new VirtualTableCell(lineTime(0)), new VirtualTableCell(lineTime(6)), new VirtualTableCell(lineDuration(6)), new VirtualTableCell(MAIN_TRACE_NAME))),
+                new VirtualTableLine(7, Arrays.asList(new VirtualTableCell(lineTime(7)), new VirtualTableCell(lineTime(7)), new VirtualTableCell(lineDuration(0)), new VirtualTableCell(MAIN_TRACE_NAME))),
+                new VirtualTableLine(8, Arrays.asList(new VirtualTableCell(lineTime(7)), new VirtualTableCell(lineTime(8)), new VirtualTableCell(lineDuration(1)), new VirtualTableCell(MAIN_TRACE_NAME))),
+                new VirtualTableLine(9, Arrays.asList(new VirtualTableCell(lineTime(7)), new VirtualTableCell(lineTime(9)), new VirtualTableCell(lineDuration(2)), new VirtualTableCell(MAIN_TRACE_NAME))));
+
+        TmfModelResponse<@NonNull ITmfVirtualTableModel<@NonNull VirtualTableLine>> response = fMainDataProvider.fetchLines(fetchParameters, null);
+        ITmfVirtualTableModel<@NonNull VirtualTableLine> currentModel = response.getModel();
         assertNotNull(currentModel);
-        ITmfVirtualTableModel<@NonNull SegmentStoreTableLine> expectedModel = new TmfVirtualTableModel<>(new ArrayList<>(fColumns.values()), expectedData, 0, 66535);
+        ITmfVirtualTableModel<@NonNull VirtualTableLine> expectedModel = new TmfVirtualTableModel<>(new ArrayList<>(fColumns.values()), expectedData, 0, 66535);
         assertEquals(expectedModel, currentModel);
     }
 

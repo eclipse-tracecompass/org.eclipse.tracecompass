@@ -45,6 +45,7 @@ import org.eclipse.tracecompass.internal.provisional.tmf.core.model.table.ITmfVi
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.table.ITmfVirtualTableModel;
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.table.TmfVirtualTableModel;
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.table.VirtualTableCell;
+import org.eclipse.tracecompass.internal.provisional.tmf.core.model.table.VirtualTableLine;
 import org.eclipse.tracecompass.internal.tmf.core.model.AbstractTmfTraceDataProvider;
 import org.eclipse.tracecompass.internal.tmf.core.model.filters.FetchParametersUtils;
 import org.eclipse.tracecompass.segmentstore.core.ISegment;
@@ -76,7 +77,7 @@ import com.google.common.collect.HashBiMap;
  * @author: Kyrollos Bekhet
  */
 
-public class SegmentStoreTableDataProvider extends AbstractTmfTraceDataProvider implements ITmfVirtualTableDataProvider<TmfTreeDataModel, SegmentStoreTableLine> {
+public class SegmentStoreTableDataProvider extends AbstractTmfTraceDataProvider implements ITmfVirtualTableDataProvider<TmfTreeDataModel, VirtualTableLine> {
     /**
      *
      * A simple class to create checkpoints to index the segments of a segment
@@ -364,7 +365,7 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTraceDataProvider 
     }
 
     @Override
-    public TmfModelResponse<ITmfVirtualTableModel<SegmentStoreTableLine>> fetchLines(Map<String, Object> fetchParameters, @Nullable IProgressMonitor monitor) {
+    public TmfModelResponse<ITmfVirtualTableModel<VirtualTableLine>> fetchLines(Map<String, Object> fetchParameters, @Nullable IProgressMonitor monitor) {
         TraceCompassLogUtils.traceAsyncStart(LOGGER, Level.FINE, "SegmentStoreTableDataProvider#fetchLines", fId, 2); //$NON-NLS-1$
         fetchParameters.putIfAbsent(DataProviderParameterUtils.REQUESTED_COLUMN_IDS_KEY, Collections.emptyList());
         VirtualTableQueryFilter queryFilter = FetchParametersUtils.createVirtualTableQueryFilter(fetchParameters);
@@ -399,12 +400,12 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTraceDataProvider 
         return new TmfModelResponse<>(null, ITmfResponse.Status.FAILED, CommonStatusMessage.INCORRECT_QUERY_PARAMETERS);
     }
 
-    private static TmfModelResponse<ITmfVirtualTableModel<SegmentStoreTableLine>> extractRequestedLines(VirtualTableQueryFilter queryFilter, Map<String, Object> fetchParameters, ISegmentStore<ISegment> segmentStore, Map<Long, ISegmentAspect> aspects,
+    private static TmfModelResponse<ITmfVirtualTableModel<VirtualTableLine>> extractRequestedLines(VirtualTableQueryFilter queryFilter, Map<String, Object> fetchParameters, ISegmentStore<ISegment> segmentStore, Map<Long, ISegmentAspect> aspects,
             SegmentIndexesComparatorWrapper indexesComparatorWrapper) {
         VirtualTableQueryFilter localQueryFilter = queryFilter;
         @Nullable Predicate<ISegment> searchFilter = generateFilter(fetchParameters);
         List<Long> columnIds = new ArrayList<>(aspects.keySet());
-        List<SegmentStoreTableLine> lines = new ArrayList<>();
+        List<VirtualTableLine> lines = new ArrayList<>();
         int startIndexRank = (int) (localQueryFilter.getIndex() / STEP);
         int actualStartQueryIndex = (int) (localQueryFilter.getIndex() % STEP);
         SegmentStoreIndex segIndex = indexesComparatorWrapper.getIndexes().get(startIndexRank);
@@ -446,7 +447,7 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTraceDataProvider 
                 break;
             }
             long lineNumber = localQueryFilter.getIndex() + lines.size();
-            SegmentStoreTableLine newLine = buildSegmentStoreTableLine(aspects, newSegStore.get(i), lineNumber, searchFilter);
+            VirtualTableLine newLine = buildSegmentStoreTableLine(aspects, newSegStore.get(i), lineNumber, searchFilter);
             lines.add(newLine);
         }
         return new TmfModelResponse<>(new TmfVirtualTableModel<>(columnIds, lines, localQueryFilter.getIndex(), segmentStore.size()), ITmfResponse.Status.COMPLETED, CommonStatusMessage.COMPLETED);
@@ -628,7 +629,7 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTraceDataProvider 
      * @return Returns a SegmentStoreTableLine after resolving the aspects of a
      *         given segment
      */
-    private static SegmentStoreTableLine buildSegmentStoreTableLine(Map<Long, ISegmentAspect> aspects, ISegment segment, long lineNumber, @Nullable Predicate<ISegment> searchFilter) {
+    private static VirtualTableLine buildSegmentStoreTableLine(Map<Long, ISegmentAspect> aspects, ISegment segment, long lineNumber, @Nullable Predicate<ISegment> searchFilter) {
         List<VirtualTableCell> entry = new ArrayList<>(aspects.size());
         for (Entry<Long, ISegmentAspect> aspectEntry : aspects.entrySet()) {
             ISegmentAspect aspect = Objects.requireNonNull(aspectEntry.getValue());
@@ -636,7 +637,7 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTraceDataProvider 
             String cellContent = formatResolvedAspect(aspectResolved, aspect.getName());
             entry.add(new VirtualTableCell(cellContent));
         }
-        SegmentStoreTableLine tableLine = new SegmentStoreTableLine(entry, lineNumber);
+        VirtualTableLine tableLine = new VirtualTableLine(lineNumber, entry);
         if (searchFilter != null) {
             tableLine.setActiveProperties(searchFilter.test(segment) ? CoreFilterProperty.HIGHLIGHT : 0);
         }
