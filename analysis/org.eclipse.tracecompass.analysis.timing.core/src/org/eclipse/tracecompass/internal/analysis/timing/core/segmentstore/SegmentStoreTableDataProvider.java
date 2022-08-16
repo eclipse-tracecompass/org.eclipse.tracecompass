@@ -189,10 +189,10 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTraceDataProvider 
      * @author Kyrollos Bekhet
      *
      */
-    private class SegmentIndexesComparatorWrapper {
-        private List<SegmentStoreIndex> fIndexes;
-        private Comparator<ISegment> fComparator;
-        private String fAspectName;
+    private static final class SegmentIndexesComparatorWrapper {
+        private final List<SegmentStoreIndex> fIndexes;
+        private final Comparator<ISegment> fComparator;
+        private final String fAspectName;
 
         @SuppressWarnings("null")
         public SegmentIndexesComparatorWrapper() {
@@ -207,8 +207,12 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTraceDataProvider 
             fAspectName = aspectName;
         }
 
-        public List<SegmentStoreIndex> getIndexes() {
-            return fIndexes;
+        public SegmentStoreIndex getIndex(int rank) {
+            return fIndexes.get(rank);
+        }
+
+        public int getIndexesSize() {
+            return fIndexes.size();
         }
 
         public Comparator<ISegment> getComparator() {
@@ -408,7 +412,7 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTraceDataProvider 
         List<VirtualTableLine> lines = new ArrayList<>();
         int startIndexRank = (int) (localQueryFilter.getIndex() / STEP);
         int actualStartQueryIndex = (int) (localQueryFilter.getIndex() % STEP);
-        SegmentStoreIndex segIndex = indexesComparatorWrapper.getIndexes().get(startIndexRank);
+        SegmentStoreIndex segIndex = indexesComparatorWrapper.getIndex(startIndexRank);
         long start = segIndex.getStartTimestamp();
         SegmentPredicate filter = new SegmentPredicate(segIndex, indexesComparatorWrapper.getAspectName());
         int endIndexRank = (int) ((localQueryFilter.getIndex() + localQueryFilter.getCount() + STEP - 1) / STEP);
@@ -432,7 +436,7 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTraceDataProvider 
                 long nextSegmentRank = segment.getRank() + 1;
                 startIndexRank = (int) (nextSegmentRank / STEP);
                 actualStartQueryIndex = (int) (nextSegmentRank % STEP);
-                segIndex = indexesComparatorWrapper.getIndexes().get(startIndexRank);
+                segIndex = indexesComparatorWrapper.getIndex(startIndexRank);
                 start = segIndex.getStartTimestamp();
                 endIndexRank = (int) ((nextSegmentRank + localQueryFilter.getCount() + STEP - 1) / STEP);
                 end = getEndTimestamp(endIndexRank, indexesComparatorWrapper);
@@ -476,9 +480,8 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTraceDataProvider 
         int startTimeIndexRank = (int) (startQueryIndex / STEP);
         int actualStartQueryIndex = (int) (startQueryIndex % STEP);
         int endTimeIndexRank = startTimeIndexRank + 1;
-        List<SegmentStoreIndex> indexes = indexesComparatorWrapper.getIndexes();
-        while (startTimeIndexRank < indexes.size()) {
-            SegmentStoreIndex segIndex = indexes.get(startTimeIndexRank);
+        while (startTimeIndexRank < indexesComparatorWrapper.getIndexesSize()) {
+            SegmentStoreIndex segIndex = indexesComparatorWrapper.getIndex(startTimeIndexRank);
             SegmentPredicate filter = new SegmentPredicate(segIndex, indexesComparatorWrapper.getAspectName());
             long end = getEndTimestamp(endTimeIndexRank, indexesComparatorWrapper);
             List<ISegment> segments = segmentStore.getIntersectingElements(segIndex.getStartTimestamp(), end, indexesComparatorWrapper.getComparator(), filter);
@@ -516,7 +519,7 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTraceDataProvider 
         int startTimeIndexRank = (int) (endQueryIndex / STEP);
         int endTimeIndexRank = startTimeIndexRank + 1;
         while (endTimeIndexRank > 0) {
-            SegmentStoreIndex segIndex = indexesWrapper.getIndexes().get(startTimeIndexRank);
+            SegmentStoreIndex segIndex = indexesWrapper.getIndex(startTimeIndexRank);
             SegmentPredicate filter = new SegmentPredicate(segIndex, indexesWrapper.getAspectName());
             long end = getEndTimestamp(endTimeIndexRank, indexesWrapper);
             List<ISegment> segments = segmentStore.getIntersectingElements(segIndex.getStartTimestamp(), end, indexesWrapper.getComparator(), filter);
@@ -692,15 +695,14 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTraceDataProvider 
     }
 
     private static long getEndTimestamp(int position, SegmentIndexesComparatorWrapper indexComparatorWrapper) {
-        List<SegmentStoreIndex> indexes = indexComparatorWrapper.getIndexes();
-        if (position >= indexes.size()) {
+        if (position >= indexComparatorWrapper.getIndexesSize()) {
             boolean isEndTimeComparatorUsed = indexComparatorWrapper.getAspectName().equals(SegmentEndTimeAspect.SEGMENT_END_TIME_ASPECT.getName());
             if (isEndTimeComparatorUsed) {
                 return 0;
             }
             return Long.MAX_VALUE;
         }
-        return indexes.get(position).getStartTimestamp();
+        return indexComparatorWrapper.getIndex(position).getStartTimestamp();
     }
 
 }
