@@ -8,13 +8,13 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  **********************************************************************/
+
 package org.eclipse.tracecompass.analysis.timing.core.tests.segmentstore;
 
 import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.annotation.NonNull;
-//import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.analysis.timing.core.segmentstore.AbstractSegmentStoreAnalysisModule;
 import org.eclipse.tracecompass.segmentstore.core.BasicSegment;
 import org.eclipse.tracecompass.segmentstore.core.ISegment;
@@ -26,16 +26,20 @@ import org.eclipse.tracecompass.tmf.tests.stubs.trace.xml.TmfXmlTraceStub;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
 
-/*
+/**
  * Test stub for segment store table
  *
  * @author Kyrollos Bekhet
  */
 public class StubSegmentStoreProvider extends AbstractSegmentStoreAnalysisModule {
 
-    public static final int SIZE = 65535;
+    private static final int SIZE = 65535;
+
     private final List<@NonNull ISegment> fPreFixture;
 
+    /**
+     * The constructor
+     */
     public StubSegmentStoreProvider() {
         ImmutableList.Builder<@NonNull ISegment> builder = new Builder<>();
         int previousStartTime = 0;
@@ -56,6 +60,7 @@ public class StubSegmentStoreProvider extends AbstractSegmentStoreAnalysisModule
 
     @Override
     protected void canceling() {
+        // Empty
     }
 
     @Override
@@ -71,5 +76,4 @@ public class StubSegmentStoreProvider extends AbstractSegmentStoreAnalysisModule
     public boolean executeAnalysis(@NonNull IProgressMonitor monitor) throws TmfAnalysisException {
         return super.executeAnalysis(monitor);
     }
-
 }
