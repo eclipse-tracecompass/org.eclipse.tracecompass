@@ -137,13 +137,17 @@ public interface ISegmentStore<E extends ISegment> extends Collection<E> {
      * the specified order. We define this target segment by a predicate that
      * tests a given segment
      *
-     * @param start the target start position
+     * @param start
+     *            the target start position
      *
-     * @param end the target end position
+     * @param end
+     *            the target end position
      *
-     * @param order The desired order for the returned iterator
+     * @param order
+     *            The desired order for the returned iterator
      *
-     * param filter The predicate that defines the first target segment
+     * @param filter
+     *            The predicate that defines the first target segment
      *
      * @return The segments that follows a specific segment inclusively
      *
@@ -152,13 +156,13 @@ public interface ISegmentStore<E extends ISegment> extends Collection<E> {
     default List<E> getIntersectingElements(long start, long end, Comparator<ISegment> order, Predicate<ISegment> filter) {
         long startTime = start;
         long endTime = end;
-        if(start > end) {
+        if (start > end) {
             long tmp = endTime;
             endTime = startTime;
             startTime = tmp;
         }
         Iterable<E> segments = getIntersectingElements(startTime, endTime, order);
-        List ret;
+        List<E> ret;
         long i = 0;
         for (E segment : segments) {
             if (filter.test(segment)) {
@@ -167,9 +171,9 @@ public interface ISegmentStore<E extends ISegment> extends Collection<E> {
             i++;
         }
         if (segments instanceof ArrayList<?>) {
-            ret = ((ArrayList) segments).subList((int) i, ((ArrayList) segments).size());
+            ret = ((ArrayList<E>) segments).subList((int) i, ((ArrayList<E>) segments).size());
         } else {
-            List tmp = Lists.newArrayList(segments);
+            List<E> tmp = Lists.newArrayList(segments);
             ret = tmp.subList((int) i, tmp.size());
         }
         return ret;
