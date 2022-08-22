@@ -55,8 +55,8 @@ import org.eclipse.tracecompass.tmf.core.TmfStrings;
 import org.eclipse.tracecompass.tmf.core.analysis.IAnalysisModule;
 import org.eclipse.tracecompass.tmf.core.dataprovider.DataProviderParameterUtils;
 import org.eclipse.tracecompass.tmf.core.model.CommonStatusMessage;
-import org.eclipse.tracecompass.tmf.core.model.tree.TmfTreeDataModel;
 import org.eclipse.tracecompass.tmf.core.model.CoreFilterProperty;
+import org.eclipse.tracecompass.tmf.core.model.tree.TmfTreeDataModel;
 import org.eclipse.tracecompass.tmf.core.model.tree.TmfTreeModel;
 import org.eclipse.tracecompass.tmf.core.response.ITmfResponse;
 import org.eclipse.tracecompass.tmf.core.response.TmfModelResponse;
@@ -76,10 +76,9 @@ import com.google.common.collect.HashBiMap;
  *
  * @author: Kyrollos Bekhet
  */
-
 public class SegmentStoreTableDataProvider extends AbstractTmfTraceDataProvider implements ITmfVirtualTableDataProvider<TmfTreeDataModel, VirtualTableLine> {
+
     /**
-     *
      * A simple class to create checkpoints to index the segments of a segment
      * store
      */
@@ -112,7 +111,6 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTraceDataProvider 
      * first of the checkpoint.
      *
      * @author Kyrollos Bekhet.
-     *
      */
     private static class SegmentPredicate implements Predicate<ISegment> {
         private final long fStartTime;
@@ -155,7 +153,6 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTraceDataProvider 
      * A placeholder class to wrap a segment and its rank.
      *
      * @author Kyrollos Bekhet
-     *
      */
     private static class WrappedSegment {
         private ISegment fSegment;
@@ -187,7 +184,6 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTraceDataProvider 
      * used to create the indexes.
      *
      * @author Kyrollos Bekhet
-     *
      */
     private static final class SegmentIndexesComparatorWrapper {
         private final List<SegmentStoreIndex> fIndexes;
@@ -513,7 +509,6 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTraceDataProvider 
      * @return A {@link WrappedSegment} that contains the matching previous
      *         segment found before a given index.
      */
-
     private static @Nullable WrappedSegment getPreviousWrappedSegmentMatching(Predicate<ISegment> searchFilter, long endQueryIndex, ISegmentStore<ISegment> segmentStore, SegmentIndexesComparatorWrapper indexesWrapper) {
         int actualEndQueryIndex = (int) (endQueryIndex % STEP);
         int startTimeIndexRank = (int) (endQueryIndex / STEP);
@@ -704,5 +699,4 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTraceDataProvider 
         }
         return indexComparatorWrapper.getIndex(position).getStartTimestamp();
     }
-
 }

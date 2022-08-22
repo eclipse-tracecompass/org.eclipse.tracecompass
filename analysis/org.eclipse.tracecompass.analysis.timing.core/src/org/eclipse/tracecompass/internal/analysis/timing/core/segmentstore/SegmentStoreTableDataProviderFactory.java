@@ -11,6 +11,7 @@
  * Contributors:
  *   Kyrollos Bekhet - Initial API and implementation
  ******************************************************************************/
+
 package org.eclipse.tracecompass.internal.analysis.timing.core.segmentstore;
 
 import java.util.ArrayList;
