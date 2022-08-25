@@ -580,7 +580,8 @@ public class TmfEventTableDataProvider extends AbstractTmfTraceDataProvider impl
     private static EventTableLine buildEventTableLine(Map<Long, ITmfEventAspect<?>> aspects, ITmfEvent event, long lineIndex, long lineRank, boolean matches) {
         List<VirtualTableCell> entry = new ArrayList<>(aspects.size());
         for (Entry<Long, ITmfEventAspect<?>> aspectEntry : aspects.entrySet()) {
-            Object aspectResolved = aspectEntry.getValue().resolve(event);
+            ITmfEventAspect<?> aspect = Objects.requireNonNull(aspectEntry.getValue());
+            Object aspectResolved = aspect.resolve(event);
             String cellContent = aspectResolved == null ? StringUtils.EMPTY : String.valueOf(aspectResolved);
             entry.add(new VirtualTableCell(cellContent));
         }
