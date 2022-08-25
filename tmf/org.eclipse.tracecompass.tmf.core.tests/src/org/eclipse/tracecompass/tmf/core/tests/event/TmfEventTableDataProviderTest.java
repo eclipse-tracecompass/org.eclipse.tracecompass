@@ -153,8 +153,9 @@ public class TmfEventTableDataProviderTest {
     }
 
     /**
-     * Given a start index and count, we check model returned by the data provider.
-     * This test don't provide desired columns, so it queries data for all of them
+     * Given a start index and count, we check model returned by the data
+     * provider. This test doesn't provide desired columns, so it queries data
+     * for all of them
      */
     @Test
     public void testDataProvider() {
@@ -175,8 +176,8 @@ public class TmfEventTableDataProviderTest {
     }
 
     /**
-     * Given a start index that is out of bound and count, we check data returned
-     * by the data provider.
+     * Given a start index that is out of bound and count, we check data
+     * returned by the data provider.
      */
     @Test
     public void testDataProviderWithOutOfBoundIndex() {
@@ -242,8 +243,8 @@ public class TmfEventTableDataProviderTest {
     }
 
     /**
-     * Given a start index, count and a list of desired columns that contains only
-     * non-existent columns, we check data returned by the data provider.
+     * Given a start index, count and a list of desired columns that contains
+     * only non-existent columns, we check data returned by the data provider.
      */
     @Test
     public void testDataProviderWithNonExistentColumns() {
@@ -325,9 +326,9 @@ public class TmfEventTableDataProviderTest {
     }
 
     /**
-     * Given a start index, count and a list of desired columns, we check model returned by
-     * the data provider. We also apply a search filter on a single column, where no event matches
-     * the search expression.
+     * Given a start index, count and a list of desired columns, we check model
+     * returned by the data provider. We also apply a search filter on a single
+     * column, where no event matches the search expression.
      */
     @Test
     public void testDataProviderWithSearchNoMatch() {
@@ -394,7 +395,8 @@ public class TmfEventTableDataProviderTest {
         TmfVirtualTableModel<@NonNull EventTableLine> expectedModel = new TmfVirtualTableModel<>(expectedColumnsId, expectedData, 2, 10000);
         assertEquals(expectedModel, currentModel);
 
-        // Query for events with search filter active. Matching lines will be tagged for highlighting
+        // Query for events with search filter active. Matching lines will be
+        // tagged for highlighting
         int nbEventsRequested = 5;
         queryFilter = new EventTableQueryFilter(Arrays.asList(eventTypeColumnId, timestampColumnId), 0, nbEventsRequested, null);
         parameters = FetchParametersUtils.virtualTableQueryToMap(queryFilter);
@@ -418,8 +420,8 @@ public class TmfEventTableDataProviderTest {
     /**
      * Given a start index, count and a list of desired columns, we check model
      * returned by the data provider. We also apply a search filter on a single
-     * column to search NEXT from the start index. N number of events from
-     * the first matched event will be returned by the data provider.
+     * column to search NEXT from the start index. N number of events from the
+     * first matched event will be returned by the data provider.
      */
     @Test
     public void testDataProviderWithGetDataFromSearchForwardMatch() {
@@ -459,8 +461,8 @@ public class TmfEventTableDataProviderTest {
 
     /**
      * Given a start index, count and a list of desired columns, we check model
-     * returned by the data provider. We also apply a search filter on a single column
-     * with search direction PREVIOUS.
+     * returned by the data provider. We also apply a search filter on a single
+     * column with search direction PREVIOUS.
      */
     @Test
     public void testDataProviderWithSimpleSingleColumnsIndexBackwardsSearch() {
@@ -470,7 +472,8 @@ public class TmfEventTableDataProviderTest {
         assertNotNull(timestampColumnId);
         assertNotNull(eventTypeColumnId);
 
-        // Query for the index for the first matching event backwards, starting at index 10
+        // Query for the index for the first matching event backwards, starting
+        // at index 10
         VirtualTableQueryFilter queryFilter = new EventTableQueryFilter(Arrays.asList(eventTypeColumnId, timestampColumnId), 10, 1, null);
         Map<String, Object> parameters = FetchParametersUtils.virtualTableQueryToMap(queryFilter);
 
@@ -507,7 +510,8 @@ public class TmfEventTableDataProviderTest {
         assertNotNull(timestampColumnId);
         assertNotNull(eventTypeColumnId);
 
-        // Query for the 3 events starting from the the first matching event backwards, starting at index 10
+        // Query for the 3 events starting from the the first matching event
+        // backwards, starting at index 10
         int nbEventsRequested = 3;
         VirtualTableQueryFilter queryFilter = new EventTableQueryFilter(Arrays.asList(eventTypeColumnId, timestampColumnId), 10, nbEventsRequested, null);
         Map<String, Object> parameters = FetchParametersUtils.virtualTableQueryToMap(queryFilter);
@@ -535,10 +539,10 @@ public class TmfEventTableDataProviderTest {
         assertEquals(expectedModel, currentModel);
     }
 
-
     /**
      * Given a start index, count and a list of desired columns, we check model
-     * returned by the data provider. We also apply a search filter on multiple columns
+     * returned by the data provider. We also apply a search filter on multiple
+     * columns
      */
     @Test
     public void testDataProviderWithSimpleMultiColumnsSearch() {
@@ -571,7 +575,8 @@ public class TmfEventTableDataProviderTest {
         TmfVirtualTableModel<@NonNull EventTableLine> expectedModel = new TmfVirtualTableModel<>(expectedColumnsId, expectedData, 3, 10000);
         assertEquals(expectedModel, currentModel);
 
-        // Query for events with search filter active. Matching lines will be tagged for highlighting
+        // Query for events with search filter active. Matching lines will be
+        // tagged for highlighting
         int nbEventsRequested = 5;
         queryFilter = new EventTableQueryFilter(new ArrayList<>(fColumns.values()), 0, nbEventsRequested, null);
         parameters = FetchParametersUtils.virtualTableQueryToMap(queryFilter);
