@@ -107,7 +107,11 @@ public class TmfEventTableDataProviderTest {
     }
 
     private static String lineTimestamp(long millisecond) {
-        return TmfTimestamp.fromMillis(millisecond).toString();
+        String timestamp = TmfTimestamp.fromMillis(millisecond).toString();
+        if (timestamp == null) {
+            timestamp = "";
+        }
+        return timestamp;
     }
 
     private static String lineNsTimestamp(int millisecond) {
@@ -349,7 +353,6 @@ public class TmfEventTableDataProviderTest {
 
         TmfModelResponse<ITmfVirtualTableModel<EventTableLine>> response = fProvider.fetchLines(parameters, null);
         ITmfVirtualTableModel<EventTableLine> currentModel = response.getModel();
-        currentModel = response.getModel();
         assertNotNull(currentModel);
         assertTrue(currentModel.getLines().isEmpty());
         TmfVirtualTableModel<@NonNull EventTableLine> expectedModel = new TmfVirtualTableModel<>(expectedColumnsId, expectedData, 0, 10000);
