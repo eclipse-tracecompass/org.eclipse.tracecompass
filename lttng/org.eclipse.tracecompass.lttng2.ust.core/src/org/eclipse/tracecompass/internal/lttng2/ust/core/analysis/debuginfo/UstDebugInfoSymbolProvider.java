@@ -12,6 +12,7 @@
 package org.eclipse.tracecompass.internal.lttng2.ust.core.analysis.debuginfo;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -23,9 +24,15 @@ import org.eclipse.tracecompass.lttng2.ust.core.analysis.debuginfo.UstDebugInfoA
 import org.eclipse.tracecompass.lttng2.ust.core.analysis.debuginfo.UstDebugInfoBinaryAspect;
 import org.eclipse.tracecompass.lttng2.ust.core.analysis.debuginfo.UstDebugInfoFunctionAspect;
 import org.eclipse.tracecompass.lttng2.ust.core.trace.LttngUstTrace;
+import org.eclipse.tracecompass.statesystem.core.ITmfStateSystem;
+import org.eclipse.tracecompass.statesystem.core.exceptions.AttributeNotFoundException;
+import org.eclipse.tracecompass.statesystem.core.exceptions.StateSystemDisposedException;
+import org.eclipse.tracecompass.statesystem.core.interval.ITmfStateInterval;
 import org.eclipse.tracecompass.tmf.core.symbols.DefaultSymbolProvider;
 import org.eclipse.tracecompass.tmf.core.symbols.SymbolProviderManager;
 import org.eclipse.tracecompass.tmf.core.symbols.TmfResolvedSymbol;
+import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
+import org.eclipse.tracecompass.tmf.core.trace.TmfTraceUtils;
 
 /**
  * Symbol provider for UST traces with debug information.
@@ -77,9 +84,19 @@ public class UstDebugInfoSymbolProvider extends DefaultSymbolProvider {
 
     @Override
     public @Nullable TmfResolvedSymbol getSymbol(int pid, long timestamp, long address) {
-        BinaryCallsite bc = UstDebugInfoBinaryAspect.getBinaryCallsite(getTrace(), pid, timestamp, address);
+        LttngUstTrace trace = getTrace();
+        BinaryCallsite bc = UstDebugInfoBinaryAspect.getBinaryCallsite(trace, pid, timestamp, address);
         if (bc == null) {
             return null;
+        }
+
+        String functionName = getFunctionNameFromSS(bc, trace);
+        /*
+         * Return function information only if it is non null, otherwise try to
+         * resolve the symbol in another way (see code below).
+         */
+        if (functionName != null) {
+            return new TmfResolvedSymbol(bc.getOffset(), functionName);
         }
 
         FunctionLocation loc = UstDebugInfoFunctionAspect.getFunctionFromBinaryLocation(bc);
@@ -96,5 +113,45 @@ public class UstDebugInfoSymbolProvider extends DefaultSymbolProvider {
             }
         }
         return new TmfLibrarySymbol(bc.getOffset(), bc.getBinaryFilePath());
+    }
+
+    /**
+     * Try to resolve the function name using information stored in the SS of
+     * the {@link UstDebugInfoAnalysisModule}
+     *
+     * @param bc
+     *            the {@link BinaryCallsite}, containing information
+     *            corresponding to an instruction pointer
+     * @param trace
+     *            the lttng ust trace of the monitored application
+     * @return the function name, or null if not found
+     */
+    public static @Nullable String getFunctionNameFromSS(BinaryCallsite bc, ITmfTrace trace) {
+        Iterator<UstDebugInfoAnalysisModule> ustDebugModules = TmfTraceUtils.getAnalysisModulesOfClass(trace, UstDebugInfoAnalysisModule.class).iterator();
+        if (ustDebugModules.hasNext()) {
+            UstDebugInfoAnalysisModule ustDebugModule = ustDebugModules.next();
+            ITmfStateSystem ustDebugSsb = ustDebugModule.getStateSystem();
+            if (ustDebugSsb != null) {
+                String binFilePath = bc.getBinaryFilePath();
+                long offset = bc.getOffset() + ustDebugSsb.getStartTime();
+                try {
+                    int functionNameQuark = ustDebugSsb.getQuarkAbsolute(binFilePath, UstDebugInfoStateProvider.FUNCTION_NAME);
+                    ITmfStateInterval functionInterval = ustDebugSsb.querySingleState(offset, functionNameQuark);
+                    return functionInterval.getValueString();
+                } catch (AttributeNotFoundException e) {
+                    /*
+                     * It's fine, sometimes a function could not be found with
+                     * the info stored in the SS using nm. Try to resolve the
+                     * symbol in another way.
+                     */
+                } catch (StateSystemDisposedException e) {
+                    /*
+                     * This can happen if user closes a trace during the
+                     * analysis execution. Continue with what we have.
+                     */
+                }
+            }
+        }
+        return null;
     }
 }

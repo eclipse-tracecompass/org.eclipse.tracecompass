@@ -13,22 +13,33 @@ package org.eclipse.tracecompass.internal.lttng2.ust.core.analysis.debuginfo;
 
 import static org.eclipse.tracecompass.common.core.NonNullUtils.checkNotNull;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.analysis.os.linux.core.event.aspect.LinuxPidAspect;
 import org.eclipse.tracecompass.common.core.log.TraceCompassLog;
 import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils;
+import org.eclipse.tracecompass.common.core.process.ProcessUtils;
 import org.eclipse.tracecompass.internal.lttng2.ust.core.trace.layout.LttngUst28EventLayout;
 import org.eclipse.tracecompass.lttng2.ust.core.trace.LttngUstTrace;
 import org.eclipse.tracecompass.lttng2.ust.core.trace.layout.ILttngUstEventLayout;
 import org.eclipse.tracecompass.statesystem.core.ITmfStateSystemBuilder;
+import org.eclipse.tracecompass.statesystem.core.StateSystemUtils;
 import org.eclipse.tracecompass.statesystem.core.exceptions.AttributeNotFoundException;
+import org.eclipse.tracecompass.statesystem.core.exceptions.StateSystemDisposedException;
 import org.eclipse.tracecompass.statesystem.core.exceptions.StateValueTypeException;
+import org.eclipse.tracecompass.statesystem.core.interval.ITmfStateInterval;
 import org.eclipse.tracecompass.tmf.core.event.ITmfEvent;
 import org.eclipse.tracecompass.tmf.core.statesystem.AbstractTmfStateProvider;
 import org.eclipse.tracecompass.tmf.core.statesystem.ITmfStateProvider;
@@ -36,6 +47,7 @@ import org.eclipse.tracecompass.tmf.core.trace.TmfTraceUtils;
 import org.eclipse.tracecompass.tmf.core.util.Pair;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Iterables;
 import com.google.common.io.BaseEncoding;
 
 /**
@@ -59,6 +71,13 @@ import com.google.common.io.BaseEncoding;
  * /vpid/<baddr>/path        Path to the binary, e.g. "/usr/lib/libhello.so".
  * /vpid/<baddr>/is_pic      Integer 1 if the binary contains position
  *                           independent code, 0 otherwise.
+ * /<binPath>                null
+ * /<binPath>/functionName   The symbols resolved using nm (when the nm utility is
+ *                           available). Time is used to represent the address range.
+ * /<binPath>/lineNr         Function line nr retrieved from nm (when the nm utility is
+ *                           available). Time is used to represent the address range.
+ * /<binPath>/sourceFileName The file name retrieved from nm (when the nm utility is
+ *                           available). Time is used to represent the address range.
  * </pre>
  *
  * The "baddr" attribute name represents the memory mapping base address a
@@ -84,6 +103,15 @@ public class UstDebugInfoStateProvider extends AbstractTmfStateProvider {
     /** State system attribute name for the debug link of the binary */
     public static final String DEBUG_LINK_ATTRIB = "debug_link"; //$NON-NLS-1$
 
+    /** State system attribute name for the function names identified with nm */
+    public static final String FUNCTION_NAME = "functionName"; //$NON-NLS-1$
+
+    /** State system attribute name for the file names identified with nm */
+    public static final String SOURCE_FILE_NAME = "sourceFileName"; //$NON-NLS-1$
+
+    /** State system attribute name for the line numbers identified with nm */
+    public static final String LINE_NUMBER = "lineNr"; //$NON-NLS-1$
+
     /** Version of this state provider */
     private static final int VERSION = 5;
 
@@ -97,6 +125,14 @@ public class UstDebugInfoStateProvider extends AbstractTmfStateProvider {
     private static final int STATEDUMP_BUILD_ID_INDEX = 6;
     private static final int STATEDUMP_DEBUG_LINK_INDEX = 7;
     private static final int STATEDUMP_START_INDEX = 8;
+
+    private static final String NM_EXECUTABLE = "nm"; //$NON-NLS-1$
+    /*
+     * Pattern to match nm console output. Usually in the following form:
+     *
+     * <value> <type> <name> <source>:<line>
+     */
+    private static final Pattern fNmPattern = Pattern.compile("(\\w+)(\\s+)(\\w)(\\s+)([^\\t]*)([\\t]*)([^\\:]*)([\\:]*)(.*)"); //$NON-NLS-1$
 
     private final LttngUst28EventLayout fLayout;
     private final Map<String, Integer> fEventNames;
@@ -549,5 +585,100 @@ public class UstDebugInfoStateProvider extends AbstractTmfStateProvider {
     @Override
     public int getVersion() {
         return VERSION;
+    }
+
+    @Override
+    public void done() {
+        Set<String> binPaths = new HashSet<>();
+        @NonNull ITmfStateSystemBuilder ssb = checkNotNull(getStateSystemBuilder());
+        List<Integer> vPidQuarks = ssb.getQuarks("*"); //$NON-NLS-1$
+        for (int vPidQuark : vPidQuarks) {
+            List<Integer> bAddrQuarks = ssb.getQuarks(vPidQuark, "*"); //$NON-NLS-1$
+            for (int bAddrQuark : bAddrQuarks) {
+                try {
+                    Integer pathQuark = ssb.getQuarkRelative(bAddrQuark, PATH_ATTRIB);
+                    List<ITmfStateInterval> states = StateSystemUtils.queryHistoryRange(ssb, pathQuark, ssb.getStartTime(), ssb.getCurrentEndTime());
+                    for (ITmfStateInterval state : states) {
+                        String binPath = state.getValueString();
+                        /*
+                         * The retrieved binary path can be null if we are
+                         * analysing a state when the process represented by the
+                         * vPid is not active. Add to the set only if non null,
+                         * otherwise ignore.
+                         */
+                        if (binPath != null) {
+                            binPaths.add(binPath);
+                        }
+                    }
+                } catch (AttributeNotFoundException e) {
+                    /* Something went very wrong. */
+                    throw new IllegalStateException(e);
+                } catch (StateSystemDisposedException e) {
+                    /*
+                     * This can happen if user closes a trace during the
+                     * analysis execution. Continue with what we have.
+                     */
+                }
+            }
+        }
+
+        for (String binPath : binPaths) {
+            // run nm and push in ss
+            getNmInfo(ssb, binPath);
+        }
+
+        super.done();
+    }
+
+    // ------------------------------------------------------------------------
+    // Utility methods making use of 'nm'
+    // ------------------------------------------------------------------------
+
+    /**
+     * Given a binary path, returns the nm results sorted by offset/address
+     *
+     * @param filePath
+     *            The absolute path of the binary to be used with nm
+     * @return the nm results sorted by offset/address
+     */
+    private static Iterable<String> callNm(String filePath) {
+        List<String> command = Arrays.asList(NM_EXECUTABLE, "-l", "-C", filePath); //$NON-NLS-1$ //$NON-NLS-2$
+        List<String> output = ProcessUtils.getOutputFromCommand(command);
+        if (output != null) {
+            // Sort by address (low to high)
+            Collections.sort(output);
+            return output;
+        }
+        /* Command returned an error */
+        return Collections.emptySet();
+    }
+
+    private static void getNmInfo(ITmfStateSystemBuilder ssb, String binFilePath) {
+        Iterable<String> sortedNmResults = callNm(binFilePath);
+        if (Iterables.size(sortedNmResults) > 0) {
+            for (String nmLine : sortedNmResults) {
+                Matcher nmLineMatcher = fNmPattern.matcher(nmLine);
+                if (nmLineMatcher.matches()) {
+                    String offset = nmLineMatcher.group(1).replaceFirst("^0+(?!$)", ""); //$NON-NLS-1$ //$NON-NLS-2$
+                    String functionName = nmLineMatcher.group(5);
+                    if ((offset != null) && (functionName != null)) {
+                        String sourceFile = nmLineMatcher.group(7);
+                        String lineNr = nmLineMatcher.group(9);
+                        // push in ss
+                        int funNameQuark = ssb.getQuarkAbsoluteAndAdd(binFilePath, FUNCTION_NAME);
+                        int sourceFileQuark = ssb.getQuarkAbsoluteAndAdd(binFilePath, SOURCE_FILE_NAME);
+                        int lineNrQuark = ssb.getQuarkAbsoluteAndAdd(binFilePath, LINE_NUMBER);
+                        try {
+                            Long offsetLong = Long.parseLong(offset, 16) + ssb.getStartTime();
+                            ssb.modifyAttribute(offsetLong, functionName, funNameQuark);
+                            ssb.modifyAttribute(offsetLong, sourceFile, sourceFileQuark);
+                            ssb.modifyAttribute(offsetLong, lineNr, lineNrQuark);
+                        } catch (NumberFormatException e) {
+                            // Do not write in ss
+                        }
+                    }
+                }
+            }
+        }
     }
 }

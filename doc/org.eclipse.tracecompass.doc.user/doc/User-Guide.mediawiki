@@ -3195,9 +3195,9 @@ associate trace events with their location in the original source code.
 
 To make use of this feature, first make sure your binaries are compiled with
 debug information (-g), so that the instruction pointers can be mapped to source
-code locations. This lookup is made using the ''addr2line'' command-line utility,
-which needs to be installed and on the '''$PATH''' of the system running Trace
-Compass. ''addr2line'' is available in most Linux distributions, Mac OS X, Windows using Cygwin and others.
+code locations. This lookup is made using the ''addr2line'' and ''nm'' command-line utilities,
+which need to be installed and on the '''$PATH''' of the system running Trace
+Compass. ''addr2line'' and ''nm'' are available in most Linux distributions, Mac OS X, Windows using Cygwin and others.
 
 The following trace events need to be present in the trace:
 

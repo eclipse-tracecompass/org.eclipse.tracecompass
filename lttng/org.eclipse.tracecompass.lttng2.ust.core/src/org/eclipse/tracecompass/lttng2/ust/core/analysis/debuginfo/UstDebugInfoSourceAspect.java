@@ -14,13 +14,20 @@ package org.eclipse.tracecompass.lttng2.ust.core.analysis.debuginfo;
 import static org.eclipse.tracecompass.common.core.NonNullUtils.nullToEmptyString;
 
 import java.io.File;
+import java.util.Iterator;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.internal.lttng2.ust.core.analysis.debuginfo.FileOffsetMapper;
+import org.eclipse.tracecompass.internal.lttng2.ust.core.analysis.debuginfo.UstDebugInfoStateProvider;
 import org.eclipse.tracecompass.lttng2.ust.core.trace.LttngUstTrace;
+import org.eclipse.tracecompass.statesystem.core.ITmfStateSystem;
+import org.eclipse.tracecompass.statesystem.core.exceptions.AttributeNotFoundException;
+import org.eclipse.tracecompass.statesystem.core.exceptions.StateSystemDisposedException;
+import org.eclipse.tracecompass.statesystem.core.interval.ITmfStateInterval;
 import org.eclipse.tracecompass.tmf.core.event.ITmfEvent;
 import org.eclipse.tracecompass.tmf.core.event.aspect.ITmfEventAspect;
 import org.eclipse.tracecompass.tmf.core.event.lookup.TmfCallsite;
+import org.eclipse.tracecompass.tmf.core.trace.TmfTraceUtils;
 
 /**
  * Event aspect of UST traces to generate a {@link TmfCallsite} using the debug
@@ -66,6 +73,44 @@ public class UstDebugInfoSourceAspect implements ITmfEventAspect<TmfCallsite> {
         BinaryCallsite bc = UstDebugInfoBinaryAspect.INSTANCE.resolve(event);
         if (bc == null) {
             return null;
+        }
+
+        Iterator<UstDebugInfoAnalysisModule> ustDebugModules = TmfTraceUtils.getAnalysisModulesOfClass(event.getTrace(), UstDebugInfoAnalysisModule.class).iterator();
+        if (ustDebugModules.hasNext()) {
+            UstDebugInfoAnalysisModule ustDebugModule = ustDebugModules.next();
+            ITmfStateSystem ustDebugSsq = ustDebugModule.getStateSystem();
+            if (ustDebugSsq != null) {
+                String binFilePath = bc.getBinaryFilePath();
+                long offset = bc.getOffset() + ustDebugSsq.getStartTime();
+                try {
+                    int srcFileNameQuark = ustDebugSsq.getQuarkAbsolute(binFilePath, UstDebugInfoStateProvider.SOURCE_FILE_NAME);
+                    int lineNrQuark = ustDebugSsq.getQuarkAbsolute(binFilePath, UstDebugInfoStateProvider.LINE_NUMBER);
+                    ITmfStateInterval srcFileInterval = ustDebugSsq.querySingleState(offset, srcFileNameQuark);
+                    ITmfStateInterval lineNrInterval = ustDebugSsq.querySingleState(offset, lineNrQuark);
+                    String lineNrValue = lineNrInterval.getValueString();
+                    long lineNr = Long.parseLong(lineNrValue);
+                    String srcFileName = srcFileInterval.getValueString();
+                    /*
+                     * Return function information only if it is non null,
+                     * otherwise try to resolve the symbol in another way (see
+                     * code below).
+                     */
+                    if (srcFileName != null) {
+                        return new TmfCallsite(srcFileName, lineNr);
+                    }
+                } catch (AttributeNotFoundException e) {
+                    /*
+                     * It's fine, sometimes a function could not be found with
+                     * nm. Try to resolve the symbol in another way (see code
+                     * below).
+                     */
+                } catch (StateSystemDisposedException e) {
+                    /*
+                     * This can happen if user closes a trace during the
+                     * analysis execution. Continue with what we have.
+                     */
+                }
+            }
         }
 
         TmfCallsite callsite = FileOffsetMapper.getCallsiteFromOffset(

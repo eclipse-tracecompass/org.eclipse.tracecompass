@@ -17,6 +17,7 @@ import java.io.File;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.internal.lttng2.ust.core.analysis.debuginfo.FileOffsetMapper;
+import org.eclipse.tracecompass.internal.lttng2.ust.core.analysis.debuginfo.UstDebugInfoSymbolProvider;
 import org.eclipse.tracecompass.tmf.core.event.ITmfEvent;
 import org.eclipse.tracecompass.tmf.core.event.aspect.ITmfEventAspect;
 
@@ -51,6 +52,15 @@ public class UstDebugInfoFunctionAspect implements ITmfEventAspect<FunctionLocat
         BinaryCallsite bc = UstDebugInfoBinaryAspect.INSTANCE.resolve(event);
         if (bc == null) {
             return null;
+        }
+
+        String functionName = UstDebugInfoSymbolProvider.getFunctionNameFromSS(bc, event.getTrace());
+        /*
+         * Return function information only if it is non null, otherwise try to
+         * resolve the symbol in another way (see code below).
+         */
+        if (functionName != null) {
+            return new FunctionLocation(functionName, null);
         }
 
         return getFunctionFromBinaryLocation(bc);
