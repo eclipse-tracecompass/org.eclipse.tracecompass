@@ -473,7 +473,7 @@ public class SegmentStoreTableDataProviderExperimentTest {
         TmfModelResponse<@NonNull ITmfVirtualTableModel<@NonNull VirtualTableLine>> response = fDataProvider.fetchLines(fetchParameters, null);
         ITmfVirtualTableModel<@NonNull VirtualTableLine> currentModel = response.getModel();
         assertNotNull(currentModel);
-        ITmfVirtualTableModel<@NonNull VirtualTableLine> expectedModel = new TmfVirtualTableModel<>(new ArrayList<>(fColumns.values()), expectedData, 0, 65535);
+        ITmfVirtualTableModel<@NonNull VirtualTableLine> expectedModel = new TmfVirtualTableModel<>(new ArrayList<>(fSingleTraceColumns.values()), expectedData, 0, 65535);
         assertEquals(expectedModel, currentModel);
     }
 

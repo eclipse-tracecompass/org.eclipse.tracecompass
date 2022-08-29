@@ -30,6 +30,7 @@ import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -373,7 +374,7 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTraceDataProvider 
             return new TmfModelResponse<>(null, ITmfResponse.Status.FAILED, CommonStatusMessage.INCORRECT_QUERY_PARAMETERS);
         }
         SegmentIndexesComparatorWrapper indexesComparatorWrapper = getIndexesComparatorOrDefault(fetchParameters);
-        Map<Long, ISegmentAspect> aspects = getAspectsFromColumnId(queryFilter.getColumnsId());
+        Map<Long, ISegmentAspect> aspects = getAspectsFromColumnId(queryFilter.getColumnsId(), monitor);
         if (aspects.isEmpty()) {
             return new TmfModelResponse<>(new TmfVirtualTableModel<>(Collections.emptyList(), Collections.emptyList(), queryFilter.getIndex(), 0), ITmfResponse.Status.COMPLETED, CommonStatusMessage.COMPLETED);
         }
@@ -647,11 +648,13 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTraceDataProvider 
      *
      * @param desiredColumns
      *            The list of desired column ids that we want to retrieve
+     * @param monitor
+     *            The progress monitor
      *
      * @return The list of {@link ISegmentAspect} that matches the desired
      *         columns ids
      */
-    private static Map<Long, ISegmentAspect> getAspectsFromColumnId(List<Long> desiredColumns) {
+    private Map<Long, ISegmentAspect> getAspectsFromColumnId(List<Long> desiredColumns, @Nullable IProgressMonitor monitor) {
         Map<Long, ISegmentAspect> aspects = new LinkedHashMap<>();
         if (!desiredColumns.isEmpty()) {
             for (Long columnId : desiredColumns) {
@@ -661,6 +664,14 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTraceDataProvider 
                 }
             }
             return aspects;
+        }
+        // Get all columnIds using fetchTree
+        TmfModelResponse<TmfTreeModel<TmfTreeDataModel>> response = this.fetchTree(Collections.emptyMap(), monitor);
+        if (response.getStatus() == ITmfResponse.Status.COMPLETED) {
+            TmfTreeModel<TmfTreeDataModel> model = response.getModel();
+            if (model != null && !model.getEntries().isEmpty()) {
+                return getAspectsFromColumnId(model.getEntries().stream().map(TmfTreeDataModel::getId).collect(Collectors.toList()), monitor);
+            }
         }
         return Objects.requireNonNull(fAspectToIdMap.inverse());
     }
