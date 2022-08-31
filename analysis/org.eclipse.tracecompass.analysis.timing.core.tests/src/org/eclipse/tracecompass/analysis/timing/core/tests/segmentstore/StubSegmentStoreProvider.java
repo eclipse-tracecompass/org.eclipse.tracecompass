@@ -11,15 +11,18 @@
 
 package org.eclipse.tracecompass.analysis.timing.core.tests.segmentstore;
 
+import java.util.Comparator;
 import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.analysis.timing.core.segmentstore.AbstractSegmentStoreAnalysisModule;
 import org.eclipse.tracecompass.segmentstore.core.BasicSegment;
 import org.eclipse.tracecompass.segmentstore.core.ISegment;
 import org.eclipse.tracecompass.segmentstore.core.ISegmentStore;
 import org.eclipse.tracecompass.tmf.core.exceptions.TmfAnalysisException;
+import org.eclipse.tracecompass.tmf.core.segment.ISegmentAspect;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
 import org.eclipse.tracecompass.tmf.tests.stubs.trace.xml.TmfXmlTraceStub;
 
@@ -33,9 +36,37 @@ import com.google.common.collect.ImmutableList.Builder;
  */
 public class StubSegmentStoreProvider extends AbstractSegmentStoreAnalysisModule {
 
+    /** Stub column name */
+    static final String STUB_COLUMN_NAME = "Stub Column";
+
+    /** Stub column content */
+    static final String STUB_COLUMN_CONTENT = "Stub Content";
+
     private static final int SIZE = 65535;
 
     private final List<@NonNull ISegment> fPreFixture;
+
+    private static final @NonNull ISegmentAspect STUB_CUSTOM_ASPECT = new ISegmentAspect() {
+        @Override
+        public @Nullable Object resolve(@NonNull ISegment segment) {
+            return STUB_COLUMN_CONTENT;
+        }
+
+        @Override
+        public @NonNull String getName() {
+            return STUB_COLUMN_NAME;
+        }
+
+        @Override
+        public @NonNull String getHelpText() {
+            return "Stub segment column information";
+        }
+
+        @Override
+        public @Nullable Comparator<?> getComparator() {
+            return null;
+        }
+    };
 
     /**
      * The constructor
@@ -70,6 +101,11 @@ public class StubSegmentStoreProvider extends AbstractSegmentStoreAnalysisModule
             tmfXmlTraceStub.addAnalysisModule(this);
         }
         return super.setTrace(trace);
+    }
+
+    @Override
+    public @NonNull Iterable<@NonNull ISegmentAspect> getSegmentAspects() {
+        return ImmutableList.of(STUB_CUSTOM_ASPECT);
     }
 
     @Override

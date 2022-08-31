@@ -255,12 +255,9 @@ public class SegmentStoreAnalysisModule extends AbstractSegmentStoreAnalysisModu
         if (fProviders.size() > 1) {
             return getExperimentSegmentAspects();
         }
-        ITmfTrace trace = getTrace();
-        if (trace != null) {
-            ISegmentStoreProvider provider = fProviders.get(trace.getName());
-            if (provider != null) {
-                return provider.getSegmentAspects();
-            }
+        if (fProviders.size() == 1) {
+            ISegmentStoreProvider provider = fProviders.values().iterator().next();
+            return provider.getSegmentAspects();
         }
         return Collections.emptyList();
     }
