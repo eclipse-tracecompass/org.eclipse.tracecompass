@@ -36,6 +36,7 @@ import org.eclipse.tracecompass.tmf.core.symbols.TmfResolvedSymbol;
 public class UstDebugInfoSymbolProvider extends DefaultSymbolProvider {
 
     private final List<org.eclipse.tracecompass.tmf.core.symbols.ISymbolProvider> fOtherProviders = new ArrayList<>();
+
     /**
      * Create a new {@link UstDebugInfoSymbolProvider} for the given trace
      *
@@ -85,7 +86,8 @@ public class UstDebugInfoSymbolProvider extends DefaultSymbolProvider {
         if (loc != null) {
             return new TmfResolvedSymbol(bc.getOffset(), loc.getFunctionName());
         }
-        // Try to see if some other symbol provider has a symbol for this relative binary callsite
+        // Try to see if some other symbol provider has a symbol for this
+        // relative binary callsite
         // FIXME: Ideally, it would be good to be able to specify the filename
         for (org.eclipse.tracecompass.tmf.core.symbols.ISymbolProvider provider : fOtherProviders) {
             TmfResolvedSymbol symbol = provider.getSymbol(pid, timestamp, bc.getOffset());

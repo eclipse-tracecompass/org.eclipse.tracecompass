@@ -34,7 +34,9 @@ public class UstDebugInfoSourceAspect implements ITmfEventAspect<TmfCallsite> {
     /** Singleton instance */
     public static final UstDebugInfoSourceAspect INSTANCE = new UstDebugInfoSourceAspect();
 
-    private UstDebugInfoSourceAspect() {}
+    private UstDebugInfoSourceAspect() {
+        // Do nothing
+    }
 
     @Override
     public String getName() {

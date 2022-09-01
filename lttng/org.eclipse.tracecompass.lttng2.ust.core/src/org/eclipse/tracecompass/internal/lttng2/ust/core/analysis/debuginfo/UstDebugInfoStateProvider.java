@@ -113,9 +113,12 @@ public class UstDebugInfoStateProvider extends AbstractTmfStateProvider {
      */
     private final Map<Pair<Long, Long>, PendingBinInfo> fPendingBinInfos = new HashMap<>();
 
-    private class PendingBinInfo {
+    private static class PendingBinInfo {
 
-        /* The event data, saved here until we put everything in the state system. */
+        /*
+         * The event data, saved here until we put everything in the state
+         * system.
+         */
         private final long fVpid;
         private final long fBaddr;
         private final long fMemsz;
@@ -296,7 +299,7 @@ public class UstDebugInfoStateProvider extends AbstractTmfStateProvider {
             }
 
             if (debugLink != null) {
-                ss.modifyAttribute(ts,  debugLink, debugLinkQuark);
+                ss.modifyAttribute(ts, debugLink, debugLinkQuark);
             } else {
                 ss.modifyAttribute(ts, (Object) null, debugLinkQuark);
             }
@@ -327,7 +330,10 @@ public class UstDebugInfoStateProvider extends AbstractTmfStateProvider {
         if (pending.done()) {
             commitPendingToStateSystem(pending, ts, ss);
         } else {
-            /* We are expecting more data for this binary, put in the pending map. */
+            /*
+             * We are expecting more data for this binary, put in the pending
+             * map.
+             */
             Pair<Long, Long> key = new Pair<>(pending.fVpid, pending.fBaddr);
 
             fPendingBinInfos.put(key, pending);
@@ -348,7 +354,10 @@ public class UstDebugInfoStateProvider extends AbstractTmfStateProvider {
             int vpidQuark = ss.getQuarkAbsolute(vpid.toString());
             ss.removeAttribute(ts, vpidQuark);
         } catch (AttributeNotFoundException e) {
-            /* We didn't know anything about this vpid yet, so there is nothing to remove. */
+            /*
+             * We didn't know anything about this vpid yet, so there is nothing
+             * to remove.
+             */
         }
     }
 
@@ -416,9 +425,8 @@ public class UstDebugInfoStateProvider extends AbstractTmfStateProvider {
         }
 
         /*
-         * Decode the buildID from the byte array in the trace field.
-         * Use lower-case encoding, since this is how eu-readelf
-         * displays it.
+         * Decode the buildID from the byte array in the trace field. Use
+         * lower-case encoding, since this is how eu-readelf displays it.
          */
         String buildId = checkNotNull(BaseEncoding.base16().encode(longArrayToByteArray(buildIdArray)).toLowerCase());
 
@@ -477,9 +485,9 @@ public class UstDebugInfoStateProvider extends AbstractTmfStateProvider {
             ss.removeAttribute(ts, quark);
         } catch (AttributeNotFoundException e) {
             /*
-             * We have never seen a matching dlopen() for this
-             * dlclose(). Possible that it happened before the start of
-             * the trace, or that it was lost through lost events.
+             * We have never seen a matching dlopen() for this dlclose().
+             * Possible that it happened before the start of the trace, or that
+             * it was lost through lost events.
              */
         }
     }

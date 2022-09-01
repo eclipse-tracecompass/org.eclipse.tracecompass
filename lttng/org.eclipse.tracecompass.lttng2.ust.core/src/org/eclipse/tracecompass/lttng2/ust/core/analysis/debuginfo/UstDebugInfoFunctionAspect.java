@@ -31,7 +31,9 @@ public class UstDebugInfoFunctionAspect implements ITmfEventAspect<FunctionLocat
     /** Singleton instance */
     public static final UstDebugInfoFunctionAspect INSTANCE = new UstDebugInfoFunctionAspect();
 
-    private UstDebugInfoFunctionAspect() {}
+    private UstDebugInfoFunctionAspect() {
+        // Do nothing
+    }
 
     @Override
     public String getName() {
