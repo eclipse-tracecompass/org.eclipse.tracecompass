@@ -83,7 +83,7 @@ import com.google.common.collect.Sets;
  *
  * @author Geneviève Bastien
  */
-public class XmlUtils {
+public final class XmlUtils {
 
     /**
      * Enum to match the name of an output's XML element to its output ID.
@@ -100,7 +100,7 @@ public class XmlUtils {
 
         private final @NonNull String fXmlElem;
 
-        private OutputType(@NonNull String xmlElem) {
+        OutputType(@NonNull String xmlElem) {
             fXmlElem = xmlElem;
         }
 
@@ -373,7 +373,7 @@ public class XmlUtils {
     public static synchronized @NonNull Collection<ITmfXmlSchemaParser> getExtraSchemaParsers() {
         /* Get the XSD files advertised through the extension point */
         IConfigurationElement[] elements = Platform.getExtensionRegistry().getConfigurationElementsFor(TMF_XSD_ID);
-        List<org.eclipse.tracecompass.tmf.analysis.xml.core.module.ITmfXmlSchemaParser> list = new ArrayList<>();
+        List<ITmfXmlSchemaParser> list = new ArrayList<>();
         for (IConfigurationElement element : elements) {
             if (element.getName().equals(XSD_SCHEMA_PARSER_ELEMENT)) {
                 try {
@@ -393,7 +393,7 @@ public class XmlUtils {
      * @param names
      *            The XML files to delete
      */
-    public static void deleteFiles(Collection<String> names) {
+    public static void deleteFiles(Iterable<String> names) {
         Map<String, File> files = listFiles();
         for (String name : names) {
             File file = files.get(name);
@@ -414,7 +414,7 @@ public class XmlUtils {
      * @param names
      *            the names of the XML files to enable, with extension
      */
-    public static void enableFiles(Collection<String> names) {
+    public static void enableFiles(Iterable<String> names) {
         for (String name : names) {
             File fileName = getXmlFilesPath().addTrailingSeparator().append(name).toFile();
             preloadXmlAnalysesOutput(fileName);
@@ -428,7 +428,7 @@ public class XmlUtils {
      * @param names
      *            the names of the XML files to disable, with extension
      */
-    public static void disableFiles(Collection<String> names) {
+    public static void disableFiles(Iterable<String> names) {
         Map<String, File> files = listFiles();
         for (String name : names) {
             File file = files.get(name);
@@ -480,7 +480,7 @@ public class XmlUtils {
         try (FileInputStream fis = new FileInputStream(fromFile);
                 FileOutputStream fos = new FileOutputStream(toFile);
                 FileChannel source = fis.getChannel();
-                FileChannel destination = fos.getChannel();) {
+                FileChannel destination = fos.getChannel()) {
             destination.transferFrom(source, 0, source.size());
         } catch (IOException e) {
             String error = Messages.XmlUtils_ErrorCopyingFile;
@@ -549,7 +549,7 @@ public class XmlUtils {
      *            The parent element to get children from
      * @return The list of children Element of the parent
      */
-    public static @NonNull List<@Nullable Element> getChildElements(Element parent) {
+    public static @NonNull List<@Nullable Element> getChildElements(Node parent) {
         NodeList childNodes = parent.getChildNodes();
         List<@Nullable Element> childElements = new ArrayList<>();
         for (int index = 0; index < childNodes.getLength(); index++) {
@@ -607,7 +607,6 @@ public class XmlUtils {
             for (OutputType outputType : OutputType.values()) {
                 NodeList outputNodes = doc.getElementsByTagName(outputType.getXmlElem());
                 for (int i = 0; i < outputNodes.getLength(); i++) {
-                    Set<String> analysesId = new HashSet<>();
                     Element node = (Element) outputNodes.item(i);
 
                     /* Check if analysis is the right one */
@@ -616,6 +615,7 @@ public class XmlUtils {
                         return;
                     }
 
+                    Set<String> analysesId = new HashSet<>();
                     Element headElement = headNodes.get(0);
                     List<Element> analysisNodes = TmfXmlUtils.getChildElements(headElement, TmfXmlStrings.ANALYSIS);
                     for (Element analysis : analysisNodes) {
