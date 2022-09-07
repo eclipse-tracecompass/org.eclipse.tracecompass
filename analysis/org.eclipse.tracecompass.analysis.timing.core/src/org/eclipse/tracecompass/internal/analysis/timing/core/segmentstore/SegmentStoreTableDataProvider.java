@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -47,7 +46,7 @@ import org.eclipse.tracecompass.internal.provisional.tmf.core.model.table.ITmfVi
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.table.TmfVirtualTableModel;
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.table.VirtualTableCell;
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.table.VirtualTableLine;
-import org.eclipse.tracecompass.internal.tmf.core.model.AbstractTmfTraceDataProvider;
+import org.eclipse.tracecompass.internal.tmf.core.model.AbstractTmfTableDataProvider;
 import org.eclipse.tracecompass.internal.tmf.core.model.filters.FetchParametersUtils;
 import org.eclipse.tracecompass.segmentstore.core.ISegment;
 import org.eclipse.tracecompass.segmentstore.core.ISegmentStore;
@@ -77,7 +76,7 @@ import com.google.common.collect.HashBiMap;
  *
  * @author: Kyrollos Bekhet
  */
-public class SegmentStoreTableDataProvider extends AbstractTmfTraceDataProvider implements ITmfVirtualTableDataProvider<TmfTreeDataModel, VirtualTableLine> {
+public class SegmentStoreTableDataProvider extends AbstractTmfTableDataProvider implements ITmfVirtualTableDataProvider<TmfTreeDataModel, VirtualTableLine> {
 
     /**
      * A simple class to create checkpoints to index the segments of a segment
@@ -173,6 +172,10 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTraceDataProvider 
         }
     }
 
+    /**
+     * Matches the locally non-API yet published
+     * TmfEventTableDataProvider.Direction enumeration.
+     */
     private enum Direction {
         /** Search next */
         NEXT,
@@ -225,13 +228,10 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTraceDataProvider 
      * The id of the data provider
      */
     public static final String ID = "org.eclipse.tracecompass.analysis.timing.core.segmentstore.SegmentStoreTableDataProvider"; //$NON-NLS-1$
-    private static final AtomicLong fAtomicLong = new AtomicLong();
     private static BiMap<ISegmentAspect, Long> fAspectToIdMap = HashBiMap.create();
     private static final Format FORMATTER = new DecimalFormat("###,###.##"); //$NON-NLS-1$
     private static final int STEP = 1000;
     private static final Logger LOGGER = TraceCompassLog.getLogger(SegmentStoreTableDataProvider.class);
-    private static final String TABLE_SEARCH_EXPRESSION_KEY = "table_search_expressions"; //$NON-NLS-1$
-    private static final String TABLE_SEARCH_DIRECTION_KEY = "table_search_direction"; //$NON-NLS-1$
     private static final String TABLE_COMPARATOR_EXPRESSION_KEY = "table_comparator_expression"; //$NON-NLS-1$
 
     private Map<Long, SegmentIndexesComparatorWrapper> fAllIndexes;
@@ -341,7 +341,7 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTraceDataProvider 
         List<TmfTreeDataModel> model = new ArrayList<>();
         for (ISegmentAspect aspect : ISegmentStoreProvider.getBaseSegmentAspects()) {
             synchronized (fAspectToIdMap) {
-                long id = fAspectToIdMap.computeIfAbsent(aspect, a -> fAtomicLong.getAndIncrement());
+                long id = fAspectToIdMap.computeIfAbsent(aspect, a -> createColumnId());
                 Comparator<ISegment> comparator = (Comparator<ISegment>) aspect.getComparator();
                 if (comparator != null && aspect.getName().equals(SegmentEndTimeAspect.SEGMENT_END_TIME_ASPECT.getName())) {
                     comparator = comparator.reversed();
@@ -354,7 +354,7 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTraceDataProvider 
         }
         for (ISegmentAspect aspect : fSegmentProvider.getSegmentAspects()) {
             synchronized (fAspectToIdMap) {
-                long id = fAspectToIdMap.computeIfAbsent(aspect, a -> fAtomicLong.getAndIncrement());
+                long id = fAspectToIdMap.computeIfAbsent(aspect, a -> createColumnId());
                 Comparator<ISegment> comparator = (Comparator<ISegment>) aspect.getComparator();
                 if (comparator != null) {
                     buildIndex(id, comparator, aspect.getName());
@@ -418,7 +418,7 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTraceDataProvider 
          * Search for the next or previous segment starting from the given
          * segment index
          */
-        Object directionValue = fetchParameters.get(TABLE_SEARCH_DIRECTION_KEY);
+        Object directionValue = fetchParameters.get(TABLE_SEARCH_DIRECTION);
         if (searchFilter != null && directionValue != null) {
             Direction direction = directionValue.equals(Direction.PREVIOUS.name()) ? Direction.PREVIOUS : Direction.NEXT;
             @Nullable WrappedSegment segment = null;
@@ -565,7 +565,7 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTraceDataProvider 
 
     @SuppressWarnings("unchecked")
     private static @Nullable Map<Long, String> extractSearchFilter(Map<String, Object> fetchParameters) {
-        Object searchFilterObject = fetchParameters.get(TABLE_SEARCH_EXPRESSION_KEY);
+        Object searchFilterObject = fetchParameters.get(TABLE_SEARCH_EXPRESSIONS);
         if (searchFilterObject instanceof Map<?, ?>) {
             return extractSimpleSearchFilter((Map<?, String>) searchFilterObject);
         }
@@ -586,29 +586,8 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTraceDataProvider 
         return searchMap;
     }
 
-    /**
-     * Extract the id of the column out of an object
-     *
-     * @param key
-     *            The object that contains the id
-     *
-     * @return The column id
-     */
     private static @Nullable Long extractColumnId(@Nullable Object key) {
-        try {
-            if (key instanceof String && Pattern.compile("[-?\\d+\\.?\\d+]").matcher((String) key).matches()) { //$NON-NLS-1$
-                return Long.valueOf((String) key);
-            }
-            if (key instanceof Long) {
-                return (Long) key;
-            }
-            if (key instanceof Integer) {
-                return Long.valueOf((Integer) key);
-            }
-        } catch (NumberFormatException e) {
-            // Do nothing
-        }
-        return null;
+        return AbstractTmfTableDataProvider.extractColumnId(key, true);
     }
 
     /**

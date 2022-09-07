@@ -20,7 +20,6 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.TreeMap;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Predicate;
 
 import org.apache.commons.lang3.StringUtils;
@@ -36,7 +35,7 @@ import org.eclipse.tracecompass.internal.provisional.tmf.core.model.table.ITmfVi
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.table.TmfVirtualTableModel;
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.table.VirtualTableCell;
 import org.eclipse.tracecompass.internal.tmf.core.filter.TmfCollapseFilter;
-import org.eclipse.tracecompass.internal.tmf.core.model.AbstractTmfTraceDataProvider;
+import org.eclipse.tracecompass.internal.tmf.core.model.AbstractTmfTableDataProvider;
 import org.eclipse.tracecompass.internal.tmf.core.model.filters.FetchParametersUtils;
 import org.eclipse.tracecompass.tmf.core.dataprovider.DataProviderParameterUtils;
 import org.eclipse.tracecompass.tmf.core.event.ITmfEvent;
@@ -78,16 +77,16 @@ import com.google.common.collect.Lists;
  * @author Yonni Chen
  * @since 4.0
  */
-public class TmfEventTableDataProvider extends AbstractTmfTraceDataProvider implements ITmfVirtualTableDataProvider<TmfEventTableColumnDataModel, EventTableLine> {
+public class TmfEventTableDataProvider extends AbstractTmfTableDataProvider implements ITmfVirtualTableDataProvider<TmfEventTableColumnDataModel, EventTableLine> {
 
     /**
      * Key for table search regex filter expressions (regex only)
      */
-    public static final String TABLE_SEARCH_EXPRESSION_KEY = "table_search_expressions"; //$NON-NLS-1$
+    public static final String TABLE_SEARCH_EXPRESSION_KEY = TABLE_SEARCH_EXPRESSIONS;
     /**
      * Key for table search direction (forward or backward)
      */
-    public static final String TABLE_SEARCH_DIRECTION_KEY = "table_search_direction"; //$NON-NLS-1$
+    public static final String TABLE_SEARCH_DIRECTION_KEY = TABLE_SEARCH_DIRECTION;
     /**
      * Key for table filters
      */
@@ -117,11 +116,6 @@ public class TmfEventTableDataProvider extends AbstractTmfTraceDataProvider impl
      * better cache with the two list of cached index/rank.
      */
     private long fFilteredCount = -1L;
-
-    /**
-     * Atomic Long so that every column has a unique ID.
-     */
-    private static final AtomicLong fAtomicLong = new AtomicLong();
 
     private static final BiMap<ITmfEventAspect<?>, Long> fAspectToIdMap = HashBiMap.create();
 
@@ -176,7 +170,7 @@ public class TmfEventTableDataProvider extends AbstractTmfTraceDataProvider impl
         }
         for (ITmfEventAspect<?> aspect : aspects.values()) {
             synchronized (fAspectToIdMap) {
-                long id = fAspectToIdMap.computeIfAbsent(aspect, a -> fAtomicLong.getAndIncrement());
+                long id = fAspectToIdMap.computeIfAbsent(aspect, a -> createColumnId());
                 model.add(new TmfEventTableColumnDataModel(id, -1, Collections.singletonList(aspect.getName()), aspect.getHelpText(), aspect.isHiddenByDefault()));
                 hasTs |= (aspect == TmfBaseAspects.getTimestampAspect());
             }
@@ -184,7 +178,7 @@ public class TmfEventTableDataProvider extends AbstractTmfTraceDataProvider impl
         if (hasTs) {
             synchronized (fAspectToIdMap) {
                 ITmfEventAspect<Long> aspect = TmfBaseAspects.getTimestampNsAspect();
-                long id = fAspectToIdMap.computeIfAbsent(aspect, a -> fAtomicLong.getAndIncrement());
+                long id = fAspectToIdMap.computeIfAbsent(aspect, a -> createColumnId());
                 model.add(new TmfEventTableColumnDataModel(id, -1, Collections.singletonList(aspect.getName()), aspect.getHelpText(), aspect.isHiddenByDefault()));
             }
         }
@@ -706,20 +700,7 @@ public class TmfEventTableDataProvider extends AbstractTmfTraceDataProvider impl
     }
 
     private static @Nullable Long extractColumnId(@Nullable Object key) {
-        try {
-            if (key instanceof String) {
-                return Long.valueOf((String) key);
-            }
-            if (key instanceof Long) {
-                return (Long) key;
-            }
-            if (key instanceof Integer) {
-                return Long.valueOf((Integer) key);
-            }
-        } catch (NumberFormatException e) {
-            // fall through
-        }
-        return null;
+        return AbstractTmfTableDataProvider.extractColumnId(key, false);
     }
 
     private static @Nullable TmfCollapseFilter extractCollapseFilter(Map<?, Object> fetchParameters) {
