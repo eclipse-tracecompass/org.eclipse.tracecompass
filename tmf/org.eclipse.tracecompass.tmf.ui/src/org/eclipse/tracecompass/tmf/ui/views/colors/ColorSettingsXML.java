@@ -46,7 +46,6 @@ import org.xml.sax.helpers.DefaultHandler;
  *
  * @version 1.0
  * @author Patrick Tasse
- *
  */
 public class ColorSettingsXML {
 
@@ -195,7 +194,6 @@ public class ColorSettingsXML {
                 }
                 break;
             }
-
         }
 
         private static RGB getRGBfromAttributes(Attributes attributes) {
@@ -220,6 +218,5 @@ public class ColorSettingsXML {
                 filterContentHandler.endElement(uri, localName, qName);
             }
         }
-
     }
 }

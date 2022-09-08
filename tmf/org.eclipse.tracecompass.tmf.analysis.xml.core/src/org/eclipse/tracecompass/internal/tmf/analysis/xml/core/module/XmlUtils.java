@@ -146,7 +146,6 @@ public class XmlUtils {
 
     /** Make this class non-instantiable */
     private XmlUtils() {
-
     }
 
     /**
@@ -177,7 +176,8 @@ public class XmlUtils {
     }
 
     /**
-     * Get the path where the XML files are stored. Create it if it does not exist
+     * Get the path where the XML files are stored. Create it if it does not
+     * exist
      *
      * @return path to XML files
      */
@@ -217,9 +217,9 @@ public class XmlUtils {
         try {
             SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
             /*
-             * Even though the XSDs do not define a namespace, there is one default
-             * namespace of null and to allow multiple XSDs to be parsed together, we must
-             * allow namespace growth
+             * Even though the XSDs do not define a namespace, there is one
+             * default namespace of null and to allow multiple XSDs to be parsed
+             * together, we must allow namespace growth
              */
             schemaFactory.setFeature("http://apache.org/xml/features/namespace-growth", true); //$NON-NLS-1$
             schema = schemaFactory.newSchema(sources);
@@ -253,8 +253,8 @@ public class XmlUtils {
 
     /**
      * Adds an XML file to the plugin's path. The XML file should have been
-     * validated using the {@link XmlUtils#xmlValidate(File)} method before calling
-     * this method.
+     * validated using the {@link XmlUtils#xmlValidate(File)} method before
+     * calling this method.
      *
      * @param fromFile
      *            The XML file to add
@@ -277,8 +277,8 @@ public class XmlUtils {
     }
 
     /**
-     * List all files under the XML analysis files path. It returns a map where the
-     * key is the file name (with extension).
+     * List all files under the XML analysis files path. It returns a map where
+     * the key is the file name (with extension).
      *
      * @return A map with all the XML analysis files
      */
@@ -304,8 +304,8 @@ public class XmlUtils {
     }
 
     /**
-     * List all files advertised through the builtin extension point. It returns a
-     * map where the key is the file name.
+     * List all files advertised through the builtin extension point. It returns
+     * a map where the key is the file name.
      *
      * @return A map with all the XMl analysis builtin files
      */
@@ -624,19 +624,18 @@ public class XmlUtils {
                     }
                     String outputId = node.getAttribute(TmfXmlStrings.ID);
 
-                        List<Element> label = TmfXmlUtils.getChildElements(headNodes.get(0), TmfXmlStrings.LABEL);
-                        String outputLabel = outputId;
-                        if (!label.isEmpty()) {
-                            Element labelElement = label.get(0);
-                            outputLabel = labelElement.getAttribute(TmfXmlStrings.VALUE);
-                        }
+                    List<Element> label = TmfXmlUtils.getChildElements(headNodes.get(0), TmfXmlStrings.LABEL);
+                    String outputLabel = outputId;
+                    if (!label.isEmpty()) {
+                        Element labelElement = label.get(0);
+                        outputLabel = labelElement.getAttribute(TmfXmlStrings.VALUE);
+                    }
 
                     XmlOutputElement output = new XmlOutputElement(xmlFile.getAbsolutePath(), outputType.getXmlElem(), outputId, outputLabel, analysesId);
                     addXmlOutput(output);
                 }
             }
             updateCachedOuputElements();
-
         } catch (ParserConfigurationException | SAXException | IOException e) {
             Activator.logError(Messages.XmlUtils_ErrorOpeningFile, e);
         }

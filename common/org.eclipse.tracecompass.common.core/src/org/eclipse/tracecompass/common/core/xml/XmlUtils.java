@@ -155,7 +155,7 @@ public final class XmlUtils {
 
     private static void logException(String feature, ParserConfigurationException e) {
         // This should catch a failed setFeature feature
-        TraceCompassLogUtils.traceInstant(LOGGER, Level.WARNING,  "ParserConfigurationException" , "feature", feature, "stack", e.getStackTrace()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        TraceCompassLogUtils.traceInstant(LOGGER, Level.WARNING, "ParserConfigurationException", "feature", feature, "stack", e.getStackTrace()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
 
     /**
