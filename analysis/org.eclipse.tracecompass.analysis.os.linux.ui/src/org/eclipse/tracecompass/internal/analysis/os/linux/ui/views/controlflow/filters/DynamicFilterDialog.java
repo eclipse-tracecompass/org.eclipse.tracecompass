@@ -48,6 +48,8 @@ public class DynamicFilterDialog extends TitleAreaDialog {
     private static final Pattern CPU_RANGE = Pattern.compile("^((\\d+(\\-\\d+)?, ?)*(\\d+(\\-\\d+)?))+$"); //$NON-NLS-1$
     private static final @NonNull String INTERNAL_RANGE_SEPARATOR = "-"; //$NON-NLS-1$
     private static final @NonNull String RANGES_DELIMITER = ","; //$NON-NLS-1$
+    private static final int EXPECTED_RANGE_LEN = 2;
+    private static final int NUM_COLUMNS = 2;
 
     /** The internal ActiveThreadsFilter result */
     private @NonNull ActiveThreadsFilter fInternalActiveThreadsFilter;
@@ -114,7 +116,7 @@ public class DynamicFilterDialog extends TitleAreaDialog {
         Group cpuSelectionGroup = new Group(activeThreadGroup, SWT.SHADOW_NONE);
         cpuSelectionGroup.setText(Messages.DynamicFilterDialog_OptionsGroupLabel);
         cpuSelectionGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-        cpuSelectionGroup.setLayout(new GridLayout(2, false));
+        cpuSelectionGroup.setLayout(new GridLayout(NUM_COLUMNS, false));
 
         fAllActiveThreadsRadionButton = new Button(cpuSelectionGroup, SWT.RADIO);
         fAllActiveThreadsRadionButton.setText(Messages.DynamicFilterDialog_RadioButtonAllActiveThreads);
@@ -122,7 +124,7 @@ public class DynamicFilterDialog extends TitleAreaDialog {
 
         fAllActiveThreadsRadionButton.setSelection(!usesCpuRanges);
         gd = new GridData(SWT.FILL, SWT.FILL, true, true);
-        gd.horizontalSpan = 2;
+        gd.horizontalSpan = NUM_COLUMNS;
         fAllActiveThreadsRadionButton.setLayoutData(gd);
 
         fCpuRangesRadioButton = new Button(cpuSelectionGroup, SWT.RADIO);
@@ -253,7 +255,7 @@ public class DynamicFilterDialog extends TitleAreaDialog {
                 if (range.contains(INTERNAL_RANGE_SEPARATOR)) {
                     /* Parse as a range */
                     String[] split = range.split(INTERNAL_RANGE_SEPARATOR);
-                    if (split.length != 2) {
+                    if (split.length != EXPECTED_RANGE_LEN) {
                         /* Invalid range */
                         continue;
                     }

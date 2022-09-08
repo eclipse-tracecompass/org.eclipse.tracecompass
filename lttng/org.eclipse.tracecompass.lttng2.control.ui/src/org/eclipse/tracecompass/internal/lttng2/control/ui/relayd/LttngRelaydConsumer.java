@@ -52,6 +52,7 @@ public final class LttngRelaydConsumer {
 
     private static final Pattern PROTOCOL_HOST_PATTERN = Pattern.compile("(\\S+://)*(\\d+\\.\\d+\\.\\d+\\.\\d+)"); //$NON-NLS-1$
     private static final int SIGNAL_THROTTLE_NANOSEC = 10_000_000;
+    private static final int GROUP = 2;
 
     private Job fConsumerJob;
     private CtfTmfTrace fCtfTmfTrace;
@@ -104,7 +105,7 @@ public final class LttngRelaydConsumer {
             Matcher matcher = PROTOCOL_HOST_PATTERN.matcher(fConnectionInfo.getHost());
             String host = null;
             if (matcher.matches()) {
-                host = matcher.group(2);
+                host = matcher.group(GROUP);
             }
 
             if (host == null || host.isEmpty()) {
