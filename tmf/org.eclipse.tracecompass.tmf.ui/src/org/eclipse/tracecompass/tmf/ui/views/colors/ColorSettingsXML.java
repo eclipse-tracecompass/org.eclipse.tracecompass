@@ -154,7 +154,7 @@ public class ColorSettingsXML {
     }
 
     // Helper class
-    private static class ColorSettingsContentHandler extends DefaultHandler {
+    private static final class ColorSettingsContentHandler extends DefaultHandler {
 
         private List<ColorSetting> colorSettings = new ArrayList<>(0);
         private RGB fg;
@@ -162,6 +162,9 @@ public class ColorSettingsXML {
         private RGB tickColor;
         private ITmfFilterTreeNode filter;
         private TmfFilterContentHandler filterContentHandler;
+
+        private ColorSettingsContentHandler() {
+        }
 
         @Override
         public void startElement(String uri, String localName, String qName, Attributes attributes)
