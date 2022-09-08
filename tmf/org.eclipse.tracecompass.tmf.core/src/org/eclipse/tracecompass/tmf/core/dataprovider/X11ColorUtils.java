@@ -35,7 +35,7 @@ import org.eclipse.tracecompass.internal.tmf.core.Activator;
 public class X11ColorUtils {
 
     private static final String X11_COLOR_FILE = "share/rgb.txt"; //$NON-NLS-1$
-    private static final Pattern PATTERN = Pattern.compile("\\s*(\\d{1,3})\\s*(\\d{1,3})\\s*(\\d{1,3})\\s*(.*\\S)\\s*"); //$NON-NLS-1$
+    private static final Pattern PATTERN = Pattern.compile("\\s*(\\d{1,3})\\s*(\\d{1,3})\\s*(\\d{1,3})\\s*(.*\\S)\\s*"); //$NON-NLS-1$ NOSONAR
     private static final String HEX_COLOR_FORMAT = "#%02x%02x%02x"; //$NON-NLS-1$
     private static final Map<String, String> COLORS = new HashMap<>();
     static {

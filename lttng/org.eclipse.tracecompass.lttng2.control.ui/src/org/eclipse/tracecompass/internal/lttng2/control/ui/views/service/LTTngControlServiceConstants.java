@@ -344,7 +344,7 @@ public interface LTTngControlServiceConstants {
     /**
      * Pattern to match the version.
      */
-    Pattern VERSION_PATTERN = Pattern.compile(".*lttng\\s+version\\s+.*(\\d+\\.\\d+\\.\\d+).*"); //$NON-NLS-1$
+    Pattern VERSION_PATTERN = Pattern.compile(".*lttng\\s+version\\s+.*(\\d+\\.\\d+\\.\\d+).*"); //$NON-NLS-1$ NOSONAR
     /**
      * Pattern to match for error output
      */
@@ -352,15 +352,15 @@ public interface LTTngControlServiceConstants {
     /**
      * Pattern to match for session information (lttng list)
      */
-    Pattern SESSION_PATTERN = Pattern.compile("\\s+(\\d+)\\)\\s+(.*)\\s+\\((.*)\\)\\s+\\[(active|inactive).*\\].*"); //$NON-NLS-1$
+    Pattern SESSION_PATTERN = Pattern.compile("\\s+(\\d+)\\)\\s+(.*)\\s+\\((.*)\\)\\s+\\[(active|inactive).*\\].*"); //$NON-NLS-1$ NOSONAR
     /**
      * Pattern to match for session information (lttng list <session>)
      */
-    Pattern TRACE_SESSION_PATTERN = Pattern.compile("\\s*Tracing\\s+session\\s+(.*)\\:\\s+\\[(active|inactive)\\].*"); //$NON-NLS-1$
+    Pattern TRACE_SESSION_PATTERN = Pattern.compile("\\s*Tracing\\s+session\\s+(.*)\\:\\s+\\[(active|inactive)\\].*"); //$NON-NLS-1$ NOSONAR
     /**
      * Pattern to match for snapshot session information (lttng list <session>)
      */
-    Pattern TRACE_SNAPSHOT_SESSION_PATTERN = Pattern.compile("\\s*Tracing\\s+session\\s+(.*)\\:\\s+\\[(active|inactive)\\s*snapshot\\].*"); //$NON-NLS-1$
+    Pattern TRACE_SNAPSHOT_SESSION_PATTERN = Pattern.compile("\\s*Tracing\\s+session\\s+(.*)\\:\\s+\\[(active|inactive)\\s*snapshot\\].*"); //$NON-NLS-1$ NOSONAR
     /**
      * Pattern to match for session path information (lttng list <session>)
      */
@@ -407,7 +407,7 @@ public interface LTTngControlServiceConstants {
     /**
      * Pattern to match for channel information (lttng list <session>)
      */
-    Pattern CHANNEL_PATTERN = Pattern.compile("\\s*-\\s+(.*)\\:\\s+\\[(enabled|disabled)\\]"); //$NON-NLS-1$
+    Pattern CHANNEL_PATTERN = Pattern.compile("\\s*-\\s+(.*)\\:\\s+\\[(enabled|disabled)\\]"); //$NON-NLS-1$ NOSONAR
     /**
      * Pattern to match for events section information (lttng list <session>)
      */
@@ -415,11 +415,11 @@ public interface LTTngControlServiceConstants {
     /**
      * Pattern to match for event information (lttng list <session>)
      */
-    Pattern EVENT_PATTERN = Pattern.compile("\\s+(.*)\\s+\\(loglevel\\s*(:|<=|==)\\s+(.*)\\s+\\(\\d*\\)\\)\\s+\\(type:\\s+(.*)\\)\\s+\\[(enabled|disabled)\\]\\s*(\\[has exclusions\\])?\\s*(\\[with filter\\])?.*"); //$NON-NLS-1$
+    Pattern EVENT_PATTERN = Pattern.compile("\\s+(.*)\\s+\\(loglevel\\s*(:|<=|==)\\s+(.*)\\s+\\(\\d*\\)\\)\\s+\\(type:\\s+(.*)\\)\\s+\\[(enabled|disabled)\\]\\s*(\\[has exclusions\\])?\\s*(\\[with filter\\])?.*"); //$NON-NLS-1$ NOSONAR
     /**
      * Pattern to match a wildcarded event information (lttng list <session>)
      */
-    Pattern WILDCARD_EVENT_PATTERN = Pattern.compile("\\s+(.*)\\s+\\(type:\\s+(.*)\\)\\s+\\[(enabled|disabled)\\]\\s*(\\[has exclusions\\])?\\s*(\\[with filter\\])?.*"); //$NON-NLS-1$
+    Pattern WILDCARD_EVENT_PATTERN = Pattern.compile("\\s+(.*)\\s+\\(type:\\s+(.*)\\)\\s+\\[(enabled|disabled)\\]\\s*(\\[has exclusions\\])?\\s*(\\[with filter\\])?.*"); //$NON-NLS-1$ NOSONAR
     /**
      * Pattern to match a probe address information (lttng list <session>)
      */
@@ -476,11 +476,11 @@ public interface LTTngControlServiceConstants {
     /**
      * Pattern to match for provider information (lttng list -k/-u)
      */
-    Pattern PROVIDER_EVENT_PATTERN = Pattern.compile("\\s*(.*)\\s+\\(loglevel:\\s+(.*)\\s+\\(\\d*\\)\\)\\s+\\(type:\\s+(.*)\\)"); //$NON-NLS-1$
+    Pattern PROVIDER_EVENT_PATTERN = Pattern.compile("\\s*(.*)\\s+\\(loglevel:\\s+(.*)\\s+\\(\\d*\\)\\)\\s+\\(type:\\s+(.*)\\)"); //$NON-NLS-1$ NOSONAR
     /**
      * Pattern to match event fields
      */
-    Pattern EVENT_FIELD_PATTERN = Pattern.compile("\\s*(field:)\\s+(.*)\\s+\\((.*)\\)"); //$NON-NLS-1$
+    Pattern EVENT_FIELD_PATTERN = Pattern.compile("\\s*(field:)\\s+(.*)\\s+\\((.*)\\)"); //$NON-NLS-1$ NOSONAR
     /**
      * Pattern to match for UST provider information (lttng list -u)
      */
@@ -488,7 +488,7 @@ public interface LTTngControlServiceConstants {
     /**
      * Pattern to match for session information (lttng create <session name>)
      */
-    Pattern CREATE_SESSION_NAME_PATTERN = Pattern.compile(".*Session\\s+(.*)\\s+created\\."); //$NON-NLS-1$
+    Pattern CREATE_SESSION_NAME_PATTERN = Pattern.compile(".*Session\\s+(.*)\\s+created\\."); //$NON-NLS-1$ NOSONAR
     /**
      * Pattern to match for session path information (lttng create <session name>)
      */

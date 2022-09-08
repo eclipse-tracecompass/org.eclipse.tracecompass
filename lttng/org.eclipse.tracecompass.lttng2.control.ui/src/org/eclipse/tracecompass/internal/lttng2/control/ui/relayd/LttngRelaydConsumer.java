@@ -50,7 +50,7 @@ import org.eclipse.tracecompass.tmf.ctf.core.trace.CtfTmfTrace;
  */
 public final class LttngRelaydConsumer {
 
-    private static final Pattern PROTOCOL_HOST_PATTERN = Pattern.compile("(\\S+://)*(\\d+\\.\\d+\\.\\d+\\.\\d+)"); //$NON-NLS-1$
+    private static final Pattern PROTOCOL_HOST_PATTERN = Pattern.compile("(\\S+://)*(\\d+\\.\\d+\\.\\d+\\.\\d+)"); //$NON-NLS-1$ NOSONAR
     private static final int SIGNAL_THROTTLE_NANOSEC = 10_000_000;
     private static final int GROUP = 2;
 

@@ -45,7 +45,7 @@ import com.google.common.collect.Range;
 public class DynamicFilterDialog extends TitleAreaDialog {
 
     /** Pattern for CPUS ranges e.g.: 1,1-200,2,3 */
-    private static final Pattern CPU_RANGE = Pattern.compile("^((\\d+(\\-\\d+)?, ?)*(\\d+(\\-\\d+)?))+$"); //$NON-NLS-1$
+    private static final Pattern CPU_RANGE = Pattern.compile("^((\\d+(\\-\\d+)?, ?)*(\\d+(\\-\\d+)?))+$"); //$NON-NLS-1$ NOSONAR
     private static final @NonNull String INTERNAL_RANGE_SEPARATOR = "-"; //$NON-NLS-1$
     private static final @NonNull String RANGES_DELIMITER = ","; //$NON-NLS-1$
     private static final int EXPECTED_RANGE_LEN = 2;

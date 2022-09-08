@@ -49,7 +49,7 @@ public interface IMappingFile {
 
         // Look for a process ID at the end of the filename.
         String filename = path.getFileName().toString();
-        final Pattern pattern = Pattern.compile("(.+)-([0-9]+)\\.(.+)"); //$NON-NLS-1$
+        final Pattern pattern = Pattern.compile("(.+)-([0-9]+)\\.(.+)"); //$NON-NLS-1$ NOSONAR
         Matcher matcher = pattern.matcher(filename);
         int pid = -1;
         if (matcher.find()) {
