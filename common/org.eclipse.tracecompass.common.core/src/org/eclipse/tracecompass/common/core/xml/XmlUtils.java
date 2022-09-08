@@ -70,7 +70,9 @@ public final class XmlUtils {
      * </p>
      * <p>
      * Use {@link XMLConstants#FEATURE_SECURE_PROCESSING} to ensure that the
-     * transformer is secure.
+     * transformer is secure. Hence the NOSONAR comment that disables the
+     * java:S2755 rule check. Eclipse fails to recognize the corresponding, more
+     * specific {@code @SuppressWarnings} annotated token unfortunately.
      * </p>
      *
      * @return A Transformer object that may be used to perform a transformation
@@ -81,7 +83,7 @@ public final class XmlUtils {
      *             instance.
      */
     public static Transformer newSecureTransformer() throws TransformerConfigurationException {
-        TransformerFactory factory = TransformerFactory.newInstance();
+        TransformerFactory factory = TransformerFactory.newInstance(); // NOSONAR
         factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
         return factory.newTransformer();
     }

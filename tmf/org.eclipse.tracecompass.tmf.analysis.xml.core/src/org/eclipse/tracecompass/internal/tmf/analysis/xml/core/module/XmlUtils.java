@@ -212,10 +212,14 @@ public final class XmlUtils {
             sources[i + 1] = new StreamSource(xsdFiles.get(i).toExternalForm());
         }
         /*
-         * TODO: Unsecure, figure out how to harden this and do it.
+         * Below, the NOSONAR comment disables the java:S2755 rule check.
+         * Eclipse fails to recognize the corresponding, more
+         * specific @SuppressWarnings annotated token unfortunately. Here,
+         * XMLConstants.FEATURE_SECURE_PROCESSING cannot be applied to this
+         * factory, as attempting so leads to schema construction failures.
          */
         try {
-            SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI); // NOSONAR
             /*
              * Even though the XSDs do not define a namespace, there is one
              * default namespace of null and to allow multiple XSDs to be parsed
