@@ -88,17 +88,12 @@ public final class LttngRelaydConsumer {
      * @throws CoreException
      *             If something goes wrong during the connection
      *             <ul>
-     *             <li>
-     *             Connection could not be established (Socket could not be
+     *             <li>Connection could not be established (Socket could not be
      *             opened, etc)</li>
-     *             <li>
-     *             Connection timeout</li>
-     *             <li>
-     *             The session was not found</li>
-     *             <li>
-     *             Could not create viewer session</li>
-     *             <li>
-     *             Invalid trace (no metadata, no streams)</li>
+     *             <li>Connection timeout</li>
+     *             <li>The session was not found</li>
+     *             <li>Could not create viewer session</li>
+     *             <li>Invalid trace (no metadata, no streams)</li>
      *             </ul>
      */
     public void connect() throws CoreException {
@@ -199,7 +194,8 @@ public final class LttngRelaydConsumer {
                                         fTimestampEnd = nanoTimeStamp;
                                     }
                                 } else if (indexReply.getStatus() == NextIndexReturnCode.VIEWER_INDEX_HUP) {
-                                    // The trace is now complete because the trace session was destroyed
+                                    // The trace is now complete because the
+                                    // trace session was destroyed
                                     fCtfTmfTrace.setComplete(true);
                                     TmfTraceRangeUpdatedSignal signal = new TmfTraceRangeUpdatedSignal(LttngRelaydConsumer.this, fCtfTmfTrace, new TmfTimeRange(fCtfTmfTrace.getStartTime(), TmfTimestamp.fromNanos(fTimestampEnd)));
                                     fCtfTmfTrace.broadcastAsync(signal);
@@ -263,5 +259,4 @@ public final class LttngRelaydConsumer {
         String asessionName = new String(byteArray, 0, length, ENCODING_UTF_8);
         return asessionName;
     }
-
 }
