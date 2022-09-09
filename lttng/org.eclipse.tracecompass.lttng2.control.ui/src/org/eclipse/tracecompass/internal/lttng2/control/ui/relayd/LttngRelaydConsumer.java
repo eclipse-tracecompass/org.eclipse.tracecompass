@@ -231,9 +231,7 @@ public final class LttngRelaydConsumer {
             if (fRelayd != null) {
                 fRelayd.close();
             }
-        } catch (IOException e) {
-            // Ignore
-        } catch (InterruptedException e) {
+        } catch (InterruptedException | IOException e) {
             // Ignore
         }
     }
@@ -255,8 +253,6 @@ public final class LttngRelaydConsumer {
         while (length < byteArray.length && byteArray[length] != 0) {
             length++;
         }
-
-        String asessionName = new String(byteArray, 0, length, ENCODING_UTF_8);
-        return asessionName;
+        return new String(byteArray, 0, length, ENCODING_UTF_8);
     }
 }
