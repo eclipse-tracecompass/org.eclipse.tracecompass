@@ -15,8 +15,8 @@
 package org.eclipse.tracecompass.internal.lttng2.control.ui.relayd;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -52,7 +52,6 @@ public final class LttngRelaydConsumer {
 
     private static final Pattern PROTOCOL_HOST_PATTERN = Pattern.compile("(\\S+://)*(\\d+\\.\\d+\\.\\d+\\.\\d+)"); //$NON-NLS-1$
     private static final int SIGNAL_THROTTLE_NANOSEC = 10_000_000;
-    private static final String ENCODING_UTF_8 = "UTF-8"; //$NON-NLS-1$
 
     private Job fConsumerJob;
     private CtfTmfTrace fCtfTmfTrace;
@@ -247,12 +246,12 @@ public final class LttngRelaydConsumer {
         return fTracePath;
     }
 
-    private static String nullTerminatedByteArrayToString(final byte[] byteArray) throws UnsupportedEncodingException {
+    private static String nullTerminatedByteArrayToString(final byte[] byteArray) {
         // Find length of null terminated string
         int length = 0;
         while (length < byteArray.length && byteArray[length] != 0) {
             length++;
         }
-        return new String(byteArray, 0, length, ENCODING_UTF_8);
+        return new String(byteArray, 0, length, StandardCharsets.UTF_8);
     }
 }
