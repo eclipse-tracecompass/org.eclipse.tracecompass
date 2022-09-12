@@ -68,13 +68,13 @@ public interface LTTngControlServiceConstants {
     // ------------------------------------------------------------------------
 
     /**
-     * Name of the XSD to validate against the xml machine interface
-     * output from LTTng
+     * Name of the XSD to validate against the xml machine interface output from
+     * LTTng
      */
     String MI_XSD_FILENAME = "mi_lttng.xsd"; //$NON-NLS-1$
     /**
-     * Name of the XSD to validate against the xml machine interface
-     * output from LTTng, version 3.0
+     * Name of the XSD to validate against the xml machine interface output from
+     * LTTng, version 3.0
      */
     String MI3_XSD_FILENAME = "mi-lttng-3.0.xsd"; //$NON-NLS-1$
     // ------------------------------------------------------------------------
@@ -163,19 +163,19 @@ public interface LTTngControlServiceConstants {
     /**
      * Command line option to add tracing group of user.
      */
-    String OPTION_TRACING_GROUP = "-g";  //$NON-NLS-1$
+    String OPTION_TRACING_GROUP = "-g"; //$NON-NLS-1$
     /**
      * Command line option for verbose output.
      */
-    String OPTION_VERBOSE = "-v";  //$NON-NLS-1$
+    String OPTION_VERBOSE = "-v"; //$NON-NLS-1$
     /**
      * Command line option for verbose output.
      */
-    String OPTION_VERY_VERBOSE = "-vv";  //$NON-NLS-1$
+    String OPTION_VERY_VERBOSE = "-vv"; //$NON-NLS-1$
     /**
      * Command line option for verbose output.
      */
-    String OPTION_VERY_VERY_VERBOSE = "-vvv";  //$NON-NLS-1$
+    String OPTION_VERY_VERY_VERBOSE = "-vvv"; //$NON-NLS-1$
     /**
      * Command line option for output path.
      */
@@ -211,71 +211,74 @@ public interface LTTngControlServiceConstants {
     /**
      * Command line option for specifying a session.
      */
-    String OPTION_SESSION = "-s";  //$NON-NLS-1$
+    String OPTION_SESSION = "-s"; //$NON-NLS-1$
     /**
      * Command line option for specifying a channel.
      */
-    String OPTION_CHANNEL = "-c";  //$NON-NLS-1$
+    String OPTION_CHANNEL = "-c"; //$NON-NLS-1$
     /**
      * Command line option for specifying a event.
      */
-    String OPTION_EVENT = "-e";  //$NON-NLS-1$
+    String OPTION_EVENT = "-e"; //$NON-NLS-1$
     /**
      * Command line option for specifying all events.
      */
-    String OPTION_ALL = "-a";  //$NON-NLS-1$
+    String OPTION_ALL = "-a"; //$NON-NLS-1$
     /**
      * Command line option for specifying a context.
      */
-    String OPTION_CONTEXT_TYPE = "-t";  //$NON-NLS-1$
+    String OPTION_CONTEXT_TYPE = "-t"; //$NON-NLS-1$
     /**
      * Command line option for specifying tracepoint events.
      */
-    String OPTION_TRACEPOINT = "--tracepoint";  //$NON-NLS-1$
+    String OPTION_TRACEPOINT = "--tracepoint"; //$NON-NLS-1$
     /**
      * Command line option for specifying syscall events.
      */
-    String OPTION_SYSCALL = "--syscall";  //$NON-NLS-1$
+    String OPTION_SYSCALL = "--syscall"; //$NON-NLS-1$
     /**
      * Command line option for specifying a dynamic probe.
      */
-    String OPTION_PROBE = "--probe";  //$NON-NLS-1$
+    String OPTION_PROBE = "--probe"; //$NON-NLS-1$
     /**
      * Command line option for specifying a dynamic function entry/return probe.
      */
-    String OPTION_FUNCTION_PROBE = "--function";  //$NON-NLS-1$
+    String OPTION_FUNCTION_PROBE = "--function"; //$NON-NLS-1$
     /**
      * Command line option for specifying a log level range.
      */
-    String OPTION_LOGLEVEL = "--loglevel";  //$NON-NLS-1$
+    String OPTION_LOGLEVEL = "--loglevel"; //$NON-NLS-1$
     /**
      * Command line option for specifying a specific log level.
      */
-    String OPTION_LOGLEVEL_ONLY = "--loglevel-only";  //$NON-NLS-1$
+    String OPTION_LOGLEVEL_ONLY = "--loglevel-only"; //$NON-NLS-1$
     /**
      * Optional command line option for configuring a channel's overwrite mode.
      */
-    String OPTION_OVERWRITE = "--overwrite";  //$NON-NLS-1$
+    String OPTION_OVERWRITE = "--overwrite"; //$NON-NLS-1$
     /**
-     * Optional command line option for configuring a channel's number of sub buffers.
+     * Optional command line option for configuring a channel's number of sub
+     * buffers.
      */
-    String OPTION_NUM_SUB_BUFFERS = "--num-subbuf";  //$NON-NLS-1$
+    String OPTION_NUM_SUB_BUFFERS = "--num-subbuf"; //$NON-NLS-1$
     /**
      * Optional command line option for configuring a channel's sub buffer size.
      */
-    String OPTION_SUB_BUFFER_SIZE = "--subbuf-size";  //$NON-NLS-1$
+    String OPTION_SUB_BUFFER_SIZE = "--subbuf-size"; //$NON-NLS-1$
     /**
-     * Optional command line option for configuring a channel's switch timer interval.
+     * Optional command line option for configuring a channel's switch timer
+     * interval.
      */
-    String OPTION_SWITCH_TIMER = "--switch-timer";  //$NON-NLS-1$
+    String OPTION_SWITCH_TIMER = "--switch-timer"; //$NON-NLS-1$
     /**
-     * Optional command line option for configuring a channel's read timer interval.
+     * Optional command line option for configuring a channel's read timer
+     * interval.
      */
-    String OPTION_READ_TIMER = "--read-timer";  //$NON-NLS-1$
+    String OPTION_READ_TIMER = "--read-timer"; //$NON-NLS-1$
     /**
      * Command line option for printing the help of a specific command
      */
-    String OPTION_HELP = "-h";  //$NON-NLS-1$
+    String OPTION_HELP = "-h"; //$NON-NLS-1$
     /**
      * Command line option for listing things. For example listing available
      * context.
@@ -294,7 +297,8 @@ public interface LTTngControlServiceConstants {
      */
     String OPTION_EXCLUDE = "--exclude"; //$NON-NLS-1$
     /**
-     * Command line option for configuring the streaming network URL (common for control and data channel).
+     * Command line option for configuring the streaming network URL (common for
+     * control and data channel).
      */
     String OPTION_NETWORK_URL = "-U"; //$NON-NLS-1$
     /**
@@ -363,12 +367,13 @@ public interface LTTngControlServiceConstants {
     Pattern TRACE_SESSION_PATH_PATTERN = Pattern.compile("\\s*Trace\\s+path\\:\\s+(.*)"); //$NON-NLS-1$
     /**
      * Pattern to match session path for network tracing (lttng list <session>)
-     * Note: file for protocol is not considered as network trace since local consumer will be used.
+     * Note: file for protocol is not considered as network trace since local
+     * consumer will be used.
      */
     Pattern TRACE_NETWORK_PATH_PATTERN = Pattern.compile("\\s*Trace\\s+path\\:\\s+(net|net4|net6|tcp|tcp4|tcp6)\\:\\/\\/(.*)(\\:(\\d*)\\/(.*)\\[data\\:\\s+(\\d*)\\]){0,1}"); //$NON-NLS-1$
     /**
-     * Pattern to match session path for network tracing
-     * Note: file for protocol is not considered as network trace since local consumer will be used.
+     * Pattern to match session path for network tracing Note: file for protocol
+     * is not considered as network trace since local consumer will be used.
      */
     Pattern TRACE_NETWORK_PATTERN = Pattern.compile("\\s*(net|net4|net6|tcp|tcp4|tcp6)\\:\\/\\/(.*)(\\:(\\d*)\\/(.*)\\[data\\:\\s+(\\d*)\\]){0,1}"); //$NON-NLS-1$
     /**
@@ -428,7 +433,7 @@ public interface LTTngControlServiceConstants {
      */
     Pattern PROBE_SYMBOL_PATTERN = Pattern.compile("\\s+(symbol)\\:\\s+(.+)"); //$NON-NLS-1$
     /**
-     * Pattern to match for channel (overwite mode) information (lttng list <session>)
+     * Pattern to match for channel (overwrite mode) information (lttng list <session>)
      */
     Pattern OVERWRITE_MODE_ATTRIBUTE = Pattern.compile("\\s+overwrite\\s+mode\\:.*"); //$NON-NLS-1$
     /**
@@ -436,7 +441,8 @@ public interface LTTngControlServiceConstants {
      */
     String OVERWRITE_MODE_ATTRIBUTE_FALSE = "0"; //$NON-NLS-1$
     /**
-     * Pattern to match indicating false for overwrite mode in machine interface mode
+     * Pattern to match indicating false for overwrite mode in machine interface
+     * mode
      */
     String OVERWRITE_MODE_ATTRIBUTE_FALSE_MI = "DISCARD"; //$NON-NLS-1$
     /**
@@ -500,7 +506,8 @@ public interface LTTngControlServiceConstants {
      */
     Pattern ADD_CONTEXT_HELP_CONTEXTS_END_LINE = Pattern.compile("\\s*Example.*"); //$NON-NLS-1$
     /**
-     * Pattern to match error line if no kernel tracer is available or installed.
+     * Pattern to match error line if no kernel tracer is available or
+     * installed.
      */
     Pattern LIST_KERNEL_NO_KERNEL_PROVIDER_PATTERN = Pattern.compile("\\s*Error:\\s+Unable\\s+to\\s+list\\s+kernel\\s+events.*"); //$NON-NLS-1$;
     /**
@@ -517,8 +524,8 @@ public interface LTTngControlServiceConstants {
     Pattern LIST_LIVE_TIMER_INTERVAL_PATTERN = Pattern.compile("\\s*Live\\stimer\\sinterval\\s\\(usec\\):\\s(\\d+)"); //$NON-NLS-1$
     /**
      * Pattern to match snapshot path for network tracing (lttng list <session>)
-     * Note: file for protocol is not considered as network trace since local consumer will be used.
+     * Note: file for protocol is not considered as network trace since local
+     * consumer will be used.
      */
     Pattern SNAPSHOT_NETWORK_PATH_PATTERN = Pattern.compile("(net|net4|net6|tcp|tcp4|tcp6)\\:\\/\\/(.*)(\\:(\\d*)\\/(.*)\\[data\\:\\s+(\\d*)\\]){0,1}"); //$NON-NLS-1$
-
 }
