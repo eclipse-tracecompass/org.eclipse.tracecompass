@@ -34,14 +34,15 @@ public interface IMappingFile {
     /**
      * Create a mapping file from a path.
      *
-     * If the file name before the extension finishes by -[0-9]+, then the number is
-     * taken as the ID of the process this mapping applies to.
+     * If the file name before the extension finishes by -[0-9]+, then the
+     * number is taken as the ID of the process this mapping applies to.
      *
      * @param fullPath
      *            The full path of the file to load.
      * @param isBinaryFile
      *            <code>true</code> if the file is a binary file
-     * @return The MappingFile object, or <code>null</code> if the file is invalid
+     * @return The MappingFile object, or <code>null</code> if the file is
+     *         invalid
      */
     static @Nullable IMappingFile create(String fullPath, boolean isBinaryFile) {
         Path path = Paths.get(fullPath);
@@ -64,8 +65,8 @@ public interface IMappingFile {
     }
 
     /**
-     * Create a mapping file from a path and associate it with the PID this mapping
-     * applies to.
+     * Create a mapping file from a path and associate it with the PID this
+     * mapping applies to.
      *
      * @param fullPath
      *            The full path of the file to load.
@@ -73,7 +74,8 @@ public interface IMappingFile {
      *            <code>true</code> if the file is a binary file
      * @param pid
      *            The ID of the process that this mapping describes
-     * @return The MappingFile object, or <code>null</code> if the file is invalid
+     * @return The MappingFile object, or <code>null</code> if the file is
+     *         invalid
      */
     static @Nullable IMappingFile create(String fullPath, boolean isBinaryFile, int pid) {
         Path path = Paths.get(fullPath);
@@ -83,7 +85,7 @@ public interface IMappingFile {
             results = FunctionNameMapper.mapFromBinaryFile(path.toFile());
             return new MappingFile(fullPath, isBinaryFile, results, pid);
         }
-        switch(FunctionNameMapper.guessMappingType(path.toFile())) {
+        switch (FunctionNameMapper.guessMappingType(path.toFile())) {
         case MAP_WITH_SIZE:
             results = FunctionNameMapper.mapFromSizedTextFile(path.toFile());
             return results == null ? null : new SizedMappingFile(fullPath, isBinaryFile, results, pid);
@@ -111,15 +113,16 @@ public interface IMappingFile {
      *
      * @param address
      *            The address of the symbol to look for
-     * @return The entry with its address/symbol if it's within this mapping's space
+     * @return The entry with its address/symbol if it's within this mapping's
+     *         space
      */
     @Nullable TmfResolvedSymbol getSymbolEntry(long address);
 
     /**
      * Get the ID of the process this mapping is for.
      *
-     * @return the process ID that this mapping applies to. A negative value means
-     *         it applies to no specific process.
+     * @return the process ID that this mapping applies to. A negative value
+     *         means it applies to no specific process.
      */
     int getPid();
 }

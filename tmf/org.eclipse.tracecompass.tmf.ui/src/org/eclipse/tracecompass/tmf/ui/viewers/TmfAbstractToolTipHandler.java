@@ -110,7 +110,8 @@ public abstract class TmfAbstractToolTipHandler {
         /**
          * Creates a tool tip string from a plain text string
          *
-         * @param text the plain text string
+         * @param text
+         *            the plain text string
          * @return the tool tip string
          */
         public static ToolTipString fromString(String text) {
@@ -120,7 +121,8 @@ public abstract class TmfAbstractToolTipHandler {
         /**
          * Creates a tool tip string from an HTML string
          *
-         * @param htmlString the HTML string
+         * @param htmlString
+         *            the HTML string
          * @return the tool tip string
          */
         public static ToolTipString fromHtml(String htmlString) {
@@ -128,7 +130,8 @@ public abstract class TmfAbstractToolTipHandler {
         }
 
         /**
-         * Creates a tool tip string from a decimal number. The HTML string mirror the string value.
+         * Creates a tool tip string from a decimal number. The HTML string
+         * mirror the string value.
          *
          * @param decimal
          *            The number to format
@@ -198,7 +201,7 @@ public abstract class TmfAbstractToolTipHandler {
     private static final String TIME_HYPERLINK = "<a href=time://%d>%s</a>"; //$NON-NLS-1$
     private static final String SOURCE_HYPERLINK = "<a href=" + TmfStrings.source() + "://%s>%s</a>"; //$NON-NLS-1$//$NON-NLS-2$
     private static final Pattern TIME_PATTERN = Pattern.compile("\\s*time\\:\\/\\/(\\d+).*"); //$NON-NLS-1$
-    private static final Pattern SOURCE_PATTERN = Pattern.compile(TmfStrings.source().toLowerCase() +"\\:\\/\\/(.*):(\\d+).*"); //$NON-NLS-1$
+    private static final Pattern SOURCE_PATTERN = Pattern.compile(TmfStrings.source().toLowerCase() + "\\:\\/\\/(.*):(\\d+).*"); //$NON-NLS-1$
 
     private static final ToolTipString UNCATEGORIZED = ToolTipString.fromString(""); //$NON-NLS-1$
     private static final int OFFSET = 16;
@@ -406,7 +409,10 @@ public abstract class TmfAbstractToolTipHandler {
     private static Rectangle getBounds(Shell shell) {
         Rectangle bounds = shell.getBounds();
         if (SWT.getVersion() < 4902 && SWT.getPlatform().equals("gtk")) { //$NON-NLS-1$
-            /* Bug 319612 - [Gtk] Shell.getSize() returns wrong value when created with style SWT.RESIZE | SWT.ON_TOP */
+            /*
+             * Bug 319612 - [Gtk] Shell.getSize() returns wrong value when
+             * created with style SWT.RESIZE | SWT.ON_TOP
+             */
             bounds = shell.computeTrim(bounds.x, bounds.y, bounds.width, bounds.height);
         }
         return bounds;
@@ -435,8 +441,8 @@ public abstract class TmfAbstractToolTipHandler {
     }
 
     /**
-     * Adds a (category, name, value) tuple to the tool tip. The category, name and
-     * value are plain text strings.
+     * Adds a (category, name, value) tuple to the tool tip. The category, name
+     * and value are plain text strings.
      *
      * @param category
      *            the category of the item (used for grouping)
@@ -484,7 +490,9 @@ public abstract class TmfAbstractToolTipHandler {
 
     private interface ITooltipContent {
         Point create();
+
         void setInput(Table<ToolTipString, ToolTipString, ToolTipString> model);
+
         Point computePreferredSize();
 
         default void setupControl(Control control) {
@@ -539,6 +547,7 @@ public abstract class TmfAbstractToolTipHandler {
                         }
                     }
                 }
+
                 @Override
                 public void changed(LocationEvent ev) {
                     // Ignore
@@ -601,13 +610,13 @@ public abstract class TmfAbstractToolTipHandler {
                     ".collapsible {\n" +
                     "  background-color: #777;\n" +
                     "  color: white;\n" +
-//                    "  cursor: pointer;\n" + // Add when enabling JavaScript
+//                  "  cursor: pointer;\n" + // Add when enabling JavaScript
                     "  padding: 0px;\n" +
                     "  width: 100%;\n" +
                     "  border: none;\n" +
                     "  text-align: left;\n" +
                     "  outline: none;\n" +
-                    "  font-family: " + fontName +";\n" +
+                    "  font-family: " + fontName + ";\n" +
                     "  font-size: " + fontHeight + ";\n" +
                     "}\n" +
                     "\n" +
@@ -761,5 +770,4 @@ public abstract class TmfAbstractToolTipHandler {
             return fParent;
         }
     }
-
 }
