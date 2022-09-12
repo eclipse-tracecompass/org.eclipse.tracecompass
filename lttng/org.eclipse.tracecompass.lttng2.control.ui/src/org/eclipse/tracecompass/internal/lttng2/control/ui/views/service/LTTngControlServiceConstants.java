@@ -51,7 +51,7 @@ public interface LTTngControlServiceConstants {
     String TRUE_NUMERICAL = "1"; //$NON-NLS-1$
 
     /** The default directory for session */
-    public static final String DEFAULT_PATH = ".lttng/sessions"; //$NON-NLS-1$
+    String DEFAULT_PATH = ".lttng/sessions"; //$NON-NLS-1$
 
     /**
      * The string returned when some event(s) are excluded.
@@ -509,11 +509,11 @@ public interface LTTngControlServiceConstants {
      * Pattern to match error line if no kernel tracer is available or
      * installed.
      */
-    Pattern LIST_KERNEL_NO_KERNEL_PROVIDER_PATTERN = Pattern.compile("\\s*Error:\\s+Unable\\s+to\\s+list\\s+kernel\\s+events.*"); //$NON-NLS-1$;
+    Pattern LIST_KERNEL_NO_KERNEL_PROVIDER_PATTERN = Pattern.compile("\\s*Error:\\s+Unable\\s+to\\s+list\\s+kernel\\s+events.*"); //$NON-NLS-1$
     /**
      * Pattern to match error line if no ust tracer is available or installed.
      */
-    Pattern LIST_UST_NO_UST_PROVIDER_PATTERN = Pattern.compile(".*Unable\\s*to\\s*list\\s*UST\\s*event.*"); //$NON-NLS-1$;
+    Pattern LIST_UST_NO_UST_PROVIDER_PATTERN = Pattern.compile(".*Unable\\s*to\\s*list\\s*UST\\s*event.*"); //$NON-NLS-1$
     /**
      * Pattern to match for list snapshot information (lttng snapshot list-output)
      */
