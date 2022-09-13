@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.tracecompass.datastore.core.encoding;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.nio.ByteBuffer;
 import java.util.PrimitiveIterator.OfLong;
@@ -22,7 +22,6 @@ import org.junit.Test;
  * Test for HTVarInt
  *
  * @author David Piché
- *
  */
 public class HTVarIntTest {
 
@@ -30,12 +29,11 @@ public class HTVarIntTest {
 
     /**
      * Test write long read long unsigned
-     *
      */
     @Test
-    public void ReadWriteLongTestUnsigned() {
+    public void readWriteLongTestUnsigned() {
         ByteBuffer bb = ByteBuffer.allocate(128);
-        Random r= new Random();
+        Random r = new Random();
         r.setSeed(0);
         OfLong randomStream = r.longs(0L, Long.MAX_VALUE).iterator();
         for (int i = 1; i < Long.BYTES; i++) {
@@ -51,22 +49,20 @@ public class HTVarIntTest {
 
     /**
      * Test write long read long
-     *
      */
-   @Test
-   public void ReadWriteLongTest() {
-       ByteBuffer bb = ByteBuffer.allocate(128);
-       Random r= new Random();
-       r.setSeed(0);
-       for (int i = 1; i < Long.BYTES; i++) {
-           for (int l = 0; l < LOOP_COUNT; l++) {
-               long value = r.nextLong() >> (i * Byte.SIZE);
-               HTVarInt.writeLong(bb, value);
-               bb.position(0);
-               assertEquals(l + " " + Long.toHexString(value), value, HTVarInt.readLong(bb));
-               bb.position(0);
-           }
-       }
-   }
-
+    @Test
+    public void readWriteLongTest() {
+        ByteBuffer bb = ByteBuffer.allocate(128);
+        Random r = new Random();
+        r.setSeed(0);
+        for (int i = 1; i < Long.BYTES; i++) {
+            for (int l = 0; l < LOOP_COUNT; l++) {
+                long value = r.nextLong() >> (i * Byte.SIZE);
+                HTVarInt.writeLong(bb, value);
+                bb.position(0);
+                assertEquals(l + " " + Long.toHexString(value), value, HTVarInt.readLong(bb));
+                bb.position(0);
+            }
+        }
+    }
 }
