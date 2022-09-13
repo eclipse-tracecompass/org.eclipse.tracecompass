@@ -33,7 +33,7 @@ public class HTVarIntTest {
     @Test
     public void readWriteLongTestUnsigned() {
         ByteBuffer bb = ByteBuffer.allocate(128);
-        Random r = new Random();
+        Random r = new Random(); // NOSONAR
         r.setSeed(0);
         OfLong randomStream = r.longs(0L, Long.MAX_VALUE).iterator();
         for (int i = 1; i < Long.BYTES; i++) {
@@ -53,7 +53,7 @@ public class HTVarIntTest {
     @Test
     public void readWriteLongTest() {
         ByteBuffer bb = ByteBuffer.allocate(128);
-        Random r = new Random();
+        Random r = new Random(); // NOSONAR
         r.setSeed(0);
         for (int i = 1; i < Long.BYTES; i++) {
             for (int l = 0; l < LOOP_COUNT; l++) {
