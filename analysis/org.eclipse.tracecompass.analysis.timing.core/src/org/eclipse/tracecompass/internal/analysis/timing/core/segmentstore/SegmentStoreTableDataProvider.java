@@ -174,17 +174,6 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTableDataProvider 
     }
 
     /**
-     * Matches the locally non-API yet published
-     * TmfEventTableDataProvider.Direction enumeration.
-     */
-    private enum Direction {
-        /** Search next */
-        NEXT,
-        /** Search previous */
-        PREVIOUS
-    }
-
-    /**
      * A wrapper class to encapsulate the indexes with the comparator that was
      * used to create the indexes.
      *

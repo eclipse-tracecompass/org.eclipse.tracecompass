@@ -17,6 +17,8 @@ import java.util.regex.Pattern;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
 
+import com.google.common.annotations.VisibleForTesting;
+
 /**
  * Table-specific abstract class to reuse towards the Trace-oriented superclass.
  */
@@ -43,6 +45,17 @@ public abstract class AbstractTmfTableDataProvider extends AbstractTmfTraceDataP
      */
     protected AbstractTmfTableDataProvider(ITmfTrace trace) {
         super(trace);
+    }
+
+    /**
+     * Direction of search, navigation etc.
+     */
+    @VisibleForTesting
+    public enum Direction {
+        /** Search next */
+        NEXT,
+        /** Search previous */
+        PREVIOUS
     }
 
     /**

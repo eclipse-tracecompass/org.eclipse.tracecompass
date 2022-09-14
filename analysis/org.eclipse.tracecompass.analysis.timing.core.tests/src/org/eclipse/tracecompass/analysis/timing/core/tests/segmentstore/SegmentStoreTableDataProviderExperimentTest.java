@@ -31,13 +31,13 @@ import org.eclipse.tracecompass.analysis.timing.core.segmentstore.AbstractSegmen
 import org.eclipse.tracecompass.analysis.timing.core.segmentstore.ISegmentStoreProvider;
 import org.eclipse.tracecompass.analysis.timing.core.segmentstore.SegmentStoreAnalysisModule;
 import org.eclipse.tracecompass.internal.analysis.timing.core.segmentstore.SegmentStoreTableDataProvider;
-import org.eclipse.tracecompass.internal.provisional.tmf.core.model.events.TmfEventTableDataProvider.Direction;
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.filters.VirtualTableQueryFilter;
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.table.ITmfVirtualTableDataProvider;
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.table.ITmfVirtualTableModel;
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.table.TmfVirtualTableModel;
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.table.VirtualTableCell;
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.table.VirtualTableLine;
+import org.eclipse.tracecompass.internal.tmf.core.model.AbstractTmfTableDataProvider.Direction;
 import org.eclipse.tracecompass.internal.tmf.core.model.filters.FetchParametersUtils;
 import org.eclipse.tracecompass.segmentstore.core.BasicSegment;
 import org.eclipse.tracecompass.segmentstore.core.ISegment;
@@ -69,6 +69,7 @@ import com.google.common.collect.ImmutableList.Builder;
  *
  * @author: Kyrollos Bekhet
  */
+@SuppressWarnings("restriction")
 public class SegmentStoreTableDataProviderExperimentTest {
 
     private static class SecondStubSegmentStoreProvider extends AbstractSegmentStoreAnalysisModule {

@@ -27,7 +27,6 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.events.TmfEventTableColumnDataModel;
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.events.TmfEventTableDataProvider;
-import org.eclipse.tracecompass.internal.provisional.tmf.core.model.events.TmfEventTableDataProvider.Direction;
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.events.TmfEventTableFilterModel;
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.filters.EventTableQueryFilter;
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.filters.VirtualTableQueryFilter;
@@ -36,6 +35,7 @@ import org.eclipse.tracecompass.internal.provisional.tmf.core.model.table.ITmfVi
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.table.ITmfVirtualTableModel;
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.table.TmfVirtualTableModel;
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.table.VirtualTableCell;
+import org.eclipse.tracecompass.internal.tmf.core.model.AbstractTmfTableDataProvider.Direction;
 import org.eclipse.tracecompass.internal.tmf.core.model.filters.FetchParametersUtils;
 import org.eclipse.tracecompass.tmf.core.exceptions.TmfTraceException;
 import org.eclipse.tracecompass.tmf.core.model.CoreFilterProperty;

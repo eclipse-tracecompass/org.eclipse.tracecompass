@@ -131,18 +131,6 @@ public class TmfEventTableDataProvider extends AbstractTmfTableDataProvider impl
     private static final int INDEX_STORING_INTERVAL = 1000;
 
     /**
-     * Direction of search, navigation etc.
-     *
-     * @since 7.1
-     */
-    public enum Direction {
-        /** Search next */
-        NEXT,
-        /** Search previous */
-        PREVIOUS
-    }
-
-    /**
      * Constructor
      *
      * @param trace
