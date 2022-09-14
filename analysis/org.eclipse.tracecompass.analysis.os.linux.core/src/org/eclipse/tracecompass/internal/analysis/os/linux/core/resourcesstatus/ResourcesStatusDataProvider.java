@@ -444,7 +444,7 @@ public class ResourcesStatusDataProvider extends AbstractTimeGraphDataProvider<@
                                 }
                             }
                         }
-                        TimeGraphState timeGraphState = new TimeGraphState(startTime, duration, execName != null ? execName + ' ' + '(' + String.valueOf(s) + ')' : String.valueOf(s), getSpecificStyleForTid(s));
+                        TimeGraphState timeGraphState = new TimeGraphState(startTime, duration, s, execName != null ? execName + ' ' + '(' + String.valueOf(s) + ')' : String.valueOf(s), getSpecificStyleForTid(s));
                         applyFilterAndAddState(eventList, timeGraphState, key, predicates, monitor);
                     } else if (type == Type.CURRENT_THREAD) {
                         // add null state when current thread is 0
