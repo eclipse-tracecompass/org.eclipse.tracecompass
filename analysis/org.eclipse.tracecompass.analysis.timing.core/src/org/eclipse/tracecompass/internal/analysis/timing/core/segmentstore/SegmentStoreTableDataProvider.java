@@ -29,6 +29,7 @@ import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -649,7 +650,8 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTableDataProvider 
         if (response.getStatus() == ITmfResponse.Status.COMPLETED) {
             TmfTreeModel<TmfTreeDataModel> model = response.getModel();
             if (model != null && !model.getEntries().isEmpty()) {
-                return getAspectsFromColumnId(model.getEntries().stream().map(TmfTreeDataModel::getId).collect(Collectors.toList()), monitor);
+                Collector<? super Long, ?, List<Long>> list = Collectors.toList();
+                return getAspectsFromColumnId(model.getEntries().stream().map(TmfTreeDataModel::getId).collect(list), monitor);
             }
         }
         return Objects.requireNonNull(fAspectToIdMap.inverse());
