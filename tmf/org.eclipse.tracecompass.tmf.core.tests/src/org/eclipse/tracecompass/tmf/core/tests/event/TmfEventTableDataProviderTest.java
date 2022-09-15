@@ -69,6 +69,14 @@ public class TmfEventTableDataProviderTest {
     private static final String EVENT_TYPE_COLUMN_NAME = "Event type";
     private static final String CONTENTS_COLUMN_NAME = "Contents";
 
+    private static final String TYPE_0 = "Type-0";
+    private static final String TYPE_1 = "Type-1";
+    private static final String TYPE_2 = "Type-2";
+    private static final String TYPE_3 = "Type-3";
+    private static final String TYPE_4 = "Type-4";
+    private static final String TYPE_5 = "Type-5";
+    private static final String TYPE_6 = "Type-6";
+
     private static Map<String, Long> fColumns = Collections.emptyMap();
 
     /**
@@ -162,11 +170,11 @@ public class TmfEventTableDataProviderTest {
         VirtualTableQueryFilter queryFilter = new EventTableQueryFilter(Collections.emptyList(), 0, 5, null);
 
         List<EventTableLine> expectedData = Arrays.asList(
-                new EventTableLine(Arrays.asList(new VirtualTableCell(lineTimestamp(1)), new VirtualTableCell("Type-0"), new VirtualTableCell(""), new VirtualTableCell(lineNsTimestamp(1))), 0, TmfTimestamp.fromMillis(1), 0, 0),
-                new EventTableLine(Arrays.asList(new VirtualTableCell(lineTimestamp(2)), new VirtualTableCell("Type-1"), new VirtualTableCell(""), new VirtualTableCell(lineNsTimestamp(2))), 1, TmfTimestamp.fromMillis(2), 1, 0),
-                new EventTableLine(Arrays.asList(new VirtualTableCell(lineTimestamp(3)), new VirtualTableCell("Type-2"), new VirtualTableCell(""), new VirtualTableCell(lineNsTimestamp(3))), 2, TmfTimestamp.fromMillis(3), 2, 0),
-                new EventTableLine(Arrays.asList(new VirtualTableCell(lineTimestamp(4)), new VirtualTableCell("Type-3"), new VirtualTableCell(""), new VirtualTableCell(lineNsTimestamp(4))), 3, TmfTimestamp.fromMillis(4), 3, 0),
-                new EventTableLine(Arrays.asList(new VirtualTableCell(lineTimestamp(5)), new VirtualTableCell("Type-4"), new VirtualTableCell(""), new VirtualTableCell(lineNsTimestamp(5))), 4, TmfTimestamp.fromMillis(5), 4, 0));
+                new EventTableLine(Arrays.asList(new VirtualTableCell(lineTimestamp(1)), new VirtualTableCell(TYPE_0), new VirtualTableCell(""), new VirtualTableCell(lineNsTimestamp(1))), 0, TmfTimestamp.fromMillis(1), 0, 0),
+                new EventTableLine(Arrays.asList(new VirtualTableCell(lineTimestamp(2)), new VirtualTableCell(TYPE_1), new VirtualTableCell(""), new VirtualTableCell(lineNsTimestamp(2))), 1, TmfTimestamp.fromMillis(2), 1, 0),
+                new EventTableLine(Arrays.asList(new VirtualTableCell(lineTimestamp(3)), new VirtualTableCell(TYPE_2), new VirtualTableCell(""), new VirtualTableCell(lineNsTimestamp(3))), 2, TmfTimestamp.fromMillis(3), 2, 0),
+                new EventTableLine(Arrays.asList(new VirtualTableCell(lineTimestamp(4)), new VirtualTableCell(TYPE_3), new VirtualTableCell(""), new VirtualTableCell(lineNsTimestamp(4))), 3, TmfTimestamp.fromMillis(4), 3, 0),
+                new EventTableLine(Arrays.asList(new VirtualTableCell(lineTimestamp(5)), new VirtualTableCell(TYPE_4), new VirtualTableCell(""), new VirtualTableCell(lineNsTimestamp(5))), 4, TmfTimestamp.fromMillis(5), 4, 0));
 
         TmfModelResponse<ITmfVirtualTableModel<EventTableLine>> response = fProvider.fetchLines(FetchParametersUtils.virtualTableQueryToMap(queryFilter), null);
         ITmfVirtualTableModel<EventTableLine> currentModel = response.getModel();
@@ -202,11 +210,11 @@ public class TmfEventTableDataProviderTest {
 
         List<Long> expectedColumnsId = Arrays.asList(eventTypeColumnId);
         List<EventTableLine> expectedData = Arrays.asList(
-                new EventTableLine(Arrays.asList(new VirtualTableCell("Type-5")), 5, TmfTimestamp.fromMillis(6), 5, 0),
-                new EventTableLine(Arrays.asList(new VirtualTableCell("Type-6")), 6, TmfTimestamp.fromMillis(7), 6, 0),
-                new EventTableLine(Arrays.asList(new VirtualTableCell("Type-0")), 7, TmfTimestamp.fromMillis(8), 7, 0),
-                new EventTableLine(Arrays.asList(new VirtualTableCell("Type-1")), 8, TmfTimestamp.fromMillis(9), 8, 0),
-                new EventTableLine(Arrays.asList(new VirtualTableCell("Type-2")), 9, TmfTimestamp.fromMillis(10), 9, 0));
+                new EventTableLine(Arrays.asList(new VirtualTableCell(TYPE_5)), 5, TmfTimestamp.fromMillis(6), 5, 0),
+                new EventTableLine(Arrays.asList(new VirtualTableCell(TYPE_6)), 6, TmfTimestamp.fromMillis(7), 6, 0),
+                new EventTableLine(Arrays.asList(new VirtualTableCell(TYPE_0)), 7, TmfTimestamp.fromMillis(8), 7, 0),
+                new EventTableLine(Arrays.asList(new VirtualTableCell(TYPE_1)), 8, TmfTimestamp.fromMillis(9), 8, 0),
+                new EventTableLine(Arrays.asList(new VirtualTableCell(TYPE_2)), 9, TmfTimestamp.fromMillis(10), 9, 0));
 
         TmfModelResponse<ITmfVirtualTableModel<EventTableLine>> response = fProvider.fetchLines(FetchParametersUtils.virtualTableQueryToMap(queryFilter), null);
         ITmfVirtualTableModel<EventTableLine> currentModel = response.getModel();
@@ -229,11 +237,11 @@ public class TmfEventTableDataProviderTest {
 
         List<Long> expectedColumnsId = Arrays.asList(eventTypeColumnId, timestampColumnId);
         List<EventTableLine> expectedData = Arrays.asList(
-                new EventTableLine(Arrays.asList(new VirtualTableCell("Type-3"), new VirtualTableCell(lineTimestamp(151))), 150, TmfTimestamp.fromMillis(151), 150, 0),
-                new EventTableLine(Arrays.asList(new VirtualTableCell("Type-4"), new VirtualTableCell(lineTimestamp(152))), 151, TmfTimestamp.fromMillis(152), 151, 0),
-                new EventTableLine(Arrays.asList(new VirtualTableCell("Type-5"), new VirtualTableCell(lineTimestamp(153))), 152, TmfTimestamp.fromMillis(153), 152, 0),
-                new EventTableLine(Arrays.asList(new VirtualTableCell("Type-6"), new VirtualTableCell(lineTimestamp(154))), 153, TmfTimestamp.fromMillis(154), 153, 0),
-                new EventTableLine(Arrays.asList(new VirtualTableCell("Type-0"), new VirtualTableCell(lineTimestamp(155))), 154, TmfTimestamp.fromMillis(155), 154, 0));
+                new EventTableLine(Arrays.asList(new VirtualTableCell(TYPE_3), new VirtualTableCell(lineTimestamp(151))), 150, TmfTimestamp.fromMillis(151), 150, 0),
+                new EventTableLine(Arrays.asList(new VirtualTableCell(TYPE_4), new VirtualTableCell(lineTimestamp(152))), 151, TmfTimestamp.fromMillis(152), 151, 0),
+                new EventTableLine(Arrays.asList(new VirtualTableCell(TYPE_5), new VirtualTableCell(lineTimestamp(153))), 152, TmfTimestamp.fromMillis(153), 152, 0),
+                new EventTableLine(Arrays.asList(new VirtualTableCell(TYPE_6), new VirtualTableCell(lineTimestamp(154))), 153, TmfTimestamp.fromMillis(154), 153, 0),
+                new EventTableLine(Arrays.asList(new VirtualTableCell(TYPE_0), new VirtualTableCell(lineTimestamp(155))), 154, TmfTimestamp.fromMillis(155), 154, 0));
 
         TmfModelResponse<ITmfVirtualTableModel<EventTableLine>> response = fProvider.fetchLines(FetchParametersUtils.virtualTableQueryToMap(queryFilter), null);
         ITmfVirtualTableModel<EventTableLine> currentModel = response.getModel();
@@ -278,11 +286,11 @@ public class TmfEventTableDataProviderTest {
         List<Long> expectedColumnsId = Arrays.asList(eventTypeColumnId, timestampColumnId);
         TmfTimestampFormat.getDefaulTimeFormat().format(TmfTimestamp.fromMillis(2).toNanos());
         List<EventTableLine> expectedData = Arrays.asList(
-                new EventTableLine(Arrays.asList(new VirtualTableCell("Type-1"), new VirtualTableCell(lineTimestamp(2))), 0, TmfTimestamp.fromMillis(2), 1, 0),
-                new EventTableLine(Arrays.asList(new VirtualTableCell("Type-1"), new VirtualTableCell(lineTimestamp(9))), 1, TmfTimestamp.fromMillis(9), 8, 0),
-                new EventTableLine(Arrays.asList(new VirtualTableCell("Type-1"), new VirtualTableCell(lineTimestamp(16))), 2, TmfTimestamp.fromMillis(16), 15, 0),
-                new EventTableLine(Arrays.asList(new VirtualTableCell("Type-1"), new VirtualTableCell(lineTimestamp(23))), 3, TmfTimestamp.fromMillis(23), 22, 0),
-                new EventTableLine(Arrays.asList(new VirtualTableCell("Type-1"), new VirtualTableCell(lineTimestamp(30))), 4, TmfTimestamp.fromMillis(30), 29, 0));
+                new EventTableLine(Arrays.asList(new VirtualTableCell(TYPE_1), new VirtualTableCell(lineTimestamp(2))), 0, TmfTimestamp.fromMillis(2), 1, 0),
+                new EventTableLine(Arrays.asList(new VirtualTableCell(TYPE_1), new VirtualTableCell(lineTimestamp(9))), 1, TmfTimestamp.fromMillis(9), 8, 0),
+                new EventTableLine(Arrays.asList(new VirtualTableCell(TYPE_1), new VirtualTableCell(lineTimestamp(16))), 2, TmfTimestamp.fromMillis(16), 15, 0),
+                new EventTableLine(Arrays.asList(new VirtualTableCell(TYPE_1), new VirtualTableCell(lineTimestamp(23))), 3, TmfTimestamp.fromMillis(23), 22, 0),
+                new EventTableLine(Arrays.asList(new VirtualTableCell(TYPE_1), new VirtualTableCell(lineTimestamp(30))), 4, TmfTimestamp.fromMillis(30), 29, 0));
 
         TmfModelResponse<ITmfVirtualTableModel<EventTableLine>> response = fProvider.fetchLines(parameters, null);
         ITmfVirtualTableModel<EventTableLine> currentModel = response.getModel();
@@ -312,11 +320,11 @@ public class TmfEventTableDataProviderTest {
 
         List<Long> expectedColumnsId = Arrays.asList(eventTypeColumnId, timestampColumnId);
         List<EventTableLine> expectedData = Arrays.asList(
-                new EventTableLine(Arrays.asList(new VirtualTableCell("Type-0"), new VirtualTableCell(lineTimestamp(8))), 0, TmfTimestamp.fromMillis(8), 7, 0),
-                new EventTableLine(Arrays.asList(new VirtualTableCell("Type-0"), new VirtualTableCell(lineTimestamp(78))), 1, TmfTimestamp.fromMillis(78), 77, 0),
-                new EventTableLine(Arrays.asList(new VirtualTableCell("Type-0"), new VirtualTableCell(lineTimestamp(85))), 2, TmfTimestamp.fromMillis(85), 84, 0),
-                new EventTableLine(Arrays.asList(new VirtualTableCell("Type-0"), new VirtualTableCell(lineTimestamp(148))), 3, TmfTimestamp.fromMillis(148), 147, 0),
-                new EventTableLine(Arrays.asList(new VirtualTableCell("Type-0"), new VirtualTableCell(lineTimestamp(183))), 4, TmfTimestamp.fromMillis(183), 182, 0));
+                new EventTableLine(Arrays.asList(new VirtualTableCell(TYPE_0), new VirtualTableCell(lineTimestamp(8))), 0, TmfTimestamp.fromMillis(8), 7, 0),
+                new EventTableLine(Arrays.asList(new VirtualTableCell(TYPE_0), new VirtualTableCell(lineTimestamp(78))), 1, TmfTimestamp.fromMillis(78), 77, 0),
+                new EventTableLine(Arrays.asList(new VirtualTableCell(TYPE_0), new VirtualTableCell(lineTimestamp(85))), 2, TmfTimestamp.fromMillis(85), 84, 0),
+                new EventTableLine(Arrays.asList(new VirtualTableCell(TYPE_0), new VirtualTableCell(lineTimestamp(148))), 3, TmfTimestamp.fromMillis(148), 147, 0),
+                new EventTableLine(Arrays.asList(new VirtualTableCell(TYPE_0), new VirtualTableCell(lineTimestamp(183))), 4, TmfTimestamp.fromMillis(183), 182, 0));
 
         TmfModelResponse<ITmfVirtualTableModel<EventTableLine>> response = fProvider.fetchLines(parameters, null);
         ITmfVirtualTableModel<EventTableLine> currentModel = response.getModel();
@@ -378,7 +386,7 @@ public class TmfEventTableDataProviderTest {
         Map<String, Object> parameters = FetchParametersUtils.virtualTableQueryToMap(queryFilter);
 
         Map<Long, String> searchExpressions = new HashMap<>();
-        searchExpressions.put(eventTypeColumnId, "Type-2");
+        searchExpressions.put(eventTypeColumnId, TYPE_2);
 
         parameters.put(TmfEventTableDataProvider.TABLE_SEARCH_EXPRESSION_KEY, searchExpressions);
         parameters.put(TmfEventTableDataProvider.TABLE_SEARCH_DIRECTION_KEY, Direction.NEXT.name());
@@ -386,7 +394,7 @@ public class TmfEventTableDataProviderTest {
         List<Long> expectedColumnsId = Arrays.asList(eventTypeColumnId, timestampColumnId);
         TmfTimestampFormat.getDefaulTimeFormat().format(TmfTimestamp.fromMillis(2).toNanos());
         List<EventTableLine> expectedData = Arrays.asList(
-                new EventTableLine(Arrays.asList(new VirtualTableCell("Type-2"), new VirtualTableCell(lineTimestamp(3))), 2, TmfTimestamp.fromMillis(3), 2, 0));
+                new EventTableLine(Arrays.asList(new VirtualTableCell(TYPE_2), new VirtualTableCell(lineTimestamp(3))), 2, TmfTimestamp.fromMillis(3), 2, 0));
         expectedData.get(0).setActiveProperties(CoreFilterProperty.HIGHLIGHT);
 
         TmfModelResponse<ITmfVirtualTableModel<EventTableLine>> response = fProvider.fetchLines(parameters, null);
@@ -407,11 +415,11 @@ public class TmfEventTableDataProviderTest {
         assertNotNull(currentModel);
         assertEquals(nbEventsRequested, currentModel.getLines().size());
         expectedData = Arrays.asList(
-                new EventTableLine(Arrays.asList(new VirtualTableCell("Type-0"), new VirtualTableCell(lineTimestamp(1))), 0, TmfTimestamp.fromMillis(1), 0, 0),
-                new EventTableLine(Arrays.asList(new VirtualTableCell("Type-1"), new VirtualTableCell(lineTimestamp(2))), 1, TmfTimestamp.fromMillis(2), 1, 0),
-                new EventTableLine(Arrays.asList(new VirtualTableCell("Type-2"), new VirtualTableCell(lineTimestamp(3))), 2, TmfTimestamp.fromMillis(3), 2, 0),
-                new EventTableLine(Arrays.asList(new VirtualTableCell("Type-3"), new VirtualTableCell(lineTimestamp(4))), 3, TmfTimestamp.fromMillis(4), 3, 0),
-                new EventTableLine(Arrays.asList(new VirtualTableCell("Type-4"), new VirtualTableCell(lineTimestamp(5))), 4, TmfTimestamp.fromMillis(5), 4, 0));
+                new EventTableLine(Arrays.asList(new VirtualTableCell(TYPE_0), new VirtualTableCell(lineTimestamp(1))), 0, TmfTimestamp.fromMillis(1), 0, 0),
+                new EventTableLine(Arrays.asList(new VirtualTableCell(TYPE_1), new VirtualTableCell(lineTimestamp(2))), 1, TmfTimestamp.fromMillis(2), 1, 0),
+                new EventTableLine(Arrays.asList(new VirtualTableCell(TYPE_2), new VirtualTableCell(lineTimestamp(3))), 2, TmfTimestamp.fromMillis(3), 2, 0),
+                new EventTableLine(Arrays.asList(new VirtualTableCell(TYPE_3), new VirtualTableCell(lineTimestamp(4))), 3, TmfTimestamp.fromMillis(4), 3, 0),
+                new EventTableLine(Arrays.asList(new VirtualTableCell(TYPE_4), new VirtualTableCell(lineTimestamp(5))), 4, TmfTimestamp.fromMillis(5), 4, 0));
         expectedData.get(2).setActiveProperties(CoreFilterProperty.HIGHLIGHT);
         expectedModel = new TmfVirtualTableModel<>(expectedColumnsId, expectedData, 0, 10000);
         assertEquals(expectedModel, currentModel);
@@ -437,7 +445,7 @@ public class TmfEventTableDataProviderTest {
         Map<String, Object> parameters = FetchParametersUtils.virtualTableQueryToMap(queryFilter);
 
         Map<Long, String> searchExpressions = new HashMap<>();
-        searchExpressions.put(eventTypeColumnId, "Type-2");
+        searchExpressions.put(eventTypeColumnId, TYPE_2);
 
         parameters.put(TmfEventTableDataProvider.TABLE_SEARCH_EXPRESSION_KEY, searchExpressions);
         parameters.put(TmfEventTableDataProvider.TABLE_SEARCH_DIRECTION_KEY, Direction.NEXT.name());
@@ -445,9 +453,9 @@ public class TmfEventTableDataProviderTest {
         List<Long> expectedColumnsId = Arrays.asList(eventTypeColumnId, timestampColumnId);
         TmfTimestampFormat.getDefaulTimeFormat().format(TmfTimestamp.fromMillis(2).toNanos());
         List<EventTableLine> expectedData = Arrays.asList(
-                new EventTableLine(Arrays.asList(new VirtualTableCell("Type-2"), new VirtualTableCell(lineTimestamp(3))), 2, TmfTimestamp.fromMillis(3), 2, 0),
-                new EventTableLine(Arrays.asList(new VirtualTableCell("Type-3"), new VirtualTableCell(lineTimestamp(4))), 3, TmfTimestamp.fromMillis(4), 3, 0),
-                new EventTableLine(Arrays.asList(new VirtualTableCell("Type-4"), new VirtualTableCell(lineTimestamp(5))), 4, TmfTimestamp.fromMillis(5), 4, 0));
+                new EventTableLine(Arrays.asList(new VirtualTableCell(TYPE_2), new VirtualTableCell(lineTimestamp(3))), 2, TmfTimestamp.fromMillis(3), 2, 0),
+                new EventTableLine(Arrays.asList(new VirtualTableCell(TYPE_3), new VirtualTableCell(lineTimestamp(4))), 3, TmfTimestamp.fromMillis(4), 3, 0),
+                new EventTableLine(Arrays.asList(new VirtualTableCell(TYPE_4), new VirtualTableCell(lineTimestamp(5))), 4, TmfTimestamp.fromMillis(5), 4, 0));
         expectedData.get(0).setActiveProperties(CoreFilterProperty.HIGHLIGHT);
 
         TmfModelResponse<ITmfVirtualTableModel<EventTableLine>> response = fProvider.fetchLines(parameters, null);
@@ -478,7 +486,7 @@ public class TmfEventTableDataProviderTest {
         Map<String, Object> parameters = FetchParametersUtils.virtualTableQueryToMap(queryFilter);
 
         Map<Long, String> searchExpressions = new HashMap<>();
-        searchExpressions.put(eventTypeColumnId, "Type-2");
+        searchExpressions.put(eventTypeColumnId, TYPE_2);
 
         parameters.put(TmfEventTableDataProvider.TABLE_SEARCH_EXPRESSION_KEY, searchExpressions);
         parameters.put(TmfEventTableDataProvider.TABLE_SEARCH_DIRECTION_KEY, Direction.PREVIOUS.name());
@@ -486,7 +494,7 @@ public class TmfEventTableDataProviderTest {
         List<Long> expectedColumnsId = Arrays.asList(eventTypeColumnId, timestampColumnId);
         TmfTimestampFormat.getDefaulTimeFormat().format(TmfTimestamp.fromMillis(2).toNanos());
         List<EventTableLine> expectedData = Arrays.asList(
-                new EventTableLine(Arrays.asList(new VirtualTableCell("Type-2"), new VirtualTableCell(lineTimestamp(10))), 9, TmfTimestamp.fromMillis(10), 9, 0));
+                new EventTableLine(Arrays.asList(new VirtualTableCell(TYPE_2), new VirtualTableCell(lineTimestamp(10))), 9, TmfTimestamp.fromMillis(10), 9, 0));
         expectedData.get(0).setActiveProperties(CoreFilterProperty.HIGHLIGHT);
 
         TmfModelResponse<ITmfVirtualTableModel<EventTableLine>> response = fProvider.fetchLines(parameters, null);
@@ -517,7 +525,7 @@ public class TmfEventTableDataProviderTest {
         Map<String, Object> parameters = FetchParametersUtils.virtualTableQueryToMap(queryFilter);
 
         Map<Long, String> searchExpressions = new HashMap<>();
-        searchExpressions.put(eventTypeColumnId, "Type-2");
+        searchExpressions.put(eventTypeColumnId, TYPE_2);
 
         parameters.put(TmfEventTableDataProvider.TABLE_SEARCH_EXPRESSION_KEY, searchExpressions);
         parameters.put(TmfEventTableDataProvider.TABLE_SEARCH_DIRECTION_KEY, Direction.PREVIOUS.name());
@@ -525,9 +533,9 @@ public class TmfEventTableDataProviderTest {
         List<Long> expectedColumnsId = Arrays.asList(eventTypeColumnId, timestampColumnId);
         TmfTimestampFormat.getDefaulTimeFormat().format(TmfTimestamp.fromMillis(2).toNanos());
         List<EventTableLine> expectedData = Arrays.asList(
-                new EventTableLine(Arrays.asList(new VirtualTableCell("Type-2"), new VirtualTableCell(lineTimestamp(10))), 9, TmfTimestamp.fromMillis(10), 9, 0),
-                new EventTableLine(Arrays.asList(new VirtualTableCell("Type-3"), new VirtualTableCell(lineTimestamp(11))), 10, TmfTimestamp.fromMillis(11), 10, 0),
-                new EventTableLine(Arrays.asList(new VirtualTableCell("Type-4"), new VirtualTableCell(lineTimestamp(12))), 11, TmfTimestamp.fromMillis(12), 11, 0));
+                new EventTableLine(Arrays.asList(new VirtualTableCell(TYPE_2), new VirtualTableCell(lineTimestamp(10))), 9, TmfTimestamp.fromMillis(10), 9, 0),
+                new EventTableLine(Arrays.asList(new VirtualTableCell(TYPE_3), new VirtualTableCell(lineTimestamp(11))), 10, TmfTimestamp.fromMillis(11), 10, 0),
+                new EventTableLine(Arrays.asList(new VirtualTableCell(TYPE_4), new VirtualTableCell(lineTimestamp(12))), 11, TmfTimestamp.fromMillis(12), 11, 0));
         expectedData.get(0).setActiveProperties(CoreFilterProperty.HIGHLIGHT);
 
         TmfModelResponse<ITmfVirtualTableModel<EventTableLine>> response = fProvider.fetchLines(parameters, null);
@@ -566,7 +574,7 @@ public class TmfEventTableDataProviderTest {
         List<Long> expectedColumnsId = new ArrayList<>(fColumns.values());
         TmfTimestampFormat.getDefaulTimeFormat().format(TmfTimestamp.fromMillis(2).toNanos());
         List<EventTableLine> expectedData = Arrays.asList(
-                new EventTableLine(Arrays.asList(new VirtualTableCell(lineTimestamp(4)), new VirtualTableCell("Type-3"), new VirtualTableCell(""), new VirtualTableCell(lineNsTimestamp(4))), 3, TmfTimestamp.fromMillis(4), 3, 0));
+                new EventTableLine(Arrays.asList(new VirtualTableCell(lineTimestamp(4)), new VirtualTableCell(TYPE_3), new VirtualTableCell(""), new VirtualTableCell(lineNsTimestamp(4))), 3, TmfTimestamp.fromMillis(4), 3, 0));
         expectedData.get(0).setActiveProperties(CoreFilterProperty.HIGHLIGHT);
 
         TmfModelResponse<ITmfVirtualTableModel<EventTableLine>> response = fProvider.fetchLines(parameters, null);
@@ -587,11 +595,11 @@ public class TmfEventTableDataProviderTest {
         assertNotNull(currentModel);
         assertEquals(nbEventsRequested, currentModel.getLines().size());
         expectedData = Arrays.asList(
-                new EventTableLine(Arrays.asList(new VirtualTableCell(lineTimestamp(1)), new VirtualTableCell("Type-0"), new VirtualTableCell(""), new VirtualTableCell(lineNsTimestamp(1))), 0, TmfTimestamp.fromMillis(1), 0, 0),
-                new EventTableLine(Arrays.asList(new VirtualTableCell(lineTimestamp(2)), new VirtualTableCell("Type-1"), new VirtualTableCell(""), new VirtualTableCell(lineNsTimestamp(2))), 1, TmfTimestamp.fromMillis(2), 1, 0),
-                new EventTableLine(Arrays.asList(new VirtualTableCell(lineTimestamp(3)), new VirtualTableCell("Type-2"), new VirtualTableCell(""), new VirtualTableCell(lineNsTimestamp(3))), 2, TmfTimestamp.fromMillis(3), 2, 0),
-                new EventTableLine(Arrays.asList(new VirtualTableCell(lineTimestamp(4)), new VirtualTableCell("Type-3"), new VirtualTableCell(""), new VirtualTableCell(lineNsTimestamp(4))), 3, TmfTimestamp.fromMillis(4), 3, 0),
-                new EventTableLine(Arrays.asList(new VirtualTableCell(lineTimestamp(5)), new VirtualTableCell("Type-4"), new VirtualTableCell(""), new VirtualTableCell(lineNsTimestamp(5))), 4, TmfTimestamp.fromMillis(5), 4, 0));
+                new EventTableLine(Arrays.asList(new VirtualTableCell(lineTimestamp(1)), new VirtualTableCell(TYPE_0), new VirtualTableCell(""), new VirtualTableCell(lineNsTimestamp(1))), 0, TmfTimestamp.fromMillis(1), 0, 0),
+                new EventTableLine(Arrays.asList(new VirtualTableCell(lineTimestamp(2)), new VirtualTableCell(TYPE_1), new VirtualTableCell(""), new VirtualTableCell(lineNsTimestamp(2))), 1, TmfTimestamp.fromMillis(2), 1, 0),
+                new EventTableLine(Arrays.asList(new VirtualTableCell(lineTimestamp(3)), new VirtualTableCell(TYPE_2), new VirtualTableCell(""), new VirtualTableCell(lineNsTimestamp(3))), 2, TmfTimestamp.fromMillis(3), 2, 0),
+                new EventTableLine(Arrays.asList(new VirtualTableCell(lineTimestamp(4)), new VirtualTableCell(TYPE_3), new VirtualTableCell(""), new VirtualTableCell(lineNsTimestamp(4))), 3, TmfTimestamp.fromMillis(4), 3, 0),
+                new EventTableLine(Arrays.asList(new VirtualTableCell(lineTimestamp(5)), new VirtualTableCell(TYPE_4), new VirtualTableCell(""), new VirtualTableCell(lineNsTimestamp(5))), 4, TmfTimestamp.fromMillis(5), 4, 0));
         expectedData.get(3).setActiveProperties(CoreFilterProperty.HIGHLIGHT);
         expectedModel = new TmfVirtualTableModel<>(expectedColumnsId, expectedData, 0, 10000);
         assertEquals(expectedModel, currentModel);
