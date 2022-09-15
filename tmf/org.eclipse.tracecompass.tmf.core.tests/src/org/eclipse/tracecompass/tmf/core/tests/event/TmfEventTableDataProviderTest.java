@@ -35,6 +35,7 @@ import org.eclipse.tracecompass.internal.provisional.tmf.core.model.table.ITmfVi
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.table.ITmfVirtualTableModel;
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.table.TmfVirtualTableModel;
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.table.VirtualTableCell;
+import org.eclipse.tracecompass.internal.tmf.core.model.AbstractTmfTableDataProvider;
 import org.eclipse.tracecompass.internal.tmf.core.model.AbstractTmfTableDataProvider.Direction;
 import org.eclipse.tracecompass.internal.tmf.core.model.filters.FetchParametersUtils;
 import org.eclipse.tracecompass.tmf.core.exceptions.TmfTraceException;
@@ -353,8 +354,8 @@ public class TmfEventTableDataProviderTest {
         Map<Long, String> searchExpressions = new HashMap<>();
         searchExpressions.put(eventTypeColumnId, "Does not exits");
 
-        parameters.put(TmfEventTableDataProvider.TABLE_SEARCH_EXPRESSION_KEY, searchExpressions);
-        parameters.put(TmfEventTableDataProvider.TABLE_SEARCH_DIRECTION_KEY, Direction.NEXT.name());
+        parameters.put(AbstractTmfTableDataProvider.TABLE_SEARCH_EXPRESSION_KEY, searchExpressions);
+        parameters.put(AbstractTmfTableDataProvider.TABLE_SEARCH_DIRECTION_KEY, Direction.NEXT.name());
 
         List<Long> expectedColumnsId = Arrays.asList(eventTypeColumnId, timestampColumnId);
         TmfTimestampFormat.getDefaulTimeFormat().format(TmfTimestamp.fromMillis(2).toNanos());
@@ -388,8 +389,8 @@ public class TmfEventTableDataProviderTest {
         Map<Long, String> searchExpressions = new HashMap<>();
         searchExpressions.put(eventTypeColumnId, TYPE_2);
 
-        parameters.put(TmfEventTableDataProvider.TABLE_SEARCH_EXPRESSION_KEY, searchExpressions);
-        parameters.put(TmfEventTableDataProvider.TABLE_SEARCH_DIRECTION_KEY, Direction.NEXT.name());
+        parameters.put(AbstractTmfTableDataProvider.TABLE_SEARCH_EXPRESSION_KEY, searchExpressions);
+        parameters.put(AbstractTmfTableDataProvider.TABLE_SEARCH_DIRECTION_KEY, Direction.NEXT.name());
 
         List<Long> expectedColumnsId = Arrays.asList(eventTypeColumnId, timestampColumnId);
         TmfTimestampFormat.getDefaulTimeFormat().format(TmfTimestamp.fromMillis(2).toNanos());
@@ -408,7 +409,7 @@ public class TmfEventTableDataProviderTest {
         int nbEventsRequested = 5;
         queryFilter = new EventTableQueryFilter(Arrays.asList(eventTypeColumnId, timestampColumnId), 0, nbEventsRequested, null);
         parameters = FetchParametersUtils.virtualTableQueryToMap(queryFilter);
-        parameters.put(TmfEventTableDataProvider.TABLE_SEARCH_EXPRESSION_KEY, searchExpressions);
+        parameters.put(AbstractTmfTableDataProvider.TABLE_SEARCH_EXPRESSION_KEY, searchExpressions);
 
         response = fProvider.fetchLines(parameters, null);
         currentModel = response.getModel();
@@ -447,8 +448,8 @@ public class TmfEventTableDataProviderTest {
         Map<Long, String> searchExpressions = new HashMap<>();
         searchExpressions.put(eventTypeColumnId, TYPE_2);
 
-        parameters.put(TmfEventTableDataProvider.TABLE_SEARCH_EXPRESSION_KEY, searchExpressions);
-        parameters.put(TmfEventTableDataProvider.TABLE_SEARCH_DIRECTION_KEY, Direction.NEXT.name());
+        parameters.put(AbstractTmfTableDataProvider.TABLE_SEARCH_EXPRESSION_KEY, searchExpressions);
+        parameters.put(AbstractTmfTableDataProvider.TABLE_SEARCH_DIRECTION_KEY, Direction.NEXT.name());
 
         List<Long> expectedColumnsId = Arrays.asList(eventTypeColumnId, timestampColumnId);
         TmfTimestampFormat.getDefaulTimeFormat().format(TmfTimestamp.fromMillis(2).toNanos());
@@ -488,8 +489,8 @@ public class TmfEventTableDataProviderTest {
         Map<Long, String> searchExpressions = new HashMap<>();
         searchExpressions.put(eventTypeColumnId, TYPE_2);
 
-        parameters.put(TmfEventTableDataProvider.TABLE_SEARCH_EXPRESSION_KEY, searchExpressions);
-        parameters.put(TmfEventTableDataProvider.TABLE_SEARCH_DIRECTION_KEY, Direction.PREVIOUS.name());
+        parameters.put(AbstractTmfTableDataProvider.TABLE_SEARCH_EXPRESSION_KEY, searchExpressions);
+        parameters.put(AbstractTmfTableDataProvider.TABLE_SEARCH_DIRECTION_KEY, Direction.PREVIOUS.name());
 
         List<Long> expectedColumnsId = Arrays.asList(eventTypeColumnId, timestampColumnId);
         TmfTimestampFormat.getDefaulTimeFormat().format(TmfTimestamp.fromMillis(2).toNanos());
@@ -527,8 +528,8 @@ public class TmfEventTableDataProviderTest {
         Map<Long, String> searchExpressions = new HashMap<>();
         searchExpressions.put(eventTypeColumnId, TYPE_2);
 
-        parameters.put(TmfEventTableDataProvider.TABLE_SEARCH_EXPRESSION_KEY, searchExpressions);
-        parameters.put(TmfEventTableDataProvider.TABLE_SEARCH_DIRECTION_KEY, Direction.PREVIOUS.name());
+        parameters.put(AbstractTmfTableDataProvider.TABLE_SEARCH_EXPRESSION_KEY, searchExpressions);
+        parameters.put(AbstractTmfTableDataProvider.TABLE_SEARCH_DIRECTION_KEY, Direction.PREVIOUS.name());
 
         List<Long> expectedColumnsId = Arrays.asList(eventTypeColumnId, timestampColumnId);
         TmfTimestampFormat.getDefaulTimeFormat().format(TmfTimestamp.fromMillis(2).toNanos());
@@ -568,8 +569,8 @@ public class TmfEventTableDataProviderTest {
         searchExpressions.put(eventTypeColumnId, "T.*3");
         searchExpressions.put(timestampColumnId, "\\d*4\\d*s*");
 
-        parameters.put(TmfEventTableDataProvider.TABLE_SEARCH_EXPRESSION_KEY, searchExpressions);
-        parameters.put(TmfEventTableDataProvider.TABLE_SEARCH_DIRECTION_KEY, Direction.NEXT.name());
+        parameters.put(AbstractTmfTableDataProvider.TABLE_SEARCH_EXPRESSION_KEY, searchExpressions);
+        parameters.put(AbstractTmfTableDataProvider.TABLE_SEARCH_DIRECTION_KEY, Direction.NEXT.name());
 
         List<Long> expectedColumnsId = new ArrayList<>(fColumns.values());
         TmfTimestampFormat.getDefaulTimeFormat().format(TmfTimestamp.fromMillis(2).toNanos());
@@ -588,7 +589,7 @@ public class TmfEventTableDataProviderTest {
         int nbEventsRequested = 5;
         queryFilter = new EventTableQueryFilter(new ArrayList<>(fColumns.values()), 0, nbEventsRequested, null);
         parameters = FetchParametersUtils.virtualTableQueryToMap(queryFilter);
-        parameters.put(TmfEventTableDataProvider.TABLE_SEARCH_EXPRESSION_KEY, searchExpressions);
+        parameters.put(AbstractTmfTableDataProvider.TABLE_SEARCH_EXPRESSION_KEY, searchExpressions);
 
         response = fProvider.fetchLines(parameters, null);
         currentModel = response.getModel();

@@ -80,14 +80,6 @@ import com.google.common.collect.Lists;
 public class TmfEventTableDataProvider extends AbstractTmfTableDataProvider implements ITmfVirtualTableDataProvider<TmfEventTableColumnDataModel, EventTableLine> {
 
     /**
-     * Key for table search regex filter expressions (regex only)
-     */
-    public static final String TABLE_SEARCH_EXPRESSION_KEY = TABLE_SEARCH_EXPRESSIONS;
-    /**
-     * Key for table search direction (forward or backward)
-     */
-    public static final String TABLE_SEARCH_DIRECTION_KEY = TABLE_SEARCH_DIRECTION;
-    /**
      * Key for table filters
      */
     public static final String TABLE_FILTERS_KEY = "table_filters"; //$NON-NLS-1$

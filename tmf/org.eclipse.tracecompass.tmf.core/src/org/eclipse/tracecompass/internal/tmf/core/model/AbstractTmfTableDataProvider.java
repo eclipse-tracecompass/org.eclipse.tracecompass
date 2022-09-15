@@ -30,14 +30,14 @@ public abstract class AbstractTmfTableDataProvider extends AbstractTmfTraceDataP
     private static final AtomicLong fAtomicLong = new AtomicLong();
 
     /**
-     * Reused constant across subclasses.
+     * Key for table search regex filter expressions (regex only)
      */
-    protected static final String TABLE_SEARCH_EXPRESSIONS = "table_search_expressions"; //$NON-NLS-1$
+    public static final String TABLE_SEARCH_EXPRESSION_KEY = "table_search_expressions"; //$NON-NLS-1$
 
     /**
-     * Reused constant across subclasses.
+     * Key for table search direction (forward or backward)
      */
-    protected static final String TABLE_SEARCH_DIRECTION = "table_search_direction"; //$NON-NLS-1$
+    public static final String TABLE_SEARCH_DIRECTION_KEY = "table_search_direction"; //$NON-NLS-1$
 
     /**
      * @param trace
