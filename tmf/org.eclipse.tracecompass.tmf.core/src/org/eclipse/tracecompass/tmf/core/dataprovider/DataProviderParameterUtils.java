@@ -112,6 +112,20 @@ public class DataProviderParameterUtils {
      */
     public static final String FULL_SEARCH_KEY = "full_search"; //$NON-NLS-1$
 
+    /**
+     * Key for table search regex filter expressions (regex only)
+     *
+     * @since 8.2
+     */
+    public static final String TABLE_SEARCH_EXPRESSIONS_KEY = "table_search_expressions"; //$NON-NLS-1$
+
+    /**
+     * Key for table search direction (forward or backward)
+     *
+     * @since 8.2
+     */
+    public static final String TABLE_SEARCH_DIRECTION_KEY = "table_search_direction"; //$NON-NLS-1$
+
     private DataProviderParameterUtils() {
         // Private constructor
     }

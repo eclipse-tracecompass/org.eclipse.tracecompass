@@ -196,7 +196,7 @@ public class TmfEventTableDataProvider extends AbstractTmfTableDataProvider impl
          * Search for the next or previous event starting from the given event
          * index
          */
-        Object directionValue = fetchParameters.get(TABLE_SEARCH_DIRECTION_KEY);
+        Object directionValue = fetchParameters.get(DataProviderParameterUtils.TABLE_SEARCH_DIRECTION_KEY);
 
         /*
          * TODO: Remove isFiltered when Theia front-end is updated to use
@@ -652,7 +652,7 @@ public class TmfEventTableDataProvider extends AbstractTmfTableDataProvider impl
 
     @SuppressWarnings("unchecked")
     private static @Nullable ITmfFilter extractSearchFilter(Map<String, Object> fetchParameters) {
-        Object searchFilterObject = fetchParameters.get(TABLE_SEARCH_EXPRESSION_KEY);
+        Object searchFilterObject = fetchParameters.get(DataProviderParameterUtils.TABLE_SEARCH_EXPRESSIONS_KEY);
         if (searchFilterObject instanceof Map<?, ?>) {
             return extractSimpleSearchFilter((Map<?, String>) searchFilterObject);
         }

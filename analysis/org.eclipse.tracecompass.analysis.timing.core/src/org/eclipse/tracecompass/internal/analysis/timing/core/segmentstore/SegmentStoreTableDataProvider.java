@@ -408,7 +408,7 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTableDataProvider 
          * Search for the next or previous segment starting from the given
          * segment index
          */
-        Object directionValue = fetchParameters.get(TABLE_SEARCH_DIRECTION_KEY);
+        Object directionValue = fetchParameters.get(DataProviderParameterUtils.TABLE_SEARCH_DIRECTION_KEY);
         if (searchFilter != null && directionValue != null) {
             Direction direction = directionValue.equals(Direction.PREVIOUS.name()) ? Direction.PREVIOUS : Direction.NEXT;
             @Nullable WrappedSegment segment = null;
@@ -555,7 +555,7 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTableDataProvider 
 
     @SuppressWarnings("unchecked")
     private static @Nullable Map<Long, String> extractSearchFilter(Map<String, Object> fetchParameters) {
-        Object searchFilterObject = fetchParameters.get(TABLE_SEARCH_EXPRESSION_KEY);
+        Object searchFilterObject = fetchParameters.get(DataProviderParameterUtils.TABLE_SEARCH_EXPRESSIONS_KEY);
         if (searchFilterObject instanceof Map<?, ?>) {
             return extractSimpleSearchFilter((Map<?, String>) searchFilterObject);
         }
