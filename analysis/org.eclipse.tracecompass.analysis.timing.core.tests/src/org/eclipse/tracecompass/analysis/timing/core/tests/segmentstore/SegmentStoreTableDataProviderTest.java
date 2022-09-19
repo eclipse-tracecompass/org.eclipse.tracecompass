@@ -32,8 +32,8 @@ import org.eclipse.tracecompass.internal.provisional.tmf.core.model.table.ITmfVi
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.table.TmfVirtualTableModel;
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.table.VirtualTableCell;
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.table.VirtualTableLine;
-import org.eclipse.tracecompass.internal.tmf.core.model.AbstractTmfTableDataProvider.Direction;
 import org.eclipse.tracecompass.internal.tmf.core.model.filters.FetchParametersUtils;
+import org.eclipse.tracecompass.tmf.core.dataprovider.DataProviderParameterUtils.Direction;
 import org.eclipse.tracecompass.tmf.core.exceptions.TmfAnalysisException;
 import org.eclipse.tracecompass.tmf.core.model.CoreFilterProperty;
 import org.eclipse.tracecompass.tmf.core.model.filters.TimeQueryFilter;
@@ -55,7 +55,6 @@ import org.junit.Test;
  *
  * @author: Kyrollos Bekhet
  */
-@SuppressWarnings("restriction")
 public class SegmentStoreTableDataProviderTest {
 
     private static ITmfVirtualTableDataProvider<@NonNull TmfTreeDataModel, @NonNull VirtualTableLine> fDataProvider;

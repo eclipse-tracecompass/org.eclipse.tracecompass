@@ -120,11 +120,24 @@ public class DataProviderParameterUtils {
     public static final String TABLE_SEARCH_EXPRESSIONS_KEY = "table_search_expressions"; //$NON-NLS-1$
 
     /**
-     * Key for table search direction (forward or backward)
+     * Key for table search {@link Direction} value, expected as being the enum
+     * name string.
      *
      * @since 8.2
      */
     public static final String TABLE_SEARCH_DIRECTION_KEY = "table_search_direction"; //$NON-NLS-1$
+
+    /**
+     * Direction of search, navigation etc.
+     *
+     * @since 8.2
+     */
+    public enum Direction {
+        /** Search next */
+        NEXT,
+        /** Search previous */
+        PREVIOUS
+    }
 
     private DataProviderParameterUtils() {
         // Private constructor

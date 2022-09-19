@@ -37,12 +37,12 @@ import org.eclipse.tracecompass.internal.provisional.tmf.core.model.table.ITmfVi
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.table.TmfVirtualTableModel;
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.table.VirtualTableCell;
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.table.VirtualTableLine;
-import org.eclipse.tracecompass.internal.tmf.core.model.AbstractTmfTableDataProvider.Direction;
 import org.eclipse.tracecompass.internal.tmf.core.model.filters.FetchParametersUtils;
 import org.eclipse.tracecompass.segmentstore.core.BasicSegment;
 import org.eclipse.tracecompass.segmentstore.core.ISegment;
 import org.eclipse.tracecompass.segmentstore.core.ISegmentStore;
 import org.eclipse.tracecompass.tmf.core.analysis.IAnalysisModule;
+import org.eclipse.tracecompass.tmf.core.dataprovider.DataProviderParameterUtils.Direction;
 import org.eclipse.tracecompass.tmf.core.exceptions.TmfAnalysisException;
 import org.eclipse.tracecompass.tmf.core.model.CoreFilterProperty;
 import org.eclipse.tracecompass.tmf.core.model.filters.TimeQueryFilter;
@@ -69,7 +69,6 @@ import com.google.common.collect.ImmutableList.Builder;
  *
  * @author: Kyrollos Bekhet
  */
-@SuppressWarnings("restriction")
 public class SegmentStoreTableDataProviderExperimentTest {
 
     private static class SecondStubSegmentStoreProvider extends AbstractSegmentStoreAnalysisModule {
