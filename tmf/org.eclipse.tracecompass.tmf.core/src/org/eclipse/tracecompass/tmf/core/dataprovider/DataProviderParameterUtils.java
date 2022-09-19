@@ -199,6 +199,7 @@ public class DataProviderParameterUtils {
         }
 
         Multimap<Integer, String> regexes = HashMultimap.create();
+        @SuppressWarnings("unchecked")
         Map<Integer, Collection<String>> regexesMap = (Map<Integer, Collection<String>>) regexesObject;
         for (Entry<Integer, Collection<String>> entry : regexesMap.entrySet()) {
             regexes.putAll(entry.getKey(), entry.getValue());
