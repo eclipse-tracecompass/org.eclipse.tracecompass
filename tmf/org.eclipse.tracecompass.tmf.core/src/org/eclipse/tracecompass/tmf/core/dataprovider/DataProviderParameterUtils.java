@@ -17,8 +17,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -70,12 +70,14 @@ public class DataProviderParameterUtils {
 
     /**
      * Requested marker set key
+     *
      * @since 7.1
      */
     public static final String REQUESTED_MARKER_SET_KEY = "requested_marker_set"; //$NON-NLS-1$
 
     /**
      * Requested marker categories key
+     *
      * @since 7.1
      */
     public static final String REQUESTED_MARKER_CATEGORIES_KEY = "requested_marker_categories"; //$NON-NLS-1$
@@ -206,12 +208,13 @@ public class DataProviderParameterUtils {
     }
 
     /**
-     * Extract selected marker categories from fetch parameters. If parameter is not in the map
-     * then return null.
+     * Extract selected marker categories from fetch parameters. If parameter is
+     * not in the map then return null.
      *
      * @param fetchParams
      *            Map of parameters
-     * @return set of selected categories or null if parameter is not in parameter map
+     * @return set of selected categories or null if parameter is not in
+     *         parameter map
      * @since 7.1
      */
     public static @Nullable Set<String> extractSelectedCategories(Map<String, Object> fetchParams) {
