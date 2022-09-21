@@ -113,7 +113,8 @@ public class DataProviderParameterUtils {
     public static final String FULL_SEARCH_KEY = "full_search"; //$NON-NLS-1$
 
     /**
-     * Key for table search regex filter expressions (regex only)
+     * Key for table search regex filter expressions (regex only). The expected
+     * corresponding value being a map of column ID, regex string.
      *
      * @since 8.2
      */
