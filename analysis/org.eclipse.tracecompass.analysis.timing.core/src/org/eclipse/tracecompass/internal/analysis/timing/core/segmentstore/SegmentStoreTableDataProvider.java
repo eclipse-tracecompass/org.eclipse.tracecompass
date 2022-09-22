@@ -465,6 +465,8 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTableDataProvider 
      *            The index of the query
      * @param segmentStore
      *            The segment store from where the segments will be fetched.
+     * @param indexesComparatorWrapper
+     *            The segment indexes comparator wrapper to use.
      *
      * @return A {@link WrappedSegment} that contains the matching next segment
      *         found after a given index.
@@ -493,28 +495,30 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTableDataProvider 
     }
 
     /**
-     * Retrieve from a segment store the previous segment, from a given rank,
-     * matching the given predicate.
+     * Retrieve from a segment store the previous segment starting from a given
+     * index, matching the given predicate.
      *
      * @param searchFilter
      *            The predicate to match
      * @param endQueryIndex
      *            The index of the query
      * @param segmentStore
-     *            The segment store from where the segments will be fetched
+     *            The segment store from where the segments will be fetched.
+     * @param indexesComparatorWrapper
+     *            The segment indexes comparator wrapper to use.
      *
      * @return A {@link WrappedSegment} that contains the matching previous
      *         segment found before a given index.
      */
-    private static @Nullable WrappedSegment getPreviousWrappedSegmentMatching(Predicate<ISegment> searchFilter, long endQueryIndex, ISegmentStore<ISegment> segmentStore, SegmentIndexesComparatorWrapper indexesWrapper) {
+    private static @Nullable WrappedSegment getPreviousWrappedSegmentMatching(Predicate<ISegment> searchFilter, long endQueryIndex, ISegmentStore<ISegment> segmentStore, SegmentIndexesComparatorWrapper indexesComparatorWrapper) {
         int actualEndQueryIndex = (int) (endQueryIndex % STEP);
         int startTimeIndexRank = (int) (endQueryIndex / STEP);
         int endTimeIndexRank = startTimeIndexRank + 1;
         while (endTimeIndexRank > 0) {
-            SegmentStoreIndex segIndex = indexesWrapper.getIndex(startTimeIndexRank);
-            SegmentPredicate filter = new SegmentPredicate(segIndex, indexesWrapper.getAspectName());
-            long end = getEndTimestamp(endTimeIndexRank, indexesWrapper);
-            List<ISegment> segments = segmentStore.getIntersectingElements(segIndex.getStartTimestamp(), end, indexesWrapper.getComparator(), filter);
+            SegmentStoreIndex segIndex = indexesComparatorWrapper.getIndex(startTimeIndexRank);
+            SegmentPredicate filter = new SegmentPredicate(segIndex, indexesComparatorWrapper.getAspectName());
+            long end = getEndTimestamp(endTimeIndexRank, indexesComparatorWrapper);
+            List<ISegment> segments = segmentStore.getIntersectingElements(segIndex.getStartTimestamp(), end, indexesComparatorWrapper.getComparator(), filter);
             for (int i = Math.min(segments.size() - 1, actualEndQueryIndex); i >= 0; i--) {
                 if (searchFilter.test(segments.get(i))) {
                     long rank = i + ((long) startTimeIndexRank * STEP);
