@@ -10,6 +10,7 @@
  **********************************************************************/
 package org.eclipse.tracecompass.analysis.timing.core.tests.segmentstore;
 
+import static org.eclipse.tracecompass.analysis.timing.core.tests.segmentstore.StubSegmentStoreProvider.NEXT_DIR_UNDER_TEST;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -33,7 +34,6 @@ import org.eclipse.tracecompass.internal.provisional.tmf.core.model.table.TmfVir
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.table.VirtualTableCell;
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.table.VirtualTableLine;
 import org.eclipse.tracecompass.internal.tmf.core.model.filters.FetchParametersUtils;
-import org.eclipse.tracecompass.tmf.core.dataprovider.DataProviderParameterUtils.Direction;
 import org.eclipse.tracecompass.tmf.core.exceptions.TmfAnalysisException;
 import org.eclipse.tracecompass.tmf.core.model.CoreFilterProperty;
 import org.eclipse.tracecompass.tmf.core.model.filters.TimeQueryFilter;
@@ -254,7 +254,7 @@ public class SegmentStoreTableDataProviderTest {
         Map<Long, String> searchMap = new HashMap<>();
         searchMap.put(fColumns.get(START_TIME_COLUMN_NAME), lineTime(7000));
         fetchParameters.put(TABLE_SEARCH_EXPRESSION_KEY, searchMap);
-        fetchParameters.put(TABLE_SEARCH_DIRECTION_KEY, Direction.NEXT);
+        fetchParameters.put(TABLE_SEARCH_DIRECTION_KEY, NEXT_DIR_UNDER_TEST);
 
         List<@NonNull VirtualTableLine> expectedData = Arrays.asList(
                 new VirtualTableLine(7000, Arrays.asList(new VirtualTableCell(lineTime(7000)), new VirtualTableCell(lineTime(7000)), new VirtualTableCell(lineDuration(0)), new VirtualTableCell(StubSegmentStoreProvider.STUB_COLUMN_CONTENT))),

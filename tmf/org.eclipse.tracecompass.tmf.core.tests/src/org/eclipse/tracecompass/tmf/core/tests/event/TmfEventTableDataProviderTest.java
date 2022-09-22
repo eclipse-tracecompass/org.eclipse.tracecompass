@@ -38,7 +38,6 @@ import org.eclipse.tracecompass.internal.provisional.tmf.core.model.table.ITmfVi
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.table.TmfVirtualTableModel;
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.table.VirtualTableCell;
 import org.eclipse.tracecompass.internal.tmf.core.model.filters.FetchParametersUtils;
-import org.eclipse.tracecompass.tmf.core.dataprovider.DataProviderParameterUtils.Direction;
 import org.eclipse.tracecompass.tmf.core.exceptions.TmfTraceException;
 import org.eclipse.tracecompass.tmf.core.model.CoreFilterProperty;
 import org.eclipse.tracecompass.tmf.core.model.filters.TimeQueryFilter;
@@ -70,6 +69,10 @@ public class TmfEventTableDataProviderTest {
     private static final String TIMESTAMP_NS_COLUMN_NAME = "Timestamp ns";
     private static final String EVENT_TYPE_COLUMN_NAME = "Event type";
     private static final String CONTENTS_COLUMN_NAME = "Contents";
+
+    // Search direction values reused
+    private static final String NEXT_DIR_UNDER_TEST = "NEXT";
+    private static final String PREV_DIR_UNDER_TEST = "PREVIOUS";
 
     private static final String TYPE_0 = "Type-0";
     private static final String TYPE_1 = "Type-1";
@@ -356,7 +359,7 @@ public class TmfEventTableDataProviderTest {
         searchExpressions.put(eventTypeColumnId, "Does not exits");
 
         parameters.put(TABLE_SEARCH_EXPRESSIONS_KEY, searchExpressions);
-        parameters.put(TABLE_SEARCH_DIRECTION_KEY, Direction.NEXT.name());
+        parameters.put(TABLE_SEARCH_DIRECTION_KEY, NEXT_DIR_UNDER_TEST);
 
         List<Long> expectedColumnsId = Arrays.asList(eventTypeColumnId, timestampColumnId);
         TmfTimestampFormat.getDefaulTimeFormat().format(TmfTimestamp.fromMillis(2).toNanos());
@@ -391,7 +394,7 @@ public class TmfEventTableDataProviderTest {
         searchExpressions.put(eventTypeColumnId, TYPE_2);
 
         parameters.put(TABLE_SEARCH_EXPRESSIONS_KEY, searchExpressions);
-        parameters.put(TABLE_SEARCH_DIRECTION_KEY, Direction.NEXT.name());
+        parameters.put(TABLE_SEARCH_DIRECTION_KEY, NEXT_DIR_UNDER_TEST);
 
         List<Long> expectedColumnsId = Arrays.asList(eventTypeColumnId, timestampColumnId);
         TmfTimestampFormat.getDefaulTimeFormat().format(TmfTimestamp.fromMillis(2).toNanos());
@@ -450,7 +453,7 @@ public class TmfEventTableDataProviderTest {
         searchExpressions.put(eventTypeColumnId, TYPE_2);
 
         parameters.put(TABLE_SEARCH_EXPRESSIONS_KEY, searchExpressions);
-        parameters.put(TABLE_SEARCH_DIRECTION_KEY, Direction.NEXT.name());
+        parameters.put(TABLE_SEARCH_DIRECTION_KEY, NEXT_DIR_UNDER_TEST);
 
         List<Long> expectedColumnsId = Arrays.asList(eventTypeColumnId, timestampColumnId);
         TmfTimestampFormat.getDefaulTimeFormat().format(TmfTimestamp.fromMillis(2).toNanos());
@@ -491,7 +494,7 @@ public class TmfEventTableDataProviderTest {
         searchExpressions.put(eventTypeColumnId, TYPE_2);
 
         parameters.put(TABLE_SEARCH_EXPRESSIONS_KEY, searchExpressions);
-        parameters.put(TABLE_SEARCH_DIRECTION_KEY, Direction.PREVIOUS.name());
+        parameters.put(TABLE_SEARCH_DIRECTION_KEY, PREV_DIR_UNDER_TEST);
 
         List<Long> expectedColumnsId = Arrays.asList(eventTypeColumnId, timestampColumnId);
         TmfTimestampFormat.getDefaulTimeFormat().format(TmfTimestamp.fromMillis(2).toNanos());
@@ -530,7 +533,7 @@ public class TmfEventTableDataProviderTest {
         searchExpressions.put(eventTypeColumnId, TYPE_2);
 
         parameters.put(TABLE_SEARCH_EXPRESSIONS_KEY, searchExpressions);
-        parameters.put(TABLE_SEARCH_DIRECTION_KEY, Direction.PREVIOUS.name());
+        parameters.put(TABLE_SEARCH_DIRECTION_KEY, PREV_DIR_UNDER_TEST);
 
         List<Long> expectedColumnsId = Arrays.asList(eventTypeColumnId, timestampColumnId);
         TmfTimestampFormat.getDefaulTimeFormat().format(TmfTimestamp.fromMillis(2).toNanos());
@@ -571,7 +574,7 @@ public class TmfEventTableDataProviderTest {
         searchExpressions.put(timestampColumnId, "\\d*4\\d*s*");
 
         parameters.put(TABLE_SEARCH_EXPRESSIONS_KEY, searchExpressions);
-        parameters.put(TABLE_SEARCH_DIRECTION_KEY, Direction.NEXT.name());
+        parameters.put(TABLE_SEARCH_DIRECTION_KEY, NEXT_DIR_UNDER_TEST);
 
         List<Long> expectedColumnsId = new ArrayList<>(fColumns.values());
         TmfTimestampFormat.getDefaulTimeFormat().format(TmfTimestamp.fromMillis(2).toNanos());
