@@ -11,6 +11,7 @@
 package org.eclipse.tracecompass.analysis.timing.core.tests.segmentstore;
 
 import static org.eclipse.tracecompass.analysis.timing.core.tests.segmentstore.StubSegmentStoreProvider.NEXT_DIR_UNDER_TEST;
+import static org.eclipse.tracecompass.analysis.timing.core.tests.segmentstore.StubSegmentStoreProvider.PREV_DIR_UNDER_TEST;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -275,6 +276,34 @@ public class SegmentStoreTableDataProviderTest {
     }
 
     /**
+     * Test lines returned by the provider starting from a given index and with
+     * a search filter applied, here in the previous direction.
+     *
+     * Same as {@link #testDataProviderFetchLineWithSearch} -except previous.
+     */
+    @SuppressWarnings("null")
+    @Test
+    public void testDataProviderFetchLineWithSearchPrevious() {
+        VirtualTableQueryFilter queryFilter = new VirtualTableQueryFilter(Collections.emptyList(), 65534, 5);
+        @NonNull Map<@NonNull String, @NonNull Object> fetchParameters = FetchParametersUtils.virtualTableQueryToMap(queryFilter);
+        Map<Long, String> searchMap = new HashMap<>();
+        searchMap.put(fColumns.get(START_TIME_COLUMN_NAME), lineTime(7000));
+        fetchParameters.put(TABLE_SEARCH_EXPRESSION_KEY, searchMap);
+        fetchParameters.put(TABLE_SEARCH_DIRECTION_KEY, PREV_DIR_UNDER_TEST);
+
+        // FIXME: revisit this likely inaccurate data, per Bug 580674 or so-
+        List<@NonNull VirtualTableLine> expectedData = Arrays.asList(
+                new VirtualTableLine(7006, Arrays.asList(new VirtualTableCell(lineTime(7000)), new VirtualTableCell(lineTime(7006)), new VirtualTableCell(lineDuration(6)), new VirtualTableCell(StubSegmentStoreProvider.STUB_COLUMN_CONTENT))));
+        expectedData.forEach(sl -> sl.setActiveProperties(CoreFilterProperty.HIGHLIGHT));
+
+        TmfModelResponse<@NonNull ITmfVirtualTableModel<@NonNull VirtualTableLine>> response = fDataProvider.fetchLines(fetchParameters, null);
+        ITmfVirtualTableModel<@NonNull VirtualTableLine> currentModel = response.getModel();
+        assertNotNull(currentModel);
+        ITmfVirtualTableModel<@NonNull VirtualTableLine> expectedModel = new TmfVirtualTableModel<>(new ArrayList<>(fColumns.values()), expectedData, 7006, 65535);
+        assertEquals(expectedModel, currentModel);
+    }
+
+    /**
      * Test null model returned upon invalid search direction provided (typo).
      *
      * Same as {@link #testDataProviderFetchLineWithSearch} -except for typo.
@@ -310,7 +339,8 @@ public class SegmentStoreTableDataProviderTest {
             if (i % 7 == 0) {
                 previousStartTime = i;
             }
-            expectedData.add(new VirtualTableLine(i, Arrays.asList(new VirtualTableCell(lineTime(previousStartTime)), new VirtualTableCell(lineTime(i)), new VirtualTableCell(lineDuration(i - previousStartTime)), new VirtualTableCell(StubSegmentStoreProvider.STUB_COLUMN_CONTENT))));
+            expectedData.add(new VirtualTableLine(i,
+                    Arrays.asList(new VirtualTableCell(lineTime(previousStartTime)), new VirtualTableCell(lineTime(i)), new VirtualTableCell(lineDuration(i - previousStartTime)), new VirtualTableCell(StubSegmentStoreProvider.STUB_COLUMN_CONTENT))));
         }
 
         TmfModelResponse<@NonNull ITmfVirtualTableModel<@NonNull VirtualTableLine>> response = fDataProvider.fetchLines(FetchParametersUtils.virtualTableQueryToMap(queryFilter), null);

@@ -42,8 +42,9 @@ public class StubSegmentStoreProvider extends AbstractSegmentStoreAnalysisModule
     /** Stub column content */
     static final String STUB_COLUMN_CONTENT = "Stub Content";
 
-    /** Next search direction value to reuse */
+    /** Search direction values to reuse */
     static final String NEXT_DIR_UNDER_TEST = "NEXT";
+    static final String PREV_DIR_UNDER_TEST = "PREVIOUS";
 
     private static final int SIZE = 65535;
 
