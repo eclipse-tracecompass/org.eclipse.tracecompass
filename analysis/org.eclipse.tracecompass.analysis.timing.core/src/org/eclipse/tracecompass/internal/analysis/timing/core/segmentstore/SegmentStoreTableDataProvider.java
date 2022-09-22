@@ -411,7 +411,12 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTableDataProvider 
          */
         Object directionValue = fetchParameters.get(DataProviderParameterUtils.TABLE_SEARCH_DIRECTION_KEY);
         if (searchFilter != null && directionValue != null) {
-            Direction direction = directionValue.equals(Direction.PREVIOUS.name()) ? Direction.PREVIOUS : Direction.NEXT;
+            Direction direction = null;
+            try {
+                direction = Direction.valueOf(String.valueOf(directionValue));
+            } catch (IllegalArgumentException e) {
+                return new TmfModelResponse<>(null, ITmfResponse.Status.FAILED, CommonStatusMessage.INCORRECT_QUERY_PARAMETERS);
+            }
             @Nullable WrappedSegment segment = null;
             if (direction == Direction.NEXT) {
                 segment = getNextWrappedSegmentMatching(searchFilter, queryFilter.getIndex(), segmentStore, indexesComparatorWrapper);

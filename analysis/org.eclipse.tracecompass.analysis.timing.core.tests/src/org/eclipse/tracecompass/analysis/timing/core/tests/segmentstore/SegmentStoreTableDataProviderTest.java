@@ -13,6 +13,7 @@ package org.eclipse.tracecompass.analysis.timing.core.tests.segmentstore;
 import static org.eclipse.tracecompass.analysis.timing.core.tests.segmentstore.StubSegmentStoreProvider.NEXT_DIR_UNDER_TEST;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -35,10 +36,12 @@ import org.eclipse.tracecompass.internal.provisional.tmf.core.model.table.Virtua
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.table.VirtualTableLine;
 import org.eclipse.tracecompass.internal.tmf.core.model.filters.FetchParametersUtils;
 import org.eclipse.tracecompass.tmf.core.exceptions.TmfAnalysisException;
+import org.eclipse.tracecompass.tmf.core.model.CommonStatusMessage;
 import org.eclipse.tracecompass.tmf.core.model.CoreFilterProperty;
 import org.eclipse.tracecompass.tmf.core.model.filters.TimeQueryFilter;
 import org.eclipse.tracecompass.tmf.core.model.tree.TmfTreeDataModel;
 import org.eclipse.tracecompass.tmf.core.model.tree.TmfTreeModel;
+import org.eclipse.tracecompass.tmf.core.response.ITmfResponse.Status;
 import org.eclipse.tracecompass.tmf.core.response.TmfModelResponse;
 import org.eclipse.tracecompass.tmf.core.timestamp.TmfTimestamp;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
@@ -269,6 +272,27 @@ public class SegmentStoreTableDataProviderTest {
         assertNotNull(currentModel);
         ITmfVirtualTableModel<@NonNull VirtualTableLine> expectedModel = new TmfVirtualTableModel<>(new ArrayList<>(fColumns.values()), expectedData, 7000, 65535);
         assertEquals(expectedModel, currentModel);
+    }
+
+    /**
+     * Test null model returned upon invalid search direction provided (typo).
+     *
+     * Same as {@link #testDataProviderFetchLineWithSearch} -except for typo.
+     */
+    @Test
+    public void testDataProviderFetchLineWithSearchTypo() {
+        VirtualTableQueryFilter queryFilter = new VirtualTableQueryFilter(Collections.emptyList(), 0, 5);
+        @NonNull Map<@NonNull String, @NonNull Object> fetchParameters = FetchParametersUtils.virtualTableQueryToMap(queryFilter);
+        Map<Long, String> searchMap = new HashMap<>();
+        searchMap.put(fColumns.get(START_TIME_COLUMN_NAME), lineTime(7000));
+        fetchParameters.put(TABLE_SEARCH_EXPRESSION_KEY, searchMap);
+        String typo = "T";
+        fetchParameters.put(TABLE_SEARCH_DIRECTION_KEY, NEXT_DIR_UNDER_TEST + typo);
+
+        TmfModelResponse<@NonNull ITmfVirtualTableModel<@NonNull VirtualTableLine>> response = fDataProvider.fetchLines(fetchParameters, null);
+        assertNull(response.getModel());
+        assertEquals(response.getStatus(), Status.FAILED);
+        assertEquals(response.getStatusMessage(), CommonStatusMessage.INCORRECT_QUERY_PARAMETERS);
     }
 
     /**
