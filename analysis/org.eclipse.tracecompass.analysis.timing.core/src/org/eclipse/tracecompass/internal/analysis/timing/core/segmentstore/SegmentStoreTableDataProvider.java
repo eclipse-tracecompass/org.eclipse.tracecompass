@@ -510,8 +510,8 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTableDataProvider 
      *         segment found before a given index.
      */
     private static @Nullable WrappedSegment getPreviousWrappedSegmentMatching(Predicate<ISegment> searchFilter, long endQueryIndex, ISegmentStore<ISegment> segmentStore, SegmentIndexesComparatorWrapper indexesComparatorWrapper) {
-        int actualEndQueryIndex = (int) (endQueryIndex % STEP);
         int startTimeIndexRank = (int) (endQueryIndex / STEP);
+        int actualEndQueryIndex = (int) (endQueryIndex % STEP);
         int endTimeIndexRank = startTimeIndexRank + 1;
         while (endTimeIndexRank > 0) {
             SegmentStoreIndex segIndex = indexesComparatorWrapper.getIndex(startTimeIndexRank);
@@ -519,9 +519,10 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTableDataProvider 
             long end = getEndTimestamp(endTimeIndexRank, indexesComparatorWrapper);
             List<ISegment> segments = segmentStore.getIntersectingElements(segIndex.getStartTimestamp(), end, indexesComparatorWrapper.getComparator(), filter);
             for (int i = Math.min(segments.size() - 1, actualEndQueryIndex); i >= 0; i--) {
-                if (searchFilter.test(segments.get(i))) {
-                    long rank = i + ((long) startTimeIndexRank * STEP);
-                    return new WrappedSegment(segments.get(i), rank);
+                ISegment segment = segments.get(i);
+                if (searchFilter.test(segment)) {
+                    long rank = ((long) startTimeIndexRank * STEP) + i;
+                    return new WrappedSegment(segment, rank);
                 }
             }
             actualEndQueryIndex = STEP;
