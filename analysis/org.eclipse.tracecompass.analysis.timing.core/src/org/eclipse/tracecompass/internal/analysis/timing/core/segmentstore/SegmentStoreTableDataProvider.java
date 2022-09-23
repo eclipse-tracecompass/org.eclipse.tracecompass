@@ -474,8 +474,8 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTableDataProvider 
     private static @Nullable WrappedSegment getNextWrappedSegmentMatching(Predicate<ISegment> searchFilter, long startQueryIndex, ISegmentStore<ISegment> segmentStore, SegmentIndexesComparatorWrapper indexesComparatorWrapper) {
         int startTimeIndexRank = (int) (startQueryIndex / STEP);
         int actualStartQueryIndex = (int) (startQueryIndex % STEP);
-        int endTimeIndexRank = startTimeIndexRank + 1;
         while (startTimeIndexRank < indexesComparatorWrapper.getIndexesSize()) {
+            int endTimeIndexRank = startTimeIndexRank + 1;
             SegmentStoreIndex segIndex = indexesComparatorWrapper.getIndex(startTimeIndexRank);
             SegmentPredicate filter = new SegmentPredicate(segIndex, indexesComparatorWrapper.getAspectName());
             long end = getEndTimestamp(endTimeIndexRank, indexesComparatorWrapper);
@@ -489,7 +489,6 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTableDataProvider 
             }
             actualStartQueryIndex = 0;
             startTimeIndexRank++;
-            endTimeIndexRank++;
         }
         return null;
     }
