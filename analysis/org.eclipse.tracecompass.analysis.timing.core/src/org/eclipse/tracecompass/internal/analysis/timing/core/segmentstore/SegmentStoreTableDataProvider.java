@@ -396,13 +396,16 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTableDataProvider 
             SegmentIndexesComparatorWrapper indexesComparatorWrapper) {
         List<Long> columnIds = new ArrayList<>(aspects.keySet());
         List<VirtualTableLine> lines = new ArrayList<>();
+
         int startIndexRank = (int) (queryFilter.getIndex() / STEP);
         int actualStartQueryIndex = (int) (queryFilter.getIndex() % STEP);
         SegmentStoreIndex segIndex = indexesComparatorWrapper.getIndex(startIndexRank);
-        long start = segIndex.getStartTimestamp();
         SegmentPredicate filter = new SegmentPredicate(segIndex, indexesComparatorWrapper.getAspectName());
+        long start = segIndex.getStartTimestamp();
+
         int endIndexRank = (int) ((queryFilter.getIndex() + queryFilter.getCount() + STEP - 1) / STEP);
         long end = getEndTimestamp(endIndexRank, indexesComparatorWrapper);
+
         VirtualTableQueryFilter localQueryFilter = queryFilter;
         @Nullable Predicate<ISegment> searchFilter = generateFilter(fetchParameters);
 
