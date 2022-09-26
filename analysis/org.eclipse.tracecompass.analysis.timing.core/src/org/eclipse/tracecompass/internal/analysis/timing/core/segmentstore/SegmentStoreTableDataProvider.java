@@ -509,8 +509,8 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTableDataProvider 
      *            The predicate to match.
      * @param startIndexRank
      *            The initial start-time index rank to search from.
-     * @param endQueryIndex
-     *            The initial end index to query from.
+     * @param startQueryIndex
+     *            The initial start index to query from.
      * @param segmentStore
      *            The segment store from where the segments will be fetched.
      * @param indexesComparatorWrapper
@@ -519,26 +519,25 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTableDataProvider 
      * @return A {@link WrappedSegment} that contains the matching previous
      *         segment found before a given index.
      */
-    private static @Nullable WrappedSegment getPreviousWrappedSegmentMatching(Predicate<ISegment> searchFilter, int startIndexRank, int endQueryIndex, ISegmentStore<ISegment> segmentStore,
+    private static @Nullable WrappedSegment getPreviousWrappedSegmentMatching(Predicate<ISegment> searchFilter, int startIndexRank, int startQueryIndex, ISegmentStore<ISegment> segmentStore,
             SegmentIndexesComparatorWrapper indexesComparatorWrapper) {
         int startTimeIndexRank = startIndexRank;
-        int endTimeIndexRank = startTimeIndexRank + 1;
-        int actualEndQueryIndex = endQueryIndex;
-        while (endTimeIndexRank > 0) {
+        int actualStartQueryIndex = startQueryIndex;
+        while (startTimeIndexRank >= 0) {
+            int endTimeIndexRank = startTimeIndexRank + 1;
             SegmentStoreIndex segIndex = indexesComparatorWrapper.getIndex(startTimeIndexRank);
             SegmentPredicate filter = new SegmentPredicate(segIndex, indexesComparatorWrapper.getAspectName());
             long end = getEndTimestamp(endTimeIndexRank, indexesComparatorWrapper);
             List<ISegment> segments = segmentStore.getIntersectingElements(segIndex.getStartTimestamp(), end, indexesComparatorWrapper.getComparator(), filter);
-            for (int i = Math.min(segments.size() - 1, actualEndQueryIndex); i >= 0; i--) {
+            for (int i = Math.min(segments.size() - 1, actualStartQueryIndex); i >= 0; i--) {
                 ISegment segment = segments.get(i);
                 if (searchFilter.test(segment)) {
                     long rank = ((long) startTimeIndexRank * STEP) + i;
                     return new WrappedSegment(segment, rank);
                 }
             }
-            actualEndQueryIndex = STEP;
+            actualStartQueryIndex = STEP;
             startTimeIndexRank--;
-            endTimeIndexRank--;
         }
         return null;
     }
