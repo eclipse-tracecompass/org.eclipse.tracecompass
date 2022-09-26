@@ -394,7 +394,6 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTableDataProvider 
 
     private static TmfModelResponse<ITmfVirtualTableModel<VirtualTableLine>> extractRequestedLines(VirtualTableQueryFilter queryFilter, Map<String, Object> fetchParameters, ISegmentStore<ISegment> segmentStore, Map<Long, ISegmentAspect> aspects,
             SegmentIndexesComparatorWrapper indexesComparatorWrapper) {
-        @Nullable Predicate<ISegment> searchFilter = generateFilter(fetchParameters);
         List<Long> columnIds = new ArrayList<>(aspects.keySet());
         List<VirtualTableLine> lines = new ArrayList<>();
         int startIndexRank = (int) (queryFilter.getIndex() / STEP);
@@ -405,6 +404,7 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTableDataProvider 
         int endIndexRank = (int) ((queryFilter.getIndex() + queryFilter.getCount() + STEP - 1) / STEP);
         long end = getEndTimestamp(endIndexRank, indexesComparatorWrapper);
         VirtualTableQueryFilter localQueryFilter = queryFilter;
+        @Nullable Predicate<ISegment> searchFilter = generateFilter(fetchParameters);
 
         /*
          * Search for the next or previous segment starting from the given
@@ -536,12 +536,13 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTableDataProvider 
 
     /**
      * Generates a predicate filter based on the search map found in the given
-     * query parameters
+     * query parameters.
      *
      * @param fetchParameters
-     *            The query parameters used to extract the search map
+     *            The query parameters used to extract the search map.
      *
-     * @return A predicate based on the search map found in the fetch parameters
+     * @return A predicate based on the search map found in the fetch
+     *         parameters, or {@code null} if no search map was provided.
      */
     private static @Nullable Predicate<ISegment> generateFilter(Map<String, Object> fetchParameters) {
         @Nullable Map<Long, String> searchMap = extractSearchFilter(fetchParameters);
