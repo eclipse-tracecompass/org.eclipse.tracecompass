@@ -483,11 +483,7 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTableDataProvider 
         int startTimeIndexRank = startIndexRank;
         int actualStartQueryIndex = startQueryIndex;
         while (startTimeIndexRank < indexesComparatorWrapper.getIndexesSize()) {
-            int endTimeIndexRank = startTimeIndexRank + 1;
-            SegmentStoreIndex segIndex = indexesComparatorWrapper.getIndex(startTimeIndexRank);
-            SegmentPredicate filter = new SegmentPredicate(segIndex, indexesComparatorWrapper.getAspectName());
-            long end = getEndTimestamp(endTimeIndexRank, indexesComparatorWrapper);
-            List<ISegment> segments = segmentStore.getIntersectingElements(segIndex.getStartTimestamp(), end, indexesComparatorWrapper.getComparator(), filter);
+            List<ISegment> segments = getIntersectingElements(segmentStore, indexesComparatorWrapper, startTimeIndexRank);
             for (int i = actualStartQueryIndex; i < segments.size(); i++) {
                 ISegment segment = segments.get(i);
                 if (searchFilter.test(segment)) {
@@ -524,11 +520,7 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTableDataProvider 
         int startTimeIndexRank = startIndexRank;
         int actualStartQueryIndex = startQueryIndex;
         while (startTimeIndexRank >= 0) {
-            int endTimeIndexRank = startTimeIndexRank + 1;
-            SegmentStoreIndex segIndex = indexesComparatorWrapper.getIndex(startTimeIndexRank);
-            SegmentPredicate filter = new SegmentPredicate(segIndex, indexesComparatorWrapper.getAspectName());
-            long end = getEndTimestamp(endTimeIndexRank, indexesComparatorWrapper);
-            List<ISegment> segments = segmentStore.getIntersectingElements(segIndex.getStartTimestamp(), end, indexesComparatorWrapper.getComparator(), filter);
+            List<ISegment> segments = getIntersectingElements(segmentStore, indexesComparatorWrapper, startTimeIndexRank);
             for (int i = Math.min(segments.size() - 1, actualStartQueryIndex); i >= 0; i--) {
                 ISegment segment = segments.get(i);
                 if (searchFilter.test(segment)) {
@@ -540,6 +532,14 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTableDataProvider 
             startTimeIndexRank--;
         }
         return null;
+    }
+
+    private static List<ISegment> getIntersectingElements(ISegmentStore<ISegment> segmentStore, SegmentIndexesComparatorWrapper indexesComparatorWrapper, int startTimeIndexRank) {
+        int endTimeIndexRank = startTimeIndexRank + 1;
+        SegmentStoreIndex segIndex = indexesComparatorWrapper.getIndex(startTimeIndexRank);
+        SegmentPredicate filter = new SegmentPredicate(segIndex, indexesComparatorWrapper.getAspectName());
+        long end = getEndTimestamp(endTimeIndexRank, indexesComparatorWrapper);
+        return segmentStore.getIntersectingElements(segIndex.getStartTimestamp(), end, indexesComparatorWrapper.getComparator(), filter);
     }
 
     /**
