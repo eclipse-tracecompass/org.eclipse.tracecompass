@@ -423,9 +423,9 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTableDataProvider 
             }
             @Nullable WrappedSegment segment = null;
             if (direction == Direction.NEXT) {
-                segment = getNextWrappedSegmentMatching(searchFilter, queryFilter.getIndex(), segmentStore, indexesComparatorWrapper);
+                segment = getNextWrappedSegmentMatching(searchFilter, startIndexRank, actualStartQueryIndex, segmentStore, indexesComparatorWrapper);
             } else {
-                segment = getPreviousWrappedSegmentMatching(searchFilter, queryFilter.getIndex(), segmentStore, indexesComparatorWrapper);
+                segment = getPreviousWrappedSegmentMatching(searchFilter, startIndexRank, actualStartQueryIndex, segmentStore, indexesComparatorWrapper);
             }
             if (segment != null) {
                 lines.add(buildSegmentStoreTableLine(aspects, segment.getOriginalSegment(), segment.getRank(), searchFilter));
@@ -465,9 +465,11 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTableDataProvider 
      * index, matching the given predicate.
      *
      * @param searchFilter
-     *            The predicate to match
+     *            The predicate to match.
+     * @param startIndexRank
+     *            The initial start-time index rank to search from.
      * @param startQueryIndex
-     *            The index of the query
+     *            The initial start index to query from.
      * @param segmentStore
      *            The segment store from where the segments will be fetched.
      * @param indexesComparatorWrapper
@@ -476,9 +478,10 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTableDataProvider 
      * @return A {@link WrappedSegment} that contains the matching next segment
      *         found after a given index.
      */
-    private static @Nullable WrappedSegment getNextWrappedSegmentMatching(Predicate<ISegment> searchFilter, long startQueryIndex, ISegmentStore<ISegment> segmentStore, SegmentIndexesComparatorWrapper indexesComparatorWrapper) {
-        int startTimeIndexRank = (int) (startQueryIndex / STEP);
-        int actualStartQueryIndex = (int) (startQueryIndex % STEP);
+    private static @Nullable WrappedSegment getNextWrappedSegmentMatching(Predicate<ISegment> searchFilter, int startIndexRank, int startQueryIndex, ISegmentStore<ISegment> segmentStore,
+            SegmentIndexesComparatorWrapper indexesComparatorWrapper) {
+        int startTimeIndexRank = startIndexRank;
+        int actualStartQueryIndex = startQueryIndex;
         while (startTimeIndexRank < indexesComparatorWrapper.getIndexesSize()) {
             int endTimeIndexRank = startTimeIndexRank + 1;
             SegmentStoreIndex segIndex = indexesComparatorWrapper.getIndex(startTimeIndexRank);
@@ -503,9 +506,11 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTableDataProvider 
      * index, matching the given predicate.
      *
      * @param searchFilter
-     *            The predicate to match
+     *            The predicate to match.
+     * @param startIndexRank
+     *            The initial start-time index rank to search from.
      * @param endQueryIndex
-     *            The index of the query
+     *            The initial end index to query from.
      * @param segmentStore
      *            The segment store from where the segments will be fetched.
      * @param indexesComparatorWrapper
@@ -514,10 +519,11 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTableDataProvider 
      * @return A {@link WrappedSegment} that contains the matching previous
      *         segment found before a given index.
      */
-    private static @Nullable WrappedSegment getPreviousWrappedSegmentMatching(Predicate<ISegment> searchFilter, long endQueryIndex, ISegmentStore<ISegment> segmentStore, SegmentIndexesComparatorWrapper indexesComparatorWrapper) {
-        int startTimeIndexRank = (int) (endQueryIndex / STEP);
-        int actualEndQueryIndex = (int) (endQueryIndex % STEP);
+    private static @Nullable WrappedSegment getPreviousWrappedSegmentMatching(Predicate<ISegment> searchFilter, int startIndexRank, int endQueryIndex, ISegmentStore<ISegment> segmentStore,
+            SegmentIndexesComparatorWrapper indexesComparatorWrapper) {
+        int startTimeIndexRank = startIndexRank;
         int endTimeIndexRank = startTimeIndexRank + 1;
+        int actualEndQueryIndex = endQueryIndex;
         while (endTimeIndexRank > 0) {
             SegmentStoreIndex segIndex = indexesComparatorWrapper.getIndex(startTimeIndexRank);
             SegmentPredicate filter = new SegmentPredicate(segIndex, indexesComparatorWrapper.getAspectName());
