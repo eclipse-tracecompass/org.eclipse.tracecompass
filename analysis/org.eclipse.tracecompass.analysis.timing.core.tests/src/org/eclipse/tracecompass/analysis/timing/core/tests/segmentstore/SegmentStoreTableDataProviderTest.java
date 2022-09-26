@@ -291,9 +291,12 @@ public class SegmentStoreTableDataProviderTest {
         fetchParameters.put(TABLE_SEARCH_EXPRESSION_KEY, searchMap);
         fetchParameters.put(TABLE_SEARCH_DIRECTION_KEY, PREV_DIR_UNDER_TEST);
 
-        // FIXME: revisit this likely inaccurate data, per Bug 580674 or so-
         List<@NonNull VirtualTableLine> expectedData = Arrays.asList(
-                new VirtualTableLine(7006, Arrays.asList(new VirtualTableCell(lineTime(7000)), new VirtualTableCell(lineTime(7006)), new VirtualTableCell(lineDuration(6)), new VirtualTableCell(StubSegmentStoreProvider.STUB_COLUMN_CONTENT))));
+                new VirtualTableLine(7006, Arrays.asList(new VirtualTableCell(lineTime(7000)), new VirtualTableCell(lineTime(7006)), new VirtualTableCell(lineDuration(6)), new VirtualTableCell(StubSegmentStoreProvider.STUB_COLUMN_CONTENT))),
+                new VirtualTableLine(7005, Arrays.asList(new VirtualTableCell(lineTime(7000)), new VirtualTableCell(lineTime(7005)), new VirtualTableCell(lineDuration(5)), new VirtualTableCell(StubSegmentStoreProvider.STUB_COLUMN_CONTENT))),
+                new VirtualTableLine(7004, Arrays.asList(new VirtualTableCell(lineTime(7000)), new VirtualTableCell(lineTime(7004)), new VirtualTableCell(lineDuration(4)), new VirtualTableCell(StubSegmentStoreProvider.STUB_COLUMN_CONTENT))),
+                new VirtualTableLine(7003, Arrays.asList(new VirtualTableCell(lineTime(7000)), new VirtualTableCell(lineTime(7003)), new VirtualTableCell(lineDuration(3)), new VirtualTableCell(StubSegmentStoreProvider.STUB_COLUMN_CONTENT))),
+                new VirtualTableLine(7002, Arrays.asList(new VirtualTableCell(lineTime(7000)), new VirtualTableCell(lineTime(7002)), new VirtualTableCell(lineDuration(2)), new VirtualTableCell(StubSegmentStoreProvider.STUB_COLUMN_CONTENT))));
         expectedData.forEach(sl -> sl.setActiveProperties(CoreFilterProperty.HIGHLIGHT));
 
         TmfModelResponse<@NonNull ITmfVirtualTableModel<@NonNull VirtualTableLine>> response = fDataProvider.fetchLines(fetchParameters, null);

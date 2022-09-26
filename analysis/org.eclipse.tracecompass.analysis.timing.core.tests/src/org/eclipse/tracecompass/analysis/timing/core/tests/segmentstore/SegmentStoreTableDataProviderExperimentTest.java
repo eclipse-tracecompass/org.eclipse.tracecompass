@@ -446,12 +446,13 @@ public class SegmentStoreTableDataProviderExperimentTest {
 
         List<@NonNull VirtualTableLine> expectedData = Arrays.asList(
                 new VirtualTableLine(43, Arrays.asList(new VirtualTableCell(lineTime(21)), new VirtualTableCell(lineTime(21)), new VirtualTableCell(lineDuration(0)), new VirtualTableCell(StubSegmentStoreProvider.STUB_COLUMN_CONTENT), new VirtualTableCell(SECOND_TRACE_NAME))),
-                new VirtualTableLine(44, Arrays.asList(new VirtualTableCell(lineTime(21)), new VirtualTableCell(lineTime(22)), new VirtualTableCell(lineDuration(1)), new VirtualTableCell(StubSegmentStoreProvider.STUB_COLUMN_CONTENT), new VirtualTableCell(MAIN_TRACE_NAME))),
                 new VirtualTableLine(45, Arrays.asList(new VirtualTableCell(lineTime(21)), new VirtualTableCell(lineTime(22)), new VirtualTableCell(lineDuration(1)), new VirtualTableCell(StubSegmentStoreProvider.STUB_COLUMN_CONTENT), new VirtualTableCell(SECOND_TRACE_NAME))),
-                new VirtualTableLine(46, Arrays.asList(new VirtualTableCell(lineTime(21)), new VirtualTableCell(lineTime(23)), new VirtualTableCell(lineDuration(2)), new VirtualTableCell(StubSegmentStoreProvider.STUB_COLUMN_CONTENT), new VirtualTableCell(MAIN_TRACE_NAME))),
-                new VirtualTableLine(47, Arrays.asList(new VirtualTableCell(lineTime(21)), new VirtualTableCell(lineTime(23)), new VirtualTableCell(lineDuration(2)), new VirtualTableCell(StubSegmentStoreProvider.STUB_COLUMN_CONTENT), new VirtualTableCell(SECOND_TRACE_NAME))));
+                new VirtualTableLine(47, Arrays.asList(new VirtualTableCell(lineTime(21)), new VirtualTableCell(lineTime(23)), new VirtualTableCell(lineDuration(2)), new VirtualTableCell(StubSegmentStoreProvider.STUB_COLUMN_CONTENT), new VirtualTableCell(SECOND_TRACE_NAME))),
+                new VirtualTableLine(46, Arrays.asList(new VirtualTableCell(lineTime(21)), new VirtualTableCell(lineTime(22)), new VirtualTableCell(lineDuration(1)), new VirtualTableCell(StubSegmentStoreProvider.STUB_COLUMN_CONTENT), new VirtualTableCell(MAIN_TRACE_NAME))),
+                new VirtualTableLine(47, Arrays.asList(new VirtualTableCell(lineTime(21)), new VirtualTableCell(lineTime(22)), new VirtualTableCell(lineDuration(1)), new VirtualTableCell(StubSegmentStoreProvider.STUB_COLUMN_CONTENT), new VirtualTableCell(SECOND_TRACE_NAME))));
 
         expectedData.get(0).setActiveProperties(CoreFilterProperty.HIGHLIGHT);
+        expectedData.get(1).setActiveProperties(CoreFilterProperty.HIGHLIGHT);
         expectedData.get(2).setActiveProperties(CoreFilterProperty.HIGHLIGHT);
         expectedData.get(4).setActiveProperties(CoreFilterProperty.HIGHLIGHT);
 

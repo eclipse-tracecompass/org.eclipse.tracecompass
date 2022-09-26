@@ -423,9 +423,9 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTableDataProvider 
             }
             @Nullable WrappedSegment segment = null;
             if (direction == Direction.NEXT) {
-                segment = getNextWrappedSegmentMatching(searchFilter, startIndexRank, actualStartQueryIndex, segmentStore, indexesComparatorWrapper, lines, aspects);
+                segment = getNextWrappedSegmentMatching(searchFilter, startIndexRank, actualStartQueryIndex, segmentStore, indexesComparatorWrapper, lines, aspects, queryFilter.getCount());
             } else {
-                segment = getPreviousWrappedSegmentMatching(searchFilter, startIndexRank, actualStartQueryIndex, segmentStore, indexesComparatorWrapper, lines, aspects);
+                segment = getPreviousWrappedSegmentMatching(searchFilter, startIndexRank, actualStartQueryIndex, segmentStore, indexesComparatorWrapper, lines, aspects, queryFilter.getCount());
             }
             if (segment != null) {
                 localQueryFilter = new VirtualTableQueryFilter(queryFilter.getColumnsId(), segment.getRank(), queryFilter.getCount());
@@ -474,15 +474,18 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTableDataProvider 
      * @param indexesComparatorWrapper
      *            The segment indexes comparator wrapper to use.
      * @param lines
-     *            The virtual table lines to add this found segment to.
+     *            The virtual table lines to add the found segments to.
      * @param aspects
      *            The aspects being resolved.
+     * @param count
+     *            The count of desired events.
      *
      * @return A {@link WrappedSegment} that contains the matching next segment
      *         found after a given index.
      */
     private static @Nullable WrappedSegment getNextWrappedSegmentMatching(Predicate<ISegment> searchFilter, int startIndexRank, int startQueryIndex, ISegmentStore<ISegment> segmentStore,
-            SegmentIndexesComparatorWrapper indexesComparatorWrapper, List<VirtualTableLine> lines, Map<Long, ISegmentAspect> aspects) {
+            SegmentIndexesComparatorWrapper indexesComparatorWrapper, List<VirtualTableLine> lines, Map<Long, ISegmentAspect> aspects, int count) {
+        WrappedSegment first = null;
         int startTimeIndexRank = startIndexRank;
         int actualStartQueryIndex = startQueryIndex;
         while (startTimeIndexRank < indexesComparatorWrapper.getIndexesSize()) {
@@ -493,13 +496,16 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTableDataProvider 
                     long rank = ((long) startTimeIndexRank * STEP) + i;
                     WrappedSegment wrapped = new WrappedSegment(segment, rank);
                     lines.add(buildSegmentStoreTableLine(aspects, wrapped.getOriginalSegment(), wrapped.getRank(), searchFilter));
-                    return wrapped;
+                    first = (first == null ? wrapped : first);
+                    if (lines.size() == count) {
+                        return first;
+                    }
                 }
             }
             actualStartQueryIndex = 0;
             startTimeIndexRank++;
         }
-        return null;
+        return first;
     }
 
     /**
@@ -517,15 +523,18 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTableDataProvider 
      * @param indexesComparatorWrapper
      *            The segment indexes comparator wrapper to use.
      * @param lines
-     *            The virtual table lines to add this found segment to.
+     *            The virtual table lines to add the found segments to.
      * @param aspects
      *            The aspects being resolved.
+     * @param count
+     *            The count of desired events.
      *
      * @return A {@link WrappedSegment} that contains the matching previous
      *         segment found before a given index.
      */
     private static @Nullable WrappedSegment getPreviousWrappedSegmentMatching(Predicate<ISegment> searchFilter, int startIndexRank, int startQueryIndex, ISegmentStore<ISegment> segmentStore,
-            SegmentIndexesComparatorWrapper indexesComparatorWrapper, List<VirtualTableLine> lines, Map<Long, ISegmentAspect> aspects) {
+            SegmentIndexesComparatorWrapper indexesComparatorWrapper, List<VirtualTableLine> lines, Map<Long, ISegmentAspect> aspects, int count) {
+        WrappedSegment first = null;
         int startTimeIndexRank = startIndexRank;
         int actualStartQueryIndex = startQueryIndex;
         while (startTimeIndexRank >= 0) {
@@ -536,13 +545,16 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTableDataProvider 
                     long rank = ((long) startTimeIndexRank * STEP) + i;
                     WrappedSegment wrapped = new WrappedSegment(segment, rank);
                     lines.add(buildSegmentStoreTableLine(aspects, wrapped.getOriginalSegment(), wrapped.getRank(), searchFilter));
-                    return wrapped;
+                    first = (first == null ? wrapped : first);
+                    if (lines.size() == count) {
+                        return first;
+                    }
                 }
             }
             actualStartQueryIndex = STEP;
             startTimeIndexRank--;
         }
-        return null;
+        return first;
     }
 
     private static List<ISegment> getIntersectingElements(ISegmentStore<ISegment> segmentStore, SegmentIndexesComparatorWrapper indexesComparatorWrapper, int startTimeIndexRank) {
