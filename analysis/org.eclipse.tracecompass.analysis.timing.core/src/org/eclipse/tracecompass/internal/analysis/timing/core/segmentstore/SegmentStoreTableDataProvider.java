@@ -394,17 +394,18 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTableDataProvider 
 
     private static TmfModelResponse<ITmfVirtualTableModel<VirtualTableLine>> extractRequestedLines(VirtualTableQueryFilter queryFilter, Map<String, Object> fetchParameters, ISegmentStore<ISegment> segmentStore, Map<Long, ISegmentAspect> aspects,
             SegmentIndexesComparatorWrapper indexesComparatorWrapper) {
-        VirtualTableQueryFilter localQueryFilter = queryFilter;
         @Nullable Predicate<ISegment> searchFilter = generateFilter(fetchParameters);
         List<Long> columnIds = new ArrayList<>(aspects.keySet());
         List<VirtualTableLine> lines = new ArrayList<>();
-        int startIndexRank = (int) (localQueryFilter.getIndex() / STEP);
-        int actualStartQueryIndex = (int) (localQueryFilter.getIndex() % STEP);
+        int startIndexRank = (int) (queryFilter.getIndex() / STEP);
+        int actualStartQueryIndex = (int) (queryFilter.getIndex() % STEP);
         SegmentStoreIndex segIndex = indexesComparatorWrapper.getIndex(startIndexRank);
         long start = segIndex.getStartTimestamp();
         SegmentPredicate filter = new SegmentPredicate(segIndex, indexesComparatorWrapper.getAspectName());
-        int endIndexRank = (int) ((localQueryFilter.getIndex() + localQueryFilter.getCount() + STEP - 1) / STEP);
+        int endIndexRank = (int) ((queryFilter.getIndex() + queryFilter.getCount() + STEP - 1) / STEP);
         long end = getEndTimestamp(endIndexRank, indexesComparatorWrapper);
+        VirtualTableQueryFilter localQueryFilter = queryFilter;
+
         /*
          * Search for the next or previous segment starting from the given
          * segment index
@@ -438,6 +439,7 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTableDataProvider 
                 return new TmfModelResponse<>(new TmfVirtualTableModel<>(columnIds, lines, localQueryFilter.getIndex(), segmentStore.size()), ITmfResponse.Status.COMPLETED, CommonStatusMessage.COMPLETED);
             }
         }
+
         List<ISegment> newSegStore = segmentStore.getIntersectingElements(start, end, indexesComparatorWrapper.getComparator(), filter);
         for (int i = actualStartQueryIndex; i < newSegStore.size(); i++) {
             if (queryFilter.getCount() == lines.size()) {
