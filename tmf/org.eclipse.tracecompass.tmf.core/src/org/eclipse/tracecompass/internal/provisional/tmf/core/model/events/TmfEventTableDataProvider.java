@@ -205,13 +205,18 @@ public class TmfEventTableDataProvider extends AbstractTmfTableDataProvider impl
          */
         Boolean isFiltered = DataProviderParameterUtils.extractIsFiltered(fetchParameters);
         boolean isIndexRequest = isFiltered != null && isFiltered;
+        Direction direction = null;
         if (isIndexRequest && directionValue == null) {
-            directionValue = Direction.NEXT.name();
+            direction = Direction.NEXT;
         }
         // End of the TODO, above.
 
         if (searchFilter != null && directionValue != null) {
-            Direction direction = directionValue.equals(Direction.PREVIOUS.name()) ? Direction.PREVIOUS : Direction.NEXT;
+            try {
+                direction = (direction == null ? Direction.valueOf(String.valueOf(directionValue)) : direction);
+            } catch (IllegalArgumentException e) {
+                return new TmfModelResponse<>(null, ITmfResponse.Status.FAILED, CommonStatusMessage.INCORRECT_QUERY_PARAMETERS);
+            }
             @Nullable WrappedEvent event = null;
             Predicate<@NonNull ITmfEvent> predicate;
             if (filter == null) {
@@ -729,7 +734,6 @@ public class TmfEventTableDataProvider extends AbstractTmfTableDataProvider impl
              * just use the normal table for that type.
              */
             builder.addAll(traces.get(0).getEventAspects());
-
         } else {
             /*
              * There are different trace types in the experiment, so we are
@@ -836,7 +840,6 @@ public class TmfEventTableDataProvider extends AbstractTmfTableDataProvider impl
         long currentRank = startRank + 1;
         try {
             while (currentRank > 0) {
-
                 currentRank = currentRank - step;
                 if (currentRank < 0) {
                     step += currentRank;
@@ -859,7 +862,6 @@ public class TmfEventTableDataProvider extends AbstractTmfTableDataProvider impl
                     return matchingEvent.get();
                 }
                 /* Keep searching, next loop */
-
             }
         } catch (InterruptedException e) {
             return null;
@@ -870,7 +872,6 @@ public class TmfEventTableDataProvider extends AbstractTmfTableDataProvider impl
          * anything.
          */
         return null;
-
     }
 
     /**

@@ -15,6 +15,7 @@ import static org.eclipse.tracecompass.tmf.core.dataprovider.DataProviderParamet
 import static org.eclipse.tracecompass.tmf.core.dataprovider.DataProviderParameterUtils.TABLE_SEARCH_EXPRESSIONS_KEY;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -39,9 +40,11 @@ import org.eclipse.tracecompass.internal.provisional.tmf.core.model.table.TmfVir
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.table.VirtualTableCell;
 import org.eclipse.tracecompass.internal.tmf.core.model.filters.FetchParametersUtils;
 import org.eclipse.tracecompass.tmf.core.exceptions.TmfTraceException;
+import org.eclipse.tracecompass.tmf.core.model.CommonStatusMessage;
 import org.eclipse.tracecompass.tmf.core.model.CoreFilterProperty;
 import org.eclipse.tracecompass.tmf.core.model.filters.TimeQueryFilter;
 import org.eclipse.tracecompass.tmf.core.model.tree.TmfTreeModel;
+import org.eclipse.tracecompass.tmf.core.response.ITmfResponse.Status;
 import org.eclipse.tracecompass.tmf.core.response.TmfModelResponse;
 import org.eclipse.tracecompass.tmf.core.tests.shared.TmfTestTrace;
 import org.eclipse.tracecompass.tmf.core.timestamp.TmfTimestamp;
@@ -371,6 +374,36 @@ public class TmfEventTableDataProviderTest {
         assertTrue(currentModel.getLines().isEmpty());
         TmfVirtualTableModel<@NonNull EventTableLine> expectedModel = new TmfVirtualTableModel<>(expectedColumnsId, expectedData, 0, 10000);
         assertEquals(expectedModel, currentModel);
+    }
+
+    /**
+     * Same as {@link #testDataProviderWithSearchNoMatch} -except for typo.
+     */
+    @Test
+    public void testDataProviderWithSearchTypo() {
+        Long eventTypeColumnId = fColumns.get(EVENT_TYPE_COLUMN_NAME);
+        Long timestampColumnId = fColumns.get(TIMESTAMP_COLUMN_NAME);
+
+        assertNotNull(timestampColumnId);
+        assertNotNull(eventTypeColumnId);
+
+        // Query for the index for the first matching event
+        VirtualTableQueryFilter queryFilter = new EventTableQueryFilter(Arrays.asList(eventTypeColumnId, timestampColumnId), 0, 1, null);
+        Map<String, Object> parameters = FetchParametersUtils.virtualTableQueryToMap(queryFilter);
+
+        Map<Long, String> searchExpressions = new HashMap<>();
+        searchExpressions.put(eventTypeColumnId, "Does not exits");
+
+        parameters.put(TABLE_SEARCH_EXPRESSIONS_KEY, searchExpressions);
+        String typo = "T";
+        parameters.put(TABLE_SEARCH_DIRECTION_KEY, NEXT_DIR_UNDER_TEST + typo);
+
+        TmfTimestampFormat.getDefaulTimeFormat().format(TmfTimestamp.fromMillis(2).toNanos());
+
+        TmfModelResponse<ITmfVirtualTableModel<EventTableLine>> response = fProvider.fetchLines(parameters, null);
+        assertNull(response.getModel());
+        assertEquals(response.getStatus(), Status.FAILED);
+        assertEquals(response.getStatusMessage(), CommonStatusMessage.INCORRECT_QUERY_PARAMETERS);
     }
 
     /**
