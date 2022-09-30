@@ -96,7 +96,7 @@
          <attribute name="automatic" type="boolean">
             <annotation>
                <documentation>
-                  Whether to execute this analysis automatically when trace is opened, or wait for the user to ask for it
+                  Whether to execute this analysis automatically when trace is opened, or wait for the user to ask for it (default false).
                </documentation>
             </annotation>
          </attribute>
