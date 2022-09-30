@@ -44,12 +44,32 @@ public final class OsStrings {
     }
 
     /**
+     * Description string for the thread ID
+     *
+     * @return The externalized description text for thread ID
+     * @since 9.1
+     */
+    public static String tidDesc() {
+        return Objects.requireNonNull(org.eclipse.tracecompass.analysis.os.linux.core.event.aspect.Messages.AspectHelpText_Tid);
+    }
+
+    /**
      * Get the string for the process ID
      *
      * @return The externalized label for process ID
      */
     public static String pid() {
         return Objects.requireNonNull(org.eclipse.tracecompass.analysis.os.linux.core.event.aspect.Messages.AspectName_Pid);
+    }
+
+    /**
+     * Description string for the process ID
+     *
+     * @return The externalized description text for process ID
+     * @since 9.1
+     */
+    public static String pidDesc() {
+        return Objects.requireNonNull(org.eclipse.tracecompass.analysis.os.linux.core.event.aspect.Messages.AspectHelpText_Pid);
     }
 
     /**
@@ -63,6 +83,16 @@ public final class OsStrings {
     }
 
     /**
+     * Description string for the parent thread ID
+     *
+     * @return The externalized description text for parent thread ID
+     * @since 9.1
+     */
+    public static String ptidDesc() {
+        return Objects.requireNonNull(org.eclipse.tracecompass.analysis.os.linux.core.event.aspect.Messages.AspectHelpText_Ptid);
+    }
+
+    /**
      * Get the externalized string for the executable name of a thread
      *
      * @return The externalized label for exec name
@@ -70,6 +100,16 @@ public final class OsStrings {
      */
     public static String execName() {
         return Objects.requireNonNull(org.eclipse.tracecompass.analysis.os.linux.core.event.aspect.Messages.AspectName_ExecName);
+    }
+
+    /**
+     * Description string for the executable name of a thread
+     *
+     * @return The externalized label for exec name description
+     * @since 9.1
+     */
+    public static String execNameDesc() {
+        return Objects.requireNonNull(org.eclipse.tracecompass.analysis.os.linux.core.event.aspect.Messages.AspectHelpText_ExecName);
     }
 
 }
