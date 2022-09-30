@@ -35,6 +35,7 @@ import org.eclipse.tracecompass.analysis.os.linux.core.event.aspect.LinuxTidAspe
 import org.eclipse.tracecompass.analysis.os.linux.core.model.OsStrings;
 import org.eclipse.tracecompass.analysis.os.linux.core.model.ProcessStatus;
 import org.eclipse.tracecompass.analysis.os.linux.core.trace.IKernelTrace;
+import org.eclipse.tracecompass.common.core.NonNullUtils;
 import org.eclipse.tracecompass.internal.analysis.os.linux.core.Activator;
 import org.eclipse.tracecompass.internal.analysis.os.linux.core.kernel.Attributes;
 import org.eclipse.tracecompass.internal.analysis.os.linux.core.kernel.StateValues;
@@ -200,7 +201,10 @@ public class ThreadStatusDataProvider extends AbstractTmfTraceDataProvider imple
     @Override
     public @NonNull TmfModelResponse<@NonNull TmfTreeModel<@NonNull TimeGraphEntryModel>> fetchTree(@NonNull Map<@NonNull String, @NonNull Object> fetchParameters, @Nullable IProgressMonitor monitor) {
         if (fLastEnd == Long.MAX_VALUE) {
-            return new TmfModelResponse<>(new TmfTreeModel<>(Collections.emptyList(), filter(Objects.requireNonNull(fTraceEntry), fTidToEntry, fetchParameters)), ITmfResponse.Status.COMPLETED, CommonStatusMessage.COMPLETED);
+            TmfTreeModel.Builder<@NonNull TimeGraphEntryModel> treeModelBuilder = new TmfTreeModel.Builder();
+            treeModelBuilder.setColumnDescriptors(ThreadEntryModel.getColumnDescriptors());
+            treeModelBuilder.setEntries(filter(Objects.requireNonNull(fTraceEntry), fTidToEntry, fetchParameters));
+            return new TmfModelResponse<>(treeModelBuilder.build(), ITmfResponse.Status.COMPLETED, CommonStatusMessage.COMPLETED);
         }
 
         fModule.waitForInitialization();
@@ -242,7 +246,8 @@ public class ThreadStatusDataProvider extends AbstractTmfTraceDataProvider imple
                 }
 
                 // update the trace Entry.
-                TimeGraphEntryModel traceEntry = new TimeGraphEntryModel(fTraceId, -1, getTrace().getName(), ss.getStartTime(), end);
+                List<@NonNull String> labels = ImmutableList.of(NonNullUtils.nullToEmptyString(getTrace().getName()), "", "", ""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                TimeGraphEntryModel traceEntry = new TimeGraphEntryModel(fTraceId, -1, labels, ss.getStartTime(), end);
                 fTraceEntry = traceEntry;
 
                 for (Integer threadQuark : ss.getQuarks(Attributes.THREADS, WILDCARD)) {
@@ -276,13 +281,17 @@ public class ThreadStatusDataProvider extends AbstractTmfTraceDataProvider imple
                 fEntryMetadata.put(model.getId(), model.getMetadata());
             }
 
+            TmfTreeModel.Builder<@NonNull TimeGraphEntryModel> treeModelBuilder = new TmfTreeModel.Builder();
+            treeModelBuilder.setColumnDescriptors(ThreadEntryModel.getColumnDescriptors());
+            treeModelBuilder.setEntries(list);
+            TmfTreeModel<@NonNull TimeGraphEntryModel> returnModel = treeModelBuilder.build();
             if (complete) {
                 fBuildMap.clear();
                 fLastEnd = Long.MAX_VALUE;
-                return new TmfModelResponse<>(new TmfTreeModel<>(Collections.emptyList(), list), ITmfResponse.Status.COMPLETED, CommonStatusMessage.COMPLETED);
+                return new TmfModelResponse<>(returnModel, ITmfResponse.Status.COMPLETED, CommonStatusMessage.COMPLETED);
             }
 
-            return new TmfModelResponse<>(new TmfTreeModel<>(Collections.emptyList(), list), ITmfResponse.Status.RUNNING, CommonStatusMessage.RUNNING);
+            return new TmfModelResponse<>(returnModel, ITmfResponse.Status.RUNNING, CommonStatusMessage.RUNNING);
         }
     }
 
@@ -305,7 +314,7 @@ public class ThreadStatusDataProvider extends AbstractTmfTraceDataProvider imple
 
         if (entry == null) {
             long id = fAtomicLong.getAndIncrement();
-            entry = new ThreadEntryModel.Builder(id, Collections.singletonList(execName), startTime, endTime, threadId, ppid, pid);
+            entry = new ThreadEntryModel.Builder(id, execName, startTime, endTime, threadId, ppid, pid);
             fQuarkMap.put(id, threadQuark);
         } else {
             /*
@@ -314,7 +323,7 @@ public class ThreadStatusDataProvider extends AbstractTmfTraceDataProvider imple
              */
             entry.setEndTime(endTime);
             entry.setPpid(ppid);
-            entry.setName(Collections.singletonList(execName));
+            entry.setName(execName);
         }
         fBuildMap.put(entryKey, entry);
         fTidToEntry.put(threadId, entry);

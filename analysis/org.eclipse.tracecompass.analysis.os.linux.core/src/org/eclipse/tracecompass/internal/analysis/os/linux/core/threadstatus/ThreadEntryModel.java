@@ -15,9 +15,12 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.tracecompass.analysis.os.linux.core.model.OsStrings;
+import org.eclipse.tracecompass.internal.provisional.tmf.core.model.TableColumnDescriptor;
+import org.eclipse.tracecompass.tmf.core.model.ITableColumnDescriptor;
 import org.eclipse.tracecompass.tmf.core.model.timegraph.TimeGraphEntryModel;
 
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
 
 /**
@@ -34,7 +37,7 @@ public class ThreadEntryModel extends TimeGraphEntryModel {
      */
     public static final class Builder {
         private final long fId;
-        private @NonNull List<@NonNull String> fLabels;
+        private @NonNull String fExecName;
         private final long fStartTime;
         private long fEndTime;
         private final int fTid;
@@ -46,8 +49,8 @@ public class ThreadEntryModel extends TimeGraphEntryModel {
          *
          * @param id
          *            The unique ID for this Entry model for its trace
-         * @param labels
-         *            the thread labels
+         * @param execName
+         *            the exec name
          * @param start
          *            the thread's start time
          * @param end
@@ -61,9 +64,9 @@ public class ThreadEntryModel extends TimeGraphEntryModel {
          *            <code>-1</code> can be used. The PID will be assumed to be
          *            the same as the TID
          */
-        public Builder(long id, @NonNull List<@NonNull String> labels, long start, long end, int tid, int ppid, int pid) {
+        public Builder(long id, @NonNull String execName, long start, long end, int tid, int ppid, int pid) {
             fId = id;
-            fLabels = labels;
+            fExecName = execName;
             fStartTime = start;
             fEndTime = end;
             fTid = tid;
@@ -113,8 +116,8 @@ public class ThreadEntryModel extends TimeGraphEntryModel {
          * @param name
          *            the new name
          */
-        public void setName(@NonNull List<@NonNull String> name) {
-            fLabels = name;
+        public void setName(@NonNull String name) {
+            fExecName = name;
         }
 
         /**
@@ -159,8 +162,13 @@ public class ThreadEntryModel extends TimeGraphEntryModel {
          *         {@link NullPointerException} if the parent Id is not set.
          */
         public ThreadEntryModel build(long parentId) {
-            return new ThreadEntryModel(fId, parentId, fLabels, fStartTime, fEndTime, fTid, fPpid, fPid);
+            @NonNull List<@NonNull String> labels = ImmutableList.of(fExecName,
+                    String.valueOf(fTid),
+                    fPid <= 0 ? String.valueOf(fTid) : String.valueOf(fPid),
+                    fPpid > 0 ? String.valueOf(fPpid) : ""); //$NON-NLS-1$
+            return new ThreadEntryModel(fId, parentId, labels, fStartTime, fEndTime, fTid, fPpid, fPid);
         }
+
     }
 
     private final int fThreadId;
@@ -201,6 +209,32 @@ public class ThreadEntryModel extends TimeGraphEntryModel {
             fAspects.put(OsStrings.execName(), String.valueOf(labels.get(0)));
         }
 
+    }
+
+    /**
+     * Get the column descriptors corresponding to the of labels in the ThreadEntryModel
+     *
+     * @return list of column descriptor
+     */
+    public static @NonNull List<@NonNull ITableColumnDescriptor> getColumnDescriptors() {
+        ImmutableList.Builder<@NonNull ITableColumnDescriptor> headers = new ImmutableList.Builder<>();
+        TableColumnDescriptor.Builder builder = new TableColumnDescriptor.Builder();
+        builder.setText(OsStrings.execName());
+        builder.setTooltip(OsStrings.execNameDesc());
+        headers.add(builder.build());
+        builder = new TableColumnDescriptor.Builder();
+        builder.setText(OsStrings.tid());
+        builder.setTooltip(OsStrings.tidDesc());
+        headers.add(builder.build());
+        builder = new TableColumnDescriptor.Builder();
+        builder.setText(OsStrings.pid());
+        builder.setTooltip(OsStrings.pidDesc());
+        headers.add(builder.build());
+        builder = new TableColumnDescriptor.Builder();
+        builder.setText(OsStrings.ptid());
+        builder.setTooltip(OsStrings.ptidDesc());
+        headers.add(builder.build());
+        return headers.build();
     }
 
     /**
