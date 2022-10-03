@@ -9,7 +9,7 @@
  * SPDX-License-Identifier: EPL-2.0
  **********************************************************************/
 
-package org.eclipse.tracecompass.internal.tmf.core.model.tree;
+package org.eclipse.tracecompass.tmf.core.model.tree;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -27,16 +27,13 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.common.core.log.TraceCompassLog;
 import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils.FlowScopeLog;
 import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils.FlowScopeLogBuilder;
-import org.eclipse.tracecompass.internal.tmf.core.model.AbstractStateSystemAnalysisDataProvider;
 import org.eclipse.tracecompass.statesystem.core.ITmfStateSystem;
 import org.eclipse.tracecompass.statesystem.core.exceptions.StateSystemDisposedException;
+import org.eclipse.tracecompass.tmf.core.model.AbstractStateSystemAnalysisDataProvider;
 import org.eclipse.tracecompass.tmf.core.model.CommonStatusMessage;
 import org.eclipse.tracecompass.tmf.core.model.ICoreElementResolver;
 import org.eclipse.tracecompass.tmf.core.model.filters.SelectionTimeQueryFilter;
 import org.eclipse.tracecompass.tmf.core.model.filters.TimeQueryFilter;
-import org.eclipse.tracecompass.tmf.core.model.tree.ITmfTreeDataModel;
-import org.eclipse.tracecompass.tmf.core.model.tree.ITmfTreeDataProvider;
-import org.eclipse.tracecompass.tmf.core.model.tree.TmfTreeModel;
 import org.eclipse.tracecompass.tmf.core.response.ITmfResponse;
 import org.eclipse.tracecompass.tmf.core.response.TmfModelResponse;
 import org.eclipse.tracecompass.tmf.core.statesystem.TmfStateSystemAnalysisModule;
@@ -62,7 +59,7 @@ import com.google.common.collect.Table;
  * @param <M>
  *            Generic type for the returned {@link ITmfTreeDataModel}.
  * @author Loic Prieur-Drevon
- * @since 4.0
+ * @since 8.2
  */
 public abstract class AbstractTreeDataProvider<A extends TmfStateSystemAnalysisModule, M extends ITmfTreeDataModel>
         extends AbstractStateSystemAnalysisDataProvider implements ITmfTreeDataProvider<M> {

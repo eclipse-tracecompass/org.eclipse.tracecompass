@@ -9,7 +9,7 @@
  * SPDX-License-Identifier: EPL-2.0
  **********************************************************************/
 
-package org.eclipse.tracecompass.internal.tmf.core.model;
+package org.eclipse.tracecompass.tmf.core.model;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -29,7 +29,7 @@ import com.google.common.collect.Multimap;
  * data provider, this class is intended to limit code duplication.
  *
  * @author Yonni Chen
- * @since 4.0
+ * @since 8.2
  */
 public abstract class AbstractTmfTraceDataProvider {
 

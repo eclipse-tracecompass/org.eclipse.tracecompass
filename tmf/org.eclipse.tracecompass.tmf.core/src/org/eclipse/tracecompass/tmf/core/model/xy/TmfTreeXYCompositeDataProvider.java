@@ -9,7 +9,7 @@
  * SPDX-License-Identifier: EPL-2.0
  **********************************************************************/
 
-package org.eclipse.tracecompass.internal.tmf.core.model.xy;
+package org.eclipse.tracecompass.tmf.core.model.xy;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -22,16 +22,11 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.internal.tmf.core.model.TmfXyResponseFactory;
 import org.eclipse.tracecompass.internal.tmf.core.model.filters.FetchParametersUtils;
-import org.eclipse.tracecompass.internal.tmf.core.model.tree.TmfTreeCompositeDataProvider;
 import org.eclipse.tracecompass.tmf.core.dataprovider.DataProviderManager;
 import org.eclipse.tracecompass.tmf.core.model.CommonStatusMessage;
 import org.eclipse.tracecompass.tmf.core.model.filters.TimeQueryFilter;
 import org.eclipse.tracecompass.tmf.core.model.tree.ITmfTreeDataModel;
-import org.eclipse.tracecompass.tmf.core.model.xy.ISeriesModel;
-import org.eclipse.tracecompass.tmf.core.model.xy.ITmfCommonXAxisModel;
-import org.eclipse.tracecompass.tmf.core.model.xy.ITmfTreeXYDataProvider;
-import org.eclipse.tracecompass.tmf.core.model.xy.ITmfXyModel;
-import org.eclipse.tracecompass.tmf.core.model.xy.IYModel;
+import org.eclipse.tracecompass.tmf.core.model.tree.TmfTreeCompositeDataProvider;
 import org.eclipse.tracecompass.tmf.core.response.ITmfResponse;
 import org.eclipse.tracecompass.tmf.core.response.TmfModelResponse;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
@@ -53,7 +48,7 @@ import com.google.common.collect.Iterables;
  *            The type of {@link ITmfTreeXYDataProvider} that this composite
  *            must encapsulate
  * @author Yonni Chen
- * @since 4.0
+ * @since 8.2
  */
 public class TmfTreeXYCompositeDataProvider<M extends ITmfTreeDataModel, P extends ITmfTreeXYDataProvider<M>>
         extends TmfTreeCompositeDataProvider<M, P> implements ITmfTreeXYDataProvider<M> {

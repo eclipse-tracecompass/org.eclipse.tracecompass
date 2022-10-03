@@ -173,7 +173,6 @@ public class CPUAnalysisBenchmark {
         }
     }
 
-    @SuppressWarnings("restriction")
     private static void benchmarkCPUModule(String testName, @NonNull LttngKernelTrace trace, int loopCount) throws TmfAnalysisException {
 
         Performance perf = Performance.getDefault();

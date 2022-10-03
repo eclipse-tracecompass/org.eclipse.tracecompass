@@ -15,6 +15,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.tracecompass.tmf.core.model.AbstractTmfTraceDataProvider;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
 
 /**

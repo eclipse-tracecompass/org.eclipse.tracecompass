@@ -9,7 +9,7 @@
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
 
-package org.eclipse.tracecompass.internal.tmf.core.model.timegraph;
+package org.eclipse.tracecompass.tmf.core.model.timegraph;
 
 import java.util.Collection;
 import java.util.List;
@@ -21,16 +21,12 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils.FlowScopeLog;
 import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils.FlowScopeLogBuilder;
-import org.eclipse.tracecompass.internal.tmf.core.model.tree.AbstractTreeDataProvider;
 import org.eclipse.tracecompass.statesystem.core.ITmfStateSystem;
 import org.eclipse.tracecompass.statesystem.core.exceptions.StateSystemDisposedException;
 import org.eclipse.tracecompass.statesystem.core.exceptions.TimeRangeException;
 import org.eclipse.tracecompass.tmf.core.dataprovider.DataProviderParameterUtils;
 import org.eclipse.tracecompass.tmf.core.model.CommonStatusMessage;
-import org.eclipse.tracecompass.tmf.core.model.timegraph.ITimeGraphDataProvider;
-import org.eclipse.tracecompass.tmf.core.model.timegraph.ITimeGraphEntryModel;
-import org.eclipse.tracecompass.tmf.core.model.timegraph.ITimeGraphStateFilter;
-import org.eclipse.tracecompass.tmf.core.model.timegraph.TimeGraphModel;
+import org.eclipse.tracecompass.tmf.core.model.tree.AbstractTreeDataProvider;
 import org.eclipse.tracecompass.tmf.core.response.ITmfResponse;
 import org.eclipse.tracecompass.tmf.core.response.ITmfResponse.Status;
 import org.eclipse.tracecompass.tmf.core.response.TmfModelResponse;
@@ -51,7 +47,7 @@ import com.google.common.collect.Multimap;
  * @param <M>
  *            Generic type for the returned {@link ITimeGraphEntryModel}.
  * @author Loic Prieur-Drevon
- * @since 4.0
+ * @since 8.2
  */
 public abstract class AbstractTimeGraphDataProvider<A extends TmfStateSystemAnalysisModule, M extends ITimeGraphEntryModel>
     extends AbstractTreeDataProvider<A, M> implements ITimeGraphDataProvider<M> {

@@ -9,7 +9,7 @@
  * SPDX-License-Identifier: EPL-2.0
  **********************************************************************/
 
-package org.eclipse.tracecompass.internal.tmf.core.model.xy;
+package org.eclipse.tracecompass.tmf.core.model.xy;
 
 import java.util.Collection;
 import java.util.Map;
@@ -22,16 +22,13 @@ import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils.FlowScopeLo
 import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils.FlowScopeLogBuilder;
 import org.eclipse.tracecompass.internal.tmf.core.model.TmfXyResponseFactory;
 import org.eclipse.tracecompass.internal.tmf.core.model.filters.FetchParametersUtils;
-import org.eclipse.tracecompass.internal.tmf.core.model.tree.AbstractTreeDataProvider;
 import org.eclipse.tracecompass.statesystem.core.ITmfStateSystem;
 import org.eclipse.tracecompass.statesystem.core.exceptions.StateSystemDisposedException;
 import org.eclipse.tracecompass.statesystem.core.exceptions.TimeRangeException;
 import org.eclipse.tracecompass.tmf.core.model.CommonStatusMessage;
 import org.eclipse.tracecompass.tmf.core.model.filters.SelectionTimeQueryFilter;
+import org.eclipse.tracecompass.tmf.core.model.tree.AbstractTreeDataProvider;
 import org.eclipse.tracecompass.tmf.core.model.tree.ITmfTreeDataModel;
-import org.eclipse.tracecompass.tmf.core.model.xy.ITmfTreeXYDataProvider;
-import org.eclipse.tracecompass.tmf.core.model.xy.ITmfXyModel;
-import org.eclipse.tracecompass.tmf.core.model.xy.IYModel;
 import org.eclipse.tracecompass.tmf.core.response.TmfModelResponse;
 import org.eclipse.tracecompass.tmf.core.statesystem.TmfStateSystemAnalysisModule;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
@@ -50,7 +47,7 @@ import com.google.common.collect.ImmutableList;
  * @param <M>
  *            Generic type for the returned {@link ITmfTreeDataModel}.
  * @author Loic Prieur-Drevon
- * @since 4.0
+ * @since 8.2
  */
 public abstract class AbstractTreeCommonXDataProvider<A extends TmfStateSystemAnalysisModule, M extends ITmfTreeDataModel>
     extends AbstractTreeDataProvider<A, M> implements ITmfTreeXYDataProvider<M> {

@@ -9,7 +9,7 @@
  * SPDX-License-Identifier: EPL-2.0
  **********************************************************************/
 
-package org.eclipse.tracecompass.internal.tmf.core.model.timegraph;
+package org.eclipse.tracecompass.tmf.core.model.timegraph;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -21,17 +21,12 @@ import java.util.Map;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.tracecompass.internal.tmf.core.model.tree.TmfTreeCompositeDataProvider;
 import org.eclipse.tracecompass.tmf.core.dataprovider.DataProviderManager;
 import org.eclipse.tracecompass.tmf.core.model.CommonStatusMessage;
 import org.eclipse.tracecompass.tmf.core.model.IOutputStyleProvider;
 import org.eclipse.tracecompass.tmf.core.model.OutputElementStyle;
 import org.eclipse.tracecompass.tmf.core.model.OutputStyleModel;
-import org.eclipse.tracecompass.tmf.core.model.timegraph.ITimeGraphArrow;
-import org.eclipse.tracecompass.tmf.core.model.timegraph.ITimeGraphDataProvider;
-import org.eclipse.tracecompass.tmf.core.model.timegraph.ITimeGraphEntryModel;
-import org.eclipse.tracecompass.tmf.core.model.timegraph.ITimeGraphRowModel;
-import org.eclipse.tracecompass.tmf.core.model.timegraph.TimeGraphModel;
+import org.eclipse.tracecompass.tmf.core.model.tree.TmfTreeCompositeDataProvider;
 import org.eclipse.tracecompass.tmf.core.response.ITmfResponse;
 import org.eclipse.tracecompass.tmf.core.response.TmfModelResponse;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
@@ -52,6 +47,7 @@ import com.google.common.collect.ImmutableList;
  *            The type of {@link ITimeGraphDataProvider} that this composite
  *            must encapsulate
  * @author Loic Prieur-Drevon
+ * @since 8.2
  */
 public class TmfTimeGraphCompositeDataProvider<M extends ITimeGraphEntryModel, P extends ITimeGraphDataProvider<M>>
 extends TmfTreeCompositeDataProvider<M, P> implements ITimeGraphDataProvider<M>, IOutputStyleProvider {

@@ -9,12 +9,12 @@
  * SPDX-License-Identifier: EPL-2.0
  **********************************************************************/
 
-package org.eclipse.tracecompass.internal.tmf.core.model;
+package org.eclipse.tracecompass.tmf.core.model;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.tracecompass.internal.tmf.core.model.TmfXyResponseFactory;
 import org.eclipse.tracecompass.statesystem.core.ITmfStateSystem;
-import org.eclipse.tracecompass.tmf.core.model.CommonStatusMessage;
 import org.eclipse.tracecompass.tmf.core.model.filters.TimeQueryFilter;
 import org.eclipse.tracecompass.tmf.core.model.xy.ITmfXyModel;
 import org.eclipse.tracecompass.tmf.core.response.TmfModelResponse;
@@ -29,7 +29,7 @@ import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
  * providers
  *
  * @author Yonni Chen
- * @since 4.0
+ * @since 8.2
  */
 public abstract class AbstractStateSystemAnalysisDataProvider extends AbstractTmfTraceDataProvider {
 

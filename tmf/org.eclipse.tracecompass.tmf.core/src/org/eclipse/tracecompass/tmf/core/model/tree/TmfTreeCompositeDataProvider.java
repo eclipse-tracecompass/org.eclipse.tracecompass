@@ -9,7 +9,7 @@
  * SPDX-License-Identifier: EPL-2.0
  **********************************************************************/
 
-package org.eclipse.tracecompass.internal.tmf.core.model.tree;
+package org.eclipse.tracecompass.tmf.core.model.tree;
 
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
@@ -31,9 +31,6 @@ import org.eclipse.tracecompass.internal.provisional.tmf.core.model.annotations.
 import org.eclipse.tracecompass.tmf.core.dataprovider.DataProviderManager;
 import org.eclipse.tracecompass.tmf.core.model.CommonStatusMessage;
 import org.eclipse.tracecompass.tmf.core.model.ITableColumnDescriptor;
-import org.eclipse.tracecompass.tmf.core.model.tree.ITmfTreeDataModel;
-import org.eclipse.tracecompass.tmf.core.model.tree.ITmfTreeDataProvider;
-import org.eclipse.tracecompass.tmf.core.model.tree.TmfTreeModel;
 import org.eclipse.tracecompass.tmf.core.response.ITmfResponse;
 import org.eclipse.tracecompass.tmf.core.response.TmfModelResponse;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
@@ -56,7 +53,7 @@ import com.google.common.collect.Table;
  *            The type of {@link ITmfTreeDataProvider} that this composite must
  *            encapsulate
  * @author Loic Prieur-Drevon
- * @since 4.0
+ * @since 8.2
  */
 public class TmfTreeCompositeDataProvider<M extends ITmfTreeDataModel, P extends ITmfTreeDataProvider<M>> implements ITmfTreeDataProvider<M>, IOutputAnnotationProvider {
 
