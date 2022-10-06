@@ -726,7 +726,9 @@ public class TmfEventTableDataProvider extends AbstractTmfTableDataProvider impl
         ImmutableSet.Builder<ITmfEventAspect<?>> builder = new ImmutableSet.Builder<>();
 
         /* For experiments, we'll add a "trace name" aspect/column */
-        builder.add(TmfBaseAspects.getTraceNameAspect());
+        if (traces.size() > 1) {
+            builder.add(TmfBaseAspects.getTraceNameAspect());
+        }
 
         if (hasCommonTraceType(experiment)) {
             /*
