@@ -26,11 +26,11 @@ SPDX-License-Identifier: EPL-2.0
       </programArgs>
       <programArgsLin>--launcher.GTK_version 3
       </programArgsLin>
-      <vmArgsLin>-Xms512m -Xmx1024m  -Dosgi.requiredJavaVersion=1.11
+      <vmArgsLin>-Xms512m -Xmx1024m -Dosgi.requiredJavaVersion=11
       </vmArgsLin>
-      <vmArgsMac>-Xms512m -Xmx1024m -XstartOnFirstThread -Dosgi.requiredJavaVersion=1.11 -Dorg.eclipse.swt.internal.carbon.smallFonts
+      <vmArgsMac>-Xms512m -Xmx1024m -XstartOnFirstThread -Dosgi.requiredJavaVersion=11 -Dorg.eclipse.swt.internal.carbon.smallFonts
       </vmArgsMac>
-      <vmArgsWin>-Xms512m -Xmx1024m  -Dosgi.requiredJavaVersion=1.11
+      <vmArgsWin>-Xms512m -Xmx1024m -Dosgi.requiredJavaVersion=11
       </vmArgsWin>
    </launcherArgs>
 
