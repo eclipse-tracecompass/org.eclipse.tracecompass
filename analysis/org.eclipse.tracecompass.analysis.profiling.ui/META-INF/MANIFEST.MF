@@ -7,7 +7,7 @@ Bundle-Version: 4.0.0.qualifier
 Bundle-Localization: plugin
 Bundle-Activator: org.eclipse.tracecompass.internal.analysis.profiling.ui.Activator
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Automatic-Module-Name: org.eclipse.tracecompass.analysis.profiling.ui
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,

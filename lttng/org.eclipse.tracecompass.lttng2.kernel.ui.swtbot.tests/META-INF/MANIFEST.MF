@@ -6,7 +6,7 @@ Bundle-Version: 1.0.19.qualifier
 Bundle-Localization: plugin
 Bundle-SymbolicName: org.eclipse.tracecompass.lttng2.kernel.ui.swtbot.tests;singleton:=true
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Export-Package: org.eclipse.tracecompass.lttng2.kernel.ui.swtbot.tests,
  org.eclipse.tracecompass.lttng2.kernel.ui.swtbot.tests.perf
 Require-Bundle: org.apache.log4j,

@@ -2,12 +2,12 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name
 Bundle-Vendor: %Bundle-Vendor
-Bundle-Version: 5.1.2.qualifier
+Bundle-Version: 5.2.0.qualifier
 Bundle-Localization: plugin
 Bundle-SymbolicName: org.eclipse.tracecompass.lttng2.ust.core;singleton:=true
 Bundle-Activator: org.eclipse.tracecompass.internal.lttng2.ust.core.Activator
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Export-Package: org.eclipse.tracecompass.internal.lttng2.ust.core;x-friends:="org.eclipse.tracecompass.lttng2.ust.core.tests,org.eclipse.tracecompass.lttng2.ust.ui",
  org.eclipse.tracecompass.internal.lttng2.ust.core.analysis.cpu;x-friends:="org.eclipse.tracecompass.lttng2.ust.core.tests",
  org.eclipse.tracecompass.internal.lttng2.ust.core.analysis.debuginfo;x-friends:="org.eclipse.tracecompass.lttng2.ust.core.tests,org.eclipse.tracecompass.lttng2.ust.ui",

@@ -5,7 +5,7 @@ Bundle-Vendor: %Bundle-Vendor
 Bundle-SymbolicName: org.eclipse.tracecompass.jsontrace.core.tests
 Bundle-Version: 1.0.3.qualifier
 Automatic-Module-Name: org.eclipse.tracecompass.jsontrace.core.tests
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Require-Bundle: org.eclipse.tracecompass.jsontrace.core,
  org.eclipse.tracecompass.tmf.core,
  org.eclipse.core.resources,

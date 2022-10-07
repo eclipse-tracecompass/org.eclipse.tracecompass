@@ -3,11 +3,11 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name
 Bundle-Vendor: %Bundle-Vendor
 Bundle-SymbolicName: org.eclipse.tracecompass.analysis.profiling.core;singleton:=true
-Bundle-Version: 2.3.3.qualifier
+Bundle-Version: 2.4.0.qualifier
 Bundle-Localization: plugin
 Bundle-Activator: org.eclipse.tracecompass.internal.analysis.profiling.core.Activator
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Automatic-Module-Name: org.eclipse.tracecompass.analysis.profiling.core
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.resources,
