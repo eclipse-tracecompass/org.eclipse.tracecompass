@@ -41,7 +41,7 @@
               </target>
             </configuration>
             <goals>
-               <goal>run</goal>
+              <goal>run</goal>
             </goals>
           </execution>
           <execution>
@@ -55,12 +55,11 @@
               </target>
             </configuration>
             <goals>
-               <goal>run</goal>
+              <goal>run</goal>
             </goals>
           </execution>
         </executions>
       </plugin>
-   </plugins>
- </build>
-
+    </plugins>
+  </build>
 </project>
