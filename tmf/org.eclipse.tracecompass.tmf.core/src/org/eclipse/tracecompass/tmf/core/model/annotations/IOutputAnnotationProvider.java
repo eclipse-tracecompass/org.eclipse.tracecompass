@@ -9,7 +9,7 @@
  * SPDX-License-Identifier: EPL-2.0
  **********************************************************************/
 
-package org.eclipse.tracecompass.internal.provisional.tmf.core.model.annotations;
+package org.eclipse.tracecompass.tmf.core.model.annotations;
 
 import java.util.Map;
 
@@ -22,6 +22,7 @@ import org.eclipse.tracecompass.tmf.core.response.TmfModelResponse;
  * implement this interface to provide annotations.
  *
  * @author Simon Delisle
+ * @since 8.2
  */
 public interface IOutputAnnotationProvider {
 

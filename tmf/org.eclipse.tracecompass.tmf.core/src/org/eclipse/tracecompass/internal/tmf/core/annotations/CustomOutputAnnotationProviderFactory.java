@@ -12,7 +12,7 @@
 package org.eclipse.tracecompass.internal.tmf.core.annotations;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.tracecompass.internal.provisional.tmf.core.model.annotations.IOutputAnnotationProvider;
+import org.eclipse.tracecompass.tmf.core.model.annotations.IOutputAnnotationProvider;
 import org.eclipse.tracecompass.tmf.core.trace.AbstractTmfTraceAdapterFactory;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
 

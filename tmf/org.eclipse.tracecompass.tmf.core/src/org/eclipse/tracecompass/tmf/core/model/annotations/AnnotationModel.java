@@ -9,7 +9,7 @@
  * SPDX-License-Identifier: EPL-2.0
  **********************************************************************/
 
-package org.eclipse.tracecompass.internal.provisional.tmf.core.model.annotations;
+package org.eclipse.tracecompass.tmf.core.model.annotations;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -21,6 +21,7 @@ import java.util.Map.Entry;
  * Data provider annotation model
  *
  * @author Simon Delisle
+ * @since 8.2
  */
 public class AnnotationModel {
 

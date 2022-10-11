@@ -9,7 +9,7 @@
  * SPDX-License-Identifier: EPL-2.0
  **********************************************************************/
 
-package org.eclipse.tracecompass.internal.provisional.tmf.core.model.annotations;
+package org.eclipse.tracecompass.tmf.core.model.annotations;
 
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -19,6 +19,7 @@ import com.google.common.collect.ImmutableList;
 
 /**
  * Data provider annotation categories model
+ * @since 8.2
  */
 public class AnnotationCategoriesModel {
 

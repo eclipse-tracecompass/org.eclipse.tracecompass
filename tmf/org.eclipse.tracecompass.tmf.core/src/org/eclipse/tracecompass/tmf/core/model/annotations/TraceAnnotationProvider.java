@@ -8,7 +8,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
-package org.eclipse.tracecompass.internal.provisional.tmf.core.model.annotations;
+package org.eclipse.tracecompass.tmf.core.model.annotations;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -36,6 +36,7 @@ import org.eclipse.tracecompass.tmf.core.trace.experiment.TmfExperiment;
  * be fetched on top of data provider's annotations.
  *
  * @author Bernd Hufmann
+ * @since 8.2
  *
  */
 public class TraceAnnotationProvider implements IOutputAnnotationProvider {

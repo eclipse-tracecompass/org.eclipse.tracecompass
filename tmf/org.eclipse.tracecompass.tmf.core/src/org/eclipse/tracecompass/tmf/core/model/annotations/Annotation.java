@@ -9,7 +9,7 @@
  * SPDX-License-Identifier: EPL-2.0
  **********************************************************************/
 
-package org.eclipse.tracecompass.internal.provisional.tmf.core.model.annotations;
+package org.eclipse.tracecompass.tmf.core.model.annotations;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.tmf.core.model.OutputElement;
@@ -22,6 +22,7 @@ import org.eclipse.tracecompass.tmf.core.model.OutputElementStyle;
  * tree annotation is used to add a mark to a specific tree entry.
  *
  * @author Simon Delisle
+ * @since 8.2
  */
 public class Annotation extends OutputElement implements IAnnotation {
 

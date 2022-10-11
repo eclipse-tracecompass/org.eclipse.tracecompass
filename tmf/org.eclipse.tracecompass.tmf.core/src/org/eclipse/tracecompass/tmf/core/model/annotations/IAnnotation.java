@@ -9,7 +9,7 @@
  * SPDX-License-Identifier: EPL-2.0
  **********************************************************************/
 
-package org.eclipse.tracecompass.internal.provisional.tmf.core.model.annotations;
+package org.eclipse.tracecompass.tmf.core.model.annotations;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.tmf.core.model.ITimeElement;
@@ -18,6 +18,7 @@ import org.eclipse.tracecompass.tmf.core.model.ITimeElement;
  * Model of an annotation. A chart annotation is used to mark an interesting
  * area at a given time or range, or to add a symbol to the chart. A tree
  * annotation is used to add a mark to a specific tree entry.
+ * @since 8.2
  */
 public interface IAnnotation extends ITimeElement {
 

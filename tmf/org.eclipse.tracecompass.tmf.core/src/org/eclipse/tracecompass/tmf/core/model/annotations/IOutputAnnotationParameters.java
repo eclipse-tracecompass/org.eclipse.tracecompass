@@ -9,12 +9,13 @@
  * SPDX-License-Identifier: EPL-2.0
  **********************************************************************/
 
-package org.eclipse.tracecompass.internal.provisional.tmf.core.model.annotations;
+package org.eclipse.tracecompass.tmf.core.model.annotations;
 
 /**
  * Constants used for output annotation fetch parameters
  *
  * @noimplement This interface is not intended to be implemented by clients.
+ * @since 8.2
  */
 public interface IOutputAnnotationParameters {
 
