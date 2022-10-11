@@ -9,7 +9,7 @@
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
 
-package org.eclipse.tracecompass.internal.tmf.core.model;
+package org.eclipse.tracecompass.tmf.core.model;
 
 import java.util.Objects;
 
@@ -23,7 +23,7 @@ import org.eclipse.tracecompass.tmf.core.dataprovider.IDataProviderDescriptor;
  *
  * @author Loic Prieur-Drevon
  * @author Bernd Hufmann
- * @since 4.3
+ * @since 8.2
  */
 public class DataProviderDescriptor implements IDataProviderDescriptor {
 
