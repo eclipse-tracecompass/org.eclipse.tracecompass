@@ -54,7 +54,7 @@ public abstract class AbstractCounterAspect implements ITmfCounterAspect {
      *            The label to display in "help"
      * @param type
      *            The type of the counter
-     * @since 3.0
+     * @since 2.1
      */
     public AbstractCounterAspect(String fieldName, String label, CounterType type) {
         fFieldName = fieldName;
@@ -78,8 +78,10 @@ public abstract class AbstractCounterAspect implements ITmfCounterAspect {
      *
      * @param event
      *            The event to process
-     * @return The counter value or null if the counter type is not supported
-     * @since 3.0
+     * @return The counter value based on its type, either {@link Double} or
+     *         {@link Long}; or {@code null} if event is missing the counter
+     *         field.
+     * @since 2.1
      */
     @Override
     public @Nullable Number resolve(@NonNull ITmfEvent event) {
@@ -87,9 +89,8 @@ public abstract class AbstractCounterAspect implements ITmfCounterAspect {
         case DOUBLE:
             return event.getContent().getFieldValue(Double.class, fFieldName);
         case LONG:
-            return event.getContent().getFieldValue(Long.class, fFieldName);
         default:
-            return null;
+            return event.getContent().getFieldValue(Long.class, fFieldName);
         }
     }
 
@@ -127,7 +128,7 @@ public abstract class AbstractCounterAspect implements ITmfCounterAspect {
      * Gets the type of this counter
      *
      * @return the type of this counter
-     * @since 3.0
+     * @since 2.1
      */
     public CounterType getType() {
         return fType;

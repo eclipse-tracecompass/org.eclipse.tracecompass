@@ -68,7 +68,7 @@ public class CounterAspect extends AbstractCounterAspect {
      *            the type of this counter
      * @param groups
      *            the groups, empty means ungrouped
-     * @since 3.0
+     * @since 2.1
      */
     @SafeVarargs
     public CounterAspect(String fieldName, String label, CounterType type, Class<? extends ITmfEventAspect<?>>... groups) {

@@ -15,7 +15,7 @@ package org.eclipse.tracecompass.analysis.counters.core;
  * Enumeration of the different types of counters.
  *
  * @author Yoann Heitz
- * @since 3.0
+ * @since 2.1
  */
 public enum CounterType {
     /**

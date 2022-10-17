@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<component id="org.eclipse.tracecompass.analysis.counters.core" version="2">
+    <resource path="src/org/eclipse/tracecompass/analysis/counters/core/aspects/AbstractCounterAspect.java" type="org.eclipse.tracecompass.analysis.counters.core.aspects.AbstractCounterAspect">
+        <filter comment="Package's MANIFEST.MF minor version increment should have been a major one, but was deemed non-breaking hence minor only. Remove this filter once incrementing to the next major API version, upon a major release." id="338792546">
+            <message_arguments>
+                <message_argument value="org.eclipse.tracecompass.analysis.counters.core.aspects.AbstractCounterAspect"/>
+                <message_argument value="resolve(ITmfEvent)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+</component>
