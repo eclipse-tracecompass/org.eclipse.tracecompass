@@ -47,7 +47,6 @@ public class CounterStateProviderTest {
     private static final String COUNTER_FILE = "traces/counter_testTrace.xml";
 
     private TmfXmlTraceStubNs fTrace;
-    private ITmfStateSystemBuilder fSsb;
     private CounterStateProvider fStateProvider;
 
     /**
@@ -79,8 +78,8 @@ public class CounterStateProviderTest {
         // Create the state provider
         fStateProvider = CounterStateProvider.create(trace);
         IStateHistoryBackend backend = StateHistoryBackendFactory.createInMemoryBackend("CounterStateSystem", 0);
-        fSsb = StateSystemFactory.newStateSystem(backend);
-        fStateProvider.assignTargetStateSystem(fSsb);
+        ITmfStateSystemBuilder ssb = StateSystemFactory.newStateSystem(backend);
+        fStateProvider.assignTargetStateSystem(ssb);
         fTrace = trace;
     }
 
