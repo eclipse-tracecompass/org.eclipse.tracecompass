@@ -35,7 +35,6 @@
 <unit id="javax.xml.bind" version="0.0.0"/>
 <unit id="javax.activation" version="1.1.0.v201211130549"/>
 <unit id="javax.xml.stream" version="0.0.0"/>
-<unit id="org.eclipse.e4.ui.progress" version="0.0.0"/>
 <repository location="https://download.eclipse.org/tools/orbit/downloads/drops/R20210602031627/repository/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
@@ -56,6 +55,7 @@
 <unit id="org.eclipse.ui.trace" version="0.0.0"/>
 <unit id="org.eclipse.ui.views.log" version="0.0.0"/>
 <unit id="org.eclipse.jdt.junit4.runtime" version="0.0.0"/>
+<unit id="org.eclipse.e4.ui.progress" version="0.0.0"/>
 <repository location="https://download.eclipse.org/eclipse/updates/4.20/R-4.20-202106111600/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
