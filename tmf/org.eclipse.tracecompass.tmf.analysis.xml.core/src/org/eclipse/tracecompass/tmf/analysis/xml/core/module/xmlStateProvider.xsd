@@ -373,7 +373,15 @@
 				<xs:restriction base="xs:string">
 					<xs:enumeration value="nashorn">
 						<xs:annotation>
-							<xs:documentation>The value should be a JavaScript script</xs:documentation></xs:annotation></xs:enumeration></xs:restriction>
+							<xs:documentation>The value should be a JavaScript script</xs:documentation>
+						</xs:annotation>
+					</xs:enumeration>
+					<xs:enumeration value="rhino">
+						<xs:annotation>
+							<xs:documentation>The value should be a JavaScript script</xs:documentation>
+						</xs:annotation>
+					</xs:enumeration>
+				</xs:restriction>
 			</xs:simpleType>
 		</xs:attribute>
 	</xs:complexType>

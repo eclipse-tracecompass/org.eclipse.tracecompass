@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017 École Polytechnique de Montréal
+ * Copyright (c) 2017, 2022 École Polytechnique de Montréal
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -27,6 +27,7 @@ import org.eclipse.tracecompass.internal.tmf.analysis.xml.core.fsm.module.IAnaly
 import org.eclipse.tracecompass.statesystem.core.statevalue.ITmfStateValue;
 import org.eclipse.tracecompass.statesystem.core.statevalue.TmfStateValue;
 import org.eclipse.tracecompass.tmf.core.event.ITmfEvent;
+import org.mozilla.javascript.RhinoException;
 
 /**
  * A value that resolves to the result of a scripts
@@ -37,7 +38,7 @@ import org.eclipse.tracecompass.tmf.core.event.ITmfEvent;
 public class DataDrivenValueScript extends DataDrivenValue {
 
     /** the default script engine */
-    public static final String DEFAULT_SCRIPT_ENGINE = "nashorn"; //$NON-NLS-1$
+    public static final String DEFAULT_SCRIPT_ENGINE = "rhino"; //$NON-NLS-1$
     private final Map<String, DataDrivenValue> fValues;
     private final String fScriptEngine;
     private final String fScript;
@@ -77,34 +78,58 @@ public class DataDrivenValueScript extends DataDrivenValue {
 
     private @Nullable Object executeScript(Function<DataDrivenValue, @Nullable Object> function, IAnalysisDataContainer container) {
         Object result = null;
-        ScriptEngine engine = null;
-        engine = container.getScriptEngine(fScriptEngine);
-        if (engine == null) {
-            ScriptEngineManager manager = new ScriptEngineManager();
-            engine = manager.getEngineByName(fScriptEngine);
-            if (engine != null) {
-                container.setScriptengine(fScriptEngine, engine);
+        if (!fScriptEngine.equals(DEFAULT_SCRIPT_ENGINE)) {
+            // Other script engines (e.g. Nashorn for Java version < 15)
+            ScriptEngine engine = null;
+            engine = container.getScriptEngine(fScriptEngine);
+            if (engine == null) {
+                ScriptEngineManager manager = new ScriptEngineManager();
+                engine = manager.getEngineByName(fScriptEngine);
+                if (engine != null) {
+                    container.setScriptengine(fScriptEngine, engine);
+                }
             }
+            if (engine != null) {
+                for (Entry<String, DataDrivenValue> entry : fValues.entrySet()) {
+                    String stateValueId = Objects.requireNonNull(entry.getKey());
+                    DataDrivenValue stateValue = Objects.requireNonNull(entry.getValue());
+                    Object value = function.apply(stateValue);
+                    engine.put(stateValueId, value);
+                }
+                try {
+                    result = engine.eval(fScript);
+                } catch (ScriptException e) {
+                    Activator.logError("Script execution failed", e); //$NON-NLS-1$
+                    return TmfStateValue.nullValue();
+                }
+                return result;
+            }
+            Activator.logWarning("Unknown script engine: " + fScriptEngine + ". Trying rhino instead."); //$NON-NLS-1$ //$NON-NLS-2$
         }
-        if (engine == null) {
-            Activator.logWarning("Unknown script engine: " + fScriptEngine); //$NON-NLS-1$
-            return null;
-        }
+        return executeScriptRhino(function);
+    }
 
-        for (Entry<String, DataDrivenValue> entry : fValues.entrySet()) {
-            String stateValueId = Objects.requireNonNull(entry.getKey());
-            DataDrivenValue stateValue = Objects.requireNonNull(entry.getValue());
-            Object value = function.apply(stateValue);
-            engine.put(stateValueId, value);
-        }
-
+    private @Nullable Object executeScriptRhino(Function<DataDrivenValue, @Nullable Object> function) {
+        // Note: In case of performance issues, implement caching of the engine
+        RhinoScriptEngine rhino = new RhinoScriptEngine();
+        rhino.setupEngine();
+        Object result = null;
         try {
-            result = engine.eval(fScript);
-        } catch (ScriptException e) {
+            for (Entry<String, DataDrivenValue> entry : fValues.entrySet()) {
+                String stateValueId = Objects.requireNonNull(entry.getKey());
+                DataDrivenValue stateValue = Objects.requireNonNull(entry.getValue());
+                Object value = function.apply(stateValue);
+                if (value != null) {
+                    rhino.put(stateValueId, value);
+                }
+            }
+            result = rhino.execute(fScript);
+        } catch (RhinoException e) {
             Activator.logError("Script execution failed", e); //$NON-NLS-1$
             return TmfStateValue.nullValue();
+        } finally {
+            rhino.teardownEngine();
         }
-
         return result;
     }
 

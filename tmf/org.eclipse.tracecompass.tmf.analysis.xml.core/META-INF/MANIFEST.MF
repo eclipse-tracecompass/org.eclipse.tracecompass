@@ -16,7 +16,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.tracecompass.analysis.timing.core,
  org.eclipse.core.commands,
  com.google.guava,
- org.eclipse.jdt.annotation;bundle-version="[2.0.0,3.0.0)";resolution:=optional
+ org.eclipse.jdt.annotation;bundle-version="[2.0.0,3.0.0)";resolution:=optional,
+ org.mozilla.javascript;bundle-version="1.7.10"
 Export-Package: org.eclipse.tracecompass.internal.tmf.analysis.xml.core;x-friends:="org.eclipse.tracecompass.tmf.analysis.xml.core.tests",
  org.eclipse.tracecompass.internal.tmf.analysis.xml.core.fsm.compile;x-friends:="org.eclipse.tracecompass.tmf.analysis.xml.core.tests,org.eclipse.tracecompass.tmf.analysis.xml.ui",
  org.eclipse.tracecompass.internal.tmf.analysis.xml.core.fsm.model;x-friends:="org.eclipse.tracecompass.tmf.analysis.xml.core.tests,org.eclipse.tracecompass.tmf.analysis.xml.ui",

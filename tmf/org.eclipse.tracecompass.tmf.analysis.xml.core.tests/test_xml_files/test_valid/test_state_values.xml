@@ -78,7 +78,7 @@
 			</stateChange>
 			<stateChange>
 				<stateAttribute type="constant" value="script" />
-				<stateValue type="script" value="op == 'op1' ? 'TRUE' : 'FALSE'" scriptEngine="nashorn">
+				<stateValue type="script" value="op == 'op1' ? 'TRUE' : 'FALSE'" scriptEngine="rhino">
 					<stateValue id="op" type="eventField" value="op" />
 				</stateValue>
 			</stateChange>
@@ -89,7 +89,7 @@
 			<stateChange>
 				<stateAttribute type="constant" value="future" />
 				<stateValue type="int" value="101" />
-				<futureTime type="script" value="ts + 2" scriptEngine="nashorn">
+				<futureTime type="script" value="ts + 2" scriptEngine="rhino">
 					<stateValue id="ts" type="eventField" value="timestamp" />
 				</futureTime>
 			</stateChange>
@@ -100,7 +100,7 @@
 			<stateChange>
 				<stateAttribute type="constant" value="futureStr" />
 				<stateValue type="int" value="101" />
-				<futureTime type="script" value="ts + 2" scriptEngine="nashorn" forcedType="string" >
+				<futureTime type="script" value="ts + 2" scriptEngine="rhino" forcedType="string" >
 					<stateValue id="ts" type="eventField" value="timestamp" />
 				</futureTime>
 			</stateChange>
@@ -108,7 +108,7 @@
 				<stateAttribute type="constant" value="futureStack" />
 				<stateAttribute type="eventField" value="cpu" />
 				<stateValue type="eventField" value="op" stack="push" />
-				<futureTime type="script" value="ts + 1" scriptEngine="nashorn" >
+				<futureTime type="script" value="ts + 1" scriptEngine="rhino" >
 					<stateValue id="ts" type="eventField" value="timestamp" />
 				</futureTime>
 			</stateChange>
@@ -116,7 +116,7 @@
 				<stateAttribute type="constant" value="futureStack" />
 				<stateAttribute type="eventField" value="cpu" />
 				<stateValue type="eventField" value="op" stack="pop" />
-				<futureTime type="script" value="ts + 6" scriptEngine="nashorn" >
+				<futureTime type="script" value="ts + 6" scriptEngine="rhino" >
 					<stateValue id="ts" type="eventField" value="timestamp" />
 				</futureTime>
 			</stateChange>
@@ -169,7 +169,7 @@
 			</stateChange>
 			<stateChange>
 				<stateAttribute type="constant" value="script" />
-				<stateValue type="script" value="op == 'op1' ? 'FALSE' : 'TRUE'" scriptEngine="nashorn" >
+				<stateValue type="script" value="op == 'op1' ? 'FALSE' : 'TRUE'" scriptEngine="rhino" >
 					<stateValue id="op" type="eventField" value="op" />
 				</stateValue>
 			</stateChange>

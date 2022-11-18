@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><?pde version="3.8"?><target name="tracecompass-e4.25" sequenceNumber="6">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><?pde version="3.8"?><target name="tracecompass-e4.25" sequenceNumber="7">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.cdt.gnu.dsf.feature.group" version="0.0.0"/>
@@ -24,6 +24,7 @@
 <unit id="org.hamcrest" version="0.0.0"/>
 <unit id="jakarta.xml.bind" version="2.3.3.v20201118-1818"/>
 <unit id="org.slf4j.api" version="0.0.0"/>
+<unit id="org.mozilla.javascript" version="1.7.10.v20190430-1943"/>
 <repository location="https://download.eclipse.org/tools/orbit/downloads/drops/R20220830213456/repository/"/>
 </location>
 <!-- Add dependencies that only exists with older orbit version -->
