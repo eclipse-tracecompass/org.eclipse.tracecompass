@@ -151,3 +151,12 @@ the build system. You can set them by using `-P[profile name]` and
   the destination specified by `-DdocDestination=/absolute/path/to/destination`.
   Some directories may need to already exist at the destination (or Maven will
   throw related errors).
+
+Build Trace Compass image with Docker
+-------------------------------------
+
+To compile the image of Trace Compass with Docker, run the following command from the top level directory:
+
+    docker build -f releng/dockerfiles/Dockerfile -t tracecompass .
+
+The image will be tagged `tracecompass`.

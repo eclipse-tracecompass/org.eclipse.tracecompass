@@ -6,3 +6,7 @@
 bin/
 target/
 workspace/
+
+# VS Code
+.devcontainer
+.vscode
