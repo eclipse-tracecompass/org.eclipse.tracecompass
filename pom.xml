@@ -45,8 +45,8 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <testArgLine></testArgLine>
 
-    <jdk.version>11</jdk.version>
-    <jdk.release>11</jdk.release>
+    <jdk.version>17</jdk.version>
+    <jdk.release>17</jdk.release>
 
     <skip-tc-core-tests>false</skip-tc-core-tests>
     <skip-short-tc-ui-tests>false</skip-short-tc-ui-tests>
@@ -57,7 +57,7 @@
     <tycho-use-project-settings>true</tycho-use-project-settings>
     <tycho.scmUrl>scm:git:git://git.eclipse.org/gitroot/tracecompass/org.eclipse.tracecompass.git</tycho.scmUrl>
     <cbi-plugins.version>1.3.2</cbi-plugins.version>
-    <target-platform>tracecompass-e4.25</target-platform>
+    <target-platform>tracecompass-e4.26</target-platform>
     <help-docs-eclipserun-repo>http://download.eclipse.org/eclipse/updates/4.20</help-docs-eclipserun-repo>
 
     <rcptt-version>2.5.3</rcptt-version>
