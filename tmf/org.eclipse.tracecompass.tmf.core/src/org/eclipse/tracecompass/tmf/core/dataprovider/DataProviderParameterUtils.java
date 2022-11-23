@@ -17,11 +17,11 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.tracecompass.internal.tmf.core.Activator;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
@@ -220,6 +220,7 @@ public class DataProviderParameterUtils {
      * @return Multimap of regexes or null if there is no regex key in the map
      *         of parameters
      */
+    @SuppressWarnings("null")
     public static @Nullable Multimap<Integer, String> extractRegexFilter(Map<String, Object> parameters) {
         Object regexesObject = parameters.get(REGEX_MAP_FILTERS_KEY);
         if (!(regexesObject instanceof Map<?, ?>)) {
@@ -228,10 +229,18 @@ public class DataProviderParameterUtils {
 
         Multimap<Integer, String> regexes = HashMultimap.create();
         @SuppressWarnings("unchecked")
-        Map<Integer, Collection<String>> regexesMap = (Map<Integer, Collection<String>>) regexesObject;
-        for (Entry<Integer, Collection<String>> entry : regexesMap.entrySet()) {
-            regexes.putAll(entry.getKey(), entry.getValue());
-        }
+        Map<Object, Collection<String>> regexesMap = (Map<Object, Collection<String>>) regexesObject;
+        regexesMap.forEach((key, value) -> {
+            if (key instanceof String) {
+                try {
+                    regexes.putAll(Integer.valueOf((String) key), value);
+                } catch (NumberFormatException e) {
+                    Activator.logError(e.getMessage(), e);
+                }
+            } else if (key instanceof Number) {
+                regexes.putAll(((Number) key).intValue(), value);
+            }
+        });
 
         return regexes;
     }
