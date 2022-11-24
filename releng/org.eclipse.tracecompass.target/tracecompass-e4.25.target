@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><?pde version="3.8"?><target name="tracecompass-e4.25" sequenceNumber="8">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><?pde version="3.8"?><target name="tracecompass-e4.25" sequenceNumber="9">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.cdt.gnu.dsf.feature.group" version="0.0.0"/>
@@ -20,6 +20,7 @@
 <unit id="jakarta.xml.bind" version="2.3.3.v20201118-1818"/>
 <unit id="org.antlr.runtime" version="3.2.0.v20220404-1927"/>
 <unit id="org.antlr.runtime.source" version="3.2.0.v20220404-1927"/>
+<unit id="org.apache.commons.cli" version="0.0.0"/>
 <unit id="org.apache.commons.compress" version="0.0.0"/>
 <unit id="org.apache.commons.io" version="0.0.0"/>
 <unit id="org.apache.commons.lang" version="0.0.0"/>
@@ -34,7 +35,6 @@
 <unit id="javax.activation" version="1.1.0.v201211130549"/>
 <unit id="javax.xml.bind" version="0.0.0"/>
 <unit id="javax.xml.stream" version="0.0.0"/>
-<unit id="org.apache.commons.cli" version="1.2.0.v201404270220"/>
 <unit id="org.apache.commons.lang3" version="0.0.0"/>
 <unit id="org.apache.derby" version="0.0.0"/>
 <unit id="org.json" version="0.0.0"/>
