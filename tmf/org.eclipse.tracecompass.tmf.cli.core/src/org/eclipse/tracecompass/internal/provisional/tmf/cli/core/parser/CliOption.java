@@ -14,7 +14,7 @@ package org.eclipse.tracecompass.internal.provisional.tmf.cli.core.parser;
 import java.util.Objects;
 
 import org.apache.commons.cli.Option;
-import org.apache.commons.cli.OptionBuilder;
+import org.apache.commons.cli.Option.Builder;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
@@ -86,40 +86,44 @@ public class CliOption {
     }
 
     Option toCliOption() {
-        OptionBuilder.withArgName(fArgumentName);
+        Builder builder = Option.builder(fShortOption);
+        builder.argName(fArgumentName);
         // Number of arguments
         if (fMaxArguments == 0) {
             // No arguments
-            OptionBuilder.hasArg(false);
+            builder.hasArg(false);
         } else if (fMaxArguments == 1) {
             // 1 argument, optional or mandatory
             if (fMinArguments == 0) {
-                OptionBuilder.hasOptionalArg();
+                builder.optionalArg(true);
             } else {
-                OptionBuilder.hasArg();
+                builder.hasArg();
             }
+            builder.numberOfArgs(1);
         } else if (fMaxArguments < Integer.MAX_VALUE) {
             // Many arguments, optional or mandatory
             if (fMinArguments == 0) {
-                OptionBuilder.hasOptionalArgs(fMaxArguments);
+                builder.optionalArg(true);
             } else {
-                OptionBuilder.hasArgs(fMaxArguments);
+                builder.hasArg();
             }
+            builder.numberOfArgs(fMaxArguments);
         } else {
             // Unbounded number of optional or mandatory arguments
             if (fMinArguments == 0) {
-                OptionBuilder.hasOptionalArgs();
+                builder.optionalArg(true);
             } else {
-                OptionBuilder.hasArgs();
+                builder.hasArg();
+                builder.numberOfArgs(fMinArguments);
             }
         }
         if (fLongOption != null) {
-            OptionBuilder.withLongOpt(fLongOption);
+            builder.longOpt(fLongOption);
         }
         if (fDescription != null) {
-            OptionBuilder.withDescription(fDescription);
+            builder.desc(fDescription);
         }
-        return Objects.requireNonNull(OptionBuilder.create(fShortOption));
+        return Objects.requireNonNull(builder.build());
     }
 
     @Override

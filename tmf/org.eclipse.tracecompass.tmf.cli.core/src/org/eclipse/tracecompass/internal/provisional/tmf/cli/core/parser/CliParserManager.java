@@ -17,10 +17,10 @@ import java.util.List;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.apache.commons.cli.PosixParser;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -121,7 +121,7 @@ public final class CliParserManager {
         if (tcArgs.isEmpty()) {
             return null;
         }
-        CommandLineParser cmdLineParser = new PosixParser();
+        CommandLineParser cmdLineParser = new DefaultParser();
         try {
             // There may not be one and only one command line, do not keep the
             // command line as internal field of this class
