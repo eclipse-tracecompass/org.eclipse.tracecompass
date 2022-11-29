@@ -270,7 +270,7 @@ public class TmfStateSystemExplorer extends BaseDataProviderTimeGraphView {
         if (dataProvider instanceof StateSystemDataProvider) {
             return (StateSystemDataProvider) dataProvider;
         }
-        throw new NullPointerException();
+        throw new IllegalArgumentException();
     }
 
     private static Iterable<ITmfAnalysisModuleWithStateSystems> allModules(ITmfTrace trace) {
