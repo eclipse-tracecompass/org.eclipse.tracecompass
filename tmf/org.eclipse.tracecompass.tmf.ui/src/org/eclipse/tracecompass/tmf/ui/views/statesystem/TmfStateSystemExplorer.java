@@ -231,11 +231,14 @@ public class TmfStateSystemExplorer extends BaseDataProviderTimeGraphView {
                  */
                 new Thread(() -> {
                     /*
-                     *  DataProviderManager#getDataProvider() (see getDataProvider() below) should never be called in a signal handler.
+                     * DataProviderManager#getDataProvider() (see
+                     * getDataProvider() below) should never be called in a
+                     * signal handler.
                      */
                     synchronized (fStartedAnalysis) {
                         fStartedAnalysis.add((ITmfAnalysisModuleWithStateSystems) module);
-                        //Every children of ITmfAnalysisModuleWithStateSystems extends TmfAbstractAnalysisModule
+                        // Every children of ITmfAnalysisModuleWithStateSystems
+                        // extends TmfAbstractAnalysisModule
                         ITmfTrace moduleTrace = module instanceof TmfAbstractAnalysisModule ? ((TmfAbstractAnalysisModule) module).getTrace() : viewTrace;
                         if (moduleTrace != null) {
                             getDataProvider(moduleTrace).startedAnalysisSignalHandler((ITmfAnalysisModuleWithStateSystems) module);
