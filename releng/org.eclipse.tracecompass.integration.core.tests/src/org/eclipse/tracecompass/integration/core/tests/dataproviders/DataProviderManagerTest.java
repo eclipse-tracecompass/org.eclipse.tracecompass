@@ -80,12 +80,6 @@ public class DataProviderManagerTest {
                 .setId("org.eclipse.tracecompass.analysis.timing.core.segmentstore.SegmentStoreStatisticsDataProvider:lttng.analysis.futex");
         EXPECTED_KERNEL_DP_DESCRIPTORS.add(builder.build());
         builder = new DataProviderDescriptor.Builder();
-        builder.setName("Futex Contention Analysis - Latency Statistics")
-                .setDescription("Show latency statistics provided by Analysis module: Futex Contention Analysis")
-                .setProviderType(ProviderType.DATA_TREE)
-                .setId("org.eclipse.tracecompass.analysis.timing.core.segmentstore.SegmentStoreStatisticsDataProvider:lttng.analysis.futex");
-        EXPECTED_KERNEL_DP_DESCRIPTORS.add(builder.build());
-        builder = new DataProviderDescriptor.Builder();
         builder.setName("Futex Contention Analysis - Latency Table")
                 .setDescription("Show latency table provided by Analysis module: Futex Contention Analysis")
                 .setProviderType(ProviderType.TABLE)
