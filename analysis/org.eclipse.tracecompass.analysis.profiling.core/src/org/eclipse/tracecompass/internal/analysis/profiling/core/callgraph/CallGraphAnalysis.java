@@ -115,7 +115,7 @@ public class CallGraphAnalysis extends TmfAbstractAnalysisModule implements ICal
     protected Iterable<IAnalysisModule> getDependentAnalyses() {
         CallStackAnalysis callStackAnalysis = fCallStackAnalysis;
         if (callStackAnalysis == null) {
-            throw new NullPointerException("If the analysis is not set, this method should not be called"); //$NON-NLS-1$
+            throw new IllegalArgumentException("If the analysis is not set, this method should not be called"); //$NON-NLS-1$
         }
         return Collections.singleton(callStackAnalysis);
     }
@@ -142,7 +142,6 @@ public class CallGraphAnalysis extends TmfAbstractAnalysisModule implements ICal
         monitor.worked(1);
         monitor.done();
         return true;
-
     }
 
     /**
@@ -180,7 +179,6 @@ public class CallGraphAnalysis extends TmfAbstractAnalysisModule implements ICal
                 ThreadNode init = new ThreadNode(initSegment, 0, threadId);
                 fThreadNodes.add(init);
                 mainAttribs.put(init, subAttributes);
-
             }
         }
         iterateOverCallStack2D(ss, mainAttribs, monitor);
@@ -199,10 +197,7 @@ public class CallGraphAnalysis extends TmfAbstractAnalysisModule implements ICal
 
         /* Is there a common range with the other range */
         public boolean overlap(CallgraphRange other) {
-            if (fStart <= other.fEnd && fEnd >= other.fStart) {
-                return true;
-            }
-            return false;
+            return fStart <= other.fEnd && fEnd >= other.fStart;
         }
 
         /* Do 2 time ranges overlap or are they contiguous */
@@ -212,10 +207,7 @@ public class CallGraphAnalysis extends TmfAbstractAnalysisModule implements ICal
                 return true;
             }
             // Are they contiguous
-            if (fStart - 1 == other.fEnd || fEnd + 1 == other.fStart) {
-                return true;
-            }
-            return false;
+            return fStart - 1 == other.fEnd || fEnd + 1 == other.fStart;
         }
 
         /* Is the other range fully included in this range */
@@ -246,13 +238,12 @@ public class CallGraphAnalysis extends TmfAbstractAnalysisModule implements ICal
         public CallgraphRange getUnion(CallgraphRange other) {
             return new CallgraphRange(Math.min(fStart, other.fStart), Math.max(fEnd, other.fEnd));
         }
-
     }
 
     /** A class that associates a range with a function */
     private static class FunctionCall {
-        CallgraphRange fRange;
-        AbstractCalledFunction fFunc;
+        private CallgraphRange fRange;
+        private AbstractCalledFunction fFunc;
 
         public FunctionCall(CallgraphRange range, AbstractCalledFunction function) {
             fRange = range;
@@ -445,7 +436,6 @@ public class CallGraphAnalysis extends TmfAbstractAnalysisModule implements ICal
         public int getProcessId() {
             return fThreadNode.getProcessId();
         }
-
     }
 
     private static boolean iterateOverCallStack2D(ITmfStateSystem ss, Map<ThreadNode, List<Integer>> parentAttribs, IProgressMonitor monitor) {
@@ -484,7 +474,7 @@ public class CallGraphAnalysis extends TmfAbstractAnalysisModule implements ICal
                 }
                 CallGraphLevel level = attribToLevel.get(interval.getAttribute());
                 if (level == null) {
-                    throw new NullPointerException("The level should not be null, we created it just before!"); //$NON-NLS-1$
+                    throw new IllegalArgumentException("The level should not be null, we created it just before!"); //$NON-NLS-1$
                 }
 
                 long intervalStart = interval.getStartTime();
@@ -498,7 +488,6 @@ public class CallGraphAnalysis extends TmfAbstractAnalysisModule implements ICal
                      * set this range as covered
                      */
                     level.setCovered(range);
-
                 } else {
                     /* No, this interval represents a called function */
                     /*
@@ -543,7 +532,8 @@ public class CallGraphAnalysis extends TmfAbstractAnalysisModule implements ICal
                 }
 
                 /*
-                 * See if we can complete the parent(s) with this new information
+                 * See if we can complete the parent(s) with this new
+                 * information
                  */
                 level.tryToCompleteParentCoverage(range);
             }
@@ -570,7 +560,6 @@ public class CallGraphAnalysis extends TmfAbstractAnalysisModule implements ICal
                 tn -> tn.getChildren().forEach(
                         child -> init.addChild(initSegment, child.clone())));
         return Collections.singleton(init);
-
     }
 
     /**
@@ -599,5 +588,4 @@ public class CallGraphAnalysis extends TmfAbstractAnalysisModule implements ICal
         }
         return -1;
     }
-
 }
