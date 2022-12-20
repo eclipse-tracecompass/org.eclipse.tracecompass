@@ -47,8 +47,11 @@ import com.google.common.collect.ImmutableList;
  */
 public abstract class CallStackAnalysis extends TmfStateSystemAnalysisModule implements IFlameChartProvider, ICallGraphProvider {
 
-    /** CallStack stack-attribute
-     * @since 1.1*/
+    /**
+     * CallStack stack-attribute
+     *
+     * @since 1.1
+     */
     public static final String CALL_STACK = "CallStack"; //$NON-NLS-1$
 
     private static final String[] DEFAULT_PROCESSES_PATTERN = new String[] { CallStackStateProvider.PROCESSES, "*" }; //$NON-NLS-1$
@@ -93,9 +96,10 @@ public abstract class CallStackAnalysis extends TmfStateSystemAnalysisModule imp
     }
 
     /**
-     * Resolve the device ID if applicable. A device is the hardware context the trace is running
-     * on. An example would be CPU, GPU, DSP or even FPGA. This could allow device centric analyses
-     * such as the Callsite analysis to enrich the view.
+     * Resolve the device ID if applicable. A device is the hardware context the
+     * trace is running on. An example would be CPU, GPU, DSP or even FPGA. This
+     * could allow device centric analyses such as the Callsite analysis to
+     * enrich the view.
      *
      * @param quark
      *            quark of the state system to query
@@ -107,7 +111,6 @@ public abstract class CallStackAnalysis extends TmfStateSystemAnalysisModule imp
     public @Nullable Long resolveDeviceId(int quark, long timestamp) {
         return null;
     }
-
 
     /**
      * Resolve the device type if applicable. A device is the hardware context
@@ -231,8 +234,8 @@ public abstract class CallStackAnalysis extends TmfStateSystemAnalysisModule imp
     }
 
     /**
-     * Get the callstack host ID resolver for this instrumented series. The default
-     * is to use the host name of the trace.
+     * Get the callstack host ID resolver for this instrumented series. The
+     * default is to use the host name of the trace.
      *
      * @param trace
      *            The trace this analysis is run on
@@ -244,8 +247,8 @@ public abstract class CallStackAnalysis extends TmfStateSystemAnalysisModule imp
     }
 
     /**
-     * Get the callstack TID resolver for this instrumented series. The default is
-     * to use the name of the second attribute as the thread ID.
+     * Get the callstack TID resolver for this instrumented series. The default
+     * is to use the name of the second attribute as the thread ID.
      *
      * @return The thread ID resolver
      * @since 1.1
@@ -317,19 +320,18 @@ public abstract class CallStackAnalysis extends TmfStateSystemAnalysisModule imp
     }
 
     /**
-     * Set whether the callgraph execution should be triggered automatically after
-     * building the callstack or if it should wait to be requested. This is used
-     * in benchmark to control when the callgraph module will be built.
+     * Set whether the callgraph execution should be triggered automatically
+     * after building the callstack or if it should wait to be requested. This
+     * is used in benchmark to control when the callgraph module will be built.
      *
      * @param trigger
-     *            {@code true} means the callgraph analysis will be executed after
-     *            the callstack, {@code false} means it will be executed on demand
-     *            only.
+     *            {@code true} means the callgraph analysis will be executed
+     *            after the callstack, {@code false} means it will be executed
+     *            on demand only.
      * @since 1.1
      */
     @VisibleForTesting
     public void triggerAutomatically(boolean trigger) {
         fAutomaticCallgraph = trigger;
     }
-
 }
