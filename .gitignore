@@ -1,5 +1,6 @@
+# LC_COLLATE=C sort
+*/.settings/org.sonar.ide.eclipse.core.prefs
 .DS_Store
 bin/
 target/
 workspace/
-*/.settings/org.sonar.ide.eclipse.core.prefs
