@@ -146,6 +146,6 @@ public class TmfTreeDataModel implements ITmfTreeDataModel {
     @SuppressWarnings("nls")
     @Override
     public String toString() {
-        return "<name=" + fLabels + " id=" + fId + " parentId=" + fParentId + " style=" + fStyle + " hasRowModel=" + fHasRowModel +">";
+        return "<name=" + fLabels + " id=" + fId + " parentId=" + fParentId + " style=" + fStyle + " hasRowModel=" + fHasRowModel + ">";
     }
 }
