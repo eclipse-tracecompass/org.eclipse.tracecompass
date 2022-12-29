@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: %Bundle-Name
+Bundle-Vendor: %Bundle-Vendor
+Bundle-SymbolicName: org.eclipse.tracecompass.analysis.callstack.core;singleton:=true
+Bundle-Version: 0.1.0.qualifier
+Bundle-Localization: plugin
+Bundle-Activator: org.eclipse.tracecompass.internal.analysis.callstack.core.Activator
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Automatic-Module-Name: org.eclipse.tracecompass.analysis.callstack.core
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.jdt.annotation;bundle-version="[2.0.0,3.0.0)";resolution:=optional,
+ org.eclipse.tracecompass.common.core
+Export-Package: org.eclipse.tracecompass.internal.analysis.callstack.core;x-friends:="org.eclipse.tracecompass.analysis.callstack.core.tests"

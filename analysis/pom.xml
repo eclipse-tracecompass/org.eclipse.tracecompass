@@ -27,6 +27,9 @@
   <name>Trace Compass Tracetype-agnostic Analyses Parent</name>
 
   <modules>
+    <module>org.eclipse.tracecompass.analysis.callstack.core</module>
+    <module>org.eclipse.tracecompass.analysis.callstack.core.tests</module>
+
     <module>org.eclipse.tracecompass.analysis.counters.core</module>
     <module>org.eclipse.tracecompass.analysis.counters.core.tests</module>
     <module>org.eclipse.tracecompass.analysis.counters.ui</module>
