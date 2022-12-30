@@ -15,8 +15,6 @@ package org.eclipse.tracecompass.analysis.profiling.core.callgraph;
  * Interface that analyses who provide callgraph
  *
  * @author Geneviève Bastien
- * TODO: Bring methods from the incubator to this interface
  */
 public interface ICallGraphProvider {
-
 }
