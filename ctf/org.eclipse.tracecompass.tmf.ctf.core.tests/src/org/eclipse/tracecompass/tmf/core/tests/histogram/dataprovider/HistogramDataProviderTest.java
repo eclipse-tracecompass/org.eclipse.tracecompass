@@ -31,6 +31,7 @@ import org.eclipse.tracecompass.tmf.core.model.tree.TmfTreeDataModel;
 import org.eclipse.tracecompass.tmf.core.model.tree.TmfTreeModel;
 import org.eclipse.tracecompass.tmf.core.model.xy.ISeriesModel;
 import org.eclipse.tracecompass.tmf.core.model.xy.ITmfXyModel;
+import org.eclipse.tracecompass.tmf.core.model.xy.TmfXyTreeDataModel;
 import org.eclipse.tracecompass.tmf.core.response.ITmfResponse;
 import org.eclipse.tracecompass.tmf.core.response.TmfModelResponse;
 import org.eclipse.tracecompass.tmf.core.statistics.TmfStatisticsModule;
@@ -53,7 +54,9 @@ public class HistogramDataProviderTest {
     private static final long START = 1376592664828559410L;
     private static final long END = 1376592668452869400L;
 
-    private static final List<String> EXPECTED_FULL_PATHS = ImmutableList.of("hello-lost", "hello-lost/Total", "hello-lost/Lost");
+    private static final @NonNull String TRACE_NAME = "hello-lost";
+
+    private static final List<String> EXPECTED_FULL_PATHS = ImmutableList.of(TRACE_NAME, TRACE_NAME + "/Total", TRACE_NAME + "/Lost");
     private static final long @NonNull [] EXPECTED_COMMON_XDATA = new long[] {
             1376592664828559410l, 1376592664865168602l, 1376592664901777794l, 1376592664938386985l, 1376592664974996177l, 1376592665011605369l, 1376592665048214561l, 1376592665084823753l, 1376592665121432945l, 1376592665158042136l,
             1376592665194651328l, 1376592665231260520l, 1376592665267869712l, 1376592665304478904l, 1376592665341088095l, 1376592665377697287l, 1376592665414306479l, 1376592665450915671l, 1376592665487524863l, 1376592665524134055l,
@@ -106,6 +109,13 @@ public class HistogramDataProviderTest {
             TmfTreeModel<@NonNull TmfTreeDataModel> treeModel = treeResponse.getModel();
             assertNotNull(treeModel);
             assertEquals(EXPECTED_FULL_PATHS, getFullPaths(treeModel.getEntries()));
+
+            for (TmfTreeDataModel entry : treeModel.getEntries()) {
+                if (!entry.getName().equals(TRACE_NAME)) {
+                    assertTrue(entry instanceof TmfXyTreeDataModel);
+                    assertTrue(((TmfXyTreeDataModel) entry).isDefault());
+                }
+            }
 
             List<Long> ids = Lists.transform(treeModel.getEntries(), TmfTreeDataModel::getId);
             SelectionTimeQueryFilter selectionFilter = new SelectionTimeQueryFilter(START, END, 100, ids);
