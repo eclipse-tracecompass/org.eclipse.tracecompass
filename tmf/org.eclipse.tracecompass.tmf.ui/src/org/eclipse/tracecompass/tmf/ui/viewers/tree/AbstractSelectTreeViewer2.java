@@ -55,6 +55,7 @@ import org.eclipse.tracecompass.internal.tmf.ui.Activator;
 import org.eclipse.tracecompass.tmf.core.dataprovider.DataProviderManager;
 import org.eclipse.tracecompass.tmf.core.model.filters.TimeQueryFilter;
 import org.eclipse.tracecompass.tmf.core.model.timegraph.IElementResolver;
+import org.eclipse.tracecompass.tmf.core.model.tree.ITmfSelectionTreeDataModel;
 import org.eclipse.tracecompass.tmf.core.model.tree.ITmfTreeDataModel;
 import org.eclipse.tracecompass.tmf.core.model.tree.ITmfTreeDataProvider;
 import org.eclipse.tracecompass.tmf.core.model.tree.TmfTreeDataModel;
@@ -105,6 +106,7 @@ public abstract class AbstractSelectTreeViewer2 extends AbstractTmfTreeViewer {
     private final String fId;
     private final int fInstanceId;
     private final @NonNull String fLogCategory;
+    private volatile boolean fIsInitialized;
 
     private static final ViewerComparator COMPARATOR = new ViewerComparator() {
         @Override
@@ -231,6 +233,7 @@ public abstract class AbstractSelectTreeViewer2 extends AbstractTmfTreeViewer {
         fLogCategory = fId + LOG_CATEGORY_SUFFIX;
         fInstanceId = INSTANCE_ID_SEQUENCE.incrementAndGet();
         setLabelProvider(new DataProviderTreeLabelProvider());
+        fIsInitialized = false;
     }
 
     /**
@@ -381,6 +384,7 @@ public abstract class AbstractSelectTreeViewer2 extends AbstractTmfTreeViewer {
         saveViewContext();
         restorePatternFilter(signal.getTrace());
         fCheckboxTree.setCheckedElements(new Object[0]);
+        fIsInitialized = false;
         super.traceOpened(signal);
     }
 
@@ -430,11 +434,12 @@ public abstract class AbstractSelectTreeViewer2 extends AbstractTmfTreeViewer {
                         double factor = 1.0;
                         do {
                             TmfModelResponse<@NonNull TmfTreeModel<@NonNull ITmfTreeDataModel>> response;
+                            TmfTreeModel<@NonNull ITmfTreeDataModel> model = null;
                             try (FlowScopeLog iterScope = new FlowScopeLogBuilder(LOGGER, Level.FINE, UPDATE_CONTENT_JOB_NAME + " query") //$NON-NLS-1$
                                     .setParentScope(scope).build()) {
 
                                 response = provider.fetchTree(parameters, monitor);
-                                TmfTreeModel<@NonNull ITmfTreeDataModel> model = response.getModel();
+                                model = response.getModel();
                                 if (model != null) {
                                     updateTree(trace, start, end, model.getEntries());
                                 }
@@ -444,6 +449,16 @@ public abstract class AbstractSelectTreeViewer2 extends AbstractTmfTreeViewer {
                             if (status == ITmfResponse.Status.COMPLETED) {
                                 /* Model is complete, no need to request again the data provider */
                                 isComplete = true;
+                                if (!fIsInitialized) {
+                                    fIsInitialized = true;
+                                    if (model != null) {
+                                        TmfTreeModel<@NonNull ITmfTreeDataModel> checkModel = model;
+                                        Display.getDefault().asyncExec(() -> {
+                                            List<ITmfTreeViewerEntry> checkedElements = getAllDefaultCheckedIds(checkModel.getEntries(), getInput());
+                                            internalSetCheckedElements(checkedElements.toArray());
+                                        });
+                                    }
+                                }
                             } else if (status == ITmfResponse.Status.FAILED || status == ITmfResponse.Status.CANCELLED) {
                                 /* Error occurred, return */
                                 isComplete = true;
@@ -485,6 +500,7 @@ public abstract class AbstractSelectTreeViewer2 extends AbstractTmfTreeViewer {
              * its children to the trace's fixed root after clearing it.
              */
             final ITmfTreeViewerEntry newTreeModel = modelToTree(start, end, model);
+
             if (rootEntry != null && newTreeModel != null) {
                 synchronized (rootEntry) {
                     rootEntry.getChildren().clear();
@@ -516,6 +532,20 @@ public abstract class AbstractSelectTreeViewer2 extends AbstractTmfTreeViewer {
                 });
             }
         }
+    }
+
+    private List<ITmfTreeViewerEntry> getAllDefaultCheckedIds(List<@NonNull ITmfTreeDataModel> model, ITmfTreeViewerEntry newTreeModel) {
+        List<ITmfTreeViewerEntry> checkedElements = new ArrayList<>();
+        Set<Long> mySet = new HashSet<>();
+        for (ITmfTreeDataModel entry : model) {
+            if ((entry instanceof ITmfSelectionTreeDataModel) && (((ITmfSelectionTreeDataModel) entry).isDefault())) {
+                mySet.add(entry.getId());
+            }
+        }
+        if (!mySet.isEmpty()) {
+            checkEntries(mySet, newTreeModel, checkedElements);
+        }
+        return checkedElements;
     }
 
     /**
