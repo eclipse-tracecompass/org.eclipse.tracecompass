@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><?pde version="3.8"?><target name="tracecompass-eStaging" sequenceNumber="197">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><?pde version="3.8"?><target name="tracecompass-eStaging" sequenceNumber="198">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.cdt.gnu.dsf.feature.group" version="0.0.0"/>
@@ -24,18 +24,18 @@
 <unit id="org.apache.commons.compress" version="0.0.0"/>
 <unit id="org.apache.commons.io" version="0.0.0"/>
 <unit id="org.apache.commons.lang" version="0.0.0"/>
+<unit id="org.apache.commons.lang3" version="0.0.0"/>
 <unit id="org.apache.xml.serializer" version="0.0.0"/>
 <unit id="org.hamcrest" version="0.0.0"/>
 <unit id="org.mozilla.javascript" version="1.7.10.v20221112-0806"/>
 <unit id="org.slf4j.api" version="0.0.0"/>
-<repository location="https://download.eclipse.org/tools/orbit/downloads/drops/R20221123021534/repository/"/>
+<repository location="https://download.eclipse.org/tools/orbit/downloads/drops/S20230101190934/repository/"/>
 </location>
 <!-- Add dependencies that only exists with older orbit version -->
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="javax.activation" version="1.1.0.v201211130549"/>
 <unit id="javax.xml.bind" version="0.0.0"/>
 <unit id="javax.xml.stream" version="0.0.0"/>
-<unit id="org.apache.commons.lang3" version="0.0.0"/>
 <unit id="org.apache.derby" version="0.0.0"/>
 <unit id="org.json" version="0.0.0"/>
 <repository location="https://download.eclipse.org/tools/orbit/downloads/drops/R20220302172233/repository/"/>
@@ -60,7 +60,7 @@
 <unit id="org.eclipse.ui.views.log" version="0.0.0"/>
 <unit id="org.eclipse.jdt.junit4.runtime" version="0.0.0"/>
 <unit id="org.eclipse.e4.ui.progress" version="0.0.0"/>
-<repository location="https://download.eclipse.org/eclipse/updates/4.26/R-4.26-202211231800/"/>
+<repository location="https://download.eclipse.org/eclipse/updates/4.27-I-builds/I20230106-1800/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.tracecompass.testtraces.tracecompass-test-traces-ctf" version="1.7.2"/>
@@ -70,11 +70,11 @@
 <unit id="org.eclipse.wst.xml.core" version="0.0.0"/>
 <unit id="org.eclipse.wst.xml.ui" version="0.0.0"/>
 <unit id="org.eclipse.wst.xsd.core" version="0.0.0"/>
-<repository location="https://download.eclipse.org/webtools/downloads/drops/R3.28.0/R-3.28.0-20221120050827/repository/"/>
+<repository location="https://download.eclipse.org/webtools/downloads/drops/R3.29.0/S-3.29M1-20230108094143/repository/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.xsd" version="0.0.0"/>
-<repository location="https://download.eclipse.org/modeling/emf/emf/builds/release/2.32/"/>
+<repository location="https://download.eclipse.org/modeling/emf/emf/builds/milestone/S202301040454"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.swtchart.feature.feature.group" version="0.0.0"/>

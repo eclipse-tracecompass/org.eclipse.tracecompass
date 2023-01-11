@@ -90,6 +90,7 @@
                 <plugin id="org.apache.commons.io"/>
                 <plugin id="org.eclipse.e4.ui.progress"/>
                 <plugin id="org.eclipse.jdt.core"/>
+                <plugin id="org.eclipse.jdt.core.compiler.batch"/>
                 <plugin id="org.eclipse.remote.core"/>
                 <plugin id="org.eclipse.remote.jsch.core"/>
                 <plugin id="org.eclipse.remote.jsch.ui"/>
