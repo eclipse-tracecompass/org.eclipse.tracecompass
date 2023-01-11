@@ -11,11 +11,16 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Automatic-Module-Name: org.eclipse.tracecompass.analysis.callstack.core
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.jdt.annotation;bundle-version="[2.0.0,3.0.0)";resolution:=optional,
+ org.eclipse.tracecompass.analysis.os.linux.core,
  org.eclipse.tracecompass.analysis.profiling.core,
  org.eclipse.tracecompass.analysis.timing.core,
  org.eclipse.tracecompass.common.core,
+ org.eclipse.tracecompass.datastore.core,
  org.eclipse.tracecompass.segmentstore.core,
  org.eclipse.tracecompass.tmf.core
 Export-Package: org.eclipse.tracecompass.internal.analysis.callstack.core;x-friends:="org.eclipse.tracecompass.analysis.callstack.core.tests"
 Import-Package: com.google.common.annotations,
- com.google.common.collect
+ com.google.common.base,
+ com.google.common.cache,
+ com.google.common.collect,
+ org.apache.commons.lang3
