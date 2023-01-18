@@ -29,6 +29,8 @@ import org.eclipse.tracecompass.internal.analysis.callstack.core.CallStackHostUt
 import org.eclipse.tracecompass.internal.analysis.callstack.core.CallStackHostUtils.IHostIdResolver;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.base.ICallStackElement;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.base.ICallStackGroupDescriptor;
+import org.eclipse.tracecompass.internal.analysis.callstack.core.model.IHostModel;
+import org.eclipse.tracecompass.internal.analysis.callstack.core.model.ModelManager;
 import org.eclipse.tracecompass.segmentstore.core.BasicSegment;
 import org.eclipse.tracecompass.segmentstore.core.ISegment;
 import org.eclipse.tracecompass.segmentstore.core.ISegmentStore;

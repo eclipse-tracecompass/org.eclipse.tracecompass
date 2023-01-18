@@ -12,6 +12,7 @@
 package org.eclipse.tracecompass.internal.analysis.callstack.core;
 
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.tracecompass.internal.analysis.callstack.core.model.IHostModel;
 
 /**
  * Factory to create {@link ICalledFunction}s.

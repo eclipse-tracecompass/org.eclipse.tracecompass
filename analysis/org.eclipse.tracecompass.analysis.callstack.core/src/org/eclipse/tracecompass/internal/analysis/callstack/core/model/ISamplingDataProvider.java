@@ -9,9 +9,11 @@
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
 
-package org.eclipse.tracecompass.internal.analysis.callstack.core;
+package org.eclipse.tracecompass.internal.analysis.callstack.core.model;
 
 import java.util.Collection;
+
+import org.eclipse.tracecompass.internal.analysis.callstack.core.AggregatedCallSite;
 
 /**
  * Interfaces that classes providing sampling data for threads can implement

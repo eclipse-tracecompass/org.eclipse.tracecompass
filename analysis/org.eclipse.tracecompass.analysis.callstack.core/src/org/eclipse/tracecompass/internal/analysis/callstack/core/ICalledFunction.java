@@ -12,6 +12,7 @@
 package org.eclipse.tracecompass.internal.analysis.callstack.core;
 
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.tracecompass.internal.analysis.callstack.core.model.IHostModel;
 import org.eclipse.tracecompass.segmentstore.core.ISegment;
 import org.eclipse.tracecompass.segmentstore.core.segment.interfaces.INamedSegment;
 

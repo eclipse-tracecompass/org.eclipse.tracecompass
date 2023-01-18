@@ -27,6 +27,9 @@ import org.eclipse.tracecompass.internal.analysis.callstack.core.base.FlameWithK
 import org.eclipse.tracecompass.internal.analysis.callstack.core.base.ICallStackElement;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.base.ICallStackSymbol;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.base.IDataPalette;
+import org.eclipse.tracecompass.internal.analysis.callstack.core.model.IHostModel;
+import org.eclipse.tracecompass.internal.analysis.callstack.core.model.ModelManager;
+import org.eclipse.tracecompass.internal.analysis.callstack.core.model.ProcessStatusInterval;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.tree.IWeightedTreeGroupDescriptor;
 import org.eclipse.tracecompass.tmf.core.analysis.IAnalysisModule;
 import org.eclipse.tracecompass.tmf.core.analysis.TmfAbstractAnalysisModule;
