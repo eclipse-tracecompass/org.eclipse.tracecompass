@@ -14,6 +14,7 @@ package org.eclipse.tracecompass.internal.analysis.callstack.core;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.tracecompass.internal.analysis.callstack.core.base.CallStackGroupDescriptor;
 import org.eclipse.tracecompass.statesystem.core.ITmfStateSystem;
 
 /**

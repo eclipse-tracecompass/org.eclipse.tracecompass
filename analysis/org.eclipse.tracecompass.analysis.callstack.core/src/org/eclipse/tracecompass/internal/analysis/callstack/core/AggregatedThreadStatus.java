@@ -12,6 +12,7 @@
 package org.eclipse.tracecompass.internal.analysis.callstack.core;
 
 import org.eclipse.tracecompass.analysis.os.linux.core.model.ProcessStatus;
+import org.eclipse.tracecompass.internal.analysis.callstack.core.base.StringSymbol;
 
 /**
  * Class to calculate statistics for an aggregated function.

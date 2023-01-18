@@ -23,7 +23,8 @@ import org.eclipse.tracecompass.analysis.profiling.core.callstack.CallStackState
 import org.eclipse.tracecompass.analysis.timing.core.segmentstore.IAnalysisProgressListener;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.CallStackHostUtils.TraceHostIdResolver;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.CallStackSeries.IThreadIdResolver;
-import org.eclipse.tracecompass.internal.analysis.callstack.core.tree.IDataPalette;
+import org.eclipse.tracecompass.internal.analysis.callstack.core.base.EdgeStateValue;
+import org.eclipse.tracecompass.internal.analysis.callstack.core.base.IDataPalette;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.tree.IWeightedTreeGroupDescriptor;
 import org.eclipse.tracecompass.segmentstore.core.ISegment;
 import org.eclipse.tracecompass.segmentstore.core.ISegmentStore;

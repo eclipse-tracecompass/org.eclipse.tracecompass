@@ -16,6 +16,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.tracecompass.internal.analysis.callstack.core.base.ICallStackElement;
+import org.eclipse.tracecompass.internal.analysis.callstack.core.base.ICallStackSymbol;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.tree.IWeightedTreeSet;
 
 import com.google.common.collect.HashMultimap;

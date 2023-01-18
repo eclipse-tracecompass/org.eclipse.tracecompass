@@ -15,7 +15,10 @@ import java.util.Collection;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.tracecompass.internal.analysis.callstack.core.tree.IDataPalette;
+import org.eclipse.tracecompass.internal.analysis.callstack.core.base.FlameDefaultPalette;
+import org.eclipse.tracecompass.internal.analysis.callstack.core.base.ICallStackElement;
+import org.eclipse.tracecompass.internal.analysis.callstack.core.base.ICallStackSymbol;
+import org.eclipse.tracecompass.internal.analysis.callstack.core.base.IDataPalette;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.tree.IWeightedTreeGroupDescriptor;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.tree.IWeightedTreeProvider;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.tree.IWeightedTreeSet;

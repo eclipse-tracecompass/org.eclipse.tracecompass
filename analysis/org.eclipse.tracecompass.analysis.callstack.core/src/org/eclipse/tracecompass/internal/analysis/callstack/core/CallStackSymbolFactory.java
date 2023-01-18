@@ -13,6 +13,11 @@ package org.eclipse.tracecompass.internal.analysis.callstack.core;
 
 import java.util.regex.Pattern;
 
+import org.eclipse.tracecompass.internal.analysis.callstack.core.base.ICallStackElement;
+import org.eclipse.tracecompass.internal.analysis.callstack.core.base.ICallStackSymbol;
+import org.eclipse.tracecompass.internal.analysis.callstack.core.base.ResolvableSymbol;
+import org.eclipse.tracecompass.internal.analysis.callstack.core.base.StringSymbol;
+
 /**
  * A factory that creates the appropriate symbol for a given element
  *

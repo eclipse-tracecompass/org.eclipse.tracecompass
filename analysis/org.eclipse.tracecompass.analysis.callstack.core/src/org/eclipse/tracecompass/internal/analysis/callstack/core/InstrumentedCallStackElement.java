@@ -28,6 +28,7 @@ import org.eclipse.tracecompass.internal.analysis.callstack.core.CallStackHostUt
 import org.eclipse.tracecompass.internal.analysis.callstack.core.CallStackHostUtils.IHostIdResolver;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.CallStackSeries.IThreadIdProvider;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.CallStackSeries.IThreadIdResolver;
+import org.eclipse.tracecompass.internal.analysis.callstack.core.base.ICallStackElement;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.tree.IWeightedTreeGroupDescriptor;
 import org.eclipse.tracecompass.statesystem.core.ITmfStateSystem;
 import org.eclipse.tracecompass.statesystem.core.exceptions.StateSystemDisposedException;

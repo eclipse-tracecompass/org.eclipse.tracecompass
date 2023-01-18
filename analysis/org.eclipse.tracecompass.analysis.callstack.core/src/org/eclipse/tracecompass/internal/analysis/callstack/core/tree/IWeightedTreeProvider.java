@@ -26,6 +26,7 @@ import org.eclipse.tracecompass.common.core.format.DataSizeWithUnitFormat;
 import org.eclipse.tracecompass.common.core.format.DataSpeedWithUnitFormat;
 import org.eclipse.tracecompass.common.core.format.DecimalUnitFormat;
 import org.eclipse.tracecompass.common.core.format.SubSecondTimeWithUnitFormat;
+import org.eclipse.tracecompass.internal.analysis.callstack.core.base.IDataPalette;
 import org.eclipse.tracecompass.tmf.core.timestamp.ITmfTimestamp;
 
 /**
