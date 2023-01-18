@@ -9,7 +9,7 @@
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
 
-package org.eclipse.tracecompass.internal.analysis.callstack.core;
+package org.eclipse.tracecompass.internal.analysis.callstack.core.instrumented;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -24,6 +24,8 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.tracecompass.internal.analysis.callstack.core.CallStack;
+import org.eclipse.tracecompass.internal.analysis.callstack.core.CallStackElement;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.CallStackHostUtils.IHostIdProvider;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.CallStackHostUtils.IHostIdResolver;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.CallStackSeries.IThreadIdProvider;

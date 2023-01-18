@@ -16,6 +16,7 @@ import java.util.Objects;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.common.core.NonNullUtils;
+import org.eclipse.tracecompass.internal.analysis.callstack.core.instrumented.SymbolAspect;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.model.IHostModel;
 import org.eclipse.tracecompass.segmentstore.core.ISegment;
 import org.eclipse.tracecompass.segmentstore.core.SegmentComparators;

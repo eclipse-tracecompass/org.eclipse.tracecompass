@@ -9,12 +9,11 @@
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
 
-package org.eclipse.tracecompass.internal.analysis.callstack.core;
+package org.eclipse.tracecompass.internal.analysis.callstack.core.instrumented;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.tracecompass.internal.analysis.callstack.core.base.CallStackGroupDescriptor;
 import org.eclipse.tracecompass.statesystem.core.ITmfStateSystem;
 
 /**

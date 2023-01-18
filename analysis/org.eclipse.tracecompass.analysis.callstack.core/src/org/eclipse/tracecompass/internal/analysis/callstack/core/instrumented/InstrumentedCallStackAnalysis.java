@@ -8,7 +8,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
-package org.eclipse.tracecompass.internal.analysis.callstack.core;
+package org.eclipse.tracecompass.internal.analysis.callstack.core.instrumented;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -21,9 +21,14 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.analysis.profiling.core.callstack.CallStackStateProvider;
 import org.eclipse.tracecompass.analysis.timing.core.segmentstore.IAnalysisProgressListener;
+import org.eclipse.tracecompass.internal.analysis.callstack.core.AggregatedCallSite;
+import org.eclipse.tracecompass.internal.analysis.callstack.core.CallGraph;
+import org.eclipse.tracecompass.internal.analysis.callstack.core.CallGraphAnalysis;
+import org.eclipse.tracecompass.internal.analysis.callstack.core.CallStackHostUtils;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.CallStackHostUtils.TraceHostIdResolver;
+import org.eclipse.tracecompass.internal.analysis.callstack.core.CallStackSeries;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.CallStackSeries.IThreadIdResolver;
-import org.eclipse.tracecompass.internal.analysis.callstack.core.base.EdgeStateValue;
+import org.eclipse.tracecompass.internal.analysis.callstack.core.ICallGraphProvider;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.base.IDataPalette;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.tree.IWeightedTreeGroupDescriptor;
 import org.eclipse.tracecompass.segmentstore.core.ISegment;

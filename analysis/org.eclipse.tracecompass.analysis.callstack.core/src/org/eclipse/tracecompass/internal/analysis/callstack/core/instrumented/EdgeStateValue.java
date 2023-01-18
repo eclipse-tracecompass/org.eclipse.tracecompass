@@ -9,7 +9,7 @@
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
 
-package org.eclipse.tracecompass.internal.analysis.callstack.core.base;
+package org.eclipse.tracecompass.internal.analysis.callstack.core.instrumented;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Comparator;

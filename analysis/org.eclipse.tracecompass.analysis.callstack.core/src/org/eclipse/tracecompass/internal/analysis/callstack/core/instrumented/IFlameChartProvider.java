@@ -9,13 +9,17 @@
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
 
-package org.eclipse.tracecompass.internal.analysis.callstack.core;
+package org.eclipse.tracecompass.internal.analysis.callstack.core.instrumented;
 
 import java.util.Collection;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.analysis.timing.core.segmentstore.ISegmentStoreProvider;
+import org.eclipse.tracecompass.internal.analysis.callstack.core.CallStackDepth;
+import org.eclipse.tracecompass.internal.analysis.callstack.core.CallStackHostUtils;
+import org.eclipse.tracecompass.internal.analysis.callstack.core.CallStackSeries;
+import org.eclipse.tracecompass.internal.analysis.callstack.core.ICalledFunction;
 import org.eclipse.tracecompass.segmentstore.core.ISegment;
 import org.eclipse.tracecompass.tmf.core.analysis.IAnalysisModule;
 
