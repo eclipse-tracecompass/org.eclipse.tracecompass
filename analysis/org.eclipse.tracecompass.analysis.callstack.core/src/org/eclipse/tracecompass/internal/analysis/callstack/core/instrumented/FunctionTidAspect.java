@@ -15,7 +15,7 @@ import java.util.Comparator;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.analysis.os.linux.core.event.aspect.Messages;
-import org.eclipse.tracecompass.internal.analysis.callstack.core.ICalledFunction;
+import org.eclipse.tracecompass.internal.analysis.callstack.core.callgraph.ICalledFunction;
 import org.eclipse.tracecompass.segmentstore.core.ISegment;
 import org.eclipse.tracecompass.tmf.core.segment.ISegmentAspect;
 

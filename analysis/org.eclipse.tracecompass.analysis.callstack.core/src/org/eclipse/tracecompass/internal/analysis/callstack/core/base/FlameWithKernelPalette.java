@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.tracecompass.internal.analysis.callstack.core.AggregatedThreadStatus;
+import org.eclipse.tracecompass.internal.analysis.callstack.core.callgraph.AggregatedThreadStatus;
 import org.eclipse.tracecompass.internal.analysis.os.linux.core.kernel.StateValues;
 import org.eclipse.tracecompass.internal.analysis.os.linux.core.registry.LinuxStyle;
 import org.eclipse.tracecompass.tmf.core.model.OutputElementStyle;

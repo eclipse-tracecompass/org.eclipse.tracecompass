@@ -13,7 +13,7 @@ package org.eclipse.tracecompass.internal.analysis.callstack.core.model;
 
 import java.util.Collection;
 
-import org.eclipse.tracecompass.internal.analysis.callstack.core.AggregatedCallSite;
+import org.eclipse.tracecompass.internal.analysis.callstack.core.callgraph.AggregatedCallSite;
 
 /**
  * Interfaces that classes providing sampling data for threads can implement

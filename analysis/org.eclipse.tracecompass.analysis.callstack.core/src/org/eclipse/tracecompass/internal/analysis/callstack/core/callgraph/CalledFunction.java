@@ -9,26 +9,25 @@
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
 
-package org.eclipse.tracecompass.internal.analysis.callstack.core;
+package org.eclipse.tracecompass.internal.analysis.callstack.core.callgraph;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.model.IHostModel;
+import org.eclipse.tracecompass.segmentstore.core.ISegment;
 
 /**
- * Called Function with the symbol being a string, useful for name resolved
- * ICalledFunction
+ * A Call stack function represented as an {@link ISegment}. It's used to build
+ * a segments tree based on the state system. The parent represents the caller
+ * of the function, and the children list represents its callees.
  *
- * @author Matthew Khouzam
+ * @author Sonia Farrah
  */
-public class CalledStringFunction extends AbstractCalledFunction {
+public class CalledFunction extends AbstractCalledFunction {
 
-    /**
-     * Generated Serial ID
-     */
-    private static final long serialVersionUID = -5177382271002395020L;
+    private static final long serialVersionUID = -6903907365458616473L;
 
-    private final String fSymbol;
+    private final Long fSymbol;
 
     /**
      * Create a new segment.
@@ -44,19 +43,19 @@ public class CalledStringFunction extends AbstractCalledFunction {
      * @param processId
      *            The process ID of the traced application
      * @param threadId
-     *            the thread ID of the traced thread
+     *            The ID of the thread that was running this function
      * @param parent
      *            The caller, can be null for root elements
      * @param model
-     *            The model for the host the traced application is running on
+     *            The operating system model to provide CPU times
      */
-    protected CalledStringFunction(long start, long end, String symbol, int processId, int threadId, @Nullable ICalledFunction parent, IHostModel model) {
+    protected CalledFunction(long start, long end, long symbol, int processId, int threadId, @Nullable ICalledFunction parent, IHostModel model) {
         super(start, end, processId, threadId, parent, model);
         fSymbol = symbol;
     }
 
     @Override
-    public @NonNull String getSymbol() {
+    public @NonNull Long getSymbol() {
         return fSymbol;
     }
 }

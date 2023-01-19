@@ -24,6 +24,8 @@ import org.eclipse.tracecompass.analysis.os.linux.core.model.HostThread;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.CallStackHostUtils.IHostIdProvider;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.CallStackSeries.IThreadIdProvider;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.base.ICallStackElement;
+import org.eclipse.tracecompass.internal.analysis.callstack.core.callgraph.CalledFunctionFactory;
+import org.eclipse.tracecompass.internal.analysis.callstack.core.callgraph.ICalledFunction;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.model.IHostModel;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.model.ModelManager;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.model.ProcessStatusInterval;

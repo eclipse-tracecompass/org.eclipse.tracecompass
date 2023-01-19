@@ -15,7 +15,7 @@ import java.util.Collection;
 import java.util.EnumSet;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.tracecompass.internal.analysis.callstack.core.AggregatedCallSite;
+import org.eclipse.tracecompass.internal.analysis.callstack.core.callgraph.AggregatedCallSite;
 import org.eclipse.tracecompass.tmf.core.analysis.IAnalysisModule;
 
 /**

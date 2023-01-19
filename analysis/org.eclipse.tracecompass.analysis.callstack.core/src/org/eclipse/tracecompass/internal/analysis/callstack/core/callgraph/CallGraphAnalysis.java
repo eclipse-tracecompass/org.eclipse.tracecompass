@@ -9,7 +9,7 @@
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
 
-package org.eclipse.tracecompass.internal.analysis.callstack.core;
+package org.eclipse.tracecompass.internal.analysis.callstack.core.callgraph;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -23,6 +23,10 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.osgi.util.NLS;
+import org.eclipse.tracecompass.internal.analysis.callstack.core.Activator;
+import org.eclipse.tracecompass.internal.analysis.callstack.core.CallStack;
+import org.eclipse.tracecompass.internal.analysis.callstack.core.CallStackSeries;
+import org.eclipse.tracecompass.internal.analysis.callstack.core.CallStackSymbolFactory;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.base.FlameWithKernelPalette;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.base.ICallStackElement;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.base.ICallStackSymbol;

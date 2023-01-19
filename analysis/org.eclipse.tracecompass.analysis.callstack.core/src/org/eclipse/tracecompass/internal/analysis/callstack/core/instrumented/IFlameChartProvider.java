@@ -19,7 +19,7 @@ import org.eclipse.tracecompass.analysis.timing.core.segmentstore.ISegmentStoreP
 import org.eclipse.tracecompass.internal.analysis.callstack.core.CallStackDepth;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.CallStackHostUtils;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.CallStackSeries;
-import org.eclipse.tracecompass.internal.analysis.callstack.core.ICalledFunction;
+import org.eclipse.tracecompass.internal.analysis.callstack.core.callgraph.ICalledFunction;
 import org.eclipse.tracecompass.segmentstore.core.ISegment;
 import org.eclipse.tracecompass.tmf.core.analysis.IAnalysisModule;
 
