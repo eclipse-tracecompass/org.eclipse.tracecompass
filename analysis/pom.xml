@@ -29,6 +29,7 @@
   <modules>
     <module>org.eclipse.tracecompass.analysis.callstack.core</module>
     <module>org.eclipse.tracecompass.analysis.callstack.core.tests</module>
+    <module>org.eclipse.tracecompass.analysis.callstack.ui</module>
 
     <module>org.eclipse.tracecompass.analysis.counters.core</module>
     <module>org.eclipse.tracecompass.analysis.counters.core.tests</module>

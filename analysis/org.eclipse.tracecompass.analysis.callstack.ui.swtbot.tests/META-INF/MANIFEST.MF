@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: %Bundle-Name
+Bundle-Vendor: %Bundle-Vendor
+Bundle-SymbolicName: org.eclipse.tracecompass.analysis.callstack.ui.swtbot.tests;singleton:=true
+Bundle-Version: 0.1.0.qualifier
+Bundle-Localization: plugin
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Automatic-Module-Name: org.eclipse.tracecompass.analysis.callstack.ui.swtbot.tests
+Require-Bundle: org.eclipse.jdt.annotation;bundle-version="[2.0.0,3.0.0)";resolution:=optional
+Export-Package: org.eclipse.tracecompass.analysis.callstack.ui.swtbot.tests;x-internal:=true
