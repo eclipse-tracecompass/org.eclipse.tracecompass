@@ -18,7 +18,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.tracecompass.datastore.core,
  org.eclipse.tracecompass.segmentstore.core,
  org.eclipse.tracecompass.tmf.core
-Export-Package: org.eclipse.tracecompass.internal.analysis.callstack.core;x-friends:="org.eclipse.tracecompass.analysis.callstack.core.tests"
+Export-Package: org.eclipse.tracecompass.internal.analysis.callstack.core;x-friends:="org.eclipse.tracecompass.analysis.callstack.core.tests",
+ org.eclipse.tracecompass.internal.analysis.callstack.core.instrumented;x-friends:="org.eclipse.tracecompass.analysis.callstack.ui"
 Import-Package: com.google.common.annotations,
  com.google.common.base,
  com.google.common.cache,

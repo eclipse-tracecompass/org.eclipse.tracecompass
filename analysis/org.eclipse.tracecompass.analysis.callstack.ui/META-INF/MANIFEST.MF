@@ -9,7 +9,15 @@ Bundle-Activator: org.eclipse.tracecompass.internal.analysis.callstack.ui.Activa
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Automatic-Module-Name: org.eclipse.tracecompass.analysis.callstack.ui
-Require-Bundle: org.eclipse.core.runtime,
+Require-Bundle: org.eclipse.core.resources,
+ org.eclipse.core.runtime,
  org.eclipse.jdt.annotation;bundle-version="[2.0.0,3.0.0)";resolution:=optional,
+ org.eclipse.tracecompass.analysis.callstack.core,
+ org.eclipse.tracecompass.analysis.os.linux.core,
+ org.eclipse.tracecompass.analysis.os.linux.ui,
+ org.eclipse.tracecompass.analysis.timing.core,
+ org.eclipse.tracecompass.tmf.core,
+ org.eclipse.tracecompass.tmf.ui,
  org.eclipse.ui
 Export-Package: org.eclipse.tracecompass.internal.analysis.callstack.ui;x-internal:=true
+Import-Package: com.google.common.collect

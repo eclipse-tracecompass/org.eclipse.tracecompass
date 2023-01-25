@@ -1,7 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
-   <!-- TODO extension
+   <extension
+         point="org.eclipse.linuxtools.tmf.core.analysis">
+      <listener
+            class="org.eclipse.tracecompass.internal.analysis.callstack.ui.CallStackAnalysisListener">
+      </listener>
+   </extension>
+   <extension
          point="org.eclipse.ui.views">
-   </extension -->
+      <view
+            category="org.eclipse.linuxtools.tmf.ui.views.category"
+            allowMultiple="true"
+            class="org.eclipse.tracecompass.internal.analysis.callstack.ui.FlameChartView"
+            icon="icons/obj16/stckframe_obj.gif"
+            id="org.eclipse.tracecompass.analysis.callstack.ui.flamechart"
+            name="%view.flameChart"
+            restorable="true">
+      </view>
+   </extension>
 </plugin>
