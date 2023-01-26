@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
-   <!-- TODO extension
+   <extension
          point="org.eclipse.tracecompass.tmf.core.dataprovider">
-   </extension -->
+      <dataProviderFactory
+            class="org.eclipse.tracecompass.internal.analysis.callstack.core.instrumented.FlameChartDataProviderFactory"
+            id="org.eclipse.tracecompass.analysis.callstack.core.flamechart">
+      </dataProviderFactory>
+   </extension>
 </plugin>
