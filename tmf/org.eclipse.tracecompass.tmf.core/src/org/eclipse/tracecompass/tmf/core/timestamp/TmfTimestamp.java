@@ -358,6 +358,40 @@ public abstract class TmfTimestamp implements ITmfTimestamp {
 
     @Override
     public ITmfTimestamp getDelta(final ITmfTimestamp ts) {
+        /**
+         * Some of the special instances of TmfTimestamp have a special meaning,
+         * so the delta between them and other values can be defined as:
+         *
+         * <pre>
+         * BIG_BANG   - BIG_BANG   == ZERO
+         * BIG_CRUNCH - BIG_CRUNCH == ZERO
+         *
+         * BIG_BANG   - <anything other than BIG_BANG>   == BIG_BANG
+         * BIG_CRUNCH - <anything other than BIG_CRUNCH> == BIG_CRUNCH
+         *
+         * <anything other than BIG_BANG> - BIG_BANG     == BIG_CRUNCH
+         * <anything other than BIG_CRUNCH> - BIG_CRUNCH == BIG_BANG
+         * </pre>
+         */
+        if (equals(BIG_BANG)) {
+            if (ts.equals(BIG_BANG)) {
+                return ZERO;
+            }
+            return BIG_BANG;
+        }
+        if (equals(BIG_CRUNCH)) {
+            if (ts.equals(BIG_CRUNCH)) {
+                return ZERO;
+            }
+            return BIG_CRUNCH;
+        }
+        if (ts.equals(BIG_BANG)) {
+            return BIG_CRUNCH;
+        }
+        if (ts.equals(BIG_CRUNCH)) {
+            return BIG_BANG;
+        }
+
         final int scale = getScale();
         final ITmfTimestamp nts = ts.normalize(0, scale);
         final long value = getValue() - nts.getValue();

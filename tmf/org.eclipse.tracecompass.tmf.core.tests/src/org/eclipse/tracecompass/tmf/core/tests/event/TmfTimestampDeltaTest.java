@@ -117,4 +117,12 @@ public class TmfTimestampDeltaTest {
         assertEquals("toString", "06:55:00.000 000 000", ts3.toString(format));
         assertEquals("toString", "-00:00:00.123 450 000", ts4.toString(format));
     }
+
+    @Test
+    public void testToStringBigBangBigCrunch() {
+        ITmfTimestamp bang = new TmfTimestampDelta(TmfTimestamp.BIG_BANG);
+        ITmfTimestamp crunch = new TmfTimestampDelta(TmfTimestamp.BIG_CRUNCH);
+        assertEquals("toString", "-9223372036.854 775 808", bang.toString());
+        assertEquals("toString", "9223372036.854 775 807", crunch.toString());
+    }
 }

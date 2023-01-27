@@ -101,7 +101,7 @@ public class TmfTimestampDelta extends TmfTimestamp {
 
     @Override
     public String toString(TmfTimestampFormat format) {
-        if (getValue() < 0) {
+        if (getValue() < 0 && !equals(BIG_BANG)) {
             TmfTimestampDelta tmpTs = new TmfTimestampDelta(-getValue(), getScale());
             return "-" + tmpTs.toString(format); //$NON-NLS-1$
         }

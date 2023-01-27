@@ -234,6 +234,14 @@ public class TmfTimestampTest {
         assertEquals("toString", "-000.000 012 345", ts9.toString(TmfTimestampFormat.getDefaulIntervalFormat()));
     }
 
+    @Test
+    public void testToStringBigBangBigCrunch() {
+        ITmfTimestamp bang = TmfTimestamp.BIG_BANG;
+        ITmfTimestamp crunch = TmfTimestamp.BIG_CRUNCH;
+        assertEquals("toString", "-9223372036.854 775 808", bang.toString(TmfTimestampFormat.getDefaulIntervalFormat()));
+        assertEquals("toString", "9223372036.854 775 807", crunch.toString(TmfTimestampFormat.getDefaulIntervalFormat()));
+    }
+
     // ------------------------------------------------------------------------
     // normalize
     // ------------------------------------------------------------------------
@@ -694,6 +702,25 @@ public class TmfTimestampTest {
         exp = TmfTimestamp.create(4, 9);
         delta = t0.getDelta(t1);
         assertEquals("getDelta", 0, delta.compareTo(exp));
+
+        // Delta for BIG_CRUNCH and BIG_BANG
+        ITmfTimestamp bang = TmfTimestamp.BIG_BANG;
+        ITmfTimestamp crunch = TmfTimestamp.BIG_CRUNCH;
+        ITmfTimestamp zero = TmfTimestamp.ZERO;
+        ITmfTimestamp anyT = TmfTimestamp.create(1, 10);
+        ITmfTimestamp anyTN = TmfTimestamp.create(-2, 10);
+        assertEquals(bang.getDelta(bang), zero);
+        assertEquals(crunch.getDelta(crunch), zero);
+        assertEquals(crunch.getDelta(bang), crunch);
+        assertEquals(bang.getDelta(crunch), bang);
+        assertEquals(bang.getDelta(anyT), bang);
+        assertEquals(crunch.getDelta(anyT), crunch);
+        assertEquals(bang.getDelta(anyTN), bang);
+        assertEquals(crunch.getDelta(anyTN), crunch);
+        assertEquals(anyT.getDelta(bang), crunch);
+        assertEquals(anyT.getDelta(crunch), bang);
+        assertEquals(anyTN.getDelta(bang), crunch);
+        assertEquals(anyTN.getDelta(crunch), bang);
     }
 
 }
