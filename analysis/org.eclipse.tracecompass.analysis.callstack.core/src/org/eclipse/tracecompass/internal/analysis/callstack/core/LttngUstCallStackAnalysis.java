@@ -73,7 +73,9 @@ public class LttngUstCallStackAnalysis extends InstrumentedCallStackAnalysis {
             return Collections.emptyList();
         }
         IHostModel modelFor = ModelManager.getModelFor(trace.getHostId());
-        return modelFor.getRequiredModules(Objects.requireNonNull(EnumSet.of(ModelDataType.TID, ModelDataType.PID)));
+        EnumSet<ModelDataType> ids = EnumSet.of(ModelDataType.TID, ModelDataType.PID);
+        EnumSet<ModelDataType> checked = Objects.requireNonNull(ids);
+        return modelFor.getRequiredModules(checked);
     }
 
     @Override
