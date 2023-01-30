@@ -8,6 +8,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
+
 package org.eclipse.tracecompass.internal.analysis.callstack.core.instrumented;
 
 import java.util.ArrayList;
@@ -30,6 +31,7 @@ import org.eclipse.tracecompass.internal.analysis.callstack.core.callgraph.Aggre
 import org.eclipse.tracecompass.internal.analysis.callstack.core.callgraph.CallGraph;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.callgraph.CallGraphAnalysis;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.callgraph.ICallGraphProvider;
+import org.eclipse.tracecompass.internal.analysis.callstack.core.model.ModelManager;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.tree.IWeightedTreeGroupDescriptor;
 import org.eclipse.tracecompass.segmentstore.core.ISegment;
 import org.eclipse.tracecompass.segmentstore.core.ISegmentStore;
@@ -249,6 +251,7 @@ public abstract class InstrumentedCallStackAnalysis extends TmfStateSystemAnalys
     public void dispose() {
         super.dispose();
         fCallGraph.dispose();
+        ModelManager.disposeModels();
     }
 
     @Override
