@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
-   <!-- TODO extension
+   <extension
          point="org.eclipse.linuxtools.tmf.core.analysis">
-   </extension -->
+      <module
+            analysis_module="org.eclipse.tracecompass.analysis.callstack.core.tests.stubs.CallStackAnalysisStub"
+            id="org.eclipse.tracecompass.analysis.callstack.core.tests.stub"
+            name="Test Callstack (new)">
+         <tracetype
+               class="org.eclipse.tracecompass.tmf.tests.stubs.trace.xml.TmfXmlTraceStub">
+         </tracetype>
+      </module>
+   </extension>
 </plugin>
