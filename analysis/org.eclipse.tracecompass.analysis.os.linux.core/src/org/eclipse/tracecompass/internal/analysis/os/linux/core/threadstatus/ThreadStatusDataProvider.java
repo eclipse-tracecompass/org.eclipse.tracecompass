@@ -32,7 +32,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.analysis.os.linux.core.event.aspect.LinuxTidAspect;
-import org.eclipse.tracecompass.analysis.os.linux.core.kernel.KernelAnalysisModule;
 import org.eclipse.tracecompass.analysis.os.linux.core.model.OsStrings;
 import org.eclipse.tracecompass.analysis.os.linux.core.model.ProcessStatus;
 import org.eclipse.tracecompass.analysis.os.linux.core.trace.IKernelTrace;
@@ -79,6 +78,7 @@ import org.eclipse.tracecompass.tmf.core.model.timegraph.TimeGraphState;
 import org.eclipse.tracecompass.tmf.core.model.tree.TmfTreeModel;
 import org.eclipse.tracecompass.tmf.core.response.ITmfResponse;
 import org.eclipse.tracecompass.tmf.core.response.TmfModelResponse;
+import org.eclipse.tracecompass.tmf.core.statesystem.TmfStateSystemAnalysisModule;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
 import org.eclipse.tracecompass.tmf.core.trace.TmfTraceUtils;
 import org.eclipse.tracecompass.tmf.core.util.Pair;
@@ -146,7 +146,7 @@ public class ThreadStatusDataProvider extends AbstractTmfTraceDataProvider imple
         STATE_MAP = builder.build();
     }
 
-    private final KernelAnalysisModule fModule;
+    private final TmfStateSystemAnalysisModule fModule;
     private final long fTraceId = fAtomicLong.getAndIncrement();
 
     /**
@@ -186,11 +186,11 @@ public class ThreadStatusDataProvider extends AbstractTmfTraceDataProvider imple
      * @param trace
      *            The trace for which this provider will be built.
      * @param module
-     *            the {@link KernelAnalysisModule} to access the underlying
+     *            the {@link TmfStateSystemAnalysisModule} to access the underlying
      *            {@link ITmfStateSystem}
      *
      */
-    public ThreadStatusDataProvider(@NonNull ITmfTrace trace, KernelAnalysisModule module) {
+    public ThreadStatusDataProvider(@NonNull ITmfTrace trace, TmfStateSystemAnalysisModule module) {
         super(trace);
         fModule = module;
         fEventAnnotationProvider = new EventAnnotationProvider<>(OsStrings.tid(), (unused -> true), (candidate) -> !(candidate instanceof IKernelTrace) && trace != candidate, LinuxTidAspect.class, trace,

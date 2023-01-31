@@ -46,6 +46,7 @@ import org.eclipse.tracecompass.tmf.core.model.tree.TmfTreeModel;
 import org.eclipse.tracecompass.tmf.core.response.ITmfResponse;
 import org.eclipse.tracecompass.tmf.core.response.TmfModelResponse;
 import org.eclipse.tracecompass.tmf.core.signal.TmfTraceOpenedSignal;
+import org.eclipse.tracecompass.tmf.core.statesystem.TmfStateSystemAnalysisModule;
 import org.eclipse.tracecompass.tmf.core.trace.TmfTraceUtils;
 import org.junit.Test;
 
@@ -75,7 +76,7 @@ public class ThreadStatusDataProviderTest {
             trace.initTrace(null, filePath.toOSString(), TmfEvent.class);
             trace.traceOpened(new TmfTraceOpenedSignal(this, trace, null));
 
-            KernelAnalysisModule module = TmfTraceUtils.getAnalysisModuleOfClass(trace, KernelAnalysisModule.class, KernelAnalysisModule.ID);
+            TmfStateSystemAnalysisModule module = TmfTraceUtils.getAnalysisModuleOfClass(trace, TmfStateSystemAnalysisModule.class, KernelAnalysisModule.ID);
             assertNotNull(module);
             assertTrue(module.schedule().isOK());
             assertTrue(module.waitForCompletion());
