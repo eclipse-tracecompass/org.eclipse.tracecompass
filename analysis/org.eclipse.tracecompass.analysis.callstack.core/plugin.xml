@@ -15,6 +15,10 @@
    <extension
          point="org.eclipse.tracecompass.tmf.core.dataprovider">
       <dataProviderFactory
+            class="org.eclipse.tracecompass.internal.analysis.callstack.core.flamegraph.FlameGraphDataProviderFactory"
+            id="org.eclipse.tracecompass.analysis.callstack.core.flamegraph">
+      </dataProviderFactory>
+      <dataProviderFactory
             class="org.eclipse.tracecompass.internal.analysis.callstack.core.instrumented.FlameChartDataProviderFactory"
             id="org.eclipse.tracecompass.analysis.callstack.core.flamechart">
       </dataProviderFactory>
