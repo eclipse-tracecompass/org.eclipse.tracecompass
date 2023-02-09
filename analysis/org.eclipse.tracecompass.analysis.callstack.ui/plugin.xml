@@ -18,5 +18,21 @@
             name="%view.flameChart"
             restorable="true">
       </view>
+      <view
+            category="org.eclipse.linuxtools.tmf.ui.views.category"
+            class="org.eclipse.tracecompass.internal.analysis.callstack.ui.flamegraph.FlameGraphView"
+            icon="icons/elcl16/flame.png"
+            id="org.eclipse.tracecompass.analysis.callstack.ui.flamegraph"
+            name="%view.flameGraph"
+            restorable="true">
+      </view>
+      <view
+            category="org.eclipse.linuxtools.tmf.ui.views.category"
+            class="org.eclipse.tracecompass.internal.analysis.callstack.ui.flamegraph.FlameGraphSelView"
+            icon="icons/elcl16/flame.png"
+            id="org.eclipse.tracecompass.analysis.callstack.ui.flamegraph.selection"
+            name="%view.flameGraphSel"
+            restorable="true">
+      </view>
    </extension>
 </plugin>

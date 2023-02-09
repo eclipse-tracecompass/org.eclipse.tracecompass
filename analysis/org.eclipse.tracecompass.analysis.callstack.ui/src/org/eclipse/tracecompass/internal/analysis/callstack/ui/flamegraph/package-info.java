@@ -9,4 +9,4 @@
  *******************************************************************************/
 
 @org.eclipse.jdt.annotation.NonNullByDefault
-package org.eclipse.tracecompass.analysis.callstack.ui.swtbot.tests;
+package org.eclipse.tracecompass.internal.analysis.callstack.ui.flamegraph;

@@ -8,6 +8,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
+
 package org.eclipse.tracecompass.internal.analysis.profiling.ui.flamegraph;
 
 /**
@@ -15,16 +16,21 @@ package org.eclipse.tracecompass.internal.analysis.profiling.ui.flamegraph;
  *
  * @author Bernd Hufmann
  */
-enum SortOption {
-    /** Sort by thread name*/
+public enum SortOption {
+    /** Sort by thread name */
     BY_NAME,
     /** Sort by thread name reverse */
     BY_NAME_REV,
     /** Sort by thread ID */
     BY_ID,
-    /** Sort by thread ID reverse*/
+    /** Sort by thread ID reverse */
     BY_ID_REV;
 
+    /**
+     * @param name
+     *            The name
+     * @return The enum value from that name
+     */
     public static SortOption fromName(String name) {
         if (name.equals(SortOption.BY_NAME.name())) {
             return SortOption.BY_NAME;

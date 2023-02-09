@@ -27,7 +27,7 @@ Export-Package: org.eclipse.tracecompass.analysis.profiling.ui.views.flamechart,
  org.eclipse.tracecompass.internal.analysis.profiling.ui;x-internal:=true,
  org.eclipse.tracecompass.internal.analysis.profiling.ui.callgraph;x-friends:="org.eclipse.tracecompass.analysis.profiling.ui.swtbot.tests",
  org.eclipse.tracecompass.internal.analysis.profiling.ui.callgraph.statistics;x-friends:="org.eclipse.tracecompass.analysis.profiling.ui.swtbot.tests",
- org.eclipse.tracecompass.internal.analysis.profiling.ui.flamegraph;x-friends:="org.eclipse.tracecompass.analysis.profiling.ui.swtbot.tests",
+ org.eclipse.tracecompass.internal.analysis.profiling.ui.flamegraph;x-friends:="org.eclipse.tracecompass.analysis.profiling.ui.swtbot.tests,org.eclipse.tracecompass.analysis.callstack.ui",
  org.eclipse.tracecompass.internal.analysis.profiling.ui.symbols;x-friends:="org.eclipse.tracecompass.analysis.profiling.ui.tests",
  org.eclipse.tracecompass.internal.analysis.profiling.ui.views.flamechart;x-internal:=true
 Import-Package: com.google.common.annotations,

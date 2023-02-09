@@ -23,11 +23,11 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.tracecompass.tmf.ctf.core
 Export-Package: org.eclipse.tracecompass.internal.analysis.callstack.core;x-friends:="org.eclipse.tracecompass.analysis.callstack.core.tests",
  org.eclipse.tracecompass.internal.analysis.callstack.core.base;x-friends:="org.eclipse.tracecompass.analysis.callstack.core.tests",
- org.eclipse.tracecompass.internal.analysis.callstack.core.callgraph;x-friends:="org.eclipse.tracecompass.analysis.callstack.core.tests",
- org.eclipse.tracecompass.internal.analysis.callstack.core.flamegraph;x-friends:="org.eclipse.tracecompass.analysis.callstack.core.tests",
+ org.eclipse.tracecompass.internal.analysis.callstack.core.callgraph;x-friends:="org.eclipse.tracecompass.analysis.callstack.core.tests,org.eclipse.tracecompass.analysis.callstack.ui",
+ org.eclipse.tracecompass.internal.analysis.callstack.core.flamegraph;x-friends:="org.eclipse.tracecompass.analysis.callstack.core.tests,org.eclipse.tracecompass.analysis.callstack.ui,org.eclipse.tracecompass.analysis.callstack.ui.swtbot.tests",
  org.eclipse.tracecompass.internal.analysis.callstack.core.instrumented;x-friends:="org.eclipse.tracecompass.analysis.callstack.core.tests,org.eclipse.tracecompass.analysis.callstack.ui",
  org.eclipse.tracecompass.internal.analysis.callstack.core.model;x-friends:="org.eclipse.tracecompass.analysis.callstack.core.tests",
- org.eclipse.tracecompass.internal.analysis.callstack.core.tree;x-friends:="org.eclipse.tracecompass.analysis.callstack.core.tests"
+ org.eclipse.tracecompass.internal.analysis.callstack.core.tree;x-friends:="org.eclipse.tracecompass.analysis.callstack.core.tests,org.eclipse.tracecompass.analysis.callstack.ui"
 Import-Package: com.google.common.annotations,
  com.google.common.base,
  com.google.common.cache,

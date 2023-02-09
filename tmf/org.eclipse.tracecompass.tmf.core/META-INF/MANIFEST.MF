@@ -24,6 +24,7 @@ Export-Package: org.eclipse.tracecompass.internal.provisional.tmf.core.model,
  org.eclipse.tracecompass.internal.provisional.tmf.core.model.filters;
   x-friends:="org.eclipse.tracecompass.tmf.core.tests,
    org.eclipse.tracecompass.tmf.ui,
+   org.eclipse.tracecompass.analysis.callstack.ui,
    org.eclipse.tracecompass.analysis.timing.core,
    org.eclipse.tracecompass.analysis.timing.core.tests",
  org.eclipse.tracecompass.internal.provisional.tmf.core.model.table;x-friends:="org.eclipse.tracecompass.tmf.core.tests,org.eclipse.tracecompass.analysis.timing.core,org.eclipse.tracecompass.analysis.timing.core.tests",
