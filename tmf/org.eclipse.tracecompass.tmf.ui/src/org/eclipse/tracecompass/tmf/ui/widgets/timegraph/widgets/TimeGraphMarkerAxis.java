@@ -179,34 +179,46 @@ public class TimeGraphMarkerAxis extends TimeGraphBaseControl {
             return;
         }
         IMarkerEvent marker = getMarkerForEvent(e);
-        if (marker != null) {
-            if ((e.stateMask & SWT.MODIFIER_MASK) == SWT.SHIFT) {
-                /* Extend current selection */
-                long selectionBegin = fTimeProvider.getSelectionBegin();
-                long selectionEnd = fTimeProvider.getSelectionEnd();
-                long markerBegin = marker.getTime();
-                long markerEnd = marker.getTime() + marker.getDuration();
-                /* If marker end is outside selection, extend closest boundary */
-                if (((markerEnd - selectionBegin) > 0) == ((markerEnd - selectionEnd) > 0)) {
-                    if (Math.abs(markerEnd - selectionBegin) < Math.abs(markerEnd - selectionEnd)) {
-                        selectionBegin = markerEnd;
-                    } else {
-                        selectionEnd = markerEnd;
+        if (e.button == 1) {
+            if (marker != null) {
+                if ((e.stateMask & SWT.MODIFIER_MASK) == SWT.SHIFT) {
+                    /* Extend current selection */
+                    long selectionBegin = fTimeProvider.getSelectionBegin();
+                    long selectionEnd = fTimeProvider.getSelectionEnd();
+                    long markerBegin = marker.getTime();
+                    long markerEnd = marker.getTime() + marker.getDuration();
+                    /*
+                     * If marker end is outside selection, extend closest
+                     * boundary
+                     */
+                    if (((markerEnd - selectionBegin) > 0) == ((markerEnd - selectionEnd) > 0)) {
+                        if (Math.abs(markerEnd - selectionBegin) < Math.abs(markerEnd - selectionEnd)) {
+                            selectionBegin = markerEnd;
+                        } else {
+                            selectionEnd = markerEnd;
+                        }
                     }
-                }
-                /* If marker begin is outside selection, extend closest boundary */
-                if (((markerBegin - selectionBegin) > 0) == ((markerBegin - selectionEnd) > 0)) {
-                    if (Math.abs(markerBegin - selectionBegin) < Math.abs(markerBegin - selectionEnd)) {
-                        selectionBegin = markerBegin;
-                    } else {
-                        selectionEnd = markerBegin;
+                    /*
+                     * If marker begin is outside selection, extend closest
+                     * boundary
+                     */
+                    if (((markerBegin - selectionBegin) > 0) == ((markerBegin - selectionEnd) > 0)) {
+                        if (Math.abs(markerBegin - selectionBegin) < Math.abs(markerBegin - selectionEnd)) {
+                            selectionBegin = markerBegin;
+                        } else {
+                            selectionEnd = markerBegin;
+                        }
                     }
+                    fTimeProvider.setSelectionRangeNotify(selectionBegin, selectionEnd, false);
+                } else {
+                    /* Replace current selection */
+                    fTimeProvider.setSelectionRangeNotify(marker.getTime(), marker.getTime() + marker.getDuration(), false);
                 }
-                fTimeProvider.setSelectionRangeNotify(selectionBegin, selectionEnd, false);
-            } else {
-                /* Replace current selection */
-                fTimeProvider.setSelectionRangeNotify(marker.getTime(), marker.getTime() + marker.getDuration(), false);
             }
+        } else if (e.button == 3) {
+            long markerBegin = marker.getTime();
+            long markerEnd = marker.getTime() + marker.getDuration();
+            fTimeProvider.setStartFinishTimeNotify(markerBegin, markerEnd);
         }
     }
 
