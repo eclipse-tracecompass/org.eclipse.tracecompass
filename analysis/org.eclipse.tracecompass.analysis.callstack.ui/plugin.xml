@@ -34,5 +34,14 @@
             name="%view.flameGraphSel"
             restorable="true">
       </view>
+      <view
+            allowMultiple="false"
+            category="org.eclipse.linuxtools.tmf.ui.views.category"
+            class="org.eclipse.tracecompass.internal.analysis.callstack.ui.functiondensity.FunctionDensityView"
+            icon="icons/elcl16/funcdensity.png"
+            id="org.eclipse.tracecompass.analysis.callstack.ui.functiondensity"
+            name="%view.functionDensity"
+            restorable="true">
+      </view>
    </extension>
 </plugin>
