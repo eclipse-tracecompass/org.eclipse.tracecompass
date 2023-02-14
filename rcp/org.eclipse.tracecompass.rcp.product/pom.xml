@@ -246,8 +246,8 @@
                   <configuration>
                     <baseSearchDir>${project.build.directory}/products/${productId}</baseSearchDir>
                     <fileNames>
-                      <fileName>trace-compass.exe</fileName>
-                      <fileName>eclipsec.exe</fileName>
+                      <fileName>tracecompass.exe</fileName>
+                      <fileName>tracecompassc.exe</fileName>
                     </fileNames>
                   <timeoutMillis>120000</timeoutMillis> <!-- 2 min -->
                   </configuration>
