@@ -17,6 +17,7 @@ import org.eclipse.tracecompass.internal.analysis.callstack.core.tree.IWeightedT
 import org.eclipse.tracecompass.internal.analysis.callstack.ui.flamegraph.FlameGraphSelView;
 import org.eclipse.tracecompass.internal.analysis.callstack.ui.flamegraph.FlameGraphView;
 import org.eclipse.tracecompass.internal.analysis.callstack.ui.functiondensity.FunctionDensityView;
+import org.eclipse.tracecompass.internal.analysis.callstack.ui.weightedtree.WeightedTreeView;
 import org.eclipse.tracecompass.tmf.core.analysis.IAnalysisModule;
 import org.eclipse.tracecompass.tmf.core.analysis.ITmfNewAnalysisModuleListener;
 import org.eclipse.tracecompass.tmf.ui.analysis.TmfAnalysisViewOutput;
@@ -39,6 +40,7 @@ public class CallStackAnalysisListener implements ITmfNewAnalysisModuleListener 
         if (module instanceof IWeightedTreeProvider) {
             module.registerOutput(new TmfAnalysisViewOutput(FlameGraphView.ID, module.getId()));
             module.registerOutput(new TmfAnalysisViewOutput(FlameGraphSelView.SEL_ID, module.getId()));
+            module.registerOutput(new TmfAnalysisViewOutput(WeightedTreeView.ID, module.getId()));
         }
     }
 }

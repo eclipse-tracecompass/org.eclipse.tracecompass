@@ -3,6 +3,9 @@
 <plugin>
    <extension
          point="org.eclipse.linuxtools.tmf.core.analysis">
+      <listener
+            class="org.eclipse.tracecompass.internal.analysis.callstack.core.model.ModelListener">
+      </listener>
       <module
             analysis_module="org.eclipse.tracecompass.internal.analysis.callstack.core.LttngUstCallStackAnalysis"
             id="org.eclipse.tracecompass.analysis.callstack.core.analysis"

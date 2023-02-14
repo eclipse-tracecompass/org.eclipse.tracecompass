@@ -43,5 +43,14 @@
             name="%view.functionDensity"
             restorable="true">
       </view>
+      <view
+            category="org.eclipse.linuxtools.tmf.ui.views.category"
+            allowMultiple="true"
+            class="org.eclipse.tracecompass.internal.analysis.callstack.ui.weightedtree.WeightedTreeView"
+            icon="icons/obj16/stckframe_obj.gif"
+            id="org.eclipse.tracecompass.analysis.callstack.ui.weightedtree"
+            name="%view.weighted"
+            restorable="true">
+      </view>
    </extension>
 </plugin>

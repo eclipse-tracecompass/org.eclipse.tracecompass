@@ -84,7 +84,7 @@ Export-Package: org.eclipse.tracecompass.internal.provisional.tmf.ui.model;x-int
    org.eclipse.tracecompass.lttng2.kernel.ui",
  org.eclipse.tracecompass.internal.tmf.ui.views.timegraph;x-internal:=true,
  org.eclipse.tracecompass.internal.tmf.ui.views.xychart;x-internal:=true,
- org.eclipse.tracecompass.internal.tmf.ui.widgets.piechart;x-internal:=true,
+ org.eclipse.tracecompass.internal.tmf.ui.widgets.piechart;x-friends:="org.eclipse.tracecompass.analysis.callstack.ui",
  org.eclipse.tracecompass.internal.tmf.ui.widgets.timegraph;x-internal:=true,
  org.eclipse.tracecompass.internal.tmf.ui.widgets.timegraph.model;x-internal:=true,
  org.eclipse.tracecompass.tmf.ui,

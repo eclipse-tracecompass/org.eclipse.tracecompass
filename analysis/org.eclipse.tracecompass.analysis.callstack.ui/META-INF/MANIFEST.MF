@@ -27,4 +27,5 @@ Export-Package: org.eclipse.tracecompass.internal.analysis.callstack.ui;x-intern
  org.eclipse.tracecompass.internal.analysis.callstack.ui.flamegraph;x-friends:="org.eclipse.tracecompass.analysis.callstack.ui.swtbot.tests"
 Import-Package: com.google.common.annotations,
  com.google.common.base,
- com.google.common.collect
+ com.google.common.collect,
+ org.apache.commons.lang3
