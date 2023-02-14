@@ -12,6 +12,7 @@
 package org.eclipse.tracecompass.internal.analysis.callstack.ui;
 
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.tracecompass.analysis.timing.ui.views.segmentstore.statistics.SegmentStoreStatisticsView;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.instrumented.IFlameChartProvider;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.tree.IWeightedTreeProvider;
 import org.eclipse.tracecompass.internal.analysis.callstack.ui.flamegraph.FlameGraphSelView;
@@ -36,6 +37,7 @@ public class CallStackAnalysisListener implements ITmfNewAnalysisModuleListener 
         if (module instanceof IFlameChartProvider) {
             module.registerOutput(new TmfAnalysisViewOutput(FlameChartView.ID, module.getId()));
             module.registerOutput(new TmfAnalysisViewOutput(FunctionDensityView.ID, module.getId()));
+            module.registerOutput(new TmfAnalysisViewOutput(SegmentStoreStatisticsView.ID, module.getId()));
         }
         if (module instanceof IWeightedTreeProvider) {
             module.registerOutput(new TmfAnalysisViewOutput(FlameGraphView.ID, module.getId()));
