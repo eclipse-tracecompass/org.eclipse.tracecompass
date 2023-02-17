@@ -1,5 +1,5 @@
 /**********************************************************************
- * Copyright (c) 2020 École Polytechnique de Montréal
+ * Copyright (c) 2020, 2023 École Polytechnique de Montréal and others
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -37,6 +37,11 @@ public enum DataType {
     /**
      * Data is textual data
      */
-    STRING;
-
+    STRING,
+    /**
+     * Data representing a time range of string: [start,end],
+     * where `start` and `end` are timestamps in nanoseconds
+     * @since 8.3
+     */
+    TIME_RANGE;
 }

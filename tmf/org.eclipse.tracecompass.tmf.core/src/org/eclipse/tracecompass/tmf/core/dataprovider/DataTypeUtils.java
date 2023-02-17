@@ -1,5 +1,5 @@
 /**********************************************************************
- * Copyright (c) 2020 École Polytechnique de Montréal
+ * Copyright (c) 2020, 2023 École Polytechnique de Montréal and others
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -96,10 +96,25 @@ public final class DataTypeUtils {
             return SubSecondTimeWithUnitFormat.getInstance();
         case STRING:
             return OTHER_FORMAT;
+        case TIME_RANGE:
+            return OTHER_FORMAT;
         default:
             // Return the default format
             return OTHER_FORMAT;
         }
     }
 
+    /**
+     * Converts a time range (start, end) in a DataType string.
+     *
+     * @param start
+     *            The start time
+     * @param end
+     *            The end time
+     * @return A standard Time Range string
+     * @since 8.3
+     */
+    public static String toRangeString(long start, long end) {
+        return "[" + start + "," + end + "]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    }
 }
