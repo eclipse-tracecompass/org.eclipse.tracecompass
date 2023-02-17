@@ -15,8 +15,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.TableColumnDescriptor;
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.TableColumnDescriptor.Builder;
+import org.eclipse.tracecompass.tmf.core.dataprovider.DataType;
 import org.eclipse.tracecompass.tmf.core.model.ITableColumnDescriptor;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,6 +37,7 @@ public class TableColumnDescriptorTest {
 
     private static final String COLUMN_TEXT0 = "Name";
     private static final String COLUMN_TOOLTIP0 = "Tooltip";
+    private static final @NonNull DataType DATA_TYPE1 = DataType.TIME_RANGE;
 
     private ITableColumnDescriptor fModel0;
     private ITableColumnDescriptor fModel1;
@@ -83,7 +86,13 @@ public class TableColumnDescriptorTest {
         ITableColumnDescriptor desc = builder.setText(COLUMN_TEXT0)
                 .setTooltip(COLUMN_TOOLTIP0)
                 .build();
-        assertEquals(TO_STRING, "[text=Name tooltip=Tooltip]", desc.toString());
+        assertEquals(TO_STRING, "[text=Name tooltip=Tooltip dataType=STRING]", desc.toString());
+        builder = new TableColumnDescriptor.Builder();
+        desc = builder.setText(COLUMN_TEXT0)
+                .setTooltip(COLUMN_TOOLTIP0)
+                .setDataType(DATA_TYPE1)
+                .build();
+        assertEquals(TO_STRING, "[text=Name tooltip=Tooltip dataType=TIME_RANGE]", desc.toString());
     }
 
     // ------------------------------------------------------------------------
@@ -166,6 +175,10 @@ public class TableColumnDescriptorTest {
 
     private static TableColumnDescriptor createDescriptor(int i) {
         TableColumnDescriptor.Builder builder = new TableColumnDescriptor.Builder();
-        return builder.setText(COLUMN_TEXT0 + String.valueOf(i)).setTooltip(COLUMN_TOOLTIP0 + String.valueOf(i)).build();
+        builder.setText(COLUMN_TEXT0 + String.valueOf(i)).setTooltip(COLUMN_TOOLTIP0 + String.valueOf(i));
+        if (i == 1) {
+            builder.setDataType(DATA_TYPE1);
+        }
+        return builder.build();
     }
 }

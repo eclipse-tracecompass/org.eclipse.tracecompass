@@ -10,6 +10,8 @@
  **********************************************************************/
 package org.eclipse.tracecompass.tmf.core.model;
 
+import org.eclipse.tracecompass.tmf.core.dataprovider.DataType;
+
 /**
  * Interface to implement to describe a table column.
  *
@@ -33,4 +35,14 @@ public interface ITableColumnDescriptor {
      */
     String getTooltip();
 
+
+    /**
+     * Gets the data type of the column
+     *
+     * @return {@link DataType}.
+     * @since 8.3
+     */
+    default DataType getDataType() {
+        return DataType.STRING;
+    }
 }

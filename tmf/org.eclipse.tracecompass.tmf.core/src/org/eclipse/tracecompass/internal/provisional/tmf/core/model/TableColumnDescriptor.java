@@ -12,6 +12,7 @@
 package org.eclipse.tracecompass.internal.provisional.tmf.core.model;
 
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.tracecompass.tmf.core.dataprovider.DataType;
 import org.eclipse.tracecompass.tmf.core.model.ITableColumnDescriptor;
 
 import com.google.common.base.Objects;
@@ -23,8 +24,9 @@ import com.google.common.base.Objects;
  */
 public class TableColumnDescriptor implements ITableColumnDescriptor {
 
-    private String fText = ""; //$NON-NLS-1$
-    private String fTooltipText = ""; //$NON-NLS-1$
+    private final String fText;
+    private final String fTooltipText;
+    private final DataType fDataType;
 
     /**
      * Constructor
@@ -35,6 +37,7 @@ public class TableColumnDescriptor implements ITableColumnDescriptor {
     private TableColumnDescriptor(Builder builder) {
         fText = builder.fText;
         fTooltipText = builder.fTooltipText;
+        fDataType = builder.fDataType;
     }
 
     @Override
@@ -57,12 +60,18 @@ public class TableColumnDescriptor implements ITableColumnDescriptor {
         }
         ITableColumnDescriptor other = (ITableColumnDescriptor) obj;
         return Objects.equal(fText, other.getText()) &&
-                Objects.equal(fTooltipText, other.getTooltip());
+                Objects.equal(fTooltipText, other.getTooltip()) &&
+                Objects.equal(fDataType, other.getDataType());
+    }
+
+    @Override
+    public DataType getDataType() {
+        return fDataType;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(fText, fTooltipText);
+        return Objects.hashCode(fText, fTooltipText, fDataType);
     }
 
     @SuppressWarnings("nls")
@@ -73,6 +82,8 @@ public class TableColumnDescriptor implements ITableColumnDescriptor {
                .append(fText)
                .append(" tooltip=")
                .append(fTooltipText)
+               .append(" dataType=")
+               .append(fDataType.toString())
                .append("]");
         return builder.toString();
     }
@@ -86,6 +97,7 @@ public class TableColumnDescriptor implements ITableColumnDescriptor {
     public static class Builder {
         private String fText = ""; //$NON-NLS-1$
         private String fTooltipText = ""; //$NON-NLS-1$
+        private DataType fDataType = DataType.STRING;
 
         /**
          * Constructor
@@ -115,6 +127,19 @@ public class TableColumnDescriptor implements ITableColumnDescriptor {
          */
         public Builder setTooltip(String tooltip) {
             fTooltipText = tooltip;
+            return this;
+        }
+
+        /**
+         * Sets the data type of the column
+         *
+         * @param dataType
+         *            the dataType to set
+         * @return this {@link Builder} object
+         * @since 8.3
+         */
+        public Builder setDataType (DataType dataType) {
+            fDataType = dataType;
             return this;
         }
 
