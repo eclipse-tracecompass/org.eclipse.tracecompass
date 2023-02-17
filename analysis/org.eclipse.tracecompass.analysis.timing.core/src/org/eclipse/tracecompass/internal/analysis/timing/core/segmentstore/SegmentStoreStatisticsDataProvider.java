@@ -216,6 +216,9 @@ public class SegmentStoreStatisticsDataProvider extends AbstractTmfTraceDataProv
             TableColumnDescriptor.Builder builder = new TableColumnDescriptor.Builder();
             builder.setText(Objects.requireNonNull(aspect.getName()));
             builder.setTooltip(Objects.requireNonNull(aspect.getHelpText()));
+            if (aspect instanceof ITypedDataAspect) {
+                builder.setDataType(((ITypedDataAspect<?>) aspect).getDataType());
+            }
             headers.add(builder.build());
         }
         return headers.build();

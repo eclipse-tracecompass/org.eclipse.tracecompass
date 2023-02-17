@@ -1,5 +1,5 @@
 /**********************************************************************
- * Copyright (c) 2020 Ericsson
+ * Copyright (c) 2020, 2023 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -164,6 +164,44 @@ public final class SegmentStoreStatisticsAspects {
             @Override
             public @Nullable Object apply(NamedStatistics input) {
                 return fMapper.apply(input.getStatistics().getTotal());
+            }
+        });
+
+        aspectsBuilder.add(new ITypedDataAspect<NamedStatistics>() {
+            @Override
+            public String getName() {
+                return Objects.requireNonNull(Messages.SegmentStoreStatistics_MinTimeRangeLabel);
+            }
+            @Override
+            public @Nullable String apply(NamedStatistics input) {
+                ISegment min = input.getStatistics().getMinObject();
+                if (min != null) {
+                    return DataTypeUtils.toRangeString(min.getStart(), min.getEnd());
+                }
+                return null;
+            }
+            @Override
+            public DataType getDataType() {
+                return DataType.TIME_RANGE;
+            }
+        });
+
+        aspectsBuilder.add(new ITypedDataAspect<NamedStatistics>() {
+            @Override
+            public String getName() {
+                return Objects.requireNonNull(Messages.SegmentStoreStatistics_MaxTimeRangeLabel);
+            }
+            @Override
+            public @Nullable String apply(NamedStatistics input) {
+                ISegment max = input.getStatistics().getMaxObject();
+                if (max != null) {
+                    return DataTypeUtils.toRangeString(max.getStart(), max.getEnd());
+                }
+                return null;
+            }
+            @Override
+            public DataType getDataType() {
+                return DataType.TIME_RANGE;
             }
         });
 

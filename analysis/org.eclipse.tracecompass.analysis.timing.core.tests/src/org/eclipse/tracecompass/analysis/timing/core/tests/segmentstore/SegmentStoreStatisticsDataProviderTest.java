@@ -33,6 +33,7 @@ import org.eclipse.tracecompass.internal.analysis.timing.core.segmentstore.Segme
 import org.eclipse.tracecompass.internal.analysis.timing.core.segmentstore.SegmentStoreStatisticsDataProvider;
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.TableColumnDescriptor;
 import org.eclipse.tracecompass.internal.tmf.core.model.filters.FetchParametersUtils;
+import org.eclipse.tracecompass.tmf.core.dataprovider.DataType;
 import org.eclipse.tracecompass.tmf.core.exceptions.TmfAnalysisException;
 import org.eclipse.tracecompass.tmf.core.model.ITableColumnDescriptor;
 import org.eclipse.tracecompass.tmf.core.model.filters.FilterTimeQueryFilter;
@@ -56,19 +57,20 @@ public class SegmentStoreStatisticsDataProviderTest {
     // Test data
     // ------------------------------------------------------------------------
 
-    private static final @NonNull List<@NonNull String> EXPECTED_HEADER_LIST = Arrays.asList("Label", "Minimum", "Maximum", "Average", "Std Dev", "Count", "Total");
-    private static final @NonNull List<@NonNull String> EXPECTED_TOOLTIP_LIST = Arrays.asList("", "", "", "", "", "", "");
+    private static final @NonNull List<@NonNull String> EXPECTED_HEADER_LIST = Arrays.asList("Label", "Minimum", "Maximum", "Average", "Std Dev", "Count", "Total", "Min Time Range", "Max Time Range");
+    private static final @NonNull List<@NonNull DataType> EXPECTED_DATATYPE_LIST = Arrays.asList(DataType.STRING, DataType.STRING, DataType.STRING, DataType.STRING, DataType.STRING, DataType.STRING, DataType.STRING, DataType.TIME_RANGE, DataType.TIME_RANGE);
+    private static final @NonNull List<@NonNull String> EXPECTED_TOOLTIP_LIST = Arrays.asList("", "", "", "", "", "", "", "", "");
 
     private static final List<@NonNull List<@NonNull String>> LIST_OF_EXPECTED_LABELS_FULL = Arrays.asList(
-            Arrays.asList("", "0", "65.534 µs", "32.767 µs", "18.918 µs", "65535", "2.147 s"),
-            Arrays.asList("Total", "0", "65.534 µs", "32.767 µs", "18.918 µs", "65535", "2.147 s"),
-            Arrays.asList("even", "0", "65.534 µs", "32.767 µs", "18.919 µs", "32768", "1.074 s"),
-            Arrays.asList("odd", "1 ns", "65.533 µs", "32.767 µs", "18.918 µs", "32767", "1.074 s"));
+            Arrays.asList("", "0", "65.534 µs", "32.767 µs", "18.918 µs", "65535", "2.147 s", "[0,0]", "[65534,131068]"),
+            Arrays.asList("Total", "0", "65.534 µs", "32.767 µs", "18.918 µs", "65535", "2.147 s", "[0,0]", "[65534,131068]"),
+            Arrays.asList("even", "0", "65.534 µs", "32.767 µs", "18.919 µs", "32768", "1.074 s", "[0,0]", "[65534,131068]"),
+            Arrays.asList("odd", "1 ns", "65.533 µs", "32.767 µs", "18.918 µs", "32767", "1.074 s", "[1,2]", "[65533,131066]"));
 
     private static final @NonNull List<@NonNull List<@NonNull String>> LIST_OF_EXPECTED_LABELS_SELECTION = Arrays.asList(
-            Arrays.asList("Selection", "512 ns", "4.096 µs", "2.304 µs", "1.035 µs", "3585", "8.26 ms"),
-            Arrays.asList("even", "512 ns", "4.096 µs", "2.304 µs", "1.035 µs", "1793", "4.131 ms"),
-            Arrays.asList("odd", "513 ns", "4.095 µs", "2.304 µs", "1.035 µs", "1792", "4.129 ms"));
+            Arrays.asList("Selection", "512 ns", "4.096 µs", "2.304 µs", "1.035 µs", "3585", "8.26 ms", "[512,1024]", "[4096,8192]"),
+            Arrays.asList("even", "512 ns", "4.096 µs", "2.304 µs", "1.035 µs", "1793", "4.131 ms", "[512,1024]", "[4096,8192]"),
+            Arrays.asList("odd", "513 ns", "4.095 µs", "2.304 µs", "1.035 µs", "1792", "4.129 ms", "[513,1026]", "[4095,8190]"));
 
     private static final @NonNull List<@NonNull StatisticsHolder> EXPECTED_STATS_FULL = Arrays.asList(
             new StatisticsHolder("", 0, -1, 0, 65534, 32767.0, 18918.46, 65535, 2147385345.0, 0, 0, 65534, 131068),
@@ -82,10 +84,10 @@ public class SegmentStoreStatisticsDataProviderTest {
             new StatisticsHolder("odd", 8, 6, 513, 4095, 2304.0, 1034.9, 1792, 4128768.0, 513, 1026, 4095, 8190));
 
     private static final List<@NonNull List<@NonNull String>> LIST_OF_EXPECTED_LABELS_WITH_MAPPER_FULL = Arrays.asList(
-            Arrays.asList("My", "0", "65534", "32767.0", "18918.46928268775", "65535", "2.147385345E9"),
-            Arrays.asList("MyTotal", "0", "65534", "32767.0", "18918.46928268775", "65535", "2.147385345E9"),
-            Arrays.asList("Myeven", "0", "65534", "32767.0", "18918.90229373787", "32768", "1.073709056E9"),
-            Arrays.asList("Myodd", "1", "65533", "32767.0", "18918.32494346861", "32767", "1.073676289E9"));
+            Arrays.asList("My", "0", "65534", "32767.0", "18918.46928268775", "65535", "2.147385345E9", "[0,0]", "[65534,131068]"),
+            Arrays.asList("MyTotal", "0", "65534", "32767.0", "18918.46928268775", "65535", "2.147385345E9", "[0,0]", "[65534,131068]"),
+            Arrays.asList("Myeven", "0", "65534", "32767.0", "18918.90229373787", "32768", "1.073709056E9", "[0,0]", "[65534,131068]"),
+            Arrays.asList("Myodd", "1", "65533", "32767.0", "18918.32494346861", "32767", "1.073676289E9", "[1,2]", "[65533,131066]"));
 
     private static final @NonNull List<@NonNull StatisticsHolder> EXPECTED_STATS_WITH_MAPPER_FULL = Arrays.asList(
             new StatisticsHolder("My", 1, -1, 0, 65534, 32767.0, 18918.46, 65535, 2147385345.0, 0, 0, 65534, 131068),
@@ -95,7 +97,9 @@ public class SegmentStoreStatisticsDataProviderTest {
 
     private static final String USER_DEFINED_EXTRA_HEADER = "userDefinedHeader";
     private static final String USER_DEFINED_EXTRA_VALUE = "userDefinedValue";
+    private static final DataType USER_DEFINED_DATATYPE = DataType.STRING;
     private static final @NonNull List<@NonNull String> EXPECTED_HEADER_LIST_USER_DEFINED = Stream.concat(EXPECTED_HEADER_LIST.stream(), Stream.of(USER_DEFINED_EXTRA_HEADER)).collect(Collectors.toList());
+    private static final @NonNull List<@NonNull DataType> EXPECTED_DATATYPE_LIST_USER_DEFINED = Stream.concat(EXPECTED_DATATYPE_LIST.stream(), Stream.of(USER_DEFINED_DATATYPE)).collect(Collectors.toList());
     private static final @NonNull List<@NonNull String> EXPECTED_TOOLTIP_LIST_USER_DEFINED = Stream.concat(EXPECTED_TOOLTIP_LIST.stream(), Stream.of("")).collect(Collectors.toList());
     private static final List<@NonNull List<@NonNull String>> LIST_OF_EXPECTED_LABELS_FULL_USER_DEFINED = LIST_OF_EXPECTED_LABELS_FULL.stream()
             .map(list -> Stream.concat(list.stream(), Stream.of(USER_DEFINED_EXTRA_VALUE))
@@ -132,6 +136,7 @@ public class SegmentStoreStatisticsDataProviderTest {
             fExpectedDescriptors.add(new TableColumnDescriptor.Builder()
                     .setText(EXPECTED_HEADER_LIST.get(i))
                     .setTooltip(EXPECTED_TOOLTIP_LIST.get(i))
+                    .setDataType(EXPECTED_DATATYPE_LIST.get(i))
                     .build());
         }
         fExpectedDescriptorsUserDefined = new ArrayList<>();
@@ -139,6 +144,7 @@ public class SegmentStoreStatisticsDataProviderTest {
             fExpectedDescriptorsUserDefined.add(new TableColumnDescriptor.Builder()
                     .setText(EXPECTED_HEADER_LIST_USER_DEFINED.get(i))
                     .setTooltip(EXPECTED_TOOLTIP_LIST_USER_DEFINED.get(i))
+                    .setDataType(EXPECTED_DATATYPE_LIST_USER_DEFINED.get(i))
                     .build());
         }
 

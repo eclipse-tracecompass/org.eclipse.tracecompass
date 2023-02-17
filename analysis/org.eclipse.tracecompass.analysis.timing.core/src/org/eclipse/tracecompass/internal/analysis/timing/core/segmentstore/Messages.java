@@ -123,6 +123,10 @@ public class Messages extends NLS {
      */
     public static @Nullable String SegmentStoreStatistics_MinEndLabel;
     /**
+     * Name of the column for minimum time range
+     */
+    public static @Nullable String SegmentStoreStatistics_MinTimeRangeLabel;
+    /**
      * Name of the maximum start time column
      */
     public static @Nullable String SegmentStoreStatistics_MaxStartLabel;
@@ -130,6 +134,10 @@ public class Messages extends NLS {
      * Name of the maximum end time column
      */
     public static @Nullable String SegmentStoreStatistics_MaxEndLabel;
+    /**
+     * Name of the column for maximum time range
+     */
+    public static @Nullable String SegmentStoreStatistics_MaxTimeRangeLabel;
     /**
      * Title of the data provider
      */
