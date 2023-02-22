@@ -35,6 +35,7 @@
   <modules>
     <module>org.eclipse.tracecompass.doc.dev</module>
     <module>org.eclipse.tracecompass.doc.user</module>
+    <module>org.eclipse.tracecompass.analysis.callstack.doc.user</module>
     <module>org.eclipse.tracecompass.gdbtrace.doc.user</module>
     <module>org.eclipse.tracecompass.rcp.doc.user</module>
     <module>org.eclipse.tracecompass.tmf.pcap.doc.user</module>

@@ -1,0 +1,40 @@
+
+= Table of Contents =
+
+__TOC__
+
+= Overview =
+
+The Generic Callstack plugin provides the possibility to describe and analyze call stacks, i.e., the subroutines and function calls a program is in. But it can be generalized to any concept in the application that can be stacked.
+
+For example, if an application uses a thread pool to send jobs that are instrumented, the data can be analyzed in such a way that it is grouped not per thread or process, but by what the ongoing job does.
+
+= Terminology =
+
+Here are the definitions of the terms used in this plugin.
+
+* Callstack: According to [https://en.wikipedia.org/wiki/Call_stack Wikipedia (as of July 2017)], the call stack ''is a stack data structure that stores information about the active subroutines of a computer program. It is also known as an execution stack, program stack, control stack, run-time stack or machine stack.'' In our case, it refers to all the analyses that can be done on a trace that contains call stack data.
+
+* Instrumented callstack: It is a callstack created by instrumenting entry and exits of methods, functions, logical operation, etc. The real time spent in each level of the stack is accurate and with some kernel data, it is possible to know the CPU time as well. Instrumenting a whole application can be costly and have large overhead for the application but one can accurately know the path the code went through and when.
+
+* Sampled callstack: The sampled callstack is obtained by profiling the application. The trace events usually contain an array of frame pointers that were being executed at the moment of the sampling. With this kind of data, only statistical analyses of the callstack can be done, like the number of sampling that were at a given frame, but no information on timing is available.
+
+* Call graph: According to [https://en.wikipedia.org/wiki/Call_graph Wikipedia (as of July 2017)] a call graph ''represents calling relationships between subroutines'', i.e., the relationship between the callers and callees and how often one is called.
+
+* Calling context tree: It is the most precise form of callgraph, that shows the hierarchy of calls from the very first level of the graph, i.e., it keeps the context of the calls when building a callgraph, unlike the less precise callgraphs, where an edge is just added from the caller to the callee, no matter who called the caller (there can be cycles).
+
+* Symbol: A symbol is a way to identify a given call site. In the callstack analysis, it represents either the address of the function or routine in the code. In this case, it usually is gibberish, but it can be resolved as a function name using some symbol providers. In other cases, it may already be a readable string.
+
+* Call site: A call site is a location in the executable, that could eventually be located in some source code. The call site is identified by a symbol.
+
+* Flame chart: The flame chart is a way to organize data in instrumented call stack analysis to show the exact state of the callstack at different moment of the trace.
+
+* Flame graph: The flame graph is an visualization of the calling context tree, which shows the length (with instrumented data) or frequency (with sampling data) of the different code paths.
+
+= Analyses and views =
+
+Depending on whether the callstack is sampled or instrumented, all the analyses may not be available. The views that contain timed data are not available for sampled traces.
+
+= Additional documentation for developers =
+
+Developers wishing to extend this plugin and its analyses can read this section for additional information on the class hierarchy and structures.
