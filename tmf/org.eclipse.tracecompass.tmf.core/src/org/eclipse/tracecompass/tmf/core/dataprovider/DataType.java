@@ -41,7 +41,7 @@ public enum DataType {
     /**
      * Data representing a time range of string: [start,end],
      * where `start` and `end` are timestamps in nanoseconds
-     * @since 8.3
+     * @since 8.4
      */
     TIME_RANGE;
 }
