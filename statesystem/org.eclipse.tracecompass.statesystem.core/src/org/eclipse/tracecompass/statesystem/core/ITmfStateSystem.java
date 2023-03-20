@@ -466,12 +466,18 @@ public interface ITmfStateSystem {
      * request many entries all at the same time, you should use the
      * conventional queryFullState() + List.get() method.
      * </p>
+     * When calling this method multiple times, even if the returned
+     * {@link ITmfStateInterval} represents the same interval, there is no
+     * guarantee that the returned object is the same object.
      *
      * @param t
      *            The timestamp at which we want the state
      * @param attributeQuark
      *            Which attribute we want to get the state of
-     * @return The StateInterval representing the state
+     * @return The StateInterval representing the state. Note that the returned
+     *         object is not guaranteed to be the same object through multiple
+     *         calls, even if it represents the same interval. Only the content
+     *         is guaranteed to be the same.
      * @throws TimeRangeException
      *             If 't' is invalid
      * @throws IndexOutOfBoundsException
