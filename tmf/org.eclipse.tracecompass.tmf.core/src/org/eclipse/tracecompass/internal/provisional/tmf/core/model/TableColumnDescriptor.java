@@ -19,7 +19,7 @@ import com.google.common.base.Objects;
 
 /**
  * Data table column descriptor implementation.
- * .
+ *
  * @since 6.1
  */
 public class TableColumnDescriptor implements ITableColumnDescriptor {
@@ -90,7 +90,8 @@ public class TableColumnDescriptor implements ITableColumnDescriptor {
 
     /**
      *
-     * A builder class to build instances implementing interface {@link TableColumnDescriptor}
+     * A builder class to build instances implementing interface
+     * {@link TableColumnDescriptor}
      *
      * @author Bernd Hufmann
      */
@@ -122,7 +123,7 @@ public class TableColumnDescriptor implements ITableColumnDescriptor {
          * Sets the tooltip text of the header
          *
          * @param tooltip
-         *      the tooltip text to set
+         *            the tooltip text to set
          * @return this {@link Builder} object
          */
         public Builder setTooltip(String tooltip) {
@@ -136,16 +137,15 @@ public class TableColumnDescriptor implements ITableColumnDescriptor {
          * @param dataType
          *            the dataType to set
          * @return this {@link Builder} object
-         * @since 8.3
+         * @since 8.4
          */
-        public Builder setDataType (DataType dataType) {
+        public Builder setDataType(DataType dataType) {
             fDataType = dataType;
             return this;
         }
 
         /**
-         * The method to construct an instance of
-         * {@link ITableColumnDescriptor}
+         * The method to construct an instance of {@link ITableColumnDescriptor}
          *
          * @return a {@link ITableColumnDescriptor} instance
          */
