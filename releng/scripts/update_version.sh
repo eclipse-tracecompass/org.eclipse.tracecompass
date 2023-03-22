@@ -51,8 +51,8 @@ sed -i -e s/$oldVersion.qualifier/$newVersion.qualifier/g ../../rcp/org.eclipse.
 #rcp/org.eclipse.tracecompass.rcp.branding/plugin.xml aboutText
 sed -i -e s/$oldVersion/$newVersion/g ../../rcp/org.eclipse.tracecompass.rcp.branding/plugin.xml
 
-#Update .product rcp/org.eclipse.tracecompass.rcp.product/tracing.product
-sed -i -e s/$oldVersion/$newVersion/g ../../rcp/org.eclipse.tracecompass.rcp.product/tracing.product
+#Update .product rcp/org.eclipse.tracecompass.rcp.product/(*/)tracing.product
+find ../../rcp/org.eclipse.tracecompass.rcp.product/ -name "*.product" -type f -exec sed -i -e s/$oldVersion/$newVersion/g {} \;
 
 #Update rcp.ui plugin rcp/org.eclipse.tracecompass.rcp.ui/META-INF/MANIFEST.MF
 sed -i -e s/$oldVersion.qualifier/$newVersion.qualifier/g ../../rcp/org.eclipse.tracecompass.rcp.ui/META-INF/MANIFEST.MF
