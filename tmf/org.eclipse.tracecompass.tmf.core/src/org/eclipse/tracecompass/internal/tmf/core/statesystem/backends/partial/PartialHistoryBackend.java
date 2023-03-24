@@ -35,6 +35,7 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.internal.provisional.datastore.core.condition.IntegerRangeCondition;
 import org.eclipse.tracecompass.internal.provisional.datastore.core.condition.TimeRangeCondition;
+import org.eclipse.tracecompass.internal.tmf.core.Activator;
 import org.eclipse.tracecompass.statesystem.core.ITmfStateSystem;
 import org.eclipse.tracecompass.statesystem.core.backend.IPartialStateHistoryBackend;
 import org.eclipse.tracecompass.statesystem.core.backend.IStateHistoryBackend;
@@ -324,7 +325,7 @@ public class PartialHistoryBackend implements IStateHistoryBackend {
             try {
                 fInnerHistory.doQuery(intervalsList, checkpointTime2);
             } catch (StateSystemDisposedException e) {
-                e.printStackTrace();
+                Activator.logError(e.getMessage(), e);
             }
 
             filledStateInfo = checkNotNullContents(intervalsList.stream()).collect(Collectors.toList());
@@ -419,7 +420,7 @@ public class PartialHistoryBackend implements IStateHistoryBackend {
         try {
             fInnerHistory.doQuery(currentStateInfo, lowerCheckpoint);
         } catch (StateSystemDisposedException e) {
-            e.printStackTrace();
+            Activator.logError(e.getMessage(), e);
         }
 
         List<@NonNull ITmfStateInterval> filledStateInfo =
@@ -492,7 +493,7 @@ public class PartialHistoryBackend implements IStateHistoryBackend {
             try {
                 fInnerHistory.doQuery(currentStateInfo, upperCheckpoint);
             } catch (StateSystemDisposedException e) {
-                e.printStackTrace();
+                Activator.logError(e.getMessage(), e);
             }
 
             filledStateInfo = checkNotNullContents(currentStateInfo.stream()).collect(Collectors.toList());
