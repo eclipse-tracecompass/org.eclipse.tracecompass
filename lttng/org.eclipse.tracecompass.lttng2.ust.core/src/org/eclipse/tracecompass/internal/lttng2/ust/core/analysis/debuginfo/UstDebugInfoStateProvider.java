@@ -132,7 +132,7 @@ public class UstDebugInfoStateProvider extends AbstractTmfStateProvider {
      *
      * <value> <type> <name> <source>:<line>
      */
-    private static final Pattern fNmPattern = Pattern.compile("(\\w+)(\\s+)(\\w)(\\s+)([^\\t]*)([\\t]*)([^\\:]*)([\\:]*)(.*)"); //$NON-NLS-1$
+    private static final Pattern fNmPattern = Pattern.compile("(\\w+)(\\s+)(\\w)(\\s+)([^\\t]*)(\\t*)([^\\:]*)(:*)(.*)"); //$NON-NLS-1$
 
     private final LttngUst28EventLayout fLayout;
     private final Map<String, Integer> fEventNames;
