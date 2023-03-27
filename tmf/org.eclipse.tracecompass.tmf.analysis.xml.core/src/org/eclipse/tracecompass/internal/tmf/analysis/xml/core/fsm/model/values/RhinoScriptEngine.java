@@ -108,7 +108,7 @@ public class RhinoScriptEngine {
      * @throws RhinoException
      *             if script execution fails
      */
-    public @Nullable Object execute(final String javascriptExpression) throws RhinoException{
+    public @Nullable Object execute(final String javascriptExpression) throws RhinoException {
         Context context = fContext;
         ScriptableObject scope = fScope;
         Object result = null;
@@ -121,7 +121,7 @@ public class RhinoScriptEngine {
             return null;
         } else if (result instanceof NativeJavaObject) {
             return ((NativeJavaObject) result).unwrap();
-        } else if ("org.mozilla.javascript.InterpretedFunction".equals(result.getClass().getName())) { //$NON-NLS-1$ //NOSONAR
+        } else if ("org.mozilla.javascript.InterpretedFunction".equals(result.getClass().getName())) { //$NON-NLS-1$ NOSONAR
             return null;
         }
         return result;
