@@ -17,11 +17,14 @@
 
 package org.eclipse.tracecompass.tmf.core.project.model;
 
+import java.util.List;
+
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.tracecompass.tmf.core.project.model.TmfTraceType.TraceElementType;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
 import org.eclipse.tracecompass.tmf.core.trace.TraceValidationStatus;
+import org.eclipse.tracecompass.tmf.core.trace.experiment.TmfExperiment;
 
 /**
  * TraceTypeHelper, a helper that can link a few names to a configuration element
@@ -127,8 +130,30 @@ public class TraceTypeHelper {
      * @return the confidence level (0 is lowest) or -1 if validation fails
      */
     public int validateWithConfidence(String path) {
-        int result = -1;
         IStatus status = fTrace.validate(null, path);
+        return getConfidenceFromStatus(status);
+    }
+
+    /**
+     * Validate an experiment against this experiment type with confidence level
+     *
+     * @param traces
+     *            list of traces belonging to the experiment
+     * @return the confidence level (0 is lowest), or -1 if validation fails or
+     *         trace is not an experiment
+     * @since 8.4
+     */
+    public int validateExperimentWithTraces(List<ITmfTrace> traces) {
+        if (!isExperimentType()) {
+            return -1;
+        }
+        TmfExperiment exp = (TmfExperiment) fTrace;
+        IStatus status = exp.validateWithTraces(traces);
+        return getConfidenceFromStatus(status);
+    }
+
+    private static int getConfidenceFromStatus(IStatus status) {
+        int result = -1;
         if (status.getSeverity() != IStatus.ERROR) {
             result = 0;
             if (status instanceof TraceValidationStatus) {
@@ -198,5 +223,4 @@ public class TraceTypeHelper {
     public String toString() {
         return fName;
     }
-
 }

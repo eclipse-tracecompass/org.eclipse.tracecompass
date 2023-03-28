@@ -70,6 +70,7 @@ import org.eclipse.tracecompass.tmf.core.trace.ITmfContext;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
 import org.eclipse.tracecompass.tmf.core.trace.TmfTrace;
 import org.eclipse.tracecompass.tmf.core.trace.TmfTraceManager;
+import org.eclipse.tracecompass.tmf.core.trace.TraceValidationStatus;
 import org.eclipse.tracecompass.tmf.core.trace.indexer.ITmfPersistentlyIndexable;
 import org.eclipse.tracecompass.tmf.core.trace.indexer.ITmfTraceIndexer;
 import org.eclipse.tracecompass.tmf.core.trace.indexer.TmfBTreeTraceIndexer;
@@ -119,6 +120,11 @@ public class TmfExperiment extends TmfTrace implements ITmfPersistentlyIndexable
      * If the automatic clock offset is higher than this value, emit a warning.
      */
     private static final long CLOCK_OFFSET_THRESHOLD_NS = 500000;
+
+    /**
+     * The default confidence for the generic Tmf experiment
+     */
+    private static final int DEFAULT_GENERIC_EXPERIMENT_CONFIDENCE = 1;
 
     // ------------------------------------------------------------------------
     // Attributes
@@ -367,6 +373,29 @@ public class TmfExperiment extends TmfTrace implements ITmfPersistentlyIndexable
     @Override
     public IStatus validate(final IProject project, final String path) {
         return Status.OK_STATUS;
+    }
+
+    /**
+     * Validates the experiment based on the traces provided. All subclasses of
+     * TmfExperiment should override this method to compute its own validation.
+     * If the experiment type is valid based on the provided traces, the
+     * method should return TraceValidationStatus with confidence. If it is not
+     * valid, an ERROR status should be returned. Note that the generic Tmf
+     * experiment reserves the confidence value of 1, therefore all extending
+     * classes should return a confidence level accordingly.
+     *
+     * @param traces
+     *            list of ITmfTraces that is used to validate this experiment
+     * @return status an IStatus object with validation result. Use ERROR status
+     *         to indicate an error, otherwise use TraceValidationStatus with a
+     *         confidence.
+     * @since 8.4
+     */
+    public IStatus validateWithTraces(List<ITmfTrace> traces) {
+        if (getClass() == TmfExperiment.class) {
+            return new TraceValidationStatus(DEFAULT_GENERIC_EXPERIMENT_CONFIDENCE, Activator.PLUGIN_ID);
+        }
+        return new Status(IStatus.ERROR, Activator.PLUGIN_ID, "class extends TmfExperiment"); //$NON-NLS-1$
     }
 
     // ------------------------------------------------------------------------

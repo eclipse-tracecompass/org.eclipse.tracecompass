@@ -46,6 +46,7 @@ import org.eclipse.tracecompass.tmf.core.parsers.custom.CustomXmlTrace;
 import org.eclipse.tracecompass.tmf.core.parsers.custom.CustomXmlTraceDefinition;
 import org.eclipse.tracecompass.tmf.core.signal.TmfSignalManager;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
+import org.eclipse.tracecompass.tmf.core.trace.experiment.TmfExperiment;
 import org.eclipse.tracecompass.tmf.core.util.Pair;
 
 /**
@@ -609,5 +610,101 @@ public final class TmfTraceType {
             }
         }
         return count == 0;
+    }
+
+    /**
+     * Auto-detect an experiment type based on the List of ITmfTrace and an
+     * experiment type hint.
+     *
+     * @param traces
+     *            the list of traces for which an experiment type is to be
+     *            determined
+     * @param experimentTypeHint
+     *            the ID of an experiment (like "o.e.l.specificexperiment" )
+     * @return a list of {@link TraceTypeHelper} sorted by confidence (highest
+     *         first)
+     * @since 8.4
+     */
+    public static List<TraceTypeHelper> selectExperimentType(List<ITmfTrace> traces, String experimentTypeHint) {
+        Comparator<Pair<Integer, TraceTypeHelper>> comparator = (o1, o2) -> {
+            int res = o2.getFirst().compareTo(o1.getFirst()); // invert so that highest confidence is first
+            if (res == 0) {
+                res = o1.getSecond().getName().compareTo(o2.getSecond().getName());
+            }
+            return res;
+        };
+
+        TreeSet<Pair<Integer, TraceTypeHelper>> validCandidates = new TreeSet<>(comparator);
+        final Iterable<TraceTypeHelper> traceTypeHelpers = TmfTraceType.getTraceTypeHelpers();
+        for (TraceTypeHelper traceTypeHelper : traceTypeHelpers) {
+            // Skip if it is not enabled or it is not an experiment
+            if (!traceTypeHelper.isEnabled() || !traceTypeHelper.isExperimentType()) {
+                continue;
+            }
+            int confidence = traceTypeHelper.validateExperimentWithTraces(traces);
+            if (confidence >= 0) {
+                if (traceTypeHelper.getTraceTypeId().equals(experimentTypeHint)) {
+                    // if the trace type hint is valid, return it immediately
+                    return Collections.singletonList(traceTypeHelper);
+                }
+                // insert in the tree map, ordered by confidence (highest
+                // confidence first) then name
+                Pair<Integer, TraceTypeHelper> element = new Pair<>(confidence, traceTypeHelper);
+                validCandidates.add(element);
+            }
+        }
+        List<TraceTypeHelper> returned = new ArrayList<>();
+        // If no valid candidates are found, then add generic experiment type
+        if (validCandidates.isEmpty()) {
+            Activator.logInfo("No valid candidates were found, selecting generic TMF experiment type"); //$NON-NLS-1$
+            returned.add(getTraceType(DEFAULT_EXPERIMENT_TYPE));
+            return returned;
+        }
+
+        if (validCandidates.size() != 1) {
+            List<Pair<Integer, TraceTypeHelper>> reducedCandidates = reduce(validCandidates);
+            if (reducedCandidates.isEmpty()) {
+                Activator.logInfo("Error reducing experiment type candidates, selecting generic TMF experiment type"); //$NON-NLS-1$
+                returned.add(getTraceType(DEFAULT_EXPERIMENT_TYPE));
+                return returned;
+            } else if (reducedCandidates.size() == 1) {
+                // Don't select the exp type if it has the lowest confidence
+                if (reducedCandidates.get(0).getFirst() > 0) {
+                    returned.add(reducedCandidates.get(0).getSecond());
+                }
+            } else {
+                for (Pair<Integer, TraceTypeHelper> candidatePair : reducedCandidates) {
+                    // Don't select the exp type if it has the lowest confidence
+                    if (candidatePair.getFirst() > 0) {
+                        returned.add(candidatePair.getSecond());
+                    }
+                }
+            }
+        } else {
+            // Don't select the exp type if it has the lowest confidence
+            if (validCandidates.first().getFirst() > 0) {
+                returned.add(validCandidates.first().getSecond());
+            }
+        }
+        return returned;
+    }
+
+    /**
+     * Instantiate an experiment based on the provided type ID
+     *
+     * @param typeID
+     *            the ID of the experiment (like "o.e.l.specificexperiment" )
+     * @return {@link TmfExperiment} instance or null if experiment type Id
+     *         doesn't exist
+     * @throws CoreException
+     *             if trace cannot be instantiated
+     * @since 8.4
+     */
+    public static TmfExperiment instantiateExperiment(String typeID) throws CoreException {
+        IConfigurationElement ce = TRACE_TYPE_ATTRIBUTES.get(typeID);
+        if (ce == null) {
+            return null;
+        }
+        return (TmfExperiment) ce.createExecutableExtension(TmfTraceType.EXPERIMENT_TYPE_ATTR);
     }
 }
