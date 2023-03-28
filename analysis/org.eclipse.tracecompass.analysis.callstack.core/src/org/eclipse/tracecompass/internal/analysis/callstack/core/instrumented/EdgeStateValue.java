@@ -105,7 +105,7 @@ public class EdgeStateValue extends CustomStateValue {
     }
 
     @Override
-    public int compareTo(@NonNull ITmfStateValue o) {
+    public int compareTo(ITmfStateValue o) {
         if (o instanceof EdgeStateValue) {
             return COMPARATOR.compare(this, (EdgeStateValue) o);
         }
@@ -119,7 +119,7 @@ public class EdgeStateValue extends CustomStateValue {
     }
 
     @Override
-    protected void serializeValue(@NonNull ISafeByteBufferWriter buffer) {
+    protected void serializeValue(ISafeByteBufferWriter buffer) {
         buffer.putInt(fId);
 
         // TODO deduplicate host name when applicable.

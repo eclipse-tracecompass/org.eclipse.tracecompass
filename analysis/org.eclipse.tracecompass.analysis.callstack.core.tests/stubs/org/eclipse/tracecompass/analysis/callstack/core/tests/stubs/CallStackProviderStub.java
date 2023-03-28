@@ -51,12 +51,12 @@ public class CallStackProviderStub extends CallStackStateProvider {
     }
 
     @Override
-    protected boolean considerEvent(@NonNull ITmfEvent event) {
+    protected boolean considerEvent(ITmfEvent event) {
         return true;
     }
 
     @Override
-    protected @Nullable ITmfStateValue functionEntry(@NonNull ITmfEvent event) {
+    protected @Nullable ITmfStateValue functionEntry(ITmfEvent event) {
         String name = event.getName();
         if (ENTRY.equals(name)) {
             ITmfEventField field = event.getContent().getField("op");
@@ -68,7 +68,7 @@ public class CallStackProviderStub extends CallStackStateProvider {
     }
 
     @Override
-    protected @Nullable ITmfStateValue functionExit(@NonNull ITmfEvent event) {
+    protected @Nullable ITmfStateValue functionExit(ITmfEvent event) {
         String name = event.getName();
         if (EXIT.equals(name)) {
             ITmfEventField field = event.getContent().getField("op");
@@ -80,7 +80,7 @@ public class CallStackProviderStub extends CallStackStateProvider {
     }
 
     @Override
-    protected int getProcessId(@NonNull ITmfEvent event) {
+    protected int getProcessId(ITmfEvent event) {
         ITmfEventField field = event.getContent().getField("pid");
         if (field != null) {
             return Integer.parseInt((String) field.getValue());
@@ -89,7 +89,7 @@ public class CallStackProviderStub extends CallStackStateProvider {
     }
 
     @Override
-    protected long getThreadId(@NonNull ITmfEvent event) {
+    protected long getThreadId(ITmfEvent event) {
         ITmfEventField field = event.getContent().getField("tid");
         if (field != null) {
             return Integer.parseInt((String) field.getValue());

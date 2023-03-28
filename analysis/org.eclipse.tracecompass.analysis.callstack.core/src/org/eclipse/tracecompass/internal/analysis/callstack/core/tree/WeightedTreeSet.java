@@ -43,7 +43,7 @@ public class WeightedTreeSet<@NonNull N, E> implements IWeightedTreeSet<N, E, We
     }
 
     @Override
-    public Collection<@NonNull WeightedTree<N>> getTreesFor(Object element) {
+    public Collection<WeightedTree<N>> getTreesFor(Object element) {
         return Objects.requireNonNull(fTrees.get(element));
     }
 

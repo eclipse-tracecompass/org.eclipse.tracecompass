@@ -96,7 +96,7 @@ public class AggregatedCalledFunction extends AggregatedCallSite {
     }
 
     @Override
-    protected void mergeData(@NonNull WeightedTree<ICallStackSymbol> other) {
+    protected void mergeData(WeightedTree<ICallStackSymbol> other) {
         if (!(other instanceof AggregatedCalledFunction)) {
             return;
         }
@@ -258,7 +258,7 @@ public class AggregatedCalledFunction extends AggregatedCallSite {
     }
 
     @Override
-    public @NonNull Collection<@NonNull WeightedTree<@NonNull ICallStackSymbol>> getExtraDataTrees(int index) {
+    public @NonNull Collection<WeightedTree<ICallStackSymbol>> getExtraDataTrees(int index) {
         if (index == 0) {
             return ImmutableList.copyOf(fProcessStatuses.values());
         }

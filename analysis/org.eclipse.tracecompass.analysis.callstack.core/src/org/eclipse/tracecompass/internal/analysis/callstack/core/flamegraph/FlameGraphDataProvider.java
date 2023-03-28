@@ -240,7 +240,7 @@ public class FlameGraphDataProvider<@NonNull N, E, @NonNull T extends WeightedTr
     }
 
     @Override
-    public @NonNull TmfModelResponse<@NonNull TmfTreeModel<@NonNull FlameChartEntryModel>> fetchTree(@NonNull Map<@NonNull String, @NonNull Object> fetchParameters, @Nullable IProgressMonitor monitor) {
+    public @NonNull TmfModelResponse<TmfTreeModel<FlameChartEntryModel>> fetchTree(Map<String, Object> fetchParameters, @Nullable IProgressMonitor monitor) {
 
         fLock.writeLock().lock();
         try (FlowScopeLog scope = new FlowScopeLogBuilder(LOGGER, Level.FINE, "FlameGraphDataProvider#fetchTree") //$NON-NLS-1$
@@ -492,7 +492,7 @@ public class FlameGraphDataProvider<@NonNull N, E, @NonNull T extends WeightedTr
     }
 
     @Override
-    public @NonNull TmfModelResponse<@NonNull TimeGraphModel> fetchRowModel(@NonNull Map<@NonNull String, @NonNull Object> fetchParameters, @Nullable IProgressMonitor monitor) {
+    public @NonNull TmfModelResponse<TimeGraphModel> fetchRowModel(Map<String, Object> fetchParameters, @Nullable IProgressMonitor monitor) {
         SubMonitor subMonitor = Objects.requireNonNull(SubMonitor.convert(monitor, "FlameGraphDataProvider#fetchRowModel", 2)); //$NON-NLS-1$
 
         List<Long> times = DataProviderParameterUtils.extractTimeRequested(fetchParameters);
@@ -519,8 +519,8 @@ public class FlameGraphDataProvider<@NonNull N, E, @NonNull T extends WeightedTr
         }
 
         // Prepare the regexes
-        Map<@NonNull Integer, @NonNull Predicate<@NonNull Multimap<@NonNull String, @NonNull Object>>> predicates = new HashMap<>();
-        Multimap<@NonNull Integer, @NonNull String> regexesMap = DataProviderParameterUtils.extractRegexFilter(fetchParameters);
+        Map<Integer, Predicate<Multimap<String, Object>>> predicates = new HashMap<>();
+        Multimap<Integer, String> regexesMap = DataProviderParameterUtils.extractRegexFilter(fetchParameters);
         if (regexesMap != null) {
             predicates.putAll(computeRegexPredicate(regexesMap));
         }
@@ -604,12 +604,12 @@ public class FlameGraphDataProvider<@NonNull N, E, @NonNull T extends WeightedTr
     }
 
     @Override
-    public @NonNull TmfModelResponse<@NonNull List<@NonNull ITimeGraphArrow>> fetchArrows(@NonNull Map<@NonNull String, @NonNull Object> fetchParameters, @Nullable IProgressMonitor monitor) {
+    public @NonNull TmfModelResponse<List<ITimeGraphArrow>> fetchArrows(Map<String, Object> fetchParameters, @Nullable IProgressMonitor monitor) {
         return new TmfModelResponse<>(Collections.emptyList(), ITmfResponse.Status.COMPLETED, CommonStatusMessage.COMPLETED);
     }
 
     @Override
-    public @NonNull TmfModelResponse<@NonNull Map<@NonNull String, @NonNull String>> fetchTooltip(@NonNull Map<@NonNull String, @NonNull Object> fetchParameters, @Nullable IProgressMonitor monitor) {
+    public @NonNull TmfModelResponse<Map<String, String>> fetchTooltip(Map<String, Object> fetchParameters, @Nullable IProgressMonitor monitor) {
         List<Long> times = DataProviderParameterUtils.extractTimeRequested(fetchParameters);
         if (times == null || times.size() != 1) {
             return new TmfModelResponse<>(Collections.emptyMap(), ITmfResponse.Status.FAILED, "Invalid time requested for tooltip"); //$NON-NLS-1$

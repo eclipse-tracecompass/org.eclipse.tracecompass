@@ -19,7 +19,6 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.internal.tmf.core.model.filters.FetchParametersUtils;
 import org.eclipse.tracecompass.statesystem.core.interval.ITmfStateInterval;
@@ -67,10 +66,10 @@ public class FlameChartArrowProvider {
         Iterable<InstrumentedCallStackAnalysis> modules = TmfTraceUtils.getAnalysisModulesOfClass(fTrace, InstrumentedCallStackAnalysis.class);
         Iterator<InstrumentedCallStackAnalysis> iterator = modules.iterator();
 
-        List<@NonNull ITmfStateInterval> allEdges = new ArrayList<>();
+        List<ITmfStateInterval> allEdges = new ArrayList<>();
         while (iterator.hasNext()) {
             csModule = iterator.next();
-            List<@NonNull ITmfStateInterval> moduleEdges = csModule.getLinks(start, end, monitor == null ? new NullProgressMonitor() : monitor);
+            List<ITmfStateInterval> moduleEdges = csModule.getLinks(start, end, monitor == null ? new NullProgressMonitor() : monitor);
             allEdges.addAll(moduleEdges);
         }
         return allEdges;

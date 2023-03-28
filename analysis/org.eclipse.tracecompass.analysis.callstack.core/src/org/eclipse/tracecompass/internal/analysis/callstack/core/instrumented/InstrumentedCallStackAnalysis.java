@@ -93,7 +93,7 @@ public abstract class InstrumentedCallStackAnalysis extends TmfStateSystemAnalys
     }
 
     @Override
-    public boolean setTrace(@NonNull ITmfTrace trace) throws TmfAnalysisException {
+    public boolean setTrace(ITmfTrace trace) throws TmfAnalysisException {
         if (!super.setTrace(trace)) {
             return false;
         }
@@ -274,12 +274,12 @@ public abstract class InstrumentedCallStackAnalysis extends TmfStateSystemAnalys
     }
 
     @Override
-    public void addListener(@NonNull IAnalysisProgressListener listener) {
+    public void addListener(IAnalysisProgressListener listener) {
         fListeners.add(listener);
     }
 
     @Override
-    public void removeListener(@NonNull IAnalysisProgressListener listener) {
+    public void removeListener(IAnalysisProgressListener listener) {
         fListeners.remove(listener);
     }
 
@@ -368,7 +368,7 @@ public abstract class InstrumentedCallStackAnalysis extends TmfStateSystemAnalys
     }
 
     @Override
-    public @NonNull List<@NonNull String> getExtraDataSets() {
+    public @NonNull List<String> getExtraDataSets() {
         return fCallGraph.getExtraDataSets();
     }
 

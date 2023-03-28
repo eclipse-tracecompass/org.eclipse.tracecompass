@@ -412,7 +412,7 @@ public class FlameChartView extends BaseDataProviderTimeGraphView {
                 // use time -1 as a lower bound for the end of Time events to be
                 // included.
                 SelectionTimeQueryFilter filter = new SelectionTimeQueryFilter(Math.max(traceEntry.getStartTime(), time - 1), time, 2, map.keySet());
-                TmfModelResponse<@NonNull TimeGraphModel> response = traceEntry.getProvider().fetchRowModel(FetchParametersUtils.selectionTimeQueryToMap(filter), null);
+                TmfModelResponse<TimeGraphModel> response = traceEntry.getProvider().fetchRowModel(FetchParametersUtils.selectionTimeQueryToMap(filter), null);
                 TimeGraphModel model = response.getModel();
                 if (model != null) {
                     for (ITimeGraphRowModel row : model.getRows()) {
@@ -429,7 +429,7 @@ public class FlameChartView extends BaseDataProviderTimeGraphView {
 
     private void syncToRow(ITimeGraphRowModel rowModel, long time, Map<Long, TimeGraphEntry> entryMap) {
         long id = rowModel.getEntryID();
-        List<@NonNull ITimeGraphState> list = rowModel.getStates();
+        List<ITimeGraphState> list = rowModel.getStates();
         if (!list.isEmpty()) {
             ITimeGraphState event = list.get(0);
             if (event.getStartTime() + event.getDuration() <= time && list.size() > 1) {
@@ -584,7 +584,7 @@ public class FlameChartView extends BaseDataProviderTimeGraphView {
     }
 
     @Override
-    protected void fillTimeGraphEntryContextMenu(@NonNull IMenuManager menuManager) {
+    protected void fillTimeGraphEntryContextMenu(IMenuManager menuManager) {
         ISelection selection = getSite().getSelectionProvider().getSelection();
         if (selection instanceof StructuredSelection) {
             StructuredSelection sSel = (StructuredSelection) selection;
@@ -592,8 +592,8 @@ public class FlameChartView extends BaseDataProviderTimeGraphView {
                 TimeGraphEntry entry = (TimeGraphEntry) sSel.getFirstElement();
                 ITmfTreeDataModel entryModel = entry.getEntryModel();
                 if (entryModel instanceof IElementResolver) {
-                    Multimap<@NonNull String, @NonNull Object> metadata = ((IElementResolver) entryModel).getMetadata();
-                    Collection<@NonNull Object> tids = metadata.get(OsStrings.tid());
+                    Multimap<String, Object> metadata = ((IElementResolver) entryModel).getMetadata();
+                    Collection<Object> tids = metadata.get(OsStrings.tid());
                     if (tids.size() == 1) {
                         HostThread hostThread = new HostThread(getTrace(entry).getHostId(), (Integer) tids.iterator().next());
                         menuManager.add(new FollowThreadAction(FlameChartView.this, String.valueOf(hostThread.getTid()), hostThread));
@@ -691,7 +691,7 @@ public class FlameChartView extends BaseDataProviderTimeGraphView {
         if (signal == null) {
             return;
         }
-        List<@NonNull TimeGraphEntry> traceEntries = getEntryList(signal.getTrace());
+        List<TimeGraphEntry> traceEntries = getEntryList(signal.getTrace());
         if (traceEntries != null) {
             /*
              * remove functions associated to the trace's entries.

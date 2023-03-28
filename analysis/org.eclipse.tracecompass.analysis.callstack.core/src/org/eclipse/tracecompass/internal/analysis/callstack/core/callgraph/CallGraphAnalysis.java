@@ -140,7 +140,7 @@ public class CallGraphAnalysis extends TmfAbstractAnalysisModule implements ICal
     }
 
     @Override
-    public @NonNull String getHelpText(@NonNull ITmfTrace trace) {
+    public @NonNull String getHelpText(ITmfTrace trace) {
         return getHelpText();
     }
 

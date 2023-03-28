@@ -68,7 +68,7 @@ public final class SymbolAspect implements ISegmentAspect {
     }
 
     @Override
-    public @Nullable Object resolve(@NonNull ISegment segment) {
+    public @Nullable Object resolve(ISegment segment) {
         if (segment instanceof ICalledFunction) {
             ICalledFunction calledFunction = (ICalledFunction) segment;
             ITmfTrace trace = TmfTraceManager.getInstance().getActiveTrace();

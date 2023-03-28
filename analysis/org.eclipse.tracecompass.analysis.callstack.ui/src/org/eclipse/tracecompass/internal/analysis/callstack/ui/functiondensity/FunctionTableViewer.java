@@ -15,7 +15,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.StreamSupport;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.tracecompass.analysis.timing.core.segmentstore.ISegmentStoreProvider;
@@ -46,11 +45,11 @@ public class FunctionTableViewer extends AbstractSegmentStoreTableViewer {
     }
 
     @Override
-    protected @Nullable ISegmentStoreProvider getSegmentStoreProvider(@NonNull ITmfTrace trace) {
+    protected @Nullable ISegmentStoreProvider getSegmentStoreProvider(ITmfTrace trace) {
         IAnalysisModule module = trace.getAnalysisModule(fAnalysisId);
         if (!(module instanceof ISegmentStoreProvider)) {
-            Iterable<@NonNull ISegmentStoreProvider> modules = TmfTraceUtils.getAnalysisModulesOfClass(trace, ISegmentStoreProvider.class);
-            Optional<@NonNull ISegmentStoreProvider> providers = StreamSupport.stream(modules.spliterator(), false)
+            Iterable<ISegmentStoreProvider> modules = TmfTraceUtils.getAnalysisModulesOfClass(trace, ISegmentStoreProvider.class);
+            Optional<ISegmentStoreProvider> providers = StreamSupport.stream(modules.spliterator(), false)
                     .filter(mod -> (mod instanceof IAnalysisModule && Objects.equals(fAnalysisId, ((IAnalysisModule) mod).getId())))
                     .findFirst();
             if (providers.isPresent()) {

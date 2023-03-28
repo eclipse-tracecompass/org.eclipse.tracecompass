@@ -123,7 +123,7 @@ public class FlameChartDataProvider extends AbstractTmfTraceDataProvider impleme
     private final long fTraceId = ENTRY_ID.getAndIncrement();
 
     /** Cache for entry metadata */
-    private final Map<Long, @NonNull Multimap<@NonNull String, @NonNull Object>> fEntryMetadata = new HashMap<>();
+    private final Map<Long, Multimap<String, Object>> fEntryMetadata = new HashMap<>();
 
     private static class TidInformation {
         private final HostThread fTid;
@@ -323,7 +323,7 @@ public class FlameChartDataProvider extends AbstractTmfTraceDataProvider impleme
                 // Not the expected size of tooltip, just return empty
                 return new TmfModelResponse<>(null, Status.COMPLETED, CommonStatusMessage.COMPLETED);
             }
-            Entry<@NonNull Long, @NonNull FlameChartEntryModel> entry = entries.entrySet().iterator().next();
+            Entry<Long, FlameChartEntryModel> entry = entries.entrySet().iterator().next();
             Map<String, String> tooltip = getTooltip(entry.getKey(), entry.getValue(), times.get(0), monitor);
 
             return new TmfModelResponse<>(tooltip, Status.COMPLETED, CommonStatusMessage.COMPLETED);
@@ -548,7 +548,7 @@ public class FlameChartDataProvider extends AbstractTmfTraceDataProvider impleme
             }
             if (entries.size() == 1 && times.size() == 2) {
                 // this is a request for a follow event.
-                Entry<@NonNull Long, @NonNull FlameChartEntryModel> entry = entries.entrySet().iterator().next();
+                Entry<Long, FlameChartEntryModel> entry = entries.entrySet().iterator().next();
                 if (times.get(0) == Long.MIN_VALUE) {
                     List<ITimeGraphRowModel> followEvents = getFollowEvent(entry, times.get(times.size() - 1), false);
                     TimeGraphModel model = followEvents == null ? null : new TimeGraphModel(followEvents);
@@ -791,7 +791,7 @@ public class FlameChartDataProvider extends AbstractTmfTraceDataProvider impleme
     public void resetFunctionNames(IProgressMonitor monitor) {
         fTimeEventNames.invalidateAll();
         synchronized (fProviders) {
-            Collection<@NonNull ISymbolProvider> symbolProviders = SymbolProviderManager.getInstance().getSymbolProviders(getTrace());
+            Collection<ISymbolProvider> symbolProviders = SymbolProviderManager.getInstance().getSymbolProviders(getTrace());
             SubMonitor sub = SubMonitor.convert(monitor, "CallStackDataProvider#resetFunctionNames", symbolProviders.size()); //$NON-NLS-1$
             fProviders.clear();
             for (ISymbolProvider symbolProvider : symbolProviders) {
@@ -843,8 +843,8 @@ public class FlameChartDataProvider extends AbstractTmfTraceDataProvider impleme
     }
 
     @Override
-    public @NonNull Multimap<@NonNull String, @NonNull Object> getFilterData(long entryId, long time, @Nullable IProgressMonitor monitor) {
-        Multimap<@NonNull String, @NonNull Object> data = ITimeGraphStateFilter.mergeMultimaps(ITimeGraphDataProvider.super.getFilterData(entryId, time, monitor),
+    public @NonNull Multimap<String, Object> getFilterData(long entryId, long time, @Nullable IProgressMonitor monitor) {
+        Multimap<String, Object> data = ITimeGraphStateFilter.mergeMultimaps(ITimeGraphDataProvider.super.getFilterData(entryId, time, monitor),
                 fEntryMetadata.getOrDefault(entryId, ImmutableMultimap.of()));
         FlameChartEntryModel entryModel = fEntries.get(entryId);
         if (entryModel == null) {

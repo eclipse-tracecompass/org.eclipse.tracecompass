@@ -46,7 +46,7 @@ public class LttngUstCallStackAnalysis extends InstrumentedCallStackAnalysis {
      */
     public static final String ID = "org.eclipse.tracecompass.analysis.callstack.core.analysis"; //$NON-NLS-1$
 
-    private @Nullable Set<@NonNull TmfAbstractAnalysisRequirement> fAnalysisRequirements = null;
+    private @Nullable Set<TmfAbstractAnalysisRequirement> fAnalysisRequirements = null;
 
     @Override
     public boolean setTrace(ITmfTrace trace) throws TmfAnalysisException {
@@ -67,7 +67,7 @@ public class LttngUstCallStackAnalysis extends InstrumentedCallStackAnalysis {
     }
 
     @Override
-    protected @NonNull Iterable<@NonNull IAnalysisModule> getDependentAnalyses() {
+    protected @NonNull Iterable<IAnalysisModule> getDependentAnalyses() {
         LttngUstTrace trace = getTrace();
         if (trace == null) {
             return Collections.emptyList();
@@ -79,8 +79,8 @@ public class LttngUstCallStackAnalysis extends InstrumentedCallStackAnalysis {
     }
 
     @Override
-    public @NonNull Iterable<@NonNull TmfAbstractAnalysisRequirement> getAnalysisRequirements() {
-        Set<@NonNull TmfAbstractAnalysisRequirement> requirements = fAnalysisRequirements;
+    public @NonNull Iterable<TmfAbstractAnalysisRequirement> getAnalysisRequirements() {
+        Set<TmfAbstractAnalysisRequirement> requirements = fAnalysisRequirements;
         if (requirements == null) {
             LttngUstTrace trace = getTrace();
             ILttngUstEventLayout layout = ILttngUstEventLayout.DEFAULT_LAYOUT;

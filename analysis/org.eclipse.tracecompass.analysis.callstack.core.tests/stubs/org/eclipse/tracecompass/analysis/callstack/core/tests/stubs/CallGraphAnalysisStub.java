@@ -77,7 +77,7 @@ public class CallGraphAnalysisStub extends CallGraphAnalysis {
 
         @Override
         public synchronized @Nullable CallStackSeries getCallStackSeries() {
-            List<String @NonNull []> patterns = fPatterns;
+            List<String[]> patterns = fPatterns;
             return new CallStackSeries(fSs, patterns == null ? PATTERNS : patterns, 0, "", new CallStackHostUtils.TraceHostIdResolver(getTrace()), new CallStackSeries.AttributeValueThreadResolver(1)); //$NON-NLS-1$
         }
 

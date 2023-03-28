@@ -146,7 +146,7 @@ public class ModelListener implements ITmfNewAnalysisModuleListener {
         }
 
         @Override
-        public @NonNull Collection<@NonNull String> getHostIds() {
+        public @NonNull Collection<String> getHostIds() {
             return fHostIds;
         }
 

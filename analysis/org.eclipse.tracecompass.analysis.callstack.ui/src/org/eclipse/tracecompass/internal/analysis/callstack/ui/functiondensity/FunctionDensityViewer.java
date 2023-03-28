@@ -11,7 +11,6 @@
 
 package org.eclipse.tracecompass.internal.analysis.callstack.ui.functiondensity;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.tracecompass.analysis.timing.core.segmentstore.ISegmentStoreProvider;
@@ -41,7 +40,7 @@ public class FunctionDensityViewer extends AbstractSegmentStoreDensityViewer {
     }
 
     @Override
-    protected @Nullable ISegmentStoreProvider getSegmentStoreProvider(@NonNull ITmfTrace trace) {
+    protected @Nullable ISegmentStoreProvider getSegmentStoreProvider(ITmfTrace trace) {
         IAnalysisModule modules = trace.getAnalysisModule(fAnalysisId);
         if (!(modules instanceof ISegmentStoreProvider)) {
             return null;

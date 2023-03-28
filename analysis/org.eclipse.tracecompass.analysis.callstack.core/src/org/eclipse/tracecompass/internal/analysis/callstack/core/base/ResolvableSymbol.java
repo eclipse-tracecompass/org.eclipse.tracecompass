@@ -13,7 +13,6 @@ package org.eclipse.tracecompass.internal.analysis.callstack.core.base;
 
 import java.util.Collection;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.tmf.core.symbols.ISymbolProvider;
 import org.eclipse.tracecompass.tmf.core.symbols.SymbolProviderUtils;
@@ -47,7 +46,7 @@ public class ResolvableSymbol implements ICallStackSymbol {
     }
 
     @Override
-    public String resolve(@NonNull Collection<@NonNull ISymbolProvider> providers) {
+    public String resolve(Collection<ISymbolProvider> providers) {
         return SymbolProviderUtils.getSymbolText(providers, fPid, fTime, fAddr);
     }
 

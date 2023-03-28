@@ -13,7 +13,6 @@ package org.eclipse.tracecompass.internal.analysis.callstack.core.callgraph;
 
 import java.util.Collection;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.base.FlameDefaultPalette;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.base.ICallStackElement;
@@ -30,7 +29,7 @@ import org.eclipse.tracecompass.tmf.core.timestamp.ITmfTimestamp;
  *
  * @author Geneviève Bastien
  */
-public interface ICallGraphProvider extends IWeightedTreeProvider<@NonNull ICallStackSymbol, ICallStackElement, AggregatedCallSite> {
+public interface ICallGraphProvider extends IWeightedTreeProvider<ICallStackSymbol, ICallStackElement, AggregatedCallSite> {
 
     /**
      * Get the group descriptors that describe how the elements are grouped in
@@ -78,12 +77,12 @@ public interface ICallGraphProvider extends IWeightedTreeProvider<@NonNull ICall
     CallGraph getCallGraph();
 
     @Override
-    default @Nullable IWeightedTreeSet<@NonNull ICallStackSymbol, ICallStackElement, AggregatedCallSite> getSelection(ITmfTimestamp start, ITmfTimestamp end) {
+    default @Nullable IWeightedTreeSet<ICallStackSymbol, ICallStackElement, AggregatedCallSite> getSelection(ITmfTimestamp start, ITmfTimestamp end) {
         return getCallGraph(start, end);
     }
 
     @Override
-    default IWeightedTreeSet<@NonNull ICallStackSymbol, ICallStackElement, AggregatedCallSite> getTreeSet() {
+    default IWeightedTreeSet<ICallStackSymbol, ICallStackElement, AggregatedCallSite> getTreeSet() {
         return getCallGraph();
     }
 

@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.analysis.os.linux.core.model.HostThread;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.CallStackHostUtils.IHostIdProvider;
@@ -239,7 +238,7 @@ public class CallStackSeries implements ISegmentStore<ISegment> {
             fSs = ss;
             fHostProvider = hostProvider;
             // Get the cpu quark
-            List<@NonNull Integer> quarks = ss.getQuarks(quark, path);
+            List<Integer> quarks = ss.getQuarks(quark, path);
             fCpuQuark = quarks.isEmpty() ? ITmfStateSystem.INVALID_ATTRIBUTE : quarks.get(0);
         }
 
@@ -547,7 +546,7 @@ public class CallStackSeries implements ISegmentStore<ISegment> {
         // narrow down search when object is a segment
         if (o instanceof ICalledFunction) {
             ICalledFunction seg = (ICalledFunction) o;
-            Iterable<@NonNull ISegment> iterable = getIntersectingElements(seg.getStart());
+            Iterable<ISegment> iterable = getIntersectingElements(seg.getStart());
             return Iterables.contains(iterable, seg);
         }
         return false;
@@ -606,7 +605,7 @@ public class CallStackSeries implements ISegmentStore<ISegment> {
         }
 
         /* Iterate through possible segments until we have found them all */
-        Iterator<@NonNull ISegment> iterator = getIntersectingElements(minEnd, maxStart).iterator();
+        Iterator<ISegment> iterator = getIntersectingElements(minEnd, maxStart).iterator();
         int unFound = c.size();
         while (iterator.hasNext() && unFound > 0) {
             ISegment seg = iterator.next();
