@@ -157,7 +157,7 @@ public interface IHostModel {
      * @param end
      *            The end of the period for which to get the time on CPU
      * @param resolution
-     *            The resolution, ie the number of nanoseconds between kernel
+     *            The resolution, i.e., the number of nanoseconds between kernel
      *            status queries. A value lower or equal to 1 will return all
      *            intervals.
      * @return An iterator over the status intervals for the thread

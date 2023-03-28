@@ -193,7 +193,7 @@ public class FlameGraphView extends TmfView {
      */
     private final Semaphore fLock = new Semaphore(1);
 
-    // Variable used to specify when the graph is dirty, ie waiting for data
+    // Variable used to specify when the graph is dirty, i.e., waiting for data
     // refresh
     private final AtomicInteger fDirty = new AtomicInteger();
 

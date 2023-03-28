@@ -16,8 +16,8 @@ import java.util.Collection;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * A basic interface for a tree structure, ie hierarchical data where each node
- * can be linked to a specific object.
+ * A basic interface for a tree structure, i.e., hierarchical data where each
+ * node can be linked to a specific object.
  *
  * @author Geneviève Bastien
  */

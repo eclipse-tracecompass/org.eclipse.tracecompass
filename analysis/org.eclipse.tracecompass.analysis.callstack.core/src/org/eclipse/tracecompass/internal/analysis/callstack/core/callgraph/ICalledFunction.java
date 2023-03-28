@@ -49,7 +49,7 @@ public interface ICalledFunction extends INamedSegment {
     /**
      * The segment's time on CPU
      *
-     * @return The CPU time, ie the time spent on the CPU by the thread who
+     * @return The CPU time, i.e., the time spent on the CPU by the thread who
      *         called this function. {@link IHostModel#TIME_UNKNOWN} if not
      *         available.
      */

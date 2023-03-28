@@ -209,7 +209,7 @@ public interface IWeightedTreeProvider<@NonNull N, E, @NonNull T extends Weighte
 
     /**
      * Get a weighted tree set for a time selection. It should be a subset of
-     * the complete tree, ie the elements, and weights of the weighted trees
+     * the complete tree, i.e., the elements and weights of the weighted trees
      * should be included in full tree, but its range should cover only the
      * requested time range. If this provider does not support selection range,
      * <code>null</code> should be returned.

@@ -95,7 +95,7 @@ import com.google.common.collect.Multimap;
 
 /**
  * This class provides the data from an instrumented callstack analysis, in the
- * form of a flamechart, ie the groups are returned hierarchically and leaf
+ * form of a flamechart, i.e., the groups are returned hierarchically and leaf
  * groups return their callstacks.
  *
  * @author Geneviève Bastien

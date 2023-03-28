@@ -25,7 +25,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Multimap;
 
 /**
- * Represents a callgraph, ie the aggregation of callsites per elements.
+ * Represents a callgraph, i.e., the aggregation of callsites per elements.
  *
  * TODO: Have an interface and keep the add* method internal
  *

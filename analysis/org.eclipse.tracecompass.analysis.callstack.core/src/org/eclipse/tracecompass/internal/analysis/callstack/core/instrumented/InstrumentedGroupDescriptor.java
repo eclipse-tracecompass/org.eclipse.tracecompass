@@ -35,7 +35,7 @@ public class InstrumentedGroupDescriptor extends CallStackGroupDescriptor {
      * @param subPath
      *            The sub-path to this group
      * @param nextGroup
-     *            The next group of the hierarchy, ie the child of the group
+     *            The next group of the hierarchy, i.e., the child of the group
      *            being constructed or <code>null</code> if this group is the
      *            leaf
      * @param isSymbolKeyGroup

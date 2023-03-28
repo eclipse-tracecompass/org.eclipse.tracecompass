@@ -95,7 +95,7 @@ public interface ICallStackElement extends ITree {
      * Get whether this element is a leaf element in the callstack hierarchy.
      * Leaf elements are expected to contain the proper analysis data.
      *
-     * @return Whether this element is a leaf, i.e. contains analysis data or
+     * @return Whether this element is a leaf, i.e., contains analysis data or
      *         not
      */
     boolean isLeaf();

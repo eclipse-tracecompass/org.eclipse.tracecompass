@@ -23,7 +23,8 @@ import org.eclipse.tracecompass.statesystem.core.ITmfStateSystem;
  * Represents the actual callstack for one element. The callstack is a stack of
  * calls, whether function calls, executions, sub-routines that have a certain
  * depth and where durations at each depth is in the form of a reverse pyramid,
- * ie, a call at level n+1 will have start_n+1 >= start_n and end_n+1 <= end_n.
+ * i.e., a call at level n+1 will have start_n+1 >= start_n and end_n+1 <=
+ * end_n.
  *
  * TODO: Is that true? the reverse pyramid?
  *

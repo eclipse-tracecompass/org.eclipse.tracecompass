@@ -36,8 +36,9 @@ public class InstrumentedGroupDescriptor extends ProfilingGroupDescriptor {
      * @param subPath
      *            The sub-path to this group
      * @param nextGroup
-     *            The next group of the hierarchy, ie the child of the group being
-     *            constructed or <code>null</code> if this group is the leaf
+     *            The next group of the hierarchy, i.e., the child of the group
+     *            being constructed or <code>null</code> if this group is the
+     *            leaf
      * @param isSymbolKeyGroup
      *            Whether this level contains the symbol key
      */
