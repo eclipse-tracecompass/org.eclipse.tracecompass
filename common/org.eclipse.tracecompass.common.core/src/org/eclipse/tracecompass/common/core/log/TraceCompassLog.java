@@ -34,7 +34,7 @@ public final class TraceCompassLog {
         String loggingProperty = System.getProperty(LOGGING_PROPERTY);
         if (!"true".equals(loggingProperty)) { //$NON-NLS-1$
             TC_PARENT_LOGGER.setUseParentHandlers(false);
-            TC_PARENT_LOGGER.setLevel(Level.OFF);
+            TC_PARENT_LOGGER.setLevel(Level.OFF); // NOSONAR
         }
     }
 

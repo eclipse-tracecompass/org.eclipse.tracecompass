@@ -57,7 +57,7 @@ public final class TraceCompassMonitor extends NotificationBroadcasterSupport im
          * which doesn't output any such breaking strings. Finer logging for
          * this package isn't necessary anyway here.
          */
-        Logger.getLogger("javax.management").setLevel(Level.FINE); //$NON-NLS-1$
+        Logger.getLogger("javax.management").setLevel(Level.FINE); //$NON-NLS-1$ NOSONAR
         MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
         String beanName = "org.eclipse.tracecompass.common.core.log:type=TraceCompassMonitoring,name=" + label.replace(':', '-'); //$NON-NLS-1$
         try {
