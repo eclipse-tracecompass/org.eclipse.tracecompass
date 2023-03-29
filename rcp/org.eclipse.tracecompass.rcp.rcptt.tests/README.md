@@ -33,4 +33,4 @@ This launch sets up the AUT path and dataPath (test traces).
 If you are not using the default paths make sure to pass the correct arguments to
 the AUT in the run configurations.
 
-![](http://i.imgur.com/J4ohsPE.png)
+![arguments](http://i.imgur.com/J4ohsPE.png)

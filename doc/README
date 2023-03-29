@@ -1,3 +1,5 @@
+# How to build the documentation
+
 This describes how to build the documentation found in the
 org.eclipse.tracecompass.*.doc.* plugins.
 
@@ -5,7 +7,7 @@ To build doc plugins use maven command: mvn clean install
 
 To build doc plugins from within Eclipse you need to install m2e.
 
-To edit the mediawiki text, your Eclipse environment first needs to have the 
+To edit the mediawiki text, your Eclipse environment first needs to have the
 "Mylyn Wikitext" plugin installed. It can be found in the default Eclipse repository,
 under "Collaboration".
 

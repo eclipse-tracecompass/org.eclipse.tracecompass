@@ -22,14 +22,12 @@ The plugins are categorized as follows:
 See the `components.svg` file for a diagram showing the dependencies between the
 different components.
 
-
 Setting up the development environment
 --------------------------------------
 
 To set up the environment to build Trace Compass from within Eclipse, see this
 wiki page:
 <http://wiki.eclipse.org/Trace_Compass/Development_Environment_Setup>
-
 
 Compiling manually
 ------------------
@@ -153,4 +151,3 @@ the build system. You can set them by using `-P[profile name]` and
   the destination specified by `-DdocDestination=/absolute/path/to/destination`.
   Some directories may need to already exist at the destination (or Maven will
   throw related errors).
-
