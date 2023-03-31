@@ -33,6 +33,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.common.core.NonNullUtils;
+import org.eclipse.tracecompass.internal.tmf.ui.Activator;
 import org.eclipse.ui.internal.ide.IDEWorkbenchPlugin;
 import org.eclipse.ui.internal.wizards.datatransfer.DataTransferMessages;
 import org.eclipse.ui.internal.wizards.datatransfer.ILeveledImportStructureProvider;
@@ -198,9 +199,8 @@ public class ZipLeveledStructureProvider implements
         return zipFile;
     }
 
-
     @Override
-    public boolean closeArchive(){
+    public boolean closeArchive() {
         try {
             getZipFile().close();
         } catch (IOException e) {
@@ -214,27 +214,42 @@ public class ZipLeveledStructureProvider implements
     /**
      * Initializes this object's children table based on the contents of the
      * specified source file.
+     *
+     * Since an archive entry could also be an archive: a variable counting the
+     * number of file entries was added to the method as per SonarCloud
+     * suggestion:
+     * https://sonarcloud.io/organizations/eclipse/rules?open=java%3AS5042&rule_key=java%3AS5042&tab=how_to_fix
      */
     protected void initialize() {
         children = new HashMap<>(1000);
 
         children.put(root, new ArrayList<>());
         Enumeration<? extends ZipEntry> entries = zipFile.entries();
+        long archiveEntries = 0;
+        long archiveSize = 0;
+
         while (entries.hasMoreElements()) {
             ZipEntry entry = Objects.requireNonNull(entries.nextElement());
             IPath path = new Path(entry.getName()).addTrailingSeparator();
+            archiveSize += entry.getSize();
+            ++archiveEntries;
 
             if (entry.isDirectory()) {
                 createContainer(path);
-            } else
-            {
-                // Ensure the container structure for all levels above this is initialized
-                // Once we hit a higher-level container that's already added we need go no further
+            } else {
+                // Ensure the container structure for all levels above this is
+                // initialized. Once we hit a higher-level container that's
+                // already added we need go no further
                 int pathSegmentCount = path.segmentCount();
                 if (pathSegmentCount > 1) {
                     createContainer(path.uptoSegment(pathSegmentCount - 1));
                 }
-                createFile(new ZipArchiveEntry(entry.getName()));
+                if (ArchiveUtil.verifyZipFileIsSafe(archiveSize, archiveEntries)) {
+                    createFile(new ZipArchiveEntry(entry.getName()));
+                } else {
+                    Activator activator = new Activator();
+                    activator.logError("Unable to create file, Zip file is unsafe");
+                }
             }
         }
     }

@@ -27,15 +27,26 @@ import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.tracecompass.internal.tmf.ui.Activator;
 import org.eclipse.tracecompass.tmf.core.project.model.TmfTraceCoreUtils;
 import org.eclipse.tracecompass.tmf.core.util.Pair;
 import org.eclipse.ui.wizards.datatransfer.FileSystemStructureProvider;
+
+import com.google.common.annotations.VisibleForTesting;
 
 /**
  * Various utilities for dealing with archives in the context of importing
  * traces.
  */
 public class ArchiveUtil {
+
+    /**
+     * Threshold for size was selected according to SonarCloud suggestion and
+     * entries were revised to be smaller than SonarCould suggestion:
+     * https://sonarcloud.io/organizations/eclipse/rules?open=java%3AS5042&rule_key=java%3AS5042&tab=how_to_fix
+     */
+    private static final int THRESHOLD_ENTRIES = 5000;
+    private static final int THRESHOLD_SIZE = 1000000000;
 
     private ArchiveUtil() {
         // Do nothing, not meant to be instantiated
@@ -168,7 +179,12 @@ public class ArchiveUtil {
     }
 
     /**
-     * Get the archive size
+     * Get the archive size.
+     *
+     * Since an archive entry could also be an archive: a variable counting the
+     * number of file entries was added to the method as per SonarCloud
+     * suggestion:
+     * https://sonarcloud.io/organizations/eclipse/rules?open=java%3AS5042&rule_key=java%3AS5042&tab=how_to_fix
      *
      * @param archivePath
      *            Path of the archive
@@ -188,14 +204,51 @@ public class ArchiveUtil {
 
         ZipFile zipFile = getSpecifiedZipSourceFile(archivePath);
         if (zipFile != null) {
-            for (Enumeration<? extends ZipEntry> e = zipFile.entries(); e.hasMoreElements();) {
-                archiveSize += Objects.requireNonNull(e.nextElement()).getSize();
+            Enumeration<? extends ZipEntry> entries = zipFile.entries();
+            long archiveEntries = 0;
+            while (entries.hasMoreElements()) {
+                archiveSize += Objects.requireNonNull(entries.nextElement()).getSize();
+                ++archiveEntries;
             }
             closeZipFile(zipFile);
-            return archiveSize;
+            // ***SIZE OR LENGTH OF ENTRIES
+            if (verifyZipFileIsSafe(archiveSize, archiveEntries)) {
+                return archiveSize;
+            }
         }
 
         return -1;
+    }
+
+    /**
+     * Verify if zip file is a zip bomb by checking if number of entries is not
+     * above threshold entries, or if archive uncompressed size is not above
+     * threshold size.
+     *
+     * @param archiveSize
+     *            the uncompressed size of zip file
+     * @param archiveEntries
+     *            the number of entries in zip file
+     * @return true if file is within size or number of entries threshold,
+     *         otherwise it returns false
+     */
+    @VisibleForTesting
+    public static boolean verifyZipFileIsSafe(long archiveSize, long archiveEntries) {
+        String unsafeZipEntriesMessage = ". File seems unsafe to open."; //$NON-NLS-1$
+        String unsafeZipSizeMessage = " bytes. File seems unsafe to open."; //$NON-NLS-1$
+
+        if (archiveEntries > THRESHOLD_ENTRIES) {
+            Activator activator = new Activator();
+            activator.logError("Zip file has too many entries: " + archiveEntries + unsafeZipEntriesMessage); //$NON-NLS-1$
+            return false;
+        }
+
+        if (archiveSize > THRESHOLD_SIZE) {
+            Activator activator = new Activator();
+            activator.logError("Zip file is too large: " + archiveSize + unsafeZipSizeMessage); //$NON-NLS-1$
+            return false;
+        }
+        return true;
     }
 
     /**

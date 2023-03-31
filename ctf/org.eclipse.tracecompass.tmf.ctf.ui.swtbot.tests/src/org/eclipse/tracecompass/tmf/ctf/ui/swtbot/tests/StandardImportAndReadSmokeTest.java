@@ -55,6 +55,7 @@ import org.eclipse.swtbot.swt.finder.widgets.SWTBotText;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTree;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTreeItem;
 import org.eclipse.swtbot.swt.finder.widgets.TimeoutException;
+import org.eclipse.tracecompass.internal.tmf.ui.project.wizards.importtrace.ArchiveUtil;
 import org.eclipse.tracecompass.internal.tmf.ui.project.wizards.importtrace.ImportConfirmation;
 import org.eclipse.tracecompass.internal.tmf.ui.project.wizards.importtrace.ImportTraceWizard;
 import org.eclipse.tracecompass.internal.tmf.ui.project.wizards.importtrace.ImportTraceWizardPage;
@@ -103,6 +104,9 @@ public class StandardImportAndReadSmokeTest extends AbstractImportAndReadSmokeTe
     private static final String URI_DEVICE_SEPARATOR = IS_WIN32 ? URI_SEPARATOR : "";
 
     private static final int TEST_OPTION_CHECK_EXPERIMENT = 1 << 15;
+
+    private static final int ABOVE_THRESHOLD_ENTRIES = 5001;
+    private static final int ABOVE_THRESHOLD_SIZE = 1000000001;
 
     /** Test Class setup */
     @BeforeClass
@@ -479,6 +483,28 @@ public class StandardImportAndReadSmokeTest extends AbstractImportAndReadSmokeTe
         assertEquals(traceName, traces.get(0).getName());
 
         SWTBotUtils.clearTracesFolder(fBot, TRACE_PROJECT_NAME);
+    }
+
+    /**
+     * Test the method verifyZipFileIsSafe with a size argument that is above
+     * the size threshold permitted.
+     */
+    @Test
+    public void testArchiveSizeTooBig() {
+        boolean actual = ArchiveUtil.verifyZipFileIsSafe(ABOVE_THRESHOLD_SIZE, ABOVE_THRESHOLD_ENTRIES - 1);
+        assertFalse(actual);
+
+    }
+
+    /**
+     * Test the method verifyZipFileIsSafe with a number of entries in argument
+     * that is above the number of entries threshold permitted.
+     */
+    @Test
+    public void testArchiveTooManyEntries() {
+        boolean actual = ArchiveUtil.verifyZipFileIsSafe(ABOVE_THRESHOLD_SIZE - 1, ABOVE_THRESHOLD_ENTRIES);
+        assertFalse(actual);
+
     }
 
     private static void assertNoTraces() {
