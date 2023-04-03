@@ -158,7 +158,7 @@ public class HTNodeTest<E extends IHTInterval, N extends HTNode<E>> {
             IHTNodeFactory<E, N> nodeFactory,
             IHTIntervalReader<E> objReader,
             ObjectFactory<E> objFactory) throws IOException {
-        File file = File.createTempFile("tmp", null);
+        File file = File.createTempFile("tmp", null); // NOSONAR
         assertNotNull(file);
         fHtObjectReader = objReader;
         fNodeFactory = nodeFactory;

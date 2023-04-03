@@ -52,7 +52,7 @@ public class HtIoTest {
      */
     @Before
     public void setUp() throws IOException {
-        File file = File.createTempFile("tmp", null);
+        File file = File.createTempFile("tmp", null); // NOSONAR
         assertNotNull(file);
         fStateFile = file;
 

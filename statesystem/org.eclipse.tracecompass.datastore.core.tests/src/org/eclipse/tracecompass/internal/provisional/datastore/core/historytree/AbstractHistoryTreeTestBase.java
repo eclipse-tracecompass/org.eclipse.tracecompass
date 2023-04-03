@@ -55,7 +55,7 @@ public abstract class AbstractHistoryTreeTestBase<E extends IHTInterval, N exten
     @Before
     public void setupTest() {
         try {
-            fTempFile = File.createTempFile("tmpStateSystem", null);
+            fTempFile = File.createTempFile("tmpStateSystem", null); // NOSONAR
         } catch (IOException e) {
             fail(e.getMessage());
         }
