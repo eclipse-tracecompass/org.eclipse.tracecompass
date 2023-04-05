@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><?pde version="3.8"?><target name="tracecompass-e4.20" sequenceNumber="11">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><?pde version="3.8"?><target name="tracecompass-e4.20" sequenceNumber="12">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.cdt.gnu.dsf.feature.group" version="0.0.0"/>
@@ -27,7 +27,7 @@
 <unit id="org.apache.commons.lang" version="0.0.0"/>
 <unit id="org.apache.commons.lang3" version="0.0.0"/>
 <unit id="org.apache.xml.serializer" version="0.0.0"/>
-<unit id="com.google.guava" version="27.1.0.v20190517-1946"/>
+<unit id="com.google.guava" version="30.1.0.v20210127-2300"/>
 <unit id="org.json" version="0.0.0"/>
 <unit id="org.apache.derby" version="0.0.0"/>
 <unit id="org.hamcrest" version="0.0.0"/>
