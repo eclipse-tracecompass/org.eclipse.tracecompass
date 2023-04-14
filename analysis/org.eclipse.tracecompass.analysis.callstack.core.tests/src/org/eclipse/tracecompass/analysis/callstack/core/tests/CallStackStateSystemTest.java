@@ -24,8 +24,8 @@ import java.util.List;
 
 import org.eclipse.tracecompass.analysis.callstack.core.tests.stubs.CallStackAnalysisStub;
 import org.eclipse.tracecompass.analysis.profiling.core.callstack.CallStackStateProvider;
-import org.eclipse.tracecompass.internal.analysis.callstack.core.CallStackSeries;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.base.ICallStackGroupDescriptor;
+import org.eclipse.tracecompass.internal.analysis.callstack.core.callstack.CallStackSeries;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.instrumented.InstrumentedCallStackAnalysis;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.instrumented.InstrumentedGroupDescriptor;
 import org.eclipse.tracecompass.statesystem.core.ITmfStateSystem;

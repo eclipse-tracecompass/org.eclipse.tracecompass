@@ -9,7 +9,7 @@
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
 
-package org.eclipse.tracecompass.internal.analysis.callstack.core;
+package org.eclipse.tracecompass.internal.analysis.callstack.core.callstack;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -24,12 +24,13 @@ import java.util.Objects;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.analysis.os.linux.core.model.HostThread;
-import org.eclipse.tracecompass.internal.analysis.callstack.core.CallStackHostUtils.IHostIdProvider;
-import org.eclipse.tracecompass.internal.analysis.callstack.core.CallStackHostUtils.IHostIdResolver;
+import org.eclipse.tracecompass.internal.analysis.callstack.core.Activator;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.base.ICallStackElement;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.base.ICallStackGroupDescriptor;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.callgraph.CalledFunctionFactory;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.callgraph.ICalledFunction;
+import org.eclipse.tracecompass.internal.analysis.callstack.core.callstack.CallStackHostUtils.IHostIdProvider;
+import org.eclipse.tracecompass.internal.analysis.callstack.core.callstack.CallStackHostUtils.IHostIdResolver;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.instrumented.InstrumentedCallStackElement;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.instrumented.InstrumentedGroupDescriptor;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.model.IHostModel;

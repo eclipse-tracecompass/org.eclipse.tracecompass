@@ -16,10 +16,10 @@ import java.util.Objects;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.analysis.timing.core.segmentstore.ISegmentStoreProvider;
-import org.eclipse.tracecompass.internal.analysis.callstack.core.CallStackDepth;
-import org.eclipse.tracecompass.internal.analysis.callstack.core.CallStackHostUtils;
-import org.eclipse.tracecompass.internal.analysis.callstack.core.CallStackSeries;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.callgraph.ICalledFunction;
+import org.eclipse.tracecompass.internal.analysis.callstack.core.callstack.CallStackDepth;
+import org.eclipse.tracecompass.internal.analysis.callstack.core.callstack.CallStackHostUtils;
+import org.eclipse.tracecompass.internal.analysis.callstack.core.callstack.CallStackSeries;
 import org.eclipse.tracecompass.segmentstore.core.ISegment;
 import org.eclipse.tracecompass.tmf.core.analysis.IAnalysisModule;
 

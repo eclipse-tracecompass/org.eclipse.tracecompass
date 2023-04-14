@@ -9,7 +9,7 @@
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
 
-package org.eclipse.tracecompass.internal.analysis.callstack.core;
+package org.eclipse.tracecompass.internal.analysis.callstack.core.callstack;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -21,11 +21,11 @@ import java.util.function.Consumer;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.analysis.os.linux.core.model.HostThread;
-import org.eclipse.tracecompass.internal.analysis.callstack.core.CallStackHostUtils.IHostIdProvider;
-import org.eclipse.tracecompass.internal.analysis.callstack.core.CallStackSeries.IThreadIdProvider;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.base.ICallStackElement;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.callgraph.CalledFunctionFactory;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.callgraph.ICalledFunction;
+import org.eclipse.tracecompass.internal.analysis.callstack.core.callstack.CallStackHostUtils.IHostIdProvider;
+import org.eclipse.tracecompass.internal.analysis.callstack.core.callstack.CallStackSeries.IThreadIdProvider;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.model.IHostModel;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.model.ModelManager;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.model.ProcessStatusInterval;
