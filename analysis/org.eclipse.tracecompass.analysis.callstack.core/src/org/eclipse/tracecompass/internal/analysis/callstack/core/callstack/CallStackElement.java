@@ -111,6 +111,11 @@ public class CallStackElement implements ICallStackElement {
     }
 
     @Override
+    public boolean isCallStack() {
+        return isLeaf();
+    }
+
+    @Override
     public @Nullable IWeightedTreeGroupDescriptor getNextGroup() {
         return fNextDescriptor;
     }

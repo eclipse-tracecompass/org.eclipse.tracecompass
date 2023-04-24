@@ -261,9 +261,6 @@ public class InstrumentedCallStackElement extends CallStackElement {
      * @return The list of quarks containing the data
      */
     public List<Integer> getStackQuarks() {
-        if (!isLeaf()) {
-            throw new NoSuchElementException();
-        }
         int stackQuark = getStateSystem().optQuarkRelative(getQuark(), InstrumentedCallStackAnalysis.CALL_STACK);
         if (stackQuark == ITmfStateSystem.INVALID_ATTRIBUTE) {
             // No CallStack element underneath, assume a flat chart: the current
@@ -276,5 +273,11 @@ public class InstrumentedCallStackElement extends CallStackElement {
     @Override
     public InstrumentedCallStackElement copyElement() {
         return new InstrumentedCallStackElement(fHostResolver, fStateSystem, fQuark, super.getGroup(), null, fThreadIdResolver, null);
+    }
+
+    @Override
+    public boolean isCallStack() {
+        int stackQuark = getStateSystem().optQuarkRelative(getQuark(), InstrumentedCallStackAnalysis.CALL_STACK);
+        return stackQuark != ITmfStateSystem.INVALID_ATTRIBUTE;
     }
 }

@@ -11,8 +11,6 @@
 
 package org.eclipse.tracecompass.internal.analysis.callstack.core.instrumented;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.Nullable;
@@ -148,7 +146,7 @@ public class FlameChartEntryModel extends TimeGraphEntryModel {
          * @return the relevant {@link FlameChartEntryModel}
          */
         public FlameChartEntryModel build() {
-            return new FlameChartEntryModel(fId, fParentId, Collections.singletonList(fName), fStartTime, fEndTime, fEntryType, fDepth, fHostThread);
+            return new FlameChartEntryModel(fId, fParentId, fName, fStartTime, fEndTime, fEntryType, fDepth, fHostThread);
         }
 
         /**
@@ -190,7 +188,7 @@ public class FlameChartEntryModel extends TimeGraphEntryModel {
      * @param entryType
      *            The type of this entry
      */
-    public FlameChartEntryModel(long id, long parentId, List<String> name, long startTime, long endTime, EntryType entryType) {
+    public FlameChartEntryModel(long id, long parentId, String name, long startTime, long endTime, EntryType entryType) {
         super(id, parentId, name, startTime, endTime);
         fEntryType = entryType;
         fDepth = -1;
@@ -217,7 +215,7 @@ public class FlameChartEntryModel extends TimeGraphEntryModel {
      *            The entry's unique hostThread or <code>null</code> if host
      *            thread not available or variable
      */
-    public FlameChartEntryModel(long elementId, long parentId, List<String> name, long startTime, long endTime, EntryType entryType, int depth, @Nullable HostThread hostThread) {
+    public FlameChartEntryModel(long elementId, long parentId, String name, long startTime, long endTime, EntryType entryType, int depth, @Nullable HostThread hostThread) {
         super(elementId, parentId, name, startTime, endTime);
         fEntryType = entryType;
         fDepth = depth;

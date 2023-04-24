@@ -107,7 +107,7 @@ public class FlameChartDataProviderTest extends CallStackTestBase {
         TmfTreeModel<@NonNull FlameChartEntryModel> model = responseTree.getModel();
         assertNotNull(model);
         List<@NonNull FlameChartEntryModel> modelEntries = model.getEntries();
-        assertEquals(26, modelEntries.size());
+        assertEquals(22, modelEntries.size());
 
         String traceName = getTrace().getName();
 

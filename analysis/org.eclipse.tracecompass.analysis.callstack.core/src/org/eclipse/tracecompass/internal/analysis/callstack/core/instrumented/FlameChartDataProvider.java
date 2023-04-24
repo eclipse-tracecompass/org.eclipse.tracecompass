@@ -343,7 +343,7 @@ public class FlameChartDataProvider extends AbstractTmfTraceDataProvider impleme
             boolean complete = fcProvider.isComplete();
             CallStackSeries callstack = fcProvider.getCallStackSeries();
             if (callstack == null) {
-                return new TmfModelResponse<>(null, ITmfResponse.Status.FAILED, CommonStatusMessage.ANALYSIS_INITIALIZATION_FAILED);
+                return new TmfModelResponse<>(new TmfTreeModel<>(Collections.emptyList(), Collections.emptyList()), ITmfResponse.Status.RUNNING, CommonStatusMessage.RUNNING);
             }
             long start = getTrace().getStartTime().getValue();
             long end = Math.max(start, fcProvider.getEnd());
@@ -351,10 +351,10 @@ public class FlameChartDataProvider extends AbstractTmfTraceDataProvider impleme
             // Initialize the first element of the tree
             ImmutableList.Builder<FlameChartEntryModel> builder = ImmutableList.builder();
             @SuppressWarnings("null")
-            FlameChartEntryModel traceEntry = new FlameChartEntryModel(fTraceId, -1, Collections.singletonList(getTrace().getName()), start, end, FlameChartEntryModel.EntryType.TRACE);
+            FlameChartEntryModel traceEntry = new FlameChartEntryModel(fTraceId, -1, getTrace().getName(), start, end, FlameChartEntryModel.EntryType.TRACE);
             builder.add(traceEntry);
-
             FlameChartEntryModel callStackRoot = traceEntry;
+
             // If there is more than one callstack objects in the analysis,
             // create a root per series
             for (ICallStackElement element : callstack.getRootElements()) {
@@ -384,36 +384,34 @@ public class FlameChartDataProvider extends AbstractTmfTraceDataProvider impleme
         long elementId = getEntryId(element);
 
         // Is this an intermediate or leaf element
-        if ((element instanceof InstrumentedCallStackElement) && element.isLeaf()) {
+        if (element instanceof InstrumentedCallStackElement && ((InstrumentedCallStackElement) element).isCallStack()) {
             // For the leaf element, add the callstack entries
             InstrumentedCallStackElement finalElement = (InstrumentedCallStackElement) element;
             CallStack callStack = finalElement.getCallStack();
             // Set the fixed hostThread to the entry if it is available
             HostThread hostThread = callStack.getHostThread();
             // Create the entry for this level
-            FlameChartEntryModel entry = new FlameChartEntryModel(elementId, parentEntry.getId(), Collections.singletonList(element.getName()), parentEntry.getStartTime(), parentEntry.getEndTime(), FlameChartEntryModel.EntryType.LEVEL, -1,
-                    hostThread);
+            FlameChartEntryModel entry = new FlameChartEntryModel(elementId, parentEntry.getId(), element.getName(),
+                    parentEntry.getStartTime(), parentEntry.getEndTime(), FlameChartEntryModel.EntryType.LEVEL, -1, hostThread);
             builder.add(entry);
             for (int depth = 0; depth < callStack.getMaxDepth(); depth++) {
-                FlameChartEntryModel flameChartEntry = new FlameChartEntryModel(getEntryId(new CallStackDepth(callStack, depth + 1)), entry.getId(), Collections.singletonList(element.getName()), parentEntry.getStartTime(), parentEntry.getEndTime(),
+                FlameChartEntryModel flameChartEntry = new FlameChartEntryModel(getEntryId(new CallStackDepth(callStack, depth + 1)), entry.getId(), element.getName(), parentEntry.getStartTime(), parentEntry.getEndTime(),
                         FlameChartEntryModel.EntryType.FUNCTION, depth + 1, hostThread);
                 builder.add(flameChartEntry);
                 if (depth == 0 && callStack.hasKernelStatuses()) {
-                    long start = parentEntry.getStartTime();
-                    long end = parentEntry.getEndTime();
-                    if (hostThread != null) {
-                        IHostModel model = ModelManager.getModelFor(hostThread.getHost());
-                        start = Math.min(start, model.getStartTime());
-                        end = Math.max(end, model.getEndTime());
-                    }
-                    builder.add(new FlameChartEntryModel(getKernelEntryId(flameChartEntry.getId()), entry.getId(), Collections.singletonList(String.valueOf(Messages.FlameChartDataProvider_KernelStatusTitle)), start, end,
-                            FlameChartEntryModel.EntryType.KERNEL, -1, hostThread));
+                    builder.add(new FlameChartEntryModel(getKernelEntryId(flameChartEntry.getId()), entry.getId(), String.valueOf(Messages.FlameChartDataProvider_KernelStatusTitle),
+                            parentEntry.getStartTime(), parentEntry.getEndTime(), FlameChartEntryModel.EntryType.KERNEL, -1, hostThread));
                 }
             }
+            if (!element.isLeaf()) {
+                for (ICallStackElement child : element.getChildrenElements()) {
+                    processCallStackElement(child, builder, entry);
+                }
+            }
+            return;
         }
-
         // Intermediate element, create entry and process children
-        FlameChartEntryModel entry = new FlameChartEntryModel(elementId, parentEntry.getId(), Collections.singletonList(element.getName()), parentEntry.getStartTime(), parentEntry.getEndTime(), FlameChartEntryModel.EntryType.LEVEL);
+        FlameChartEntryModel entry = new FlameChartEntryModel(elementId, parentEntry.getId(), element.getName(), parentEntry.getStartTime(), parentEntry.getEndTime(), FlameChartEntryModel.EntryType.LEVEL);
         builder.add(entry);
         for (ICallStackElement child : element.getChildrenElements()) {
             processCallStackElement(child, builder, entry);

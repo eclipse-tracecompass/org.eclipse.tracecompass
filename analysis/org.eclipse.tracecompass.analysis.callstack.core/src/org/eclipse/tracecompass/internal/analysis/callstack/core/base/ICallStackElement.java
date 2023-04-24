@@ -99,4 +99,11 @@ public interface ICallStackElement extends ITree {
      *         not
      */
     boolean isLeaf();
+
+    /**
+     * Get whether this element has a callstack attribute under it.
+     *
+     * @return true if this element has a callstack, false otherwise
+     */
+    boolean isCallStack();
 }

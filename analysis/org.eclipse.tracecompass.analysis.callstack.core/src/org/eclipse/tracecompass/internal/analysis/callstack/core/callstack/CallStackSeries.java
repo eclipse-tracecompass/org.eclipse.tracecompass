@@ -399,7 +399,7 @@ public class CallStackSeries implements ISegmentStore<ISegment> {
         }
     }
 
-    private final InstrumentedGroupDescriptor fRootGroup;
+    private InstrumentedGroupDescriptor fRootGroup;
     private final String fName;
     private final @Nullable IThreadIdResolver fResolver;
     private final IHostIdResolver fHostResolver;
@@ -427,21 +427,11 @@ public class CallStackSeries implements ISegmentStore<ISegment> {
      *            The thread resolver
      */
     public CallStackSeries(ITmfStateSystem ss, List<String[]> patternPaths, int symbolKeyLevelIndex, String name, IHostIdResolver hostResolver, @Nullable IThreadIdResolver threadResolver) {
-        // Build the groups from the state system and pattern paths
-        if (patternPaths.isEmpty()) {
-            throw new IllegalArgumentException("State system callstack: the list of paths should not be empty"); //$NON-NLS-1$
-        }
-        int startIndex = patternPaths.size() - 1;
-        InstrumentedGroupDescriptor prevLevel = new InstrumentedGroupDescriptor(ss, patternPaths.get(startIndex), null, symbolKeyLevelIndex == startIndex);
-        for (int i = startIndex - 1; i >= 0; i--) {
-            InstrumentedGroupDescriptor level = new InstrumentedGroupDescriptor(ss, patternPaths.get(i), prevLevel, symbolKeyLevelIndex == i);
-            prevLevel = level;
-        }
         fStateSystem = ss;
-        fRootGroup = prevLevel;
         fName = name;
         fResolver = threadResolver;
         fHostResolver = hostResolver;
+        fRootGroup = createRootGroup(patternPaths, symbolKeyLevelIndex);
     }
 
     /**
@@ -460,6 +450,34 @@ public class CallStackSeries implements ISegmentStore<ISegment> {
      */
     public ICallStackGroupDescriptor getRootGroup() {
         return fRootGroup;
+    }
+
+    /**
+     * @param patternPaths
+     *            The patterns for the different levels of the callstack in the
+     *            state system. Any further level path is relative to the
+     *            previous one.
+     * @param symbolKeyLevelIndex
+     *            The index in the list of the list to be used as a key to the
+     *            symbol provider. The data at this level must be an integer,
+     *            for instance a process ID
+     */
+    public void updateRootGroup(List<String[]> patternPaths, int symbolKeyLevelIndex) {
+        fRootGroup = createRootGroup(patternPaths, symbolKeyLevelIndex);
+    }
+
+    private InstrumentedGroupDescriptor createRootGroup(List<String[]> patternPaths, int symbolKeyLevelIndex) {
+        // Build the groups from the state system and pattern paths
+        if (patternPaths.isEmpty()) {
+            throw new IllegalArgumentException("State system callstack: the list of paths should not be empty"); //$NON-NLS-1$
+        }
+        int startIndex = patternPaths.size() - 1;
+        InstrumentedGroupDescriptor prevLevel = new InstrumentedGroupDescriptor(fStateSystem, patternPaths.get(startIndex), null, symbolKeyLevelIndex == startIndex);
+        for (int i = startIndex - 1; i >= 0; i--) {
+            InstrumentedGroupDescriptor level = new InstrumentedGroupDescriptor(fStateSystem, patternPaths.get(i), prevLevel, symbolKeyLevelIndex == i);
+            prevLevel = level;
+        }
+        return prevLevel;
     }
 
     /**
@@ -523,12 +541,15 @@ public class CallStackSeries implements ISegmentStore<ISegment> {
     // Segment store methods
     // ---------------------------------------------------
 
-    private static Collection<ICallStackElement> getLeafElements(ICallStackElement element) {
+    private static Collection<ICallStackElement> getCallStacks(ICallStackElement element) {
         if (element.isLeaf()) {
             return Collections.singleton(element);
         }
         List<ICallStackElement> list = new ArrayList<>();
-        element.getChildrenElements().forEach(e -> list.addAll(getLeafElements(e)));
+        if (element.isCallStack()) {
+            list.add(element);
+        }
+        element.getChildrenElements().forEach(e -> list.addAll(getCallStacks(e)));
         return list;
     }
 
@@ -632,8 +653,8 @@ public class CallStackSeries implements ISegmentStore<ISegment> {
     private Map<Integer, CallStack> getCallStackQuarks() {
         Map<Integer, CallStack> quarkToElement = new HashMap<>();
         // Get the leaf elements and their callstacks
-        getRootElements().stream().flatMap(e -> getLeafElements(e).stream())
-                .filter(e -> e instanceof InstrumentedCallStackElement)
+        getRootElements().stream().flatMap(e -> getCallStacks(e).stream())
+                .filter(InstrumentedCallStackElement.class::isInstance)
                 .map(e -> (InstrumentedCallStackElement) e)
                 .forEach(e -> e.getStackQuarks().forEach(c -> quarkToElement.put(c, e.getCallStack())));
         return quarkToElement;

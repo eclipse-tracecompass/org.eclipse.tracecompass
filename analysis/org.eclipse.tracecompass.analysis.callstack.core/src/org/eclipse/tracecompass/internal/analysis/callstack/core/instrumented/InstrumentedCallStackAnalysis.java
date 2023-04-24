@@ -14,7 +14,9 @@ package org.eclipse.tracecompass.internal.analysis.callstack.core.instrumented;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.ListenerList;
@@ -62,14 +64,10 @@ public abstract class InstrumentedCallStackAnalysis extends TmfStateSystemAnalys
     /** CallStack stack-attribute */
     public static final String CALL_STACK = "CallStack"; //$NON-NLS-1$
 
-    private static final String[] DEFAULT_PROCESSES_PATTERN = new String[] { CallStackStateProvider.PROCESSES, "*" }; //$NON-NLS-1$
-    private static final String[] DEFAULT_THREADS_PATTERN = new String[] { "*" }; //$NON-NLS-1$
-
-    private static final List<String[]> PATTERNS = ImmutableList.of(DEFAULT_PROCESSES_PATTERN, DEFAULT_THREADS_PATTERN);
-
     private @Nullable CallStackSeries fCallStacks;
 
     private final CallGraphAnalysis fCallGraph;
+    private boolean fIsCallStackSeriesFinalized = false;
 
     /**
      * Listeners
@@ -108,15 +106,29 @@ public abstract class InstrumentedCallStackAnalysis extends TmfStateSystemAnalys
     @Override
     public synchronized @Nullable CallStackSeries getCallStackSeries() {
         CallStackSeries callstacks = fCallStacks;
+        ITmfStateSystem ss = getStateSystem();
+        ITmfTrace trace = getTrace();
+        if (ss == null || trace == null) {
+            return null;
+        }
+        // Check before getting the CallStackSeries if the state system is
+        // in its final state
+        boolean isStateSystemBuilt = ss.waitUntilBuilt(0);
         if (callstacks == null) {
-            ITmfStateSystem ss = getStateSystem();
-            ITmfTrace trace = getTrace();
-            if (ss == null || trace == null) {
+            List<String[]> patterns = getPatterns();
+            if (patterns.isEmpty()) {
                 return null;
             }
-            callstacks = new CallStackSeries(ss, getPatterns(), 0, "", getCallStackHostResolver(trace), getCallStackTidResolver()); //$NON-NLS-1$
+            callstacks = new CallStackSeries(ss, patterns, 0, "", getCallStackHostResolver(trace), getCallStackTidResolver()); //$NON-NLS-1$
             fCallStacks = callstacks;
+        } else if (!fIsCallStackSeriesFinalized) {
+            callstacks.updateRootGroup(getPatterns(), 0);
         }
+        // This is the last update after the state system is completed
+        if (isStateSystemBuilt) {
+            fIsCallStackSeriesFinalized = true;
+        }
+
         return callstacks;
     }
 
@@ -184,7 +196,76 @@ public abstract class InstrumentedCallStackAnalysis extends TmfStateSystemAnalys
      * @return The patterns for the different levels in the state system
      */
     protected List<String[]> getPatterns() {
-        return PATTERNS;
+        ITmfStateSystem ss = getStateSystem();
+        if (ss == null) {
+            return Collections.emptyList();
+        }
+        List<String> patterns = new ArrayList<>();
+        for (int quark : ss.getQuarks("*")) { //$NON-NLS-1$
+            patterns.addAll(findCallStackPatterns(ss, quark));
+        }
+        if (patterns.size() > 1) {
+            String[] firstElement = new String[] { patterns.get(0), patterns.get(1) };
+            patterns.remove(1);
+            patterns.remove(0);
+            List<String[]> groupDescriptorPatterns = new ArrayList<>();
+            groupDescriptorPatterns.add(firstElement);
+            groupDescriptorPatterns.addAll(patterns.stream().map(e -> new String @NonNull [] { e })
+                    .collect(Collectors.toList()));
+            return groupDescriptorPatterns;
+        }
+        return Collections.emptyList();
+    }
+
+    private List<String> findCallStackPatterns(ITmfStateSystem ss, int quark) {
+        LinkedList<String> patterns = new LinkedList<>();
+        int nCallStackChild = 0;
+        if (ss.getNbAttributes() == 0) {
+            return patterns;
+        }
+        List<Integer> subQuarks = ss.getSubAttributes(quark, false);
+        boolean isCallStack = false;
+        List<String> subPatterns = new LinkedList<>();
+        for (Integer subQuark : subQuarks) {
+            if (ss.getAttributeName(subQuark).equals(CALL_STACK)) {
+                isCallStack = true;
+            } else {
+                @NonNull
+                List<String> neighbourSubPatterns = subPatterns;
+                subPatterns = findCallStackPatterns(ss, subQuark);
+                if (!subPatterns.isEmpty()) {
+                    nCallStackChild += 1;
+                    mergeSubPatterns(subPatterns, neighbourSubPatterns);
+                } else {
+                    subPatterns = neighbourSubPatterns;
+                }
+            }
+        }
+        if (!subPatterns.isEmpty()) {
+            patterns.addAll(subPatterns);
+        }
+        if (nCallStackChild > 0 || isCallStack) {
+            patterns.push(ss.getAttributeName(quark));
+        }
+        return patterns;
+    }
+
+    private static void mergeSubPatterns(List<String> pattern1, List<String> pattern2) {
+        if (!pattern2.isEmpty()) {
+            // if subpatterns not empty then replace by a star everything
+            // different
+            for (int i = 0; i < Integer.max(pattern1.size(), pattern2.size()); i++) {
+                if (i > Integer.min(pattern1.size() - 1, pattern2.size() - 1)) {
+                    if (i > pattern1.size() - 1) {
+                        pattern1.add(pattern2.get(i));
+                    }
+                    continue;
+                }
+                if (!pattern1.get(i).equals(pattern2.get(i))) {
+                    pattern1.set(i, "*"); //$NON-NLS-1$
+                }
+            }
+        }
     }
 
     @Override
