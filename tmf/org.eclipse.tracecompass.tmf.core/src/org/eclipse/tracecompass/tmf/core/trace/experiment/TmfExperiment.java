@@ -496,8 +496,7 @@ public class TmfExperiment extends TmfTrace implements ITmfPersistentlyIndexable
 
     @Override
     public ITmfContext seekEvent(final double ratio) {
-        final ITmfContext context = seekEvent(Math.round(ratio * getNbEvents()));
-        return context;
+        return seekEvent(Math.round(ratio * getNbEvents()));
     }
 
     @Override
@@ -590,8 +589,7 @@ public class TmfExperiment extends TmfTrace implements ITmfPersistentlyIndexable
     @Override
     public synchronized ITmfEvent parseEvent(final ITmfContext context) {
         final ITmfContext tmpContext = seekEvent(context.getLocation());
-        final ITmfEvent event = getNext(tmpContext);
-        return event;
+        return getNext(tmpContext);
     }
 
     @Override
@@ -785,7 +783,6 @@ public class TmfExperiment extends TmfTrace implements ITmfPersistentlyIndexable
         final Thread thread = new Thread("Streaming Monitor for experiment " + getName()) { //$NON-NLS-1$
             private ITmfTimestamp safeTimestamp = null;
             private ITmfTimestamp lastSafeTimestamp = null;
-            private TmfTimeRange timeRange = null;
 
             @Override
             public void run() {
@@ -802,12 +799,11 @@ public class TmfExperiment extends TmfTrace implements ITmfPersistentlyIndexable
                                 endTimestamp = trace.getEndTime();
                             }
                         }
+                        TmfTimeRange timeRange = null;
                         ITmfTimestamp safeTs = safeTimestamp;
                         if (safeTs != null && (lastSafeTimestamp == null || safeTs.compareTo(lastSafeTimestamp) > 0)) {
                             timeRange = new TmfTimeRange(startTimestamp, safeTs);
                             lastSafeTimestamp = safeTs;
-                        } else {
-                            timeRange = null;
                         }
                         safeTimestamp = endTimestamp;
                         if (timeRange != null) {
@@ -903,7 +899,6 @@ public class TmfExperiment extends TmfTrace implements ITmfPersistentlyIndexable
             ranks[i] = bufferIn.getLong();
         }
         TmfLocationArray arr = new TmfLocationArray(locations, ranks);
-        TmfExperimentLocation l = new TmfExperimentLocation(arr);
-        return l;
+        return new TmfExperimentLocation(arr);
     }
 }
