@@ -53,8 +53,8 @@ import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils.FlowScopeLo
 import org.eclipse.tracecompass.internal.tmf.core.model.filters.FetchParametersUtils;
 import org.eclipse.tracecompass.internal.tmf.ui.Activator;
 import org.eclipse.tracecompass.tmf.core.dataprovider.DataProviderManager;
+import org.eclipse.tracecompass.tmf.core.model.ICoreElementResolver;
 import org.eclipse.tracecompass.tmf.core.model.filters.TimeQueryFilter;
-import org.eclipse.tracecompass.tmf.core.model.timegraph.IElementResolver;
 import org.eclipse.tracecompass.tmf.core.model.tree.ITmfSelectionTreeDataModel;
 import org.eclipse.tracecompass.tmf.core.model.tree.ITmfTreeDataModel;
 import org.eclipse.tracecompass.tmf.core.model.tree.ITmfTreeDataProvider;
@@ -152,8 +152,8 @@ public abstract class AbstractSelectTreeViewer2 extends AbstractTmfTreeViewer {
             Object entry = selection.getFirstElement();
             if (entry instanceof TmfGenericTreeEntry) {
                 ITmfTreeDataModel model = ((TmfGenericTreeEntry<?>) entry).getModel();
-                if (model instanceof IElementResolver) {
-                    Multimap<@NonNull String, @NonNull Object> metadata = ((IElementResolver) model).getMetadata();
+                if (model instanceof ICoreElementResolver) {
+                    Multimap<@NonNull String, @NonNull Object> metadata = ((ICoreElementResolver) model).getMetadata();
                     if (!metadata.isEmpty()) {
                         TmfSignalManager.dispatchSignal(new TmfDataModelSelectedSignal(AbstractSelectTreeViewer2.this, metadata));
                     }

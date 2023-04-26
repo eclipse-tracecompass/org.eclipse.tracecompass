@@ -141,7 +141,7 @@ public class TraceTypeHelper {
      *            list of traces belonging to the experiment
      * @return the confidence level (0 is lowest), or -1 if validation fails or
      *         trace is not an experiment
-     * @since 8.4
+     * @since 9.0
      */
     public int validateExperimentWithTraces(List<ITmfTrace> traces) {
         if (!isExperimentType()) {

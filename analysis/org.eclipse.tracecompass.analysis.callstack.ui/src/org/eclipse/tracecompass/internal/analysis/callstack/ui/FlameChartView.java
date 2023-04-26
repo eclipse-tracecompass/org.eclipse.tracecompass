@@ -45,8 +45,8 @@ import org.eclipse.tracecompass.internal.analysis.os.linux.ui.actions.FollowThre
 import org.eclipse.tracecompass.internal.provisional.tmf.ui.widgets.timegraph.BaseDataProviderTimeGraphPresentationProvider;
 import org.eclipse.tracecompass.internal.tmf.core.model.filters.FetchParametersUtils;
 import org.eclipse.tracecompass.tmf.core.dataprovider.DataProviderManager;
+import org.eclipse.tracecompass.tmf.core.model.ICoreElementResolver;
 import org.eclipse.tracecompass.tmf.core.model.filters.SelectionTimeQueryFilter;
-import org.eclipse.tracecompass.tmf.core.model.timegraph.IElementResolver;
 import org.eclipse.tracecompass.tmf.core.model.timegraph.ITimeGraphDataProvider;
 import org.eclipse.tracecompass.tmf.core.model.timegraph.ITimeGraphRowModel;
 import org.eclipse.tracecompass.tmf.core.model.timegraph.ITimeGraphState;
@@ -91,7 +91,6 @@ import com.google.common.collect.Multimap;
  * @author Patrick Tasse
  * @author Geneviève Bastien
  */
-@SuppressWarnings("deprecation")
 public class FlameChartView extends BaseDataProviderTimeGraphView {
 
     // ------------------------------------------------------------------------
@@ -591,8 +590,8 @@ public class FlameChartView extends BaseDataProviderTimeGraphView {
             if (sSel.getFirstElement() instanceof TimeGraphEntry) {
                 TimeGraphEntry entry = (TimeGraphEntry) sSel.getFirstElement();
                 ITmfTreeDataModel entryModel = entry.getEntryModel();
-                if (entryModel instanceof IElementResolver) {
-                    Multimap<String, Object> metadata = ((IElementResolver) entryModel).getMetadata();
+                if (entryModel instanceof ICoreElementResolver) {
+                    Multimap<String, Object> metadata = ((ICoreElementResolver) entryModel).getMetadata();
                     Collection<Object> tids = metadata.get(OsStrings.tid());
                     if (tids.size() == 1) {
                         HostThread hostThread = new HostThread(getTrace(entry).getHostId(), (Integer) tids.iterator().next());

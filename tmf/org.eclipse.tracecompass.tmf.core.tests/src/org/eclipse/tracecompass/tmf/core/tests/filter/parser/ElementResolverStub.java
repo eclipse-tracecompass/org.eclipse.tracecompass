@@ -1,17 +1,17 @@
 package org.eclipse.tracecompass.tmf.core.tests.filter.parser;
 
 import org.eclipse.jdt.annotation.NonNull;
-import org.eclipse.tracecompass.tmf.core.model.timegraph.IElementResolver;
+import org.eclipse.tracecompass.tmf.core.model.ICoreElementResolver;
 
 import com.google.common.collect.Multimap;
 
 /**
- * Implements an {@link IElementResolver} for test
+ * Implements an {@link ICoreElementResolver} for test
  *
  * @author Jean-Christian
  *
  */
-public class ElementResolverStub implements IElementResolver {
+public class ElementResolverStub implements ICoreElementResolver {
     private final @NonNull Multimap<@NonNull String, @NonNull Object> fData;
 
     /**

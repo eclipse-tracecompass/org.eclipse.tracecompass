@@ -137,7 +137,7 @@ public class TableColumnDescriptor implements ITableColumnDescriptor {
          * @param dataType
          *            the dataType to set
          * @return this {@link Builder} object
-         * @since 8.4
+         * @since 9.0
          */
         public Builder setDataType(DataType dataType) {
             fDataType = dataType;

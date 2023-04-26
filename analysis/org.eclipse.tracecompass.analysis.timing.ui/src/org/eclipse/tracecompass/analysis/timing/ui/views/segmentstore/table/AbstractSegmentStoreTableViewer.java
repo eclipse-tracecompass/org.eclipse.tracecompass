@@ -71,7 +71,7 @@ import org.eclipse.tracecompass.tmf.core.TmfStrings;
 import org.eclipse.tracecompass.tmf.core.analysis.IAnalysisModule;
 import org.eclipse.tracecompass.tmf.core.event.lookup.ITmfSourceLookup;
 import org.eclipse.tracecompass.tmf.core.model.CoreFilterProperty;
-import org.eclipse.tracecompass.tmf.core.model.timegraph.IElementResolver;
+import org.eclipse.tracecompass.tmf.core.model.ICoreElementResolver;
 import org.eclipse.tracecompass.tmf.core.segment.ISegmentAspect;
 import org.eclipse.tracecompass.tmf.core.signal.TmfDataModelSelectedSignal;
 import org.eclipse.tracecompass.tmf.core.signal.TmfSelectionRangeUpdatedSignal;
@@ -153,8 +153,8 @@ public abstract class AbstractSegmentStoreTableViewer extends TmfSimpleTableView
             ITmfTimestamp start = TmfTimestamp.fromNanos(selectedSegment.getStart());
             ITmfTimestamp end = TmfTimestamp.fromNanos(selectedSegment.getEnd());
             TmfSignalManager.dispatchSignal(new TmfSelectionRangeUpdatedSignal(AbstractSegmentStoreTableViewer.this, start, end, fTrace));
-            if (selectedSegment instanceof IElementResolver) {
-                Multimap<String, Object> metadata = ((IElementResolver) selectedSegment).getMetadata();
+            if (selectedSegment instanceof ICoreElementResolver) {
+                Multimap<String, Object> metadata = ((ICoreElementResolver) selectedSegment).getMetadata();
                 if (!metadata.isEmpty()) {
                     TmfSignalManager.dispatchSignal(new TmfDataModelSelectedSignal(AbstractSegmentStoreTableViewer.this, metadata));
                 }

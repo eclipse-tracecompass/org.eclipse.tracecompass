@@ -11,6 +11,7 @@
 
 package org.eclipse.tracecompass.tmf.core.model.timegraph;
 
+import org.eclipse.tracecompass.tmf.core.model.ICoreElementResolver;
 import org.eclipse.tracecompass.tmf.core.model.tree.ITmfTreeDataModel;
 
 import com.google.common.collect.HashMultimap;
@@ -24,7 +25,7 @@ import com.google.common.collect.Multimap;
  * @author Simon Delisle
  * @since 4.0
  */
-public interface ITimeGraphEntryModel extends ITmfTreeDataModel, IElementResolver {
+public interface ITimeGraphEntryModel extends ITmfTreeDataModel, ICoreElementResolver {
 
     /**
      * Gets the entry start time
@@ -41,8 +42,8 @@ public interface ITimeGraphEntryModel extends ITmfTreeDataModel, IElementResolve
     long getEndTime();
 
     /**
-     * Returns true if the entry has a row model, or false if it is a blank entry
-     * with no associated states.
+     * Returns true if the entry has a row model, or false if it is a blank
+     * entry with no associated states.
      *
      * @return true if the entry has a row model
      */

@@ -121,13 +121,13 @@ import org.eclipse.tracecompass.internal.tmf.ui.views.timegraph.TimeEventFilterD
 import org.eclipse.tracecompass.statesystem.core.StateSystemUtils;
 import org.eclipse.tracecompass.tmf.core.dataprovider.DataProviderParameterUtils;
 import org.eclipse.tracecompass.tmf.core.model.CoreFilterProperty;
+import org.eclipse.tracecompass.tmf.core.model.ICoreElementResolver;
 import org.eclipse.tracecompass.tmf.core.model.annotations.Annotation;
 import org.eclipse.tracecompass.tmf.core.model.annotations.AnnotationCategoriesModel;
 import org.eclipse.tracecompass.tmf.core.model.annotations.AnnotationModel;
+import org.eclipse.tracecompass.tmf.core.model.annotations.IAnnotation.AnnotationType;
 import org.eclipse.tracecompass.tmf.core.model.annotations.IOutputAnnotationProvider;
 import org.eclipse.tracecompass.tmf.core.model.annotations.TraceAnnotationProvider;
-import org.eclipse.tracecompass.tmf.core.model.annotations.IAnnotation.AnnotationType;
-import org.eclipse.tracecompass.tmf.core.model.timegraph.IElementResolver;
 import org.eclipse.tracecompass.tmf.core.resources.ITmfMarker;
 import org.eclipse.tracecompass.tmf.core.response.TmfModelResponse;
 import org.eclipse.tracecompass.tmf.core.signal.TmfDataModelSelectedSignal;
@@ -460,8 +460,8 @@ public abstract class AbstractTimeGraphView extends TmfView implements ITmfTimeA
     /** Listener that handles a click on an entry in the FusedVM View */
     private final ITimeGraphSelectionListener fMetadataSelectionListener = event -> {
         ITimeGraphEntry entry = event.getSelection();
-        if (entry instanceof IElementResolver) {
-            Multimap<@NonNull String, @NonNull Object> metadata = ((IElementResolver) entry).getMetadata();
+        if (entry instanceof ICoreElementResolver) {
+            Multimap<@NonNull String, @NonNull Object> metadata = ((ICoreElementResolver) entry).getMetadata();
             if (!metadata.isEmpty()) {
                 broadcast(new TmfDataModelSelectedSignal(AbstractTimeGraphView.this, metadata));
             }
@@ -3173,8 +3173,8 @@ public abstract class AbstractTimeGraphView extends TmfView implements ITmfTimeA
         Multimap<@NonNull String, @NonNull Object> metadata = signal.getMetadata();
         // See if the current selection intersects the metadata
         ITimeGraphEntry selection = getTimeGraphViewer().getSelection();
-        if (selection instanceof IElementResolver &&
-                IElementResolver.commonIntersect(metadata, ((IElementResolver) selection).getMetadata())) {
+        if (selection instanceof ICoreElementResolver &&
+                ICoreElementResolver.commonIntersect(metadata, ((ICoreElementResolver) selection).getMetadata())) {
             return;
         }
         // See if an entry intersects the metadata
@@ -3185,7 +3185,7 @@ public abstract class AbstractTimeGraphView extends TmfView implements ITmfTimeA
         for (TraceEntry traceEntry : Iterables.filter(traceEntries, TraceEntry.class)) {
             Iterable<TimeGraphEntry> unfiltered = Utils.flatten(traceEntry);
             for (TimeGraphEntry entry : unfiltered) {
-                if (IElementResolver.commonIntersect(metadata, entry.getMetadata())) {
+                if (ICoreElementResolver.commonIntersect(metadata, entry.getMetadata())) {
                     getTimeGraphViewer().setSelection(entry, true);
                 }
             }

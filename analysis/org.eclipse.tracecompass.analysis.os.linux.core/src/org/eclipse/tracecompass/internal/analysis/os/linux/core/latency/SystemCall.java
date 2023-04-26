@@ -20,7 +20,7 @@ import org.eclipse.tracecompass.segmentstore.core.ISegment;
 import org.eclipse.tracecompass.segmentstore.core.segment.interfaces.INamedSegment;
 import org.eclipse.tracecompass.tmf.core.event.lookup.ITmfCallsite;
 import org.eclipse.tracecompass.tmf.core.event.lookup.ITmfSourceLookup;
-import org.eclipse.tracecompass.tmf.core.model.timegraph.IElementResolver;
+import org.eclipse.tracecompass.tmf.core.model.ICoreElementResolver;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
@@ -31,7 +31,7 @@ import com.google.common.collect.Multimap;
  * @author Alexandre Montplaisir
  * @since 2.0
  */
-public final class SystemCall implements INamedSegment, ITmfSourceLookup, IElementResolver {
+public final class SystemCall implements INamedSegment, ITmfSourceLookup, ICoreElementResolver {
 
     private static final long serialVersionUID = 1554494342105208730L;
 

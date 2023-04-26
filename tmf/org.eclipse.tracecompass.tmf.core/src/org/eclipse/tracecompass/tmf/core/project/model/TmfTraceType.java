@@ -624,7 +624,7 @@ public final class TmfTraceType {
      *            the ID of an experiment (like "o.e.l.specificexperiment" )
      * @return a list of {@link TraceTypeHelper} sorted by confidence (highest
      *         first)
-     * @since 8.4
+     * @since 9.0
      */
     public static List<TraceTypeHelper> selectExperimentType(List<ITmfTrace> traces, String experimentTypeHint) {
         Comparator<Pair<Integer, TraceTypeHelper>> comparator = (o1, o2) -> {
@@ -699,7 +699,7 @@ public final class TmfTraceType {
      *         doesn't exist
      * @throws CoreException
      *             if trace cannot be instantiated
-     * @since 8.4
+     * @since 9.0
      */
     public static TmfExperiment instantiateExperiment(String typeID) throws CoreException {
         IConfigurationElement ce = TRACE_TYPE_ATTRIBUTES.get(typeID);

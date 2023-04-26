@@ -12,9 +12,10 @@
 package org.eclipse.tracecompass.tmf.core.model.timegraph;
 
 import org.eclipse.tracecompass.tmf.core.model.CoreMetadataStrings;
+import org.eclipse.tracecompass.tmf.core.model.ICoreElementResolver;
 
 /**
- * String constants to be used for the metadata of {@link IElementResolver}.
+ * String constants to be used for the metadata of {@link ICoreElementResolver}.
  *
  * @since 5.2
  * @noimplement This interface is not intended to be implemented by clients.

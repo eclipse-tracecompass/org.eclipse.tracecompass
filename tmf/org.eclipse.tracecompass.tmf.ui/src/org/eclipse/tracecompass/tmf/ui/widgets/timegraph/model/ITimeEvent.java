@@ -16,7 +16,7 @@
 package org.eclipse.tracecompass.tmf.ui.widgets.timegraph.model;
 
 import org.eclipse.jdt.annotation.NonNull;
-import org.eclipse.tracecompass.tmf.core.model.timegraph.IElementResolver;
+import org.eclipse.tracecompass.tmf.core.model.ICoreElementResolver;
 import org.eclipse.tracecompass.tmf.core.model.timegraph.IMetadataStrings;
 import org.eclipse.tracecompass.tmf.core.model.timegraph.IPropertyCollection;
 
@@ -30,7 +30,7 @@ import com.google.common.collect.Multimap;
  * @author Alvaro Sanchez-Leon
  * @author Patrick Tasse
  */
-public interface ITimeEvent extends IPropertyCollection, IElementResolver {
+public interface ITimeEvent extends IPropertyCollection, ICoreElementResolver {
 
     /**
      * Get the entry matching this time event.
@@ -47,13 +47,13 @@ public interface ITimeEvent extends IPropertyCollection, IElementResolver {
     long getTime();
 
     /**
-     * @return
-     * <list>
-     * <li>-1: Considers duration to be from current event till the next</li>
-     * <li>0: Duration is not relevant e.g. a Burst / no state associated</li>
-     * <li>>0: Valid duration value specified</li>
-     * </list>
-     * <p>
+     * @return <list>
+     *         <li>-1: Considers duration to be from current event till the
+     *         next</li>
+     *         <li>0: Duration is not relevant e.g. a Burst / no state
+     *         associated</li>
+     *         <li>>0: Valid duration value specified</li> </list>
+     *         <p>
      */
     long getDuration();
 

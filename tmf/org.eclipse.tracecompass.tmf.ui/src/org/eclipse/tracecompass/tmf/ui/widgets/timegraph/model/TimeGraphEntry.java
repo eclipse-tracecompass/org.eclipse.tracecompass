@@ -33,7 +33,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.tracecompass.common.core.log.TraceCompassLog;
 import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils;
 import org.eclipse.tracecompass.internal.tmf.ui.widgets.timegraph.model.TimeGraphLineEntry;
-import org.eclipse.tracecompass.tmf.core.model.timegraph.IElementResolver;
+import org.eclipse.tracecompass.tmf.core.model.ICoreElementResolver;
 import org.eclipse.tracecompass.tmf.core.model.timegraph.ITimeGraphEntryModel;
 import org.eclipse.tracecompass.tmf.core.model.timegraph.TimeGraphEntryModel;
 import org.eclipse.tracecompass.tmf.core.model.tree.ITmfTreeDataModel;
@@ -44,7 +44,7 @@ import com.google.common.collect.Multimap;
 /**
  * An entry for use in the time graph views
  */
-public class TimeGraphEntry implements ITimeGraphEntry, IElementResolver {
+public class TimeGraphEntry implements ITimeGraphEntry, ICoreElementResolver {
 
     /**
      * Class to describe on which time range and resolution the zoomed entry
@@ -613,8 +613,8 @@ public class TimeGraphEntry implements ITimeGraphEntry, IElementResolver {
      */
     @Override
     public @NonNull Multimap<@NonNull String, @NonNull Object> getMetadata() {
-        if (fModel instanceof IElementResolver) {
-            return ((IElementResolver) fModel).getMetadata();
+        if (fModel instanceof ICoreElementResolver) {
+            return ((ICoreElementResolver) fModel).getMetadata();
         }
         return ImmutableMultimap.of();
     }

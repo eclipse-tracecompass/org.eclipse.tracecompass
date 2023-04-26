@@ -112,7 +112,7 @@ public final class DataTypeUtils {
      * @param end
      *            The end time
      * @return A standard Time Range string
-     * @since 8.4
+     * @since 9.0
      */
     public static String toRangeString(long start, long end) {
         return "[" + start + "," + end + "]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$

@@ -378,18 +378,18 @@ public class TmfExperiment extends TmfTrace implements ITmfPersistentlyIndexable
     /**
      * Validates the experiment based on the traces provided. All subclasses of
      * TmfExperiment should override this method to compute its own validation.
-     * If the experiment type is valid based on the provided traces, the
-     * method should return TraceValidationStatus with confidence. If it is not
-     * valid, an ERROR status should be returned. Note that the generic Tmf
-     * experiment reserves the confidence value of 1, therefore all extending
-     * classes should return a confidence level accordingly.
+     * If the experiment type is valid based on the provided traces, the method
+     * should return TraceValidationStatus with confidence. If it is not valid,
+     * an ERROR status should be returned. Note that the generic Tmf experiment
+     * reserves the confidence value of 1, therefore all extending classes
+     * should return a confidence level accordingly.
      *
      * @param traces
      *            list of ITmfTraces that is used to validate this experiment
      * @return status an IStatus object with validation result. Use ERROR status
      *         to indicate an error, otherwise use TraceValidationStatus with a
      *         confidence.
-     * @since 8.4
+     * @since 9.0
      */
     public IStatus validateWithTraces(List<ITmfTrace> traces) {
         if (getClass() == TmfExperiment.class) {
