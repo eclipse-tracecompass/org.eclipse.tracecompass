@@ -47,8 +47,8 @@ import com.google.common.collect.Multimap;
 public class TimeGraphEntry implements ITimeGraphEntry, IElementResolver {
 
     /**
-     * Class to describe on which time range and resolution the zoomed entry list is
-     * sampled.
+     * Class to describe on which time range and resolution the zoomed entry
+     * list is sampled.
      *
      * @author Loic Prieur-Drevon
      * @since 3.2
@@ -234,7 +234,8 @@ public class TimeGraphEntry implements ITimeGraphEntry, IElementResolver {
     /**
      * Sets the entry's parent
      *
-     * @param entry The new parent entry
+     * @param entry
+     *            The new parent entry
      * @since 2.0
      */
     public void setParent(TimeGraphEntry entry) {
@@ -283,8 +284,8 @@ public class TimeGraphEntry implements ITimeGraphEntry, IElementResolver {
      */
     public void updateEndTime(long endTime) {
         /*
-         * Model is immutable, this is the only way to do this, consider not updating
-         * end time in the future?
+         * Model is immutable, this is the only way to do this, consider not
+         * updating end time in the future?
          */
         fEndTime = endTime;
     }
@@ -414,7 +415,8 @@ public class TimeGraphEntry implements ITimeGraphEntry, IElementResolver {
             if (index >= 0) {
                 ITimeEvent current = fZoomedEventList.get(index);
                 if (!(current instanceof NullTimeEvent)) {
-                    // The time event has been already added to the zoomed event list
+                    // The time event has been already added to the zoomed event
+                    // list
                     return;
                 }
                 if (current.getTime() == event.getTime()) {
@@ -465,8 +467,8 @@ public class TimeGraphEntry implements ITimeGraphEntry, IElementResolver {
         long newEnd = getEndTime() == SWT.DEFAULT ? end : Long.max(end, getEndTime());
 
         /*
-         * Model is immutable, this is the only way to do this, consider not updating
-         * bounds in the future?
+         * Model is immutable, this is the only way to do this, consider not
+         * updating bounds in the future?
          */
         fStartTime = newStart;
         fEndTime = newEnd;
@@ -486,10 +488,10 @@ public class TimeGraphEntry implements ITimeGraphEntry, IElementResolver {
         } else {
             int i = Collections.binarySearch(fChildren, child, fComparator);
             if (i >= 0) {
-                i ++;
+                i++;
                 /*
-                 * There might be several children which are equal in regards to the comparator,
-                 * increment past the index of the last one.
+                 * There might be several children which are equal in regards to
+                 * the comparator, increment past the index of the last one.
                  */
                 while (i < fChildren.size() && fComparator.compare(child, fChildren.get(i)) == 0) {
                     i++;
@@ -583,8 +585,8 @@ public class TimeGraphEntry implements ITimeGraphEntry, IElementResolver {
      * Setter for the zoom sampling of this entry.
      *
      * @param sampling
-     *            the sampling parameters used to compute the current zoomed event
-     *            list.
+     *            the sampling parameters used to compute the current zoomed
+     *            event list.
      * @since 3.2
      */
     public void setSampling(Sampling sampling) {

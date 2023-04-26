@@ -27,8 +27,8 @@ import org.eclipse.tracecompass.tmf.core.trace.TraceValidationStatus;
 import org.eclipse.tracecompass.tmf.core.trace.experiment.TmfExperiment;
 
 /**
- * TraceTypeHelper, a helper that can link a few names to a configuration element
- * and a trace
+ * TraceTypeHelper, a helper that can link a few names to a configuration
+ * element and a trace
  *
  * @author Matthew Khouzam
  */
@@ -165,6 +165,7 @@ public class TraceTypeHelper {
 
     /**
      * Get an object of the trace type
+     *
      * @return an object of the trace type
      */
     public ITmfTrace getTrace() {
@@ -190,8 +191,10 @@ public class TraceTypeHelper {
     }
 
     /**
-     * Returns whether trace type is for a directory trace or a single file trace
-     * @return <code>true</code> if trace type is for a directory trace else <code>false</code>
+     * Returns whether trace type is for directory trace or single file trace
+     *
+     * @return <code>true</code> if trace type is for a directory trace else
+     *         <code>false</code>
      */
     public boolean isDirectoryTraceType() {
         return fIsDirectory;

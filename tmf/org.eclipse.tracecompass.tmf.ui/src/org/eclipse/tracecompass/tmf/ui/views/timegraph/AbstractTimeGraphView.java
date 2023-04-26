@@ -414,8 +414,8 @@ public abstract class AbstractTimeGraphView extends TmfView implements ITmfTimeA
     private int fPrevTimeSpace = -1;
 
     /**
-     * Menu Manager for context-sensitive menu for time graph entries. This will be
-     * used on the name space of the time graph viewer.
+     * Menu Manager for context-sensitive menu for time graph entries. This will
+     * be used on the name space of the time graph viewer.
      */
     private final @NonNull MenuManager fEntryMenuManager = new MenuManager();
 
@@ -448,7 +448,7 @@ public abstract class AbstractTimeGraphView extends TmfView implements ITmfTimeA
     /** The time graph event filter dialog */
     private TimeEventFilterDialog fTimeEventFilterDialog;
 
-    /** Row filter to add**/
+    /** Row filter to add **/
     private volatile boolean fIsHideRowsFilterActive;
 
     private TimeGraphPartListener2 fPartListener2;
@@ -474,9 +474,9 @@ public abstract class AbstractTimeGraphView extends TmfView implements ITmfTimeA
     // ------------------------------------------------------------------------
 
     /**
-     * Base class to provide the labels for the tree viewer. Views extending this
-     * class typically need to override the getColumnText method if they have more
-     * than one column to display
+     * Base class to provide the labels for the tree viewer. Views extending
+     * this class typically need to override the getColumnText method if they
+     * have more than one column to display
      */
     protected static class TreeLabelProvider implements ITableLabelProvider, ILabelProvider {
 
@@ -649,8 +649,9 @@ public abstract class AbstractTimeGraphView extends TmfView implements ITmfTimeA
         public abstract void doRun();
 
         /**
-         * Set the ID of the calling flow scope. This data will allow to determine the
-         * causality between the zoom thread and its caller if tracing is enabled.
+         * Set the ID of the calling flow scope. This data will allow to
+         * determine the causality between the zoom thread and its caller if
+         * tracing is enabled.
          *
          * @param scopeId
          *            The ID of the calling flow scope
@@ -740,7 +741,7 @@ public abstract class AbstractTimeGraphView extends TmfView implements ITmfTimeA
                             });
                     List<IMarkerEvent> markers = Stream.concat(filteredMarkerStream, newMarkers.parallelStream())
                             .unordered() // enables faster distinct
-                            .distinct()  // avoid double adding in case the #getViewMarkerList does not follow the contract
+                            .distinct() // avoid double adding in case the #getViewMarkerList does not follow the contract
                             .collect(Collectors.toCollection(ArrayList::new));
                     fTimeGraphViewer.setMarkers(markers);
                 });
@@ -780,10 +781,12 @@ public abstract class AbstractTimeGraphView extends TmfView implements ITmfTimeA
     /**
      * Add events from the queried time range to the queried entries.
      * <p>
-     * Called from the ZoomThread for every entry to update the zoomed event list.
+     * Called from the ZoomThread for every entry to update the zoomed event
+     * list.
      * <p>
-     * The implementation should call {@link TimeGraphEntry#setSampling(Sampling)}
-     * if the zoomed event list is successfully set.
+     * The implementation should call
+     * {@link TimeGraphEntry#setSampling(Sampling)} if the zoomed event list is
+     * successfully set.
      *
      * @param entries
      *            List of entries to zoom on.
@@ -866,8 +869,8 @@ public abstract class AbstractTimeGraphView extends TmfView implements ITmfTimeA
     @NonNullByDefault
     protected void doFilterEventList(TimeGraphEntry entry, List<ITimeEvent> eventList, Map<Integer, Predicate<Multimap<String, Object>>> predicates) {
         if (!predicates.isEmpty()) {
-            // For each event in the events list, test each predicates and set the
-            // status of the property associated to the predicate
+            // For each event in the events list, test each predicates and set
+            // the status of the property associated to the predicate
             eventList.forEach(te -> {
                 for (Map.Entry<Integer, Predicate<Multimap<String, Object>>> mapEntry : predicates.entrySet()) {
                     Predicate<Multimap<String, Object>> value = Objects.requireNonNull(mapEntry.getValue());
@@ -905,7 +908,8 @@ public abstract class AbstractTimeGraphView extends TmfView implements ITmfTimeA
                 && viewFilterDialog != null && viewFilterDialog.hasActiveSavedFilters()) {
 
             eventList.forEach(te -> {
-                // Keep only the events that do not have the 'exclude' property activated
+                // Keep only the events that do not have the 'exclude' property
+                // activated
                 if (!te.isPropertyActive(CoreFilterProperty.EXCLUDE)) {
                     filtered.add(te);
                 }
@@ -948,9 +952,9 @@ public abstract class AbstractTimeGraphView extends TmfView implements ITmfTimeA
             String regex = IFilterStrings.mergeFilters(entry.getValue());
             FilterCu cu = FilterCu.compile(regex);
             Predicate<Multimap<String, Object>> predicate = cu != null ? cu.generate() : null;
-                if (predicate != null) {
-                    predicates.put(entry.getKey(), predicate);
-                }
+            if (predicate != null) {
+                predicates.put(entry.getKey(), predicate);
+            }
         }
         return predicates;
     }
@@ -963,8 +967,8 @@ public abstract class AbstractTimeGraphView extends TmfView implements ITmfTimeA
      * Constructs a time graph view that contains a time graph viewer.
      *
      * By default, the view uses a single default column in the name space that
-     * shows the time graph entry name. To use multiple columns and/or customized
-     * label texts, the subclass constructor must call
+     * shows the time graph entry name. To use multiple columns and/or
+     * customized label texts, the subclass constructor must call
      * {@link #setTreeColumns(String[])} and/or
      * {@link #setTreeLabelProvider(TreeLabelProvider)}.
      *
@@ -1208,10 +1212,11 @@ public abstract class AbstractTimeGraphView extends TmfView implements ITmfTimeA
     }
 
     /**
-     * Sets the auto-expand level to be used for the input of the view. The value 0
-     * means that there is no auto-expand; 1 means that top-level elements are
-     * expanded, but not their children; 2 means that top-level elements are
-     * expanded, and their children, but not grand-children; and so on.
+     * Sets the auto-expand level to be used for the input of the view. The
+     * value 0 means that there is no auto-expand; 1 means that top-level
+     * elements are expanded, but not their children; 2 means that top-level
+     * elements are expanded, and their children, but not grand-children; and so
+     * on.
      * <p>
      * The value {@link #ALL_LEVELS} means that all subtrees should be expanded.
      * </p>
@@ -1416,7 +1421,6 @@ public abstract class AbstractTimeGraphView extends TmfView implements ITmfTimeA
 
         fTimeEventFilterAction = timeEventFilterAction;
 
-
         timeGraphViewer.addRangeListener(event -> {
             final long startTime = event.getStartTime();
             final long endTime = event.getEndTime();
@@ -1494,11 +1498,12 @@ public abstract class AbstractTimeGraphView extends TmfView implements ITmfTimeA
         timeGraphControl.addPaintListener(new PaintListener() {
 
             /**
-             * This paint control allows the virtual time graph refresh to occur on paint
-             * events instead of just scrolling the time axis or zooming. To avoid
-             * refreshing the model on every paint event, we use a TmfUiRefreshHandler to
-             * coalesce requests and only execute the last one, we also check if the entries
-             * have changed to avoid useless model refresh.
+             * This paint control allows the virtual time graph refresh to occur
+             * on paint events instead of just scrolling the time axis or
+             * zooming. To avoid refreshing the model on every paint event, we
+             * use a TmfUiRefreshHandler to coalesce requests and only execute
+             * the last one, we also check if the entries have changed to avoid
+             * useless model refresh.
              *
              * @param e
              *            paint event on the visible area
@@ -1513,9 +1518,11 @@ public abstract class AbstractTimeGraphView extends TmfView implements ITmfTimeA
                     Set<@NonNull TimeGraphEntry> newSet = getVisibleItems(DEFAULT_BUFFER_SIZE);
                     if (fPrevTimeSpace != timeSpace || !fVisibleEntries.equals(newSet)) {
                         /*
-                         * Start a zoom thread if the set of visible entries has changed. We do not use
-                         * lists as the order is not important. We cannot use the start index / size of
-                         * the visible entries as we can collapse / reorder events.
+                         * Start a zoom thread if the set of visible entries has
+                         * changed. We do not use lists as the order is not
+                         * important. We cannot use the start index / size of
+                         * the visible entries as we can collapse / reorder
+                         * events.
                          */
                         fVisibleEntries = newSet;
                         fPrevTimeSpace = timeSpace;
@@ -1608,8 +1615,8 @@ public abstract class AbstractTimeGraphView extends TmfView implements ITmfTimeA
         Set<@NonNull TimeGraphEntry> visible = new HashSet<>(end - start + 1);
         for (int i = start; i <= end; i++) {
             /*
-             * Use the getExpandedElement by index to avoid creating a copy of all the the
-             * elements.
+             * Use the getExpandedElement by index to avoid creating a copy of
+             * all the the elements.
              */
             TimeGraphEntry element = (TimeGraphEntry) timeGraphControl.getExpandedElement(i);
             if (element != null) {
@@ -1897,8 +1904,8 @@ public abstract class AbstractTimeGraphView extends TmfView implements ITmfTimeA
     }
 
     /**
-     * Forces a rebuild of the entries list, even if entries already exist for this
-     * trace
+     * Forces a rebuild of the entries list, even if entries already exist for
+     * this trace
      */
     protected void rebuild() {
         try (FlowScopeLog parentLogger = new FlowScopeLogBuilder(LOGGER, Level.FINE, "TimeGraphView:Rebuilding").setCategory(getViewId()).build()) { //$NON-NLS-1$
@@ -1911,7 +1918,8 @@ public abstract class AbstractTimeGraphView extends TmfView implements ITmfTimeA
 
             List<IMarkerEventSource> markerEventSources = new ArrayList<>();
             synchronized (fBuildJobMap) {
-                // Run the build jobs through the site progress service if available
+                // Run the build jobs through the site progress service if
+                // available
                 IWorkbenchSiteProgressService service = null;
                 IWorkbenchPartSite site = getSite();
                 if (site != null) {
@@ -1981,8 +1989,8 @@ public abstract class AbstractTimeGraphView extends TmfView implements ITmfTimeA
      * populate the view. By default, if the trace is an experiment, the traces
      * under it will be returned, otherwise, the trace itself is returned.
      *
-     * A build thread will be started for each trace returned by this method, some
-     * of which may receive events in live streaming mode.
+     * A build thread will be started for each trace returned by this method,
+     * some of which may receive events in live streaming mode.
      *
      * @param trace
      *            The trace associated with this view, can be null
@@ -1999,20 +2007,20 @@ public abstract class AbstractTimeGraphView extends TmfView implements ITmfTimeA
      * {@link #getTracesToBuild(ITmfTrace)}.
      * <p>
      * Root entries must be added to the entry list by calling the
-     * {@link #addToEntryList(ITmfTrace, List)} method with the list of entries to
-     * add and where the trace in parameter should be the parentTrace. Entries that
-     * are children of other entries will be automatically picked up after
-     * refreshing the root entries.
+     * {@link #addToEntryList(ITmfTrace, List)} method with the list of entries
+     * to add and where the trace in parameter should be the parentTrace.
+     * Entries that are children of other entries will be automatically picked
+     * up after refreshing the root entries.
      * <p>
      * The full event list is also normally computed for every entry that is
      * created. It should be set for each entry by calling the
      * {@link TimeGraphEntry#setEventList(List)}. These full event lists will be
-     * used to display something while the zoomed event lists are being calculated
-     * when the window range is updated. Also, when fully zoomed out, it is this
-     * list of events that is displayed.
+     * used to display something while the zoomed event lists are being
+     * calculated when the window range is updated. Also, when fully zoomed out,
+     * it is this list of events that is displayed.
      * <p>
-     * Also, when all the entries have been added and their events set, this method
-     * can finish by calling the refresh() method like this:
+     * Also, when all the entries have been added and their events set, this
+     * method can finish by calling the refresh() method like this:
      *
      * <pre>
      * if (parentTrace.equals(getTrace())) {
@@ -2033,9 +2041,9 @@ public abstract class AbstractTimeGraphView extends TmfView implements ITmfTimeA
     /**
      * Gets the list of event for an entry in a given time range.
      * <p>
-     * Called from the ZoomThread for every entry to update the zoomed event list.
-     * Can be an empty implementation if the view does not support zoomed event
-     * lists. Can also be used to compute the full event list.
+     * Called from the ZoomThread for every entry to update the zoomed event
+     * list. Can be an empty implementation if the view does not support zoomed
+     * event lists. Can also be used to compute the full event list.
      *
      * @param entry
      *            The entry to get events for
@@ -2087,6 +2095,7 @@ public abstract class AbstractTimeGraphView extends TmfView implements ITmfTimeA
     /**
      * Gets the list of view-specific markers for a trace in a given time range.
      * Default implementation returns an empty list.
+     *
      * @param entries
      *            A list of entries to query
      * @param startTime
@@ -2106,7 +2115,8 @@ public abstract class AbstractTimeGraphView extends TmfView implements ITmfTimeA
     }
 
     /**
-     * Gets the list of trace-specific markers for a trace in a given time range.
+     * Gets the list of trace-specific markers for a trace in a given time
+     * range.
      *
      * @param startTime
      *            Start of the time range
@@ -2331,9 +2341,9 @@ public abstract class AbstractTimeGraphView extends TmfView implements ITmfTimeA
             if (zoomThread != null) {
                 zoomThread.setScopeId(log.getId());
                 /*
-                 * Don't start a new thread right away if results are being applied from an old
-                 * ZoomThread. Otherwise, the old results might overwrite the new results if it
-                 * finishes after.
+                 * Don't start a new thread right away if results are being
+                 * applied from an old ZoomThread. Otherwise, the old results
+                 * might overwrite the new results if it finishes after.
                  */
                 synchronized (fZoomThreadResultLock) {
                     zoomThread.start();
@@ -2441,6 +2451,7 @@ public abstract class AbstractTimeGraphView extends TmfView implements ITmfTimeA
             setImageDescriptor(Activator.getDefault().getImageDescripterFromPath(ITmfImageConstants.IMG_UI_HIDE_ROWS_BUTTON));
             fIsHideRowsFilterActive = false;
         }
+
         @Override
         public void run() {
             boolean hasSavedFilter = fTimeEventFilterDialog != null && fTimeEventFilterDialog.hasActiveSavedFilters();
@@ -2520,8 +2531,8 @@ public abstract class AbstractTimeGraphView extends TmfView implements ITmfTimeA
     }
 
     /**
-     * Add contributions to the local tool bar manager. The contributions should be
-     * appended to the {@link IWorkbenchActionConstants#MB_ADDITIONS} group.
+     * Add contributions to the local tool bar manager. The contributions should
+     * be appended to the {@link IWorkbenchActionConstants#MB_ADDITIONS} group.
      *
      * @param manager
      *            the tool bar manager
@@ -2626,18 +2637,18 @@ public abstract class AbstractTimeGraphView extends TmfView implements ITmfTimeA
     }
 
     /**
-     * Returns whether or not the time graph view is dirty. The time graph view is
-     * considered dirty if it has yet to completely update its model.
+     * Returns whether or not the time graph view is dirty. The time graph view
+     * is considered dirty if it has yet to completely update its model.
      *
-     * This method is meant to be used by tests in order to know when it is safe to
-     * proceed.
+     * This method is meant to be used by tests in order to know when it is safe
+     * to proceed.
      *
      * Note: If a trace is smaller than the initial window range (see
      * {@link ITmfTrace#getInitialRangeOffset}) this method will return true
      * forever.
      *
-     * @return true if the time graph view has yet to completely update its model,
-     *         false otherwise
+     * @return true if the time graph view has yet to completely update its
+     *         model, false otherwise
      * @since 2.0
      */
     public boolean isDirty() {
@@ -2854,9 +2865,9 @@ public abstract class AbstractTimeGraphView extends TmfView implements ITmfTimeA
         timeGraphControl.addTimeGraphEntryMenuListener(event -> {
             Point p = timeGraphControl.toControl(event.x, event.y);
             /*
-             * The TimeGraphControl will call the TimeGraphEntryMenuListener before the
-             * TimeEventMenuListener. If the event is triggered on the name space then show
-             * the menu else clear the menu.
+             * The TimeGraphControl will call the TimeGraphEntryMenuListener
+             * before the TimeEventMenuListener. If the event is triggered on
+             * the name space then show the menu else clear the menu.
              */
             if (p.x < getTimeGraphViewer().getNameSpace()) {
                 timeGraphControl.setMenu(entryMenu);
@@ -2873,8 +2884,8 @@ public abstract class AbstractTimeGraphView extends TmfView implements ITmfTimeA
     }
 
     /**
-     * This method build the multimap of regexes by property that will be used to
-     * filter the timegraph states
+     * This method build the multimap of regexes by property that will be used
+     * to filter the timegraph states
      *
      * Override this method to add other regexes with their properties. The data
      * provider should handle everything after.
@@ -2885,7 +2896,8 @@ public abstract class AbstractTimeGraphView extends TmfView implements ITmfTimeA
     protected @NonNull Multimap<@NonNull Integer, @NonNull String> getRegexes() {
         Multimap<@NonNull Integer, @NonNull String> regexes = HashMultimap.create();
 
-        @NonNull String dialogRegex = fTimeEventFilterDialog != null ? fTimeEventFilterDialog.getTextBoxRegex() : ""; //$NON-NLS-1$
+        @NonNull
+        String dialogRegex = fTimeEventFilterDialog != null ? fTimeEventFilterDialog.getTextBoxRegex() : ""; //$NON-NLS-1$
         if (!dialogRegex.isEmpty()) {
             regexes.put(CoreFilterProperty.DIMMED, dialogRegex);
         }
@@ -2911,7 +2923,6 @@ public abstract class AbstractTimeGraphView extends TmfView implements ITmfTimeA
             return regexes;
         }
         regexes.putAll(CoreFilterProperty.DIMMED, globalFilter.getRegexes());
-
 
         return regexes;
     }
@@ -2956,7 +2967,8 @@ public abstract class AbstractTimeGraphView extends TmfView implements ITmfTimeA
     public void restartZoomThread() {
         ZoomThread zoomThread = fZoomThread;
         if (zoomThread != null) {
-            // Make sure that the zoom thread is not a restart (resume of the previous)
+            // Make sure that the zoom thread is not a restart (resume of the
+            // previous)
             zoomThread.cancel();
             fZoomThread = null;
         }
@@ -3136,7 +3148,7 @@ public abstract class AbstractTimeGraphView extends TmfView implements ITmfTimeA
      * Set or remove the global regex filter value
      *
      * @param signal
-     *                   the signal carrying the regex value
+     *            the signal carrying the regex value
      * @since 4.2
      */
     @TmfSignalHandler
@@ -3189,7 +3201,7 @@ public abstract class AbstractTimeGraphView extends TmfView implements ITmfTimeA
         if (adapter == ITmfTimeZoomProvider.class) {
             return (T) getTimeZoomProvider();
         }
-        if (adapter == ITmfZoomToSelectionProvider.class ) {
+        if (adapter == ITmfZoomToSelectionProvider.class) {
             return (T) getZoomToSelectionProvider();
         }
         return super.getAdapter(adapter);

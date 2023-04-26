@@ -95,7 +95,10 @@ public abstract class AbstractSelectTreeViewer2 extends AbstractTmfTreeViewer {
     /** Timeout between updates in the updateData thread **/
     private static final long BUILD_UPDATE_TIMEOUT = 500;
 
-    /** ID of the checked tree items in the map of data in {@link TmfTraceContext} */
+    /**
+     * ID of the checked tree items in the map of data in
+     * {@link TmfTraceContext}
+     */
     private static final char SEP = ':';
     private static final @NonNull String CHECKED_ELEMENTS = ".CHECKED_ELEMENTS"; //$NON-NLS-1$
     private static final @NonNull String FILTER_STRING = ".FILTER_STRING"; //$NON-NLS-1$
@@ -164,6 +167,7 @@ public abstract class AbstractSelectTreeViewer2 extends AbstractTmfTreeViewer {
      * this class typically need to override the getColumnText method if they
      * have more than one column to display. It also allows to change the font
      * and colors of the cells.
+     *
      * @since 6.0
      */
     protected class DataProviderTreeLabelProvider extends TreeLabelProvider {
@@ -356,8 +360,8 @@ public abstract class AbstractSelectTreeViewer2 extends AbstractTmfTreeViewer {
     }
 
     /**
-     * Recursively find entries which were previously checked and check them again
-     * by id.
+     * Recursively find entries which were previously checked and check them
+     * again by id.
      *
      * @param ids
      *            Set of previously checked IDs
@@ -365,8 +369,8 @@ public abstract class AbstractSelectTreeViewer2 extends AbstractTmfTreeViewer {
      *            {@link ITmfTreeViewerEntry} to compare to the set of checked
      *            entries
      * @param checkedElements
-     *            list of checked entries to which we add the root entry if it was
-     *            previously checked
+     *            list of checked entries to which we add the root entry if it
+     *            was previously checked
      */
     private void checkEntries(Set<Long> ids, ITmfTreeViewerEntry root, List<ITmfTreeViewerEntry> checkedElements) {
         if (root instanceof TmfGenericTreeEntry
@@ -447,7 +451,10 @@ public abstract class AbstractSelectTreeViewer2 extends AbstractTmfTreeViewer {
 
                             ITmfResponse.Status status = response.getStatus();
                             if (status == ITmfResponse.Status.COMPLETED) {
-                                /* Model is complete, no need to request again the data provider */
+                                /*
+                                 * Model is complete, no need to request again
+                                 * the data provider
+                                 */
                                 isComplete = true;
                                 if (!fIsInitialized) {
                                     fIsInitialized = true;
@@ -464,15 +471,16 @@ public abstract class AbstractSelectTreeViewer2 extends AbstractTmfTreeViewer {
                                 isComplete = true;
                             } else {
                                 /**
-                                 * Status is RUNNING. Sleeping current thread to wait before request data
-                                 * provider again
+                                 * Status is RUNNING. Sleeping current thread to
+                                 * wait before request data provider again
                                  **/
                                 try {
                                     Thread.sleep((long) (BUILD_UPDATE_TIMEOUT * factor));
                                     factor = Math.min(20, factor + 1);
                                 } catch (InterruptedException e) {
                                     /**
-                                     * InterruptedException is throw by Thread.Sleep and we should retry querying
+                                     * InterruptedException is throw by
+                                     * Thread.Sleep and we should retry querying
                                      * the data provider
                                      **/
                                     runScope.addData(FAILED_TO_SLEEP_PREFIX + getName(), e);
@@ -492,7 +500,7 @@ public abstract class AbstractSelectTreeViewer2 extends AbstractTmfTreeViewer {
     }
 
     private void updateTree(ITmfTrace trace, long start, long end, List<@NonNull ITmfTreeDataModel> model) {
-        try (FlowScopeLog parentScope = new FlowScopeLogBuilder(LOGGER, Level.FINE, "AbstractSelectTreeViewer:TreeUpdateRequested" ) //$NON-NLS-1$
+        try (FlowScopeLog parentScope = new FlowScopeLogBuilder(LOGGER, Level.FINE, "AbstractSelectTreeViewer:TreeUpdateRequested") //$NON-NLS-1$
                 .setCategory(fLogCategory).build()) {
             final TmfTreeViewerEntry rootEntry = getRoot(trace);
             /*
@@ -549,8 +557,8 @@ public abstract class AbstractSelectTreeViewer2 extends AbstractTmfTreeViewer {
     }
 
     /**
-     * Save the checked entries' ID in the view context before changing trace and
-     * check them again in the new tree.
+     * Save the checked entries' ID in the view context before changing trace
+     * and check them again in the new tree.
      */
     private void saveViewContext() {
         ITmfTrace previousTrace = getTrace();
@@ -566,7 +574,7 @@ public abstract class AbstractSelectTreeViewer2 extends AbstractTmfTreeViewer {
             String filterString = filterControl != null ? filterControl.getText() : null;
             TmfTraceManager.getInstance().updateTraceContext(previousTrace,
                     builder -> builder.setData(getDataContextId(CHECKED_ELEMENTS), ids)
-                    .setData(getDataContextId(FILTER_STRING), filterString));
+                            .setData(getDataContextId(FILTER_STRING), filterString));
         }
     }
 
@@ -593,11 +601,14 @@ public abstract class AbstractSelectTreeViewer2 extends AbstractTmfTreeViewer {
      *
      * @param id
      *            the entry's unique ID
-     * @return the correctly dimensioned image if there is a legend image provider
+     * @return the correctly dimensioned image if there is a legend image
+     *         provider
      * @since 6.0
      */
     protected Image getLegendImage(@NonNull Long id) {
-        /* If the image height match the row height, row height will increment */
+        /*
+         * If the image height match the row height, row height will increment
+         */
         ILegendImageProvider2 legendImageProvider = fLegendImageProvider;
         int legendColumnIndex = fLegendIndex;
         if (legendImageProvider != null && legendColumnIndex >= 0) {
@@ -619,7 +630,8 @@ public abstract class AbstractSelectTreeViewer2 extends AbstractTmfTreeViewer {
     /**
      * Getter for the {@link ITmfTreeDataProvider} to query for this TreeViewer
      *
-     * @param trace the trace
+     * @param trace
+     *            the trace
      * @return the relevant provider, if any
      * @since 4.0
      */
@@ -650,7 +662,8 @@ public abstract class AbstractSelectTreeViewer2 extends AbstractTmfTreeViewer {
     }
 
     /**
-     * Algorithm to convert a model (List of {@link TmfTreeDataModel}) to the tree.
+     * Algorithm to convert a model (List of {@link TmfTreeDataModel}) to the
+     * tree.
      *
      * @param start
      *            queried start time
@@ -686,8 +699,7 @@ public abstract class AbstractSelectTreeViewer2 extends AbstractTmfTreeViewer {
      *            comparator to sort {@link TmfGenericTreeEntry}s
      * @return the comparator
      */
-    protected static <T extends TmfGenericTreeEntry<? extends TmfTreeDataModel>>
-    @NonNull TmfTreeColumnData createColumn(String text, Comparator<T> comparator) {
+    protected static <T extends TmfGenericTreeEntry<? extends TmfTreeDataModel>> @NonNull TmfTreeColumnData createColumn(String text, Comparator<T> comparator) {
         TmfTreeColumnData column = new TmfTreeColumnData(text);
         column.setComparator(new ViewerComparator() {
             @Override

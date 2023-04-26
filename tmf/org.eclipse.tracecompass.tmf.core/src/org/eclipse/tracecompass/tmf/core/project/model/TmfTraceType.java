@@ -504,10 +504,10 @@ public final class TmfTraceType {
      * This method figures out the trace type of a given trace.
      *
      * @param path
-     *            The path of trace to import (file or directory for directory traces)
+     *            The path of trace to import (file or directory)
      * @param traceTypeHint
      *            the ID of a trace (like "o.e.l.specifictrace" )
-     * @return a list of {@link TraceTypeHelper} sorted by confidence (highest first)
+     * @return a list of {@link TraceTypeHelper} sorted by descending confidence
      *
      * @throws TmfTraceImportException
      *             if there are errors in the trace file or no trace type found
@@ -536,7 +536,8 @@ public final class TmfTraceType {
                     // if the trace type hint is valid, return it immediately
                     return Collections.singletonList(traceTypeHelper);
                 }
-                // insert in the tree map, ordered by confidence (highest confidence first) then name
+                // insert in the tree map, ordered by confidence (highest
+                // confidence first) then name
                 Pair<Integer, TraceTypeHelper> element = new Pair<>(confidence, traceTypeHelper);
                 validCandidates.add(element);
             }
@@ -563,7 +564,7 @@ public final class TmfTraceType {
                 }
             } else {
                 for (Pair<Integer, TraceTypeHelper> candidatePair : reducedCandidates) {
-                    // Don't select the trace type if it has the lowest confidence
+                    // Don't select trace type if it has the lowest confidence
                     if (candidatePair.getFirst() > 0) {
                         returned.add(candidatePair.getSecond());
                     }
