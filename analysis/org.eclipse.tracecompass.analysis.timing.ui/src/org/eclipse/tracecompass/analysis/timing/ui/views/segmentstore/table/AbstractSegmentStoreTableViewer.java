@@ -33,7 +33,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
@@ -155,7 +154,7 @@ public abstract class AbstractSegmentStoreTableViewer extends TmfSimpleTableView
             ITmfTimestamp end = TmfTimestamp.fromNanos(selectedSegment.getEnd());
             TmfSignalManager.dispatchSignal(new TmfSelectionRangeUpdatedSignal(AbstractSegmentStoreTableViewer.this, start, end, fTrace));
             if (selectedSegment instanceof IElementResolver) {
-                Multimap<@NonNull String, @NonNull Object> metadata = ((IElementResolver) selectedSegment).getMetadata();
+                Multimap<String, Object> metadata = ((IElementResolver) selectedSegment).getMetadata();
                 if (!metadata.isEmpty()) {
                     TmfSignalManager.dispatchSignal(new TmfDataModelSelectedSignal(AbstractSegmentStoreTableViewer.this, metadata));
                 }
@@ -404,11 +403,11 @@ public abstract class AbstractSegmentStoreTableViewer extends TmfSimpleTableView
         // and model can be updated
 
         // FIXME Filtering should be done at the data provider level
-        Map<@NonNull Integer, @NonNull Predicate<@NonNull Multimap<@NonNull String, @NonNull Object>>> predicates = generateRegexPredicate();
+        Map<Integer, Predicate<Multimap<String, Object>>> predicates = generateRegexPredicate();
         Predicate<ISegment> predicate = segment -> {
 
             // Get the filter external input data
-            Multimap<@NonNull String, @NonNull Object> input = ISegmentStoreProvider.getFilterInput(provider, segment);
+            Multimap<String, Object> input = ISegmentStoreProvider.getFilterInput(provider, segment);
 
             /*
              * Test each predicates and set the status of the property
@@ -483,11 +482,11 @@ public abstract class AbstractSegmentStoreTableViewer extends TmfSimpleTableView
      */
     protected Map<Integer, Predicate<Multimap<String, Object>>> generateRegexPredicate() {
         Multimap<Integer, String> regexes = getRegexes();
-        Map<@NonNull Integer, @NonNull Predicate<@NonNull Multimap<@NonNull String, @NonNull Object>>> predicates = new HashMap<>();
+        Map<Integer, Predicate<Multimap<String, Object>>> predicates = new HashMap<>();
         for (Entry<Integer, Collection<String>> entry : regexes.asMap().entrySet()) {
             String regex = IFilterStrings.mergeFilters(entry.getValue());
             FilterCu cu = FilterCu.compile(regex);
-            Predicate<@NonNull Multimap<@NonNull String, @NonNull Object>> predicate = cu != null ? cu.generate() : null;
+            Predicate<Multimap<String, Object>> predicate = cu != null ? cu.generate() : null;
             if (predicate != null) {
                 predicates.put(entry.getKey(), predicate);
             }
@@ -663,8 +662,8 @@ public abstract class AbstractSegmentStoreTableViewer extends TmfSimpleTableView
      * @return The multimap of regexes by property
      * @since 3.1
      */
-    protected Multimap<@NonNull Integer, @NonNull String> getRegexes() {
-        Multimap<@NonNull Integer, @NonNull String> regexes = HashMultimap.create();
+    protected Multimap<Integer, String> getRegexes() {
+        Multimap<Integer, String> regexes = HashMultimap.create();
 
         ITmfTrace trace = fTrace;
         if (trace == null) {

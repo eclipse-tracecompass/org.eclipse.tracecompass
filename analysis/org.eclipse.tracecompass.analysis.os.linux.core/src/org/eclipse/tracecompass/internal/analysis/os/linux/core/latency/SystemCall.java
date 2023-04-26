@@ -11,7 +11,6 @@
 
 package org.eclipse.tracecompass.internal.analysis.os.linux.core.latency;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.analysis.os.linux.core.model.OsStrings;
 import org.eclipse.tracecompass.datastore.core.interval.IHTIntervalReader;
@@ -144,7 +143,7 @@ public final class SystemCall implements INamedSegment, ITmfSourceLookup, IEleme
     }
 
     @Override
-    public void writeSegment(@NonNull ISafeByteBufferWriter buffer) {
+    public void writeSegment(ISafeByteBufferWriter buffer) {
         buffer.putLong(fStartTime);
         buffer.putLong(fEndTime);
         buffer.putString(fName);
@@ -153,7 +152,7 @@ public final class SystemCall implements INamedSegment, ITmfSourceLookup, IEleme
     }
 
     @Override
-    public int compareTo(@NonNull ISegment o) {
+    public int compareTo(ISegment o) {
         int ret = INamedSegment.super.compareTo(o);
         if (ret != 0) {
             return ret;
