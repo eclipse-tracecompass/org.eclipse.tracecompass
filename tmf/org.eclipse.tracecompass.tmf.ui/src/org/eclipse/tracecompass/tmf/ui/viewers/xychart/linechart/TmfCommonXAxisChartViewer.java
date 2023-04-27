@@ -160,9 +160,9 @@ public abstract class TmfCommonXAxisChartViewer extends TmfXYChartViewer {
      * Constructor
      *
      * @param parent
-     *                     The parent composite
+     *            The parent composite
      * @param settings
-     *                     See {@link TmfXYChartSettings} to know what it contains
+     *            See {@link TmfXYChartSettings} to know what it contains
      */
     public TmfCommonXAxisChartViewer(Composite parent, TmfXYChartSettings settings) {
         super(parent, settings.getTitle(), settings.getXLabel(), settings.getYLabel());
@@ -204,9 +204,9 @@ public abstract class TmfCommonXAxisChartViewer extends TmfXYChartViewer {
      * Force the number of points to a fixed value
      *
      * @param nbPoints
-     *                     The number of points to display, cannot be negative. 0
-     *                     means use native resolution. any positive integer means
-     *                     that number of points
+     *            The number of points to display, cannot be negative. 0 means
+     *            use native resolution. any positive integer means that number
+     *            of points
      */
     public synchronized void setNbPoints(int nbPoints) {
         if (nbPoints < 0) {
@@ -220,7 +220,7 @@ public abstract class TmfCommonXAxisChartViewer extends TmfXYChartViewer {
      * Initialize the data provider of this viewer
      *
      * @param trace
-     *                  The trace
+     *            The trace
      * @return the data provider
      */
     protected abstract ITmfXYDataProvider initializeDataProvider(@NonNull ITmfTrace trace);
@@ -270,9 +270,9 @@ public abstract class TmfCommonXAxisChartViewer extends TmfXYChartViewer {
     }
 
     /**
-     * Cancels the currently running update thread. It is automatically called when
-     * the content is updated, but child viewers may want to call it manually to do
-     * some operations before calling
+     * Cancels the currently running update thread. It is automatically called
+     * when the content is updated, but child viewers may want to call it
+     * manually to do some operations before calling
      * {@link TmfCommonXAxisChartViewer#updateContent}
      */
     protected synchronized void cancelUpdate() {
@@ -290,8 +290,8 @@ public abstract class TmfCommonXAxisChartViewer extends TmfXYChartViewer {
         cancelUpdate();
         try (FlowScopeLog parentScope = new FlowScopeLogBuilder(LOGGER, Level.FINE, "CommonXLineChart:ContentUpdateRequested").setCategory(getViewerId()).build()) { //$NON-NLS-1$
             /*
-             * Content is not up to date, so we increment fDirty. It will be decremented at
-             * the end of the update thread
+             * Content is not up to date, so we increment fDirty. It will be
+             * decremented at the end of the update thread
              */
             fDirty.incrementAndGet();
             getDisplay().asyncExec(() -> {
@@ -350,8 +350,8 @@ public abstract class TmfCommonXAxisChartViewer extends TmfXYChartViewer {
                     updateData(dataProvider, parameters, fMonitor);
                 } finally {
                     /*
-                     * fDirty should have been incremented before creating the thread, so we
-                     * decrement it once it is finished
+                     * fDirty should have been incremented before creating the
+                     * thread, so we decrement it once it is finished
                      */
                     if (fDirty.decrementAndGet() < 0) {
                         Activator.getDefault().logError(DIRTY_UNDERFLOW_ERROR, new Throwable());
@@ -368,15 +368,15 @@ public abstract class TmfCommonXAxisChartViewer extends TmfXYChartViewer {
 
         /**
          * This method is responsible for calling the
-         * {@link UpdateThread#updateDisplay(ITmfCommonXAxisModel)} when needed for the
-         * new values to be displayed.
+         * {@link UpdateThread#updateDisplay(ITmfCommonXAxisModel)} when needed
+         * for the new values to be displayed.
          *
          * @param dataProvider
-         *                         A data provider
+         *            A data provider
          * @param parameters
-         *                         A query filter
+         *            A query filter
          * @param monitor
-         *                         A monitor for canceling task
+         *            A monitor for canceling task
          */
         private void updateData(@NonNull ITmfXYDataProvider dataProvider, @NonNull Map<String, Object> parameters, IProgressMonitor monitor) {
             boolean isComplete = false;
@@ -389,7 +389,9 @@ public abstract class TmfCommonXAxisChartViewer extends TmfXYChartViewer {
 
                 ITmfResponse.Status status = response.getStatus();
                 if (status == ITmfResponse.Status.COMPLETED) {
-                    /* Model is complete, no need to request again the data provider */
+                    /*
+                     * Model complete, no need to query the data provider again
+                     */
                     isComplete = true;
                 } else if (status == ITmfResponse.Status.FAILED || status == ITmfResponse.Status.CANCELLED) {
                     /* Error occurred, log and return */
@@ -397,15 +399,15 @@ public abstract class TmfCommonXAxisChartViewer extends TmfXYChartViewer {
                     isComplete = true;
                 } else {
                     /**
-                     * Status is RUNNING. Sleeping current thread to wait before request data
-                     * provider again
+                     * Status is RUNNING. Sleeping current thread to wait before
+                     * request data provider again
                      **/
                     try {
                         Thread.sleep(BUILD_UPDATE_TIMEOUT);
                     } catch (InterruptedException e) {
                         /**
-                         * InterruptedException is throw by Thread.Sleep and we should retry querying
-                         * the data provider
+                         * InterruptedException is throw by Thread.Sleep and we
+                         * should retry querying the data provider
                          **/
                         TraceCompassLogUtils.traceInstant(LOGGER, Level.INFO, e.getMessage());
                         Thread.currentThread().interrupt();
@@ -413,7 +415,6 @@ public abstract class TmfCommonXAxisChartViewer extends TmfXYChartViewer {
                 }
             } while (!isComplete);
         }
-
 
         /**
          * Update the chart's values before refreshing the viewer
@@ -454,7 +455,8 @@ public abstract class TmfCommonXAxisChartViewer extends TmfXYChartViewer {
                                 for (int i = 0; i < extractXValuesToDisplay.length; i++) {
                                     double value = data[i];
                                     /*
-                                     * Find the minimal and maximum values in this series
+                                     * Find the minimal and maximum values in
+                                     * this series
                                      */
                                     maxy = Math.max(maxy, value);
                                     miny = Math.min(miny, value);
@@ -527,7 +529,7 @@ public abstract class TmfCommonXAxisChartViewer extends TmfXYChartViewer {
                             delta = 1;
                         }
                         getSwtChart().getPlotArea().removeCustomPaintListener(NO_DATA);
-                        if(seriesValues.getSeriesData().isEmpty()) {
+                        if (seriesValues.getSeriesData().isEmpty()) {
                             getSwtChart().getPlotArea().addCustomPaintListener(NO_DATA);
                         }
                         // Set the formatters for the axis
@@ -541,7 +543,8 @@ public abstract class TmfCommonXAxisChartViewer extends TmfXYChartViewer {
                                 axisSet.getYAxis(0).getTick().setFormat(DataTypeUtils.getFormat(yAxisDescription.getDataType(), yAxisDescription.getUnit()));
                             }
                             ITitle title = axisSet.getYAxis(0).getTitle();
-                            // Set the Y title if it was not previously set (ie it is invisible)
+                            // Set the Y title if it was not previously set (ie
+                            // it is invisible)
                             if (!title.isVisible()) {
                                 title.setText(yAxisDescription.getLabel());
                                 title.setVisible(true);
@@ -560,8 +563,9 @@ public abstract class TmfCommonXAxisChartViewer extends TmfXYChartViewer {
                         getSwtChart().redraw();
                         if (isSendTimeAlignSignals()) {
                             /*
-                             * The width of the chart might have changed and its time axis might be
-                             * misaligned with the other views
+                             * The width of the chart might have changed and its
+                             * time axis might be misaligned with the other
+                             * views
                              */
                             Composite parent = TmfCommonXAxisChartViewer.this.getParent();
                             if (parent == null || parent.getParent() == null) {
@@ -585,8 +589,9 @@ public abstract class TmfCommonXAxisChartViewer extends TmfXYChartViewer {
         }
 
         /**
-         * Since the XY Model returned by data provider contains directly the requested
-         * time as long array, we need to convert it to double array for the SWT Chart.
+         * Since the XY Model returned by data provider contains directly the
+         * requested time as long array, we need to convert it to double array
+         * for the SWT Chart.
          */
         private double[] extractXValuesToDisplay(long[] xValuesRequested) {
             double[] xValuesToDisplay = new double[xValuesRequested.length];
@@ -714,7 +719,7 @@ public abstract class TmfCommonXAxisChartViewer extends TmfXYChartViewer {
      * Set or remove the global regex filter value
      *
      * @param signal
-     *                   the signal carrying the regex value
+     *            the signal carrying the regex value
      */
     @TmfSignalHandler
     public void regexFilterApplied(TmfFilterAppliedSignal signal) {
@@ -722,8 +727,8 @@ public abstract class TmfCommonXAxisChartViewer extends TmfXYChartViewer {
     }
 
     /**
-     * This method build the multimap of regexes by property that will be used to
-     * filter the timegraph states
+     * This method build the multimap of regexes by property that will be used
+     * to filter the timegraph states
      *
      * Override this method to add other regexes with their properties. The data
      * provider should handle everything after.

@@ -190,7 +190,9 @@ public abstract class AbstractStateSystemTimeGraphView extends AbstractTimeGraph
             @NonNull Map<@NonNull Integer, @NonNull Predicate<@NonNull Multimap<@NonNull String, @NonNull Object>>> predicates = generateRegexPredicate();
             Sampling sampling = new Sampling(getZoomStartTime(), getZoomEndTime(), predicates, getResolution());
             Iterable<@NonNull TimeGraphEntry> incorrectSample = Iterables.filter(fVisibleEntries, entry -> !sampling.equals(entry.getSampling()));
-            /* Only keep entries that are a member or child of the ss entry list */
+            /*
+             * Only keep entries that are a member or child of the ss entry list
+             */
             Iterable<@NonNull TimeGraphEntry> entries = Iterables.filter(incorrectSample, entry -> isMember(entry, entryList));
             // set gaps to null when there is no active filter
             Map<TimeGraphEntry, List<ITimeEvent>> gaps = isFilterActive ? new HashMap<>() : null;
@@ -253,7 +255,7 @@ public abstract class AbstractStateSystemTimeGraphView extends AbstractTimeGraph
                 doFilterEventList(entry, eventList, predicates);
                 applyResults(() -> {
                     for (ITimeEvent event : eventList) {
-                            entry.addZoomedEvent(event);
+                        entry.addZoomedEvent(event);
                     }
                 });
             }
@@ -266,10 +268,10 @@ public abstract class AbstractStateSystemTimeGraphView extends AbstractTimeGraph
                 ViewFilterDialog timeEventFilterDialog = getViewFilterDialog();
                 boolean hasActiveSavedFilters = timeEventFilterDialog.hasActiveSavedFilters();
 
-                //Regroup the gaps by overlapping gaps
+                // Regroup the gaps by overlapping gaps
                 Table<ITimeGraphEntry, @NonNull Pair<Long, Long>, List<ITimeEvent>> gapsTable = regroupOverlappingGaps(gaps);
 
-                //Get the quarks per entry once
+                // Get the quarks per entry once
                 Map<ITimeGraphEntry, Collection<Integer>> quarksPerEntry = new HashMap<>();
                 for (ITimeGraphEntry entry : gapsTable.rowKeySet()) {
                     Collection<Integer> quarks = getQuarksForEntry(entry, ss);
@@ -280,7 +282,7 @@ public abstract class AbstractStateSystemTimeGraphView extends AbstractTimeGraph
                     Map<ITimeGraphEntry, List<ITimeEvent>> row = tableEntry.getValue();
                     List<Integer> quarks = new ArrayList<>();
 
-                    //Get the need quarks for this slot
+                    // Get the need quarks for this slot
                     for (ITimeGraphEntry entry : row.keySet()) {
                         Collection<Integer> entryQuarks = quarksPerEntry.get(entry);
                         if (entryQuarks != null) {
@@ -302,18 +304,19 @@ public abstract class AbstractStateSystemTimeGraphView extends AbstractTimeGraph
                                     if (pos >= 0) {
                                         ITimeEvent gap = gapEvents.get(pos);
                                         if (!monitor.isCanceled()) {
-                                            // if any underlying event is not dimmed,
-                                            // then set the related gap event dimmed
-                                            // property to false
+                                            // if any underlying event is not
+                                            // dimmed, then set the related gap
+                                            // event dimmed property to false
                                             boolean dimmed = gap.isPropertyActive(CoreFilterProperty.DIMMED);
                                             if (dimmed && !event.isPropertyActive(CoreFilterProperty.DIMMED)) {
                                                 gap.setProperty(CoreFilterProperty.DIMMED, false);
                                             }
 
-                                            // if any underlying event is not excluded,
-                                            // then set the related gap event exclude
-                                            // status property to false and add the gap
-                                            // back to the zoom event list
+                                            // if any underlying event is not
+                                            // excluded, then set the related
+                                            // gap event exclude status property
+                                            // to false and add the gap back to
+                                            // the zoom event list
                                             if (hasActiveSavedFilters && !event.isPropertyActive(CoreFilterProperty.EXCLUDE)) {
                                                 gap.setProperty(CoreFilterProperty.EXCLUDE, false);
                                                 applyResults(() -> {
@@ -372,7 +375,7 @@ public abstract class AbstractStateSystemTimeGraphView extends AbstractTimeGraph
         PriorityQueue<ITimeEvent> queue = new PriorityQueue<>(TIME_EVENT_COMPARATOR);
         gapsMap.values().forEach(events -> queue.addAll(events));
         Pair<Long, Long> previous = null;
-        while(!queue.isEmpty()) {
+        while (!queue.isEmpty()) {
             ITimeEvent event = Objects.requireNonNull(queue.poll());
 
             ITimeGraphEntry entry = event.getEntry();
@@ -451,7 +454,7 @@ public abstract class AbstractStateSystemTimeGraphView extends AbstractTimeGraph
      * @since 4.3
      */
     protected void getEnventListGaps(@NonNull TimeGraphEntry entry, List<ITimeEvent> eventList, Map<TimeGraphEntry, List<ITimeEvent>> gaps) {
-        // Do nothing here. Must be implemented by subclasses that need this behavior
+        // Do nothing. Must be implemented by subclasses that need this behavior
     }
 
     /**
@@ -602,7 +605,10 @@ public abstract class AbstractStateSystemTimeGraphView extends AbstractTimeGraph
     protected void queryFullStates(ITmfStateSystem ss, long start, long end, long resolution,
             @NonNull IProgressMonitor monitor, @NonNull IQueryHandler handler) {
         if (end < start) {
-            /* We have an empty trace, the state system will be empty: nothing to do here. */
+            /*
+             * We have an empty trace, the state system will be empty: nothing
+             * to do here.
+             */
             return;
         }
         List<List<ITmfStateInterval>> fullStates = new ArrayList<>();
@@ -726,7 +732,7 @@ public abstract class AbstractStateSystemTimeGraphView extends AbstractTimeGraph
             int index = Objects.requireNonNull(ptr.get(key));
 
             ITmfStateInterval interval = Objects.requireNonNull(intervals.get(index));
-            while(!isBounded(time, interval) && ++index < intervals.size()) {
+            while (!isBounded(time, interval) && ++index < intervals.size()) {
                 interval = Objects.requireNonNull(intervals.get(index));
                 ptr.put(key, index);
             }
