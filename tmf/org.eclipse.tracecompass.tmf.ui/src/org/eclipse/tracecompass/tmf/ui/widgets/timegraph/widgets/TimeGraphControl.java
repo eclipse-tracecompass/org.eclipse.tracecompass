@@ -596,7 +596,8 @@ public class TimeGraphControl extends TimeGraphBaseControl
      */
     public void fireDragSelectionChanged(long start, long end) {
         // check for backward intervals
-        long beginTime, endTime;
+        long beginTime;
+        long endTime;
         if (start > end) {
             beginTime = end;
             endTime = start;
@@ -1774,8 +1775,7 @@ public class TimeGraphControl extends TimeGraphBaseControl
         int width = getSize().x;
         int nameSpace = fTimeProvider.getNameSpace();
         double pixelsPerNanoSec = (width - nameSpace <= RIGHT_MARGIN) ? 0 : (double) (width - nameSpace - RIGHT_MARGIN) / (time1 - time0);
-        int x = SaturatedArithmetic.add(getBounds().x + nameSpace, (int) ((time - time0) * pixelsPerNanoSec));
-        return x;
+        return SaturatedArithmetic.add(getBounds().x + nameSpace, (int) ((time - time0) * pixelsPerNanoSec));
     }
 
     @Override
@@ -3200,6 +3200,7 @@ public class TimeGraphControl extends TimeGraphBaseControl
         }
         Cursor cursor = null;
         if (fDragState == DRAG_SPLIT_LINE) {
+            // Nothing done.
         } else if (fDragState == DRAG_SELECTION) {
             cursor = fResizeCursor;
         } else if (fDragState == DRAG_TRACE_ITEM) {
