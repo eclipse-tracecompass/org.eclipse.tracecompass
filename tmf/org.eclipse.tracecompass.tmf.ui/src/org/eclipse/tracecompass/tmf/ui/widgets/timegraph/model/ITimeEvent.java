@@ -17,8 +17,8 @@ package org.eclipse.tracecompass.tmf.ui.widgets.timegraph.model;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.tracecompass.tmf.core.model.ICoreElementResolver;
+import org.eclipse.tracecompass.tmf.core.model.ICorePropertyCollection;
 import org.eclipse.tracecompass.tmf.core.model.timegraph.IMetadataStrings;
-import org.eclipse.tracecompass.tmf.core.model.timegraph.IPropertyCollection;
 
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
@@ -30,7 +30,7 @@ import com.google.common.collect.Multimap;
  * @author Alvaro Sanchez-Leon
  * @author Patrick Tasse
  */
-public interface ITimeEvent extends IPropertyCollection, ICoreElementResolver {
+public interface ITimeEvent extends ICorePropertyCollection, ICoreElementResolver {
 
     /**
      * Get the entry matching this time event.

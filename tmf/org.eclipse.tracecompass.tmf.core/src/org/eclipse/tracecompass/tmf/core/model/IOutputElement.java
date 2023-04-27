@@ -12,7 +12,6 @@
 package org.eclipse.tracecompass.tmf.core.model;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.tracecompass.tmf.core.model.timegraph.IPropertyCollection;
 
 /**
  * Interface for an output element. An output element represents a graphical
@@ -23,7 +22,7 @@ import org.eclipse.tracecompass.tmf.core.model.timegraph.IPropertyCollection;
  * @author Patrick Tasse
  * @since 5.2
  */
-public interface IOutputElement extends ICoreElementResolver, IPropertyCollection {
+public interface IOutputElement extends ICoreElementResolver, ICorePropertyCollection {
 
     /**
      * Get the value, may be unused if the element has a style
