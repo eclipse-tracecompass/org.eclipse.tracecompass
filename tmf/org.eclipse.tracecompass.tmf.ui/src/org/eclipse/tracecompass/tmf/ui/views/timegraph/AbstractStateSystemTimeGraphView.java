@@ -45,7 +45,7 @@ import org.eclipse.tracecompass.internal.provisional.tmf.ui.widgets.ViewFilterDi
 import org.eclipse.tracecompass.statesystem.core.ITmfStateSystem;
 import org.eclipse.tracecompass.statesystem.core.exceptions.StateSystemDisposedException;
 import org.eclipse.tracecompass.statesystem.core.interval.ITmfStateInterval;
-import org.eclipse.tracecompass.tmf.core.model.timegraph.IFilterProperty;
+import org.eclipse.tracecompass.tmf.core.model.CoreFilterProperty;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
 import org.eclipse.tracecompass.tmf.ui.widgets.timegraph.TimeGraphPresentationProvider;
 import org.eclipse.tracecompass.tmf.ui.widgets.timegraph.model.ILinkEvent;
@@ -305,17 +305,17 @@ public abstract class AbstractStateSystemTimeGraphView extends AbstractTimeGraph
                                             // if any underlying event is not dimmed,
                                             // then set the related gap event dimmed
                                             // property to false
-                                            boolean dimmed = gap.isPropertyActive(IFilterProperty.DIMMED);
-                                            if (dimmed && !event.isPropertyActive(IFilterProperty.DIMMED)) {
-                                                gap.setProperty(IFilterProperty.DIMMED, false);
+                                            boolean dimmed = gap.isPropertyActive(CoreFilterProperty.DIMMED);
+                                            if (dimmed && !event.isPropertyActive(CoreFilterProperty.DIMMED)) {
+                                                gap.setProperty(CoreFilterProperty.DIMMED, false);
                                             }
 
                                             // if any underlying event is not excluded,
                                             // then set the related gap event exclude
                                             // status property to false and add the gap
                                             // back to the zoom event list
-                                            if (hasActiveSavedFilters && !event.isPropertyActive(IFilterProperty.EXCLUDE)) {
-                                                gap.setProperty(IFilterProperty.EXCLUDE, false);
+                                            if (hasActiveSavedFilters && !event.isPropertyActive(CoreFilterProperty.EXCLUDE)) {
+                                                gap.setProperty(CoreFilterProperty.EXCLUDE, false);
                                                 applyResults(() -> {
                                                     entry.updateZoomedEvent(gap);
                                                 });

@@ -33,7 +33,7 @@ import org.eclipse.tracecompass.internal.analysis.os.linux.ui.actions.FollowThre
 import org.eclipse.tracecompass.internal.analysis.os.linux.ui.actions.UnfollowCpuAction;
 import org.eclipse.tracecompass.internal.analysis.os.linux.ui.actions.UnfollowThreadAction;
 import org.eclipse.tracecompass.internal.provisional.tmf.ui.widgets.timegraph.BaseDataProviderTimeGraphPresentationProvider;
-import org.eclipse.tracecompass.tmf.core.model.timegraph.IFilterProperty;
+import org.eclipse.tracecompass.tmf.core.model.CoreFilterProperty;
 import org.eclipse.tracecompass.tmf.core.model.tree.ITmfTreeDataModel;
 import org.eclipse.tracecompass.tmf.core.signal.TmfSignalHandler;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
@@ -201,9 +201,9 @@ public class ResourcesView extends BaseDataProviderTimeGraphView {
     protected @NonNull Multimap<@NonNull Integer, @NonNull String> getRegexes() {
         Multimap<@NonNull Integer, @NonNull String> regexes = super.getRegexes();
         if (!fFollowedThread.isEmpty()) {
-            regexes.put(IFilterProperty.BOUND, fFollowedThread);
+            regexes.put(CoreFilterProperty.BOUND, fFollowedThread);
         } else {
-            regexes.removeAll(IFilterProperty.BOUND);
+            regexes.removeAll(CoreFilterProperty.BOUND);
         }
         return regexes;
     }

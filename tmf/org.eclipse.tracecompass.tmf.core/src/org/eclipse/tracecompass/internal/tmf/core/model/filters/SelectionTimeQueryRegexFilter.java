@@ -33,19 +33,19 @@ public class SelectionTimeQueryRegexFilter extends SelectionTimeQueryFilter impl
      * Build a XYTimeQueryFilter
      *
      * @param start
-     *                    The starting value
+     *            The starting value
      * @param end
-     *                    The ending value
+     *            The ending value
      * @param n
-     *                    The number of entries
+     *            The number of entries
      * @param items
-     *                    The unique keys of the selected entries
+     *            The unique keys of the selected entries
      * @param regexes
-     *                    The regexes use to filter the queried data. It is a
-     *                    multimap of filter strings by property. The data provider
-     *                    will use the filter strings to determine whether the
-     *                    property should be activated or not. See
-     *                    {@link IFilterProperty} for supported properties.
+     *            The regexes use to filter the queried data. It is a multimap
+     *            of filter strings by property. The data provider will use the
+     *            filter strings to determine whether the property should be
+     *            activated or not. See {@link CoreFilterProperty} for supported
+     *            properties.
      */
     public SelectionTimeQueryRegexFilter(long start, long end, int n, Collection<Long> items, Multimap<@NonNull Integer, @NonNull String> regexes) {
         super(start, end, n, items);
@@ -56,15 +56,15 @@ public class SelectionTimeQueryRegexFilter extends SelectionTimeQueryFilter impl
      * Create a {@link SelectionTimeQueryFilter} from a sorted list of times.
      *
      * @param times
-     *                    sorted list of times to query.
+     *            sorted list of times to query.
      * @param items
-     *                    The unique keys of the selected entries.
+     *            The unique keys of the selected entries.
      * @param regexes
-     *                    The regexes use to filter the queried data. It is a
-     *                    multimap of filter strings by property. The data provider
-     *                    will use the filter strings to determine whether the
-     *                    property should be activated or not. See
-     *                    {@link CoreFilterProperty} for supported properties.
+     *            The regexes use to filter the queried data. It is a multimap
+     *            of filter strings by property. The data provider will use the
+     *            filter strings to determine whether the property should be
+     *            activated or not. See {@link CoreFilterProperty} for supported
+     *            properties.
      */
     public SelectionTimeQueryRegexFilter(List<Long> times, Collection<Long> items, Multimap<@NonNull Integer, @NonNull String> regexes) {
         super(times, items);

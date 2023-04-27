@@ -13,6 +13,7 @@ package org.eclipse.tracecompass.internal.tmf.core.model.filters;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.tracecompass.tmf.core.model.CoreFilterProperty;
 import org.eclipse.tracecompass.tmf.core.model.filters.TimeQueryFilter;
 
 import com.google.common.collect.Multimap;
@@ -31,17 +32,17 @@ public class TimeQueryRegexFilter extends TimeQueryFilter implements IRegexQuery
      * Constructor
      *
      * @param start
-     *                    The starting value
+     *            The starting value
      * @param end
-     *                    The ending value
+     *            The ending value
      * @param n
-     *                    The number of entries
+     *            The number of entries
      * @param regexes
-     *                    The regexes use to filter the queried data. It is a
-     *                    multimap of filter strings by property. The data provider
-     *                    will use the filter strings to determine whether the
-     *                    property should be activated or not. See
-     *                    {@link IFilterProperty} for supported properties.
+     *            The regexes use to filter the queried data. It is a multimap
+     *            of filter strings by property. The data provider will use the
+     *            filter strings to determine whether the property should be
+     *            activated or not. See {@link CoreFilterProperty} for supported
+     *            properties.
      */
     public TimeQueryRegexFilter(long start, long end, int n, Multimap<@NonNull Integer, @NonNull String> regexes) {
         super(start, end, n);
@@ -52,13 +53,13 @@ public class TimeQueryRegexFilter extends TimeQueryFilter implements IRegexQuery
      * Constructor
      *
      * @param times
-     *                    sorted list of times to query.
+     *            sorted list of times to query.
      * @param regexes
-     *                    The regexes use to filter the queried data. It is a
-     *                    multimap of filter strings by property. The data provider
-     *                    will use the filter strings to determine whether the
-     *                    property should be activated or not. See
-     *                    {@link IFilterProperty} for supported properties.
+     *            The regexes use to filter the queried data. It is a multimap
+     *            of filter strings by property. The data provider will use the
+     *            filter strings to determine whether the property should be
+     *            activated or not. See {@link CoreFilterProperty} for supported
+     *            properties.
      */
     public TimeQueryRegexFilter(List<Long> times, Multimap<@NonNull Integer, @NonNull String> regexes) {
         super(times);

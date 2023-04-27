@@ -60,10 +60,10 @@ import org.eclipse.tracecompass.internal.tmf.ui.Activator;
 import org.eclipse.tracecompass.internal.tmf.ui.Messages;
 import org.eclipse.tracecompass.tmf.core.dataprovider.DataProviderParameterUtils;
 import org.eclipse.tracecompass.tmf.core.dataprovider.DataTypeUtils;
+import org.eclipse.tracecompass.tmf.core.model.CoreFilterProperty;
 import org.eclipse.tracecompass.tmf.core.model.OutputElementStyle;
 import org.eclipse.tracecompass.tmf.core.model.StyleProperties;
 import org.eclipse.tracecompass.tmf.core.model.filters.TimeQueryFilter;
-import org.eclipse.tracecompass.tmf.core.model.timegraph.IFilterProperty;
 import org.eclipse.tracecompass.tmf.core.model.xy.ISeriesModel;
 import org.eclipse.tracecompass.tmf.core.model.xy.ITmfCommonXAxisModel;
 import org.eclipse.tracecompass.tmf.core.model.xy.ITmfXYDataProvider;
@@ -459,8 +459,8 @@ public abstract class TmfCommonXAxisChartViewer extends TmfXYChartViewer {
                                     maxy = Math.max(maxy, value);
                                     miny = Math.min(miny, value);
                                     int properties = (i < propertiesArray.length) ? propertiesArray[i] : 0;
-                                    if ((properties & IFilterProperty.EXCLUDE) == 0) {
-                                        if ((properties & IFilterProperty.DIMMED) == 0) {
+                                    if ((properties & CoreFilterProperty.EXCLUDE) == 0) {
+                                        if ((properties & CoreFilterProperty.DIMMED) == 0) {
                                             brightX.add(extractXValuesToDisplay[i]);
                                             brightY.add(value);
                                         } else {
@@ -741,7 +741,7 @@ public abstract class TmfCommonXAxisChartViewer extends TmfXYChartViewer {
         if (globalFilter == null) {
             return regexes;
         }
-        regexes.putAll(IFilterProperty.DIMMED, globalFilter.getRegexes());
+        regexes.putAll(CoreFilterProperty.DIMMED, globalFilter.getRegexes());
 
         return regexes;
     }

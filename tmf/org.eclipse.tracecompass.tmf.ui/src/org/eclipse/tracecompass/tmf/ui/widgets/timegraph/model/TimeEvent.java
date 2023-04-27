@@ -18,8 +18,8 @@ package org.eclipse.tracecompass.tmf.ui.widgets.timegraph.model;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.tracecompass.tmf.core.model.CoreFilterProperty;
 import org.eclipse.tracecompass.tmf.core.model.ITimeElement;
-import org.eclipse.tracecompass.tmf.core.model.timegraph.IFilterProperty;
 import org.eclipse.tracecompass.tmf.core.model.timegraph.ITimeGraphState;
 import org.eclipse.tracecompass.tmf.core.model.timegraph.TimeGraphState;
 
@@ -93,7 +93,7 @@ public class TimeEvent implements ITimeEvent {
      * @param activeProperties
      *            The active properties of the event represented by a bitmask
      *            value. Each bit represents a property. Available properties
-     *            can be found in {@link IFilterProperty}.
+     *            can be found in {@link CoreFilterProperty}.
      * @since 4.0
      */
     public TimeEvent(ITimeGraphEntry entry, long time, long duration, int value, int activeProperties) {

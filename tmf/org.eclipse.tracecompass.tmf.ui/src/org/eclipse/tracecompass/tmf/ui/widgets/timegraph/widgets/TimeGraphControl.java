@@ -110,12 +110,12 @@ import org.eclipse.tracecompass.internal.tmf.ui.widgets.timegraph.TimeGraphRende
 import org.eclipse.tracecompass.internal.tmf.ui.widgets.timegraph.TimeGraphRender.PostDrawEvent;
 import org.eclipse.tracecompass.internal.tmf.ui.widgets.timegraph.model.TimeGraphLineEntry;
 import org.eclipse.tracecompass.internal.tmf.ui.widgets.timegraph.model.TimeLineEvent;
+import org.eclipse.tracecompass.tmf.core.model.CoreFilterProperty;
 import org.eclipse.tracecompass.tmf.core.model.OutputElementStyle;
 import org.eclipse.tracecompass.tmf.core.model.StyleProperties;
 import org.eclipse.tracecompass.tmf.core.model.StyleProperties.BorderStyle;
 import org.eclipse.tracecompass.tmf.core.model.StyleProperties.SymbolType;
 import org.eclipse.tracecompass.tmf.core.model.StyleProperties.VerticalAlign;
-import org.eclipse.tracecompass.tmf.core.model.timegraph.IFilterProperty;
 import org.eclipse.tracecompass.tmf.core.presentation.RGBAColor;
 import org.eclipse.tracecompass.tmf.core.signal.TmfSignalManager;
 import org.eclipse.tracecompass.tmf.ui.colors.RGBAUtil;
@@ -2933,7 +2933,7 @@ public class TimeGraphControl extends TimeGraphBaseControl
         if (visible && !Boolean.TRUE.equals(styleManager.getStyle(elementStyle, StyleProperties.annotated())) && last != null) {
             last.add(new PostDrawEvent(event, drawRect));
         }
-        return visible && !event.isPropertyActive(IFilterProperty.DIMMED);
+        return visible && !event.isPropertyActive(CoreFilterProperty.DIMMED);
     }
 
     private static void addPoint(List<DeferredSegment> points, int x, int y) {
@@ -2979,12 +2979,12 @@ public class TimeGraphControl extends TimeGraphBaseControl
     }
 
     private static @NonNull Map<@NonNull String, @NonNull Object> applyEventStyleProperties(@NonNull Map<@NonNull String, @NonNull Object> styleMap, ITimeEvent event) {
-        if (event.isPropertyActive(IFilterProperty.DIMMED)) {
+        if (event.isPropertyActive(CoreFilterProperty.DIMMED)) {
             float opacity = (float) styleMap.getOrDefault(StyleProperties.OPACITY, 1.0f);
             styleMap.put(StyleProperties.OPACITY, opacity / DIMMED_ALPHA_COEFFICIENT);
             styleMap.put(StyleProperties.annotated(), Boolean.TRUE);
         }
-        if (event.isPropertyActive(IFilterProperty.BOUND)) {
+        if (event.isPropertyActive(CoreFilterProperty.BOUND)) {
             styleMap.put(StyleProperties.BORDER_COLOR, HIGHLIGHTED_BOUND_COLOR);
             styleMap.put(StyleProperties.BORDER_WIDTH, HIGHLIGHTED_BOUND_WIDTH);
             styleMap.put(StyleProperties.BORDER_STYLE, BorderStyle.SOLID);
