@@ -39,18 +39,6 @@ public interface ITmfXyModel {
     @Nullable String getTitle();
 
     /**
-     * True if the x values of the series are common
-     *
-     * @return True if X values are common
-     * @since 5.0
-     * @deprecated As currently unused, at least in o.e.tracecompass.
-     */
-    @Deprecated
-    default boolean hasCommonXAxis() {
-        return false;
-    }
-
-    /**
      * Get the collection of {@link ISeriesModel}
      *
      * @return The collection of {@link ISeriesModel} to display

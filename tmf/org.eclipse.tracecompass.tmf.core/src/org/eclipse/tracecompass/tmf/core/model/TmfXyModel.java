@@ -55,16 +55,7 @@ public class TmfXyModel implements ITmfXyModel {
     }
 
     @Override
-    public @NonNull Collection<@NonNull ISeriesModel> getSeriesData() {
+    public @NonNull Collection<ISeriesModel> getSeriesData() {
         return fSeries;
-    }
-
-    /**
-     * @deprecated As currently unused, at least in o.e.tracecompass.
-     */
-    @Deprecated
-    @Override
-    public boolean hasCommonXAxis() {
-        return false;
     }
 }

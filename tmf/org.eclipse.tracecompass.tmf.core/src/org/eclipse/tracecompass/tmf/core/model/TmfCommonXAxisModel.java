@@ -81,17 +81,8 @@ public class TmfCommonXAxisModel implements ITmfCommonXAxisModel {
         return fTitle;
     }
 
-    /**
-     * @deprecated As currently unused, at least in o.e.tracecompass.
-     */
-    @Deprecated
     @Override
-    public boolean hasCommonXAxis() {
-        return true;
-    }
-
-    @Override
-    public @NonNull Collection<@NonNull ISeriesModel> getSeriesData() {
+    public @NonNull Collection<ISeriesModel> getSeriesData() {
         return fSeries;
     }
 
@@ -102,7 +93,7 @@ public class TmfCommonXAxisModel implements ITmfCommonXAxisModel {
      */
     @Deprecated
     @Override
-    public @NonNull Collection<@NonNull IYModel> getYSeriesData() {
+    public @NonNull Collection<IYModel> getYSeriesData() {
         return fYSeries;
     }
 }
