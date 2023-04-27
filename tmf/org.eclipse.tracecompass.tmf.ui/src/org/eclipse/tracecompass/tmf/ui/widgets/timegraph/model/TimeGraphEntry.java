@@ -123,7 +123,7 @@ public class TimeGraphEntry implements ITimeGraphEntry, IElementResolver {
      *
      * @since 4.3
      */
-    public static Comparator<ITimeEvent> WITHIN_COMPARATOR = (e1, e2) -> {
+    public static final Comparator<ITimeEvent> WITHIN_COMPARATOR = (e1, e2) -> {
         int comp = Long.compare(e1.getTime(), e2.getTime());
         if (comp > 0) {
             return comp;
