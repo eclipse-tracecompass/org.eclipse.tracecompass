@@ -328,7 +328,7 @@ public abstract class AbstractSelectTreeViewer2 extends AbstractTmfTreeViewer {
     }
 
     private void refreshTree(@NonNull FlowScopeLog parent) {
-        try (FlowScopeLog refresh = new FlowScopeLogBuilder(LOGGER, Level.FINE, getClass().getSimpleName() + "#treeRefresh()").setParentScope(parent).build()) {
+        try (FlowScopeLog refresh = new FlowScopeLogBuilder(LOGGER, Level.FINE, getClass().getSimpleName() + "#treeRefresh()").setParentScope(parent).build()) { //$NON-NLS-1$
             getTreeViewer().refresh();
         }
     }
