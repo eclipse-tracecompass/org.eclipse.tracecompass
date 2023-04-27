@@ -67,15 +67,6 @@ public class TmfCommonXAxisModel implements ITmfCommonXAxisModel {
         fSeries = ImmutableList.copyOf(series);
     }
 
-    /**
-     * @deprecated As currently unused, at least in o.e.tracecompass.
-     */
-    @Deprecated
-    @Override
-    public long[] getXValues() {
-        return fXValues;
-    }
-
     @Override
     public @Nullable String getTitle() {
         return fTitle;
@@ -87,9 +78,9 @@ public class TmfCommonXAxisModel implements ITmfCommonXAxisModel {
     }
 
     /**
-     * @deprecated As {@link #getXValues()} is unused, which defeats the whole
-     *             purpose of {@link ITmfCommonXAxisModel} including
-     *             {@link #getYSeriesData()}'s.
+     * @deprecated As the former #getXValues() was unused (thus removed), which
+     *             defeats the whole purpose of {@link ITmfCommonXAxisModel}
+     *             including {@link #getYSeriesData()}'s.
      */
     @Deprecated
     @Override
