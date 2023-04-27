@@ -14,7 +14,7 @@ package org.eclipse.tracecompass.tmf.ui.widgets.timegraph.model;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNull;
-import org.eclipse.tracecompass.tmf.core.model.timegraph.IMetadataStrings;
+import org.eclipse.tracecompass.tmf.core.model.CoreMetadataStrings;
 import org.eclipse.tracecompass.tmf.core.model.timegraph.ITimeGraphState;
 
 import com.google.common.collect.ImmutableMultimap;
@@ -101,7 +101,7 @@ public class NamedTimeEvent extends TimeEvent {
         }
         com.google.common.collect.ImmutableMultimap.Builder<String, Object> builder = ImmutableMultimap.builder();
         builder.putAll(super.getMetadata());
-        builder.put(IMetadataStrings.ENTRY_NAME_KEY, entryName);
+        builder.put(CoreMetadataStrings.ENTRY_NAME_KEY, entryName);
         return builder.build();
     }
 

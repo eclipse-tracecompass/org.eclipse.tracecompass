@@ -16,9 +16,9 @@
 package org.eclipse.tracecompass.tmf.ui.widgets.timegraph.model;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.tracecompass.tmf.core.model.CoreMetadataStrings;
 import org.eclipse.tracecompass.tmf.core.model.ICoreElementResolver;
 import org.eclipse.tracecompass.tmf.core.model.ICorePropertyCollection;
-import org.eclipse.tracecompass.tmf.core.model.timegraph.IMetadataStrings;
 
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
@@ -95,6 +95,6 @@ public interface ITimeEvent extends ICorePropertyCollection, ICoreElementResolve
     @Override
     default @NonNull Multimap<@NonNull String, @NonNull Object> getMetadata() {
         String entryName = getEntry().getName();
-        return (entryName != null) ? ImmutableMultimap.of(IMetadataStrings.ENTRY_NAME_KEY, entryName) : ImmutableMultimap.of();
+        return (entryName != null) ? ImmutableMultimap.of(CoreMetadataStrings.ENTRY_NAME_KEY, entryName) : ImmutableMultimap.of();
     }
 }
