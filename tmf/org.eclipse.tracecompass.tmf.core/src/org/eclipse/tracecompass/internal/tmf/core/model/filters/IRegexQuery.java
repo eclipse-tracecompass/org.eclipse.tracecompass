@@ -10,8 +10,6 @@
  **********************************************************************/
 package org.eclipse.tracecompass.internal.tmf.core.model.filters;
 
-import org.eclipse.jdt.annotation.NonNull;
-
 import com.google.common.collect.Multimap;
 
 /**
@@ -22,11 +20,11 @@ import com.google.common.collect.Multimap;
  */
 public interface IRegexQuery {
     /**
-     * Get the regexes use to filter the queried data. It is a multimap of filter
-     * strings by property. The data provider will use the filter strings to
-     * determine whether the property should be activated or not.
+     * Get the regexes use to filter the queried data. It is a multimap of
+     * filter strings by property. The data provider will use the filter strings
+     * to determine whether the property should be activated or not.
      *
      * @return The multimap of regexes by property.
      */
-    public Multimap<@NonNull Integer, @NonNull String> getRegexes();
+    public Multimap<Integer, String> getRegexes();
 }

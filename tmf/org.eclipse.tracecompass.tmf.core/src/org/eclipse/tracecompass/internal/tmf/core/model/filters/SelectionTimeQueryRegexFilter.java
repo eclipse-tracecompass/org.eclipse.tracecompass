@@ -13,7 +13,6 @@ package org.eclipse.tracecompass.internal.tmf.core.model.filters;
 import java.util.Collection;
 import java.util.List;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.tracecompass.tmf.core.model.CoreFilterProperty;
 import org.eclipse.tracecompass.tmf.core.model.filters.SelectionTimeQueryFilter;
 
@@ -27,7 +26,7 @@ import com.google.common.collect.Multimap;
  */
 public class SelectionTimeQueryRegexFilter extends SelectionTimeQueryFilter implements IRegexQuery {
 
-    private final Multimap<@NonNull Integer, @NonNull String> fRegexes;
+    private final Multimap<Integer, String> fRegexes;
 
     /**
      * Build a XYTimeQueryFilter
@@ -47,7 +46,7 @@ public class SelectionTimeQueryRegexFilter extends SelectionTimeQueryFilter impl
      *            activated or not. See {@link CoreFilterProperty} for supported
      *            properties.
      */
-    public SelectionTimeQueryRegexFilter(long start, long end, int n, Collection<Long> items, Multimap<@NonNull Integer, @NonNull String> regexes) {
+    public SelectionTimeQueryRegexFilter(long start, long end, int n, Collection<Long> items, Multimap<Integer, String> regexes) {
         super(start, end, n, items);
         fRegexes = regexes;
     }
@@ -66,7 +65,7 @@ public class SelectionTimeQueryRegexFilter extends SelectionTimeQueryFilter impl
      *            activated or not. See {@link CoreFilterProperty} for supported
      *            properties.
      */
-    public SelectionTimeQueryRegexFilter(List<Long> times, Collection<Long> items, Multimap<@NonNull Integer, @NonNull String> regexes) {
+    public SelectionTimeQueryRegexFilter(List<Long> times, Collection<Long> items, Multimap<Integer, String> regexes) {
         super(times, items);
         fRegexes = regexes;
     }

@@ -12,7 +12,6 @@ package org.eclipse.tracecompass.internal.tmf.core.model.filters;
 
 import java.util.List;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.tracecompass.tmf.core.model.CoreFilterProperty;
 import org.eclipse.tracecompass.tmf.core.model.filters.TimeQueryFilter;
 
@@ -26,7 +25,7 @@ import com.google.common.collect.Multimap;
  */
 public class TimeQueryRegexFilter extends TimeQueryFilter implements IRegexQuery {
 
-    private final Multimap<@NonNull Integer, @NonNull String> fRegexes;
+    private final Multimap<Integer, String> fRegexes;
 
     /**
      * Constructor
@@ -44,7 +43,7 @@ public class TimeQueryRegexFilter extends TimeQueryFilter implements IRegexQuery
      *            activated or not. See {@link CoreFilterProperty} for supported
      *            properties.
      */
-    public TimeQueryRegexFilter(long start, long end, int n, Multimap<@NonNull Integer, @NonNull String> regexes) {
+    public TimeQueryRegexFilter(long start, long end, int n, Multimap<Integer, String> regexes) {
         super(start, end, n);
         fRegexes = regexes;
     }
@@ -61,13 +60,13 @@ public class TimeQueryRegexFilter extends TimeQueryFilter implements IRegexQuery
      *            activated or not. See {@link CoreFilterProperty} for supported
      *            properties.
      */
-    public TimeQueryRegexFilter(List<Long> times, Multimap<@NonNull Integer, @NonNull String> regexes) {
+    public TimeQueryRegexFilter(List<Long> times, Multimap<Integer, String> regexes) {
         super(times);
         fRegexes = regexes;
     }
 
     @Override
-    public Multimap<@NonNull Integer, @NonNull String> getRegexes() {
+    public Multimap<Integer, String> getRegexes() {
         return fRegexes;
     }
 }

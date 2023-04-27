@@ -13,7 +13,6 @@ package org.eclipse.tracecompass.internal.tmf.core.model.filters;
 import java.util.Collection;
 import java.util.List;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.tracecompass.tmf.core.model.CoreFilterProperty;
 import org.eclipse.tracecompass.tmf.core.model.filters.SelectionTimeQueryFilter;
 
@@ -29,7 +28,7 @@ import com.google.common.collect.Multimap;
  */
 public class TimeGraphStateQueryFilter extends SelectionTimeQueryFilter implements IRegexQuery {
 
-    private Multimap<@NonNull Integer, @NonNull String> fRegexes;
+    private Multimap<Integer, String> fRegexes;
 
     /**
      * Constructor
@@ -39,12 +38,13 @@ public class TimeGraphStateQueryFilter extends SelectionTimeQueryFilter implemen
      * @param items
      *            The unique keys of the selected entries.
      * @param regexes
-     *            The regexes use to filter the queried data. It is a multimap of
-     *            filter strings by property. The data provider will use the filter
-     *            strings to determine whether the property should be activated or
-     *            not. See {@link CoreFilterProperty} for supported properties.
+     *            The regexes use to filter the queried data. It is a multimap
+     *            of filter strings by property. The data provider will use the
+     *            filter strings to determine whether the property should be
+     *            activated or not. See {@link CoreFilterProperty} for supported
+     *            properties.
      */
-    public TimeGraphStateQueryFilter(List<Long> times, Collection<Long> items, Multimap<@NonNull Integer, @NonNull String> regexes) {
+    public TimeGraphStateQueryFilter(List<Long> times, Collection<Long> items, Multimap<Integer, String> regexes) {
         super(times, items);
         fRegexes = regexes;
     }
@@ -61,18 +61,18 @@ public class TimeGraphStateQueryFilter extends SelectionTimeQueryFilter implemen
      * @param items
      *            The unique keys of the selected entries
      * @param regexes
-     *            The regexes use to filter the queried data. It is a multimap of
-     *            filter strings by property. The data provider will use the filter
-     *            strings to determine whether the property should be activated or
-     *            not.
+     *            The regexes use to filter the queried data. It is a multimap
+     *            of filter strings by property. The data provider will use the
+     *            filter strings to determine whether the property should be
+     *            activated or not.
      */
-    public TimeGraphStateQueryFilter(long start, long end, int n, Collection<Long> items, Multimap<@NonNull Integer, @NonNull String> regexes) {
+    public TimeGraphStateQueryFilter(long start, long end, int n, Collection<Long> items, Multimap<Integer, String> regexes) {
         super(start, end, n, items);
         fRegexes = regexes;
     }
 
     @Override
-    public Multimap<@NonNull Integer, @NonNull String> getRegexes() {
+    public Multimap<Integer, String> getRegexes() {
         return fRegexes;
     }
 
