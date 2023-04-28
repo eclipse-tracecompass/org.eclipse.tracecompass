@@ -24,8 +24,8 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.tracecompass.internal.tmf.ui.Messages;
 import org.eclipse.tracecompass.tmf.core.model.OutputElementStyle;
+import org.eclipse.tracecompass.tmf.core.model.StyleProperties;
 import org.eclipse.tracecompass.tmf.ui.widgets.timegraph.model.ITimeEvent;
-import org.eclipse.tracecompass.tmf.ui.widgets.timegraph.model.ITimeEventStyleStrings;
 import org.eclipse.tracecompass.tmf.ui.widgets.timegraph.model.ITimeGraphEntry;
 import org.eclipse.tracecompass.tmf.ui.widgets.timegraph.model.TimeEvent;
 import org.eclipse.tracecompass.tmf.ui.widgets.timegraph.widgets.ITmfTimeGraphDrawingHelper;
@@ -200,14 +200,14 @@ public interface ITimeGraphPresentationProvider {
      *
      * @param event
      *            the time event
-     * @return the style map, as detailed in {@link ITimeEventStyleStrings}
+     * @return the style map, as detailed in {@link StyleProperties}
      * @since 3.0
      */
     default Map<String, Object> getEventStyle(ITimeEvent event) {
         if (event instanceof TimeEvent) {
             TimeEvent timeEvent = (TimeEvent) event;
             OutputElementStyle style = timeEvent.getModel().getStyle();
-            if (style!= null) {
+            if (style != null) {
                 Map<@NonNull String, @NonNull Object> styleValues = style.getStyleValues();
                 if (!styleValues.isEmpty()) {
                     return styleValues;
@@ -250,7 +250,7 @@ public interface ITimeGraphPresentationProvider {
      * @param event
      *            the time event
      * @return a style map containing the elements as detailed in
-     *         {@link ITimeEventStyleStrings} to override
+     *         {@link StyleProperties} to override
      * @since 3.0
      */
     default Map<String, Object> getSpecificEventStyle(ITimeEvent event) {
@@ -259,12 +259,12 @@ public interface ITimeGraphPresentationProvider {
 
     /**
      * Signal the provider that its color settings have changed
+     *
      * @since 3.2
      */
-    default void refresh(){
+    default void refresh() {
         // do nothing
     }
-
 
     /**
      * Returns the drawing helper for this presentation provider.
@@ -275,9 +275,8 @@ public interface ITimeGraphPresentationProvider {
     ITmfTimeGraphDrawingHelper getDrawingHelper();
 
     /**
-     * Sets this presentation provider's drawing helper.
-     * This helper be needed to know where to draw items, get its coordinates
-     * given a time, etc.
+     * Sets this presentation provider's drawing helper. This helper be needed
+     * to know where to draw items, get its coordinates given a time, etc.
      *
      * @param helper
      *            The drawing helper
