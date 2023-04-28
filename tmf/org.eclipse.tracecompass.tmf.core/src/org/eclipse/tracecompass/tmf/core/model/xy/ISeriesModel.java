@@ -40,14 +40,7 @@ public interface ISeriesModel {
         /**
          * Scatter
          */
-        SCATTER,
-        /**
-         * Area
-         *
-         * @deprecated As currently unused, at least in o.e.tracecompass.
-         */
-        @Deprecated
-        AREA
+        SCATTER
     }
 
     /**
