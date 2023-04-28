@@ -124,7 +124,7 @@ public class AbstractSegmentStoreScatterChartTreeViewer2 extends AbstractSelectT
         }
         fSegmentProvider = (ISegmentStoreProvider) module;
         ((ISegmentStoreProvider) module).addListener(fListener);
-        return DataProviderManager.getInstance().getDataProvider(trace, SegmentStoreScatterDataProvider.ID + ':' + analysisId, ITmfTreeXYDataProvider.class);
+        return DataProviderManager.getInstance().getOrCreateDataProvider(trace, SegmentStoreScatterDataProvider.ID + ':' + analysisId, ITmfTreeXYDataProvider.class);
     }
 
     @Override

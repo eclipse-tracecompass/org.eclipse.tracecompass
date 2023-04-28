@@ -153,7 +153,7 @@ public class TmfFilteredXYChartViewer extends TmfCommonXAxisChartViewer implemen
 
     @Override
     protected ITmfXYDataProvider initializeDataProvider(ITmfTrace trace) {
-        ITmfTreeXYDataProvider<?> dataProvider = DataProviderManager.getInstance().getDataProvider(trace, fId, ITmfTreeXYDataProvider.class);
+        ITmfTreeXYDataProvider<?> dataProvider = DataProviderManager.getInstance().getOrCreateDataProvider(trace, fId, ITmfTreeXYDataProvider.class);
         BaseXYPresentationProvider presentationProvider = getPresentationProvider();
         fUseDefaultStyleValues.computeIfAbsent(presentationProvider, pp -> {
             if (dataProvider instanceof IOutputStyleProvider) {

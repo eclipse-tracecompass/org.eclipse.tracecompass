@@ -74,7 +74,7 @@ public class TmfTreeCompositeDataProvider<M extends ITmfTreeDataModel, P extends
     public static @Nullable ITmfTreeDataProvider<? extends ITmfTreeDataModel> create(Collection<ITmfTrace> traces, String id) {
         List<@NonNull ITmfTreeDataProvider<ITmfTreeDataModel>> providers = new ArrayList<>();
         for (ITmfTrace child : traces) {
-            ITmfTreeDataProvider<ITmfTreeDataModel> provider = DataProviderManager.getInstance().getDataProvider(child, id, ITmfTreeDataProvider.class);
+            ITmfTreeDataProvider<ITmfTreeDataModel> provider = DataProviderManager.getInstance().getOrCreateDataProvider(child, id, ITmfTreeDataProvider.class);
             if (provider != null) {
                 providers.add(provider);
             }

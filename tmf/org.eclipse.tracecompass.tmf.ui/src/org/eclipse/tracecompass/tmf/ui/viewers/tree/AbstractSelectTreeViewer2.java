@@ -636,7 +636,7 @@ public abstract class AbstractSelectTreeViewer2 extends AbstractTmfTreeViewer {
      * @since 4.0
      */
     protected ITmfTreeDataProvider<@NonNull ITmfTreeDataModel> getProvider(@NonNull ITmfTrace trace) {
-        return DataProviderManager.getInstance().getDataProvider(trace, fId, ITmfTreeDataProvider.class);
+        return DataProviderManager.getInstance().getOrCreateDataProvider(trace, fId, ITmfTreeDataProvider.class);
     }
 
     @Override

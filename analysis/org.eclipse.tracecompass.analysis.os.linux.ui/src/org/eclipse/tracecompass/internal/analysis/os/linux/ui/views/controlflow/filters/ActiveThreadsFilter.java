@@ -163,7 +163,7 @@ public class ActiveThreadsFilter extends ViewerFilter {
 
     private static @NonNull Set<Long> getOnCpuThreads(@NonNull List<Range<Long>> cpuRanges, TmfTimeRange winRange, @NonNull ITmfTrace trace) {
 
-        ThreadStatusDataProvider threadStatusProvider = DataProviderManager.getInstance().getDataProvider(trace,
+        ThreadStatusDataProvider threadStatusProvider = DataProviderManager.getInstance().getOrCreateDataProvider(trace,
                 ThreadStatusDataProvider.ID, ThreadStatusDataProvider.class);
 
         if (threadStatusProvider == null) {
@@ -194,7 +194,7 @@ public class ActiveThreadsFilter extends ViewerFilter {
 
     private static @NonNull Set<Long> getActiveThreads(TmfTimeRange winRange, @NonNull ITmfTrace trace) {
 
-        ThreadStatusDataProvider threadStatusProvider = DataProviderManager.getInstance().getDataProvider(trace,
+        ThreadStatusDataProvider threadStatusProvider = DataProviderManager.getInstance().getOrCreateDataProvider(trace,
                 ThreadStatusDataProvider.ID, ThreadStatusDataProvider.class);
 
         if (threadStatusProvider == null) {

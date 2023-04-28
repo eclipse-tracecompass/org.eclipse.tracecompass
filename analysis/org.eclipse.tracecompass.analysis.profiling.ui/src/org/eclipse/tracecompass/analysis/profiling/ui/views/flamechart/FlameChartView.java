@@ -428,7 +428,7 @@ public class FlameChartView extends BaseDataProviderTimeGraphView {
 
     @Override
     protected void buildEntryList(final ITmfTrace trace, final ITmfTrace parentTrace, final IProgressMonitor monitor) {
-        CallStackDataProvider provider = DataProviderManager.getInstance().getDataProvider(trace,
+        CallStackDataProvider provider = DataProviderManager.getInstance().getOrCreateDataProvider(trace,
                 getProviderId(), CallStackDataProvider.class);
         if (provider == null) {
             addUnavailableEntry(trace, parentTrace);

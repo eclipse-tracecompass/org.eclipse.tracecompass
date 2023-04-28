@@ -237,7 +237,7 @@ public abstract class AbstractSegmentsStatisticsViewer extends AbstractTmfTreeVi
         // first try to get the data provider from the data provider manager.
         String providerId = fProviderId;
         if (providerId != null) {
-            provider = DataProviderManager.getInstance().getDataProvider(trace,
+            provider = DataProviderManager.getInstance().getOrCreateDataProvider(trace,
                     fProviderId, ITmfTreeDataProvider.class);
         }
 

@@ -98,7 +98,7 @@ public class AbstractSegmentStoreScatterChartViewer2 extends TmfFilteredXYChartV
              * that get the analysis ID of the segment store, is removed */
             return null;
         }
-        return DataProviderManager.getInstance().getDataProvider(trace, SegmentStoreScatterDataProvider.ID + ':' + analysisId, ITmfTreeXYDataProvider.class);
+        return DataProviderManager.getInstance().getOrCreateDataProvider(trace, SegmentStoreScatterDataProvider.ID + ':' + analysisId, ITmfTreeXYDataProvider.class);
     }
 
     // ------------------------------------------------------------------------

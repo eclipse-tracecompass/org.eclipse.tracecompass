@@ -97,7 +97,7 @@ extends TmfTreeCompositeDataProvider<M, P> implements ITimeGraphDataProvider<M>,
         String providerId = secondaryId == null ? id : id + ':' + secondaryId;
         List<@NonNull ITimeGraphDataProvider<ITimeGraphEntryModel>> providers = new ArrayList<>();
         for (ITmfTrace child : traces) {
-            ITimeGraphDataProvider<ITimeGraphEntryModel> provider = DataProviderManager.getInstance().getDataProvider(child, providerId, ITimeGraphDataProvider.class);
+            ITimeGraphDataProvider<ITimeGraphEntryModel> provider = DataProviderManager.getInstance().getOrCreateDataProvider(child, providerId, ITimeGraphDataProvider.class);
             if (provider != null) {
                 providers.add(provider);
             }

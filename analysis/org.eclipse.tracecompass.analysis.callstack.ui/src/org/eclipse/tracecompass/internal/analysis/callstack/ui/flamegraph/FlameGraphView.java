@@ -148,7 +148,6 @@ import com.google.common.collect.Multimap;
  *
  * @author Sonia Farrah
  */
-@SuppressWarnings("deprecation")
 @NonNullByDefault({})
 public class FlameGraphView extends TmfView {
     private static final @NonNull Logger LOGGER = Logger.getLogger(FlameGraphView.class.getName());
@@ -417,7 +416,7 @@ public class FlameGraphView extends TmfView {
     private void buildEntryList(@NonNull ITmfTrace trace, @NonNull ITmfTrace parentTrace, @NonNull Map<String, Object> additionalParams, @NonNull IProgressMonitor monitor) {
         @SuppressWarnings("unchecked")
         ITimeGraphDataProvider<@NonNull TimeGraphEntryModel> dataProvider = DataProviderManager
-                .getInstance().getDataProvider(trace, getProviderId(), ITimeGraphDataProvider.class);
+                .getInstance().getOrCreateDataProvider(trace, getProviderId(), ITimeGraphDataProvider.class);
         if (dataProvider == null) {
             return;
         }

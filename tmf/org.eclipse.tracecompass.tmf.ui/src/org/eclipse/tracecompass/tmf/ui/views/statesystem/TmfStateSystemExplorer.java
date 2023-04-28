@@ -266,7 +266,7 @@ public class TmfStateSystemExplorer extends BaseDataProviderTimeGraphView {
 
     private StateSystemDataProvider getDataProvider(ITmfTrace moduleTrace) {
         ITimeGraphDataProvider<@NonNull TimeGraphEntryModel> dataProvider = DataProviderManager
-                .getInstance().getDataProvider(Objects.requireNonNull(moduleTrace), getProviderId(), ITimeGraphDataProvider.class);
+                .getInstance().getOrCreateDataProvider(Objects.requireNonNull(moduleTrace), getProviderId(), ITimeGraphDataProvider.class);
         if (dataProvider instanceof StateSystemDataProvider) {
             return (StateSystemDataProvider) dataProvider;
         }

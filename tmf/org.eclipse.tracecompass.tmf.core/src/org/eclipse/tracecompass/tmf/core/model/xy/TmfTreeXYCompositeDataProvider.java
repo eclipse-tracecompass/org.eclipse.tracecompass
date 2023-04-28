@@ -106,7 +106,7 @@ public class TmfTreeXYCompositeDataProvider<M extends ITmfTreeDataModel, P exten
         String providerId = secondaryId == null ? id : id + ':' + secondaryId;
         List<@NonNull ITmfTreeXYDataProvider<ITmfTreeDataModel>> providers = new ArrayList<>();
         for (ITmfTrace child : traces) {
-            ITmfTreeXYDataProvider<ITmfTreeDataModel> provider = DataProviderManager.getInstance().getDataProvider(child, providerId, ITmfTreeXYDataProvider.class);
+            ITmfTreeXYDataProvider<ITmfTreeDataModel> provider = DataProviderManager.getInstance().getOrCreateDataProvider(child, providerId, ITmfTreeXYDataProvider.class);
             if (provider != null) {
                 providers.add(provider);
             }
