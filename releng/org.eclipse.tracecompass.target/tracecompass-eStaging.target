@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><?pde version="3.8"?><target name="tracecompass-eStaging" sequenceNumber="204">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><?pde version="3.8"?><target name="tracecompass-eStaging" sequenceNumber="205">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.cdt.gnu.dsf.feature.group" version="0.0.0"/>
@@ -7,7 +7,7 @@
 <unit id="org.eclipse.remote.ui" version="0.0.0"/>
 <unit id="org.eclipse.remote.jsch.core" version="0.0.0"/>
 <unit id="org.eclipse.remote.jsch.ui" version="0.0.0"/>
-<repository location="https://download.eclipse.org/tools/cdt/builds/11.2/cdt-11.2.0-m1/"/>
+<repository location="https://download.eclipse.org/tools/cdt/builds/11.2/cdt-11.2.0-m2/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.swtbot.eclipse.feature.group" version="0.0.0"/>
@@ -71,7 +71,7 @@
 <unit id="org.eclipse.wst.xml.core" version="0.0.0"/>
 <unit id="org.eclipse.wst.xml.ui" version="0.0.0"/>
 <unit id="org.eclipse.wst.xsd.core" version="0.0.0"/>
-<repository location="https://download.eclipse.org/webtools/downloads/drops/R3.30.0/S-3.30M2-20230428000706/repository/"/>
+<repository location="https://download.eclipse.org/webtools/downloads/drops/R3.30.0/S-3.30M2a-20230502092147/repository/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.xsd" version="0.0.0"/>
