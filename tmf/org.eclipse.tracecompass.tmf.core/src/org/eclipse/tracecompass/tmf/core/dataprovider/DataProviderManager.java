@@ -117,18 +117,20 @@ public class DataProviderManager {
     /**
      * Gets or creates the data provider for the given trace.
      * <p>
-     * This method should never be called from within a {@link TmfSignalHandler}.
+     * This method should never be called from within a
+     * {@link TmfSignalHandler}.
      *
      * @param trace
-     *            An instance of {@link ITmfTrace}.
-     *            Note, that trace can be an instance of TmfExperiment, too.
+     *            An instance of {@link ITmfTrace}. Note, that trace can be an
+     *            instance of TmfExperiment, too.
      * @param id
      *            Id of the data provider. This ID can be the concatenation of a
-     *            provider ID + ':' + a secondary ID used to differentiate multiple
-     *            instances of a same provider.
+     *            provider ID + ':' + a secondary ID used to differentiate
+     *            multiple instances of a same provider.
      * @param dataProviderClass
      *            Returned data provider must extend this class
-     * @return the data provider or null if no data provider is found for the input parameter.
+     * @return the data provider or null if no data provider is found for the
+     *         input parameter.
      * @since 8.0
      */
     public synchronized @Nullable <T extends ITmfTreeDataProvider<? extends ITmfTreeDataModel>> T getOrCreateDataProvider(@NonNull ITmfTrace trace, String id, Class<T> dataProviderClass) {
@@ -139,7 +141,9 @@ public class DataProviderManager {
         String[] ids = id.split(DataProviderConstants.ID_SEPARATOR, 2);
         for (ITmfTrace opened : TmfTraceManager.getInstance().getOpenedTraces()) {
             if (TmfTraceManager.getTraceSetWithExperiment(opened).contains(trace)) {
-                /* if this trace or an experiment containing this trace is opened */
+                /*
+                 * if this trace or an experiment containing it is opened
+                 */
                 IDataProviderFactory providerFactory = fDataProviderFactories.get(ids[0]);
                 if (providerFactory != null) {
                     dataProvider = ids.length > 1 ? providerFactory.createProvider(trace, String.valueOf(ids[1])) : providerFactory.createProvider(trace);
@@ -156,18 +160,20 @@ public class DataProviderManager {
 
     /**
      * Get a data provider for the given trace if it already exists due to
-     * calling {@link #getOrCreateDataProvider(ITmfTrace, String, Class)} before.
+     * calling {@link #getOrCreateDataProvider(ITmfTrace, String, Class)}
+     * before.
      *
      * <p>
-     * This method should never be called from within a {@link TmfSignalHandler}.
+     * This method should never be called from within a
+     * {@link TmfSignalHandler}.
      *
      * @param trace
-     *            An instance of {@link ITmfTrace}.
-     *            Note, that trace can be an instance of TmfExperiment, too.
+     *            An instance of {@link ITmfTrace}. Note, that trace can be an
+     *            instance of TmfExperiment, too.
      * @param id
      *            Id of the data provider. This ID can be the concatenation of a
-     *            provider ID + ':' + a secondary ID used to differentiate multiple
-     *            instances of a same provider.
+     *            provider ID + ':' + a secondary ID used to differentiate
+     *            multiple instances of a same provider.
      * @param dataProviderClass
      *            Returned data provider must extend this class
      * @return the data provider or null
