@@ -35,11 +35,7 @@ import java.util.Collection;
  *
  * @author Yonni Chen
  * @since 4.0
- * @deprecated As the former #getXValues() was unused (thus removed), at least
- *             in org.eclipse.tracecompass. This defeats the purpose of
- *             {@link #getYSeriesData()} thus this whole interface.
  */
-@Deprecated
 public interface ITmfCommonXAxisModel extends ITmfXyModel {
 
     /**

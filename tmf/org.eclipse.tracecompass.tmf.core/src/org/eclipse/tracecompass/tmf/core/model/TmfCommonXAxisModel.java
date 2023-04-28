@@ -77,12 +77,6 @@ public class TmfCommonXAxisModel implements ITmfCommonXAxisModel {
         return fSeries;
     }
 
-    /**
-     * @deprecated As the former #getXValues() was unused (thus removed), which
-     *             defeats the whole purpose of {@link ITmfCommonXAxisModel}
-     *             including {@link #getYSeriesData()}'s.
-     */
-    @Deprecated
     @Override
     public @NonNull Collection<IYModel> getYSeriesData() {
         return fYSeries;
