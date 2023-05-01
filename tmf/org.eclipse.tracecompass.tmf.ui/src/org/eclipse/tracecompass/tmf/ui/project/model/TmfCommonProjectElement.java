@@ -25,6 +25,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import org.eclipse.core.resources.IContainer;
@@ -46,6 +48,8 @@ import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.tracecompass.common.core.log.TraceCompassLog;
+import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils;
 import org.eclipse.tracecompass.internal.tmf.ui.Activator;
 import org.eclipse.tracecompass.internal.tmf.ui.editors.ITmfEventsEditorConstants;
 import org.eclipse.tracecompass.tmf.core.TmfCommonConstants;
@@ -76,6 +80,8 @@ public abstract class TmfCommonProjectElement extends TmfProjectModelElement {
     // ------------------------------------------------------------------------
 
     private static final String BOOKMARKS_HIDDEN_FILE = ".bookmarks"; //$NON-NLS-1$
+
+    private static final @NonNull Logger LOGGER = TraceCompassLog.getLogger(TmfCommonProjectElement.class);
 
     /* Direct child elements */
     private TmfViewsElement fViewsElement = null;
@@ -711,6 +717,8 @@ public abstract class TmfCommonProjectElement extends TmfProjectModelElement {
         for (int i = 0; i < resources.length; i++) {
             try {
                 resources[i].delete(true, new NullProgressMonitor());
+                // Needed to audit for privacy concerns
+                TraceCompassLogUtils.traceInstant(LOGGER, Level.CONFIG, "deleteSupplementaryResources", resources[i].getFullPath().toOSString() ); //$NON-NLS-1$
             } catch (CoreException e) {
                 Activator.getDefault().logError("Error deleting supplementary resource " + resources[i], e); //$NON-NLS-1$
             }
