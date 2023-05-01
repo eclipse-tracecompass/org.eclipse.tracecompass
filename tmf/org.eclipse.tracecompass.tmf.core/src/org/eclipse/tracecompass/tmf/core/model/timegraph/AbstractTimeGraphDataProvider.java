@@ -96,6 +96,12 @@ public abstract class AbstractTimeGraphDataProvider<A extends TmfStateSystemAnal
                 // getRowModel returns null if the query was cancelled.
                 return new TmfModelResponse<>(null, ITmfResponse.Status.CANCELLED, CommonStatusMessage.TASK_CANCELLED);
             }
+            long rows = models.getRows().size();
+            long states = 0;
+            for (ITimeGraphRowModel row : models.getRows()) {
+                states += row.getStates().size();
+            }
+            scope.step("complete", "rows", rows, "states", states); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             return new TmfModelResponse<>(models, complete ? Status.COMPLETED : Status.RUNNING,
                     complete ? CommonStatusMessage.COMPLETED : CommonStatusMessage.RUNNING);
         } catch (StateSystemDisposedException | TimeRangeException | IndexOutOfBoundsException e) {
