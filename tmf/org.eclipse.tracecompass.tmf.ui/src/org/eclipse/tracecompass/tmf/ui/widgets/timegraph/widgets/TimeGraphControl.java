@@ -57,6 +57,7 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTException;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.events.FocusEvent;
@@ -152,7 +153,7 @@ import com.google.common.collect.Iterables;
 public class TimeGraphControl extends TimeGraphBaseControl
         implements FocusListener, KeyListener, MouseMoveListener, MouseListener,
         MouseWheelListener, MouseTrackListener, TraverseListener, ISelectionProvider,
-        MenuDetectListener, ITmfTimeGraphDrawingHelper, ITimeGraphColorListener, Listener {
+        MenuDetectListener, ITmfTimeGraphDrawingHelper, ITimeGraphColorListener, ControlListener, Listener {
 
     /**
      * Default state width ratio
@@ -301,6 +302,9 @@ public class TimeGraphControl extends TimeGraphBaseControl
 
     private List<Rectangle> fSelectedRectangles = new ArrayList<>();
 
+    private @Nullable Point fSize = null;
+    private @Nullable Rectangle fBounds = null;
+
     private final @NonNull String fPaintScopeLabel = getClass().getCanonicalName() + "#paint"; //$NON-NLS-1$
     private final @NonNull String fBackgroundScopeLabel = getClass().getCanonicalName() + "#drawBackground"; //$NON-NLS-1$
     private final @NonNull String fGridLinesScopeLabel = getClass().getCanonicalName() + "#drawGridlines"; //$NON-NLS-1$
@@ -328,6 +332,7 @@ public class TimeGraphControl extends TimeGraphBaseControl
 
         fItemData = new ItemData();
 
+        addControlListener(this);
         addFocusListener(this);
         addMouseListener(this);
         addMouseMoveListener(this);
@@ -1772,10 +1777,47 @@ public class TimeGraphControl extends TimeGraphBaseControl
         }
         long time0 = fTimeProvider.getTime0();
         long time1 = fTimeProvider.getTime1();
-        int width = getSize().x;
+        int width = getWidth();
         int nameSpace = fTimeProvider.getNameSpace();
         double pixelsPerNanoSec = (width - nameSpace <= RIGHT_MARGIN) ? 0 : (double) (width - nameSpace - RIGHT_MARGIN) / (time1 - time0);
         return SaturatedArithmetic.add(getBounds().x + nameSpace, (int) ((time - time0) * pixelsPerNanoSec));
+    }
+
+    @Override
+    public Point getSize() {
+        Point size = fSize;
+        if (size == null) {
+            size = Objects.requireNonNull(super.getSize());
+            fSize = size;
+        }
+        return new Point(size.x, size.y);
+    }
+
+    @Override
+    public Rectangle getBounds() {
+        Rectangle bounds = fBounds;
+        if (bounds == null) {
+            bounds = Objects.requireNonNull(super.getBounds());
+            fBounds = bounds;
+        }
+        return new Rectangle(bounds.x, bounds.y, bounds.width, bounds.height);
+    }
+
+    /**
+     * Returns a integer describing the receiver's width in points.
+     *
+     * @return the receiver's width
+     *
+     * @exception SWTException
+     *                <ul>
+     *                <li>ERROR_WIDGET_DISPOSED - if the receiver has been
+     *                disposed</li>
+     *                <li>ERROR_THREAD_INVALID_ACCESS - if not called from the
+     *                thread that created the receiver</li>
+     *                </ul>
+     */
+    private int getWidth() {
+        return getSize().x;
     }
 
     @Override
@@ -3422,7 +3464,7 @@ public class TimeGraphControl extends TimeGraphBaseControl
         }
         if (fTimeProvider == null ||
                 fTimeProvider.getTime0() == fTimeProvider.getTime1() ||
-                getSize().x - fTimeProvider.getNameSpace() <= 0) {
+                getWidth() - fTimeProvider.getNameSpace() <= 0) {
             return;
         }
         if (1 == e.button && ((e.stateMask & SWT.MODIFIER_MASK) == 0 || (e.stateMask & SWT.MODIFIER_MASK) == SWT.SHIFT)) {
@@ -3485,7 +3527,7 @@ public class TimeGraphControl extends TimeGraphBaseControl
         } else if (3 == e.button) {
             if (e.x >= fTimeProvider.getNameSpace()) {
                 setCapture(true);
-                fDragX = Math.min(Math.max(e.x, fTimeProvider.getNameSpace()), getSize().x - RIGHT_MARGIN);
+                fDragX = Math.min(Math.max(e.x, fTimeProvider.getNameSpace()), getWidth() - RIGHT_MARGIN);
                 fDragX0 = fDragX;
                 fDragTime0 = getTimeAtX(fDragX0);
                 fDragState = DRAG_ZOOM;
@@ -4290,5 +4332,20 @@ public class TimeGraphControl extends TimeGraphBaseControl
      */
     public void setHideEmptyRowsFilterActive(boolean hideEmptyRowsFilterActive) {
         fHideEmptyRowsFilterActive = hideEmptyRowsFilterActive;
+    }
+
+    @Override
+    public void controlMoved(ControlEvent e) {
+        resetCache();
+    }
+
+    @Override
+    public void controlResized(ControlEvent e) {
+        resetCache();
+    }
+
+    private void resetCache() {
+        fBounds = null;
+        fSize = null;
     }
 }
