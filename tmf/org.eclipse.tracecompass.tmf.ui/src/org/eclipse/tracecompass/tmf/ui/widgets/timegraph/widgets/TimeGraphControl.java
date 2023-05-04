@@ -2585,11 +2585,20 @@ public class TimeGraphControl extends TimeGraphBaseControl
         if (fHideArrows) {
             return;
         }
+        int topIndex = fTopIndex;
+        int bottomIndex = topIndex + countPerPage() + 1;
         gc.setClipping(new Rectangle(nameSpace, 0, bounds.width - nameSpace, bounds.height));
         /* the list can grow concurrently but cannot shrink */
         int size = links.size();
         for (int i = 0; i < size; i++) {
-            drawLink(links.get(i), bounds, timeProvider, nameSpace, gc);
+            ILinkEvent event = links.get(i);
+            int srcIndex = fItemData.findItemIndex(event.getEntry());
+            int destIndex = fItemData.findItemIndex(event.getDestinationEntry());
+
+            if ((srcIndex == -1) || (destIndex == -1) || (srcIndex < topIndex && destIndex < topIndex) || (srcIndex > bottomIndex && destIndex > bottomIndex)) {
+                continue;
+            }
+            drawLink(event, bounds, timeProvider, nameSpace, gc);
         }
         gc.setClipping((Rectangle) null);
         TraceCompassLogUtils.traceCounter(LOGGER, Level.FINER, fDrawLinksCountLabel, size);
