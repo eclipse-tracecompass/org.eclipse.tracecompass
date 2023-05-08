@@ -677,7 +677,7 @@ public class GraphHistoryTree {
      */
     @VisibleForTesting
     protected void informInsertingAtDepth(int depth) {
-
+        // do nothing
     }
 
     private long getNewBranchStart(int depth, TmfEdgeInterval interval) {
