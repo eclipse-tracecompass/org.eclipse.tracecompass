@@ -43,26 +43,6 @@
               <configuration>
                 <artifacts>
                   <artifact>
-                    <file>tracecompass-e4.16.target</file>
-                    <type>target</type>
-                    <classifier>tracecompass-e4.16</classifier>
-                  </artifact>
-                  <artifact>
-                    <file>tracecompass-e4.17.target</file>
-                    <type>target</type>
-                    <classifier>tracecompass-e4.17</classifier>
-                  </artifact>
-                  <artifact>
-                    <file>tracecompass-e4.18.target</file>
-                    <type>target</type>
-                    <classifier>tracecompass-e4.18</classifier>
-                  </artifact>
-                  <artifact>
-                    <file>tracecompass-e4.19.target</file>
-                    <type>target</type>
-                    <classifier>tracecompass-e4.19</classifier>
-                  </artifact>
-                  <artifact>
                     <file>tracecompass-e4.20.target</file>
                     <type>target</type>
                     <classifier>tracecompass-e4.20</classifier>

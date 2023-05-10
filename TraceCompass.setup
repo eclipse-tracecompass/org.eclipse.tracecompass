@@ -71,18 +71,6 @@
       storageURI="scope://Workspace"
       label="Target Platform">
     <choice
-        value="tracecompass-e4.16"
-        label="Trace Compass Eclipse 2020-06 - 4.16"/>
-    <choice
-        value="tracecompass-e4.17"
-        label="Trace Compass Eclipse 2020-09 - 4.17"/>
-    <choice
-        value="tracecompass-e4.18"
-        label="Trace Compass Eclipse 2020-12 - 4.18"/>
-    <choice
-        value="tracecompass-e4.19"
-        label="Trace Compass Eclipse 2021-03 - 4.19"/>
-    <choice
         value="tracecompass-e4.20"
         label="Trace Compass Eclipse 2021-06 - 4.20"/>
     <choice
