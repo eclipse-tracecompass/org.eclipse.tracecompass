@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -213,7 +214,7 @@ public class DsfGdbAdaptor {
                             String sessionId;
                             synchronized (SESSION_LOCK) {
                                 sessionId = context.getSessionId();
-                                if (sessionId.equals(fCurrentSessionId)) {
+                                if (Objects.equals(sessionId,fCurrentSessionId)) {
                                     return;
                                 }
                                 fCurrentSessionId = sessionId;
@@ -837,7 +838,7 @@ public class DsfGdbAdaptor {
                         if (editor instanceof ITmfTraceEditor) {
                             ITmfTrace trace = ((ITmfTraceEditor) editor).getTrace();
                             if (trace instanceof GdbTrace) {
-                                if (((GdbTrace) trace).getDsfSessionId().equals(sessionId)) {
+                                if (Objects.equals(((GdbTrace) trace).getDsfSessionId(), sessionId)) {
                                     wbPage.closeEditor(editor, false);
                                 }
                             }
@@ -857,7 +858,7 @@ public class DsfGdbAdaptor {
                         if (editor instanceof ITmfTraceEditor) {
                             ITmfTrace trace = ((ITmfTraceEditor) editor).getTrace();
                             if (trace instanceof GdbTrace) {
-                                if (((GdbTrace) trace).getDsfSessionId().equals(sessionId)) {
+                                if (Objects.equals(((GdbTrace) trace).getDsfSessionId(), sessionId)) {
                                     wbPage.bringToTop(editor);
                                     if (recordId != -1) {
                                         gotoRank(editor, recordId);
@@ -869,14 +870,16 @@ public class DsfGdbAdaptor {
                                 List<ITmfTrace> expTraces = experiment.getTraces();
                                 int nbTraces = expTraces.size();
                                 for (int i = 0; i < nbTraces; i++) {
-                                    GdbTrace gdbTrace = (GdbTrace) expTraces.get(i);
-                                    if (gdbTrace.getDsfSessionId().equals(sessionId)) {
-                                        wbPage.bringToTop(editor);
-                                        if (recordId != -1) {
-                                            int rank = recordId * nbTraces + i;
-                                            gotoRank(editor, rank);
+                                    if (trace instanceof GdbTrace) {
+                                        GdbTrace gdbTrace = (GdbTrace) expTraces.get(i);
+                                        if (Objects.equals(gdbTrace.getDsfSessionId(), sessionId)) {
+                                            wbPage.bringToTop(editor);
+                                            if (recordId != -1) {
+                                                int rank = recordId * nbTraces + i;
+                                                gotoRank(editor, rank);
+                                            }
+                                            return;
                                         }
-                                        return;
                                     }
                                 }
                             }
