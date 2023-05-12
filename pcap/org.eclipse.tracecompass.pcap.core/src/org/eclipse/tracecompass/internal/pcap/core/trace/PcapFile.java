@@ -48,6 +48,25 @@ public abstract class PcapFile implements Closeable {
     private TreeMap<Long, Long> fFileIndex = new TreeMap<>();
 
     /**
+     * Pre-validate so that exceptions are not thrown in constructors
+     *
+     * @param filePath
+     *            the path
+     * @throws IOException
+     *             a low level error
+     * @return true if OK
+     */
+    public static boolean preValidate(Path filePath) throws IOException {
+        // Check file validity
+        if (Files.notExists(filePath) || !Files.isRegularFile(filePath) ||
+                Files.size(filePath) < PcapFileValues.GLOBAL_HEADER_SIZE) {
+            return false;
+        }
+
+        return Files.isReadable(filePath);
+    }
+
+    /**
      * Constructor of the PcapFile Class
      *
      * @param filePath

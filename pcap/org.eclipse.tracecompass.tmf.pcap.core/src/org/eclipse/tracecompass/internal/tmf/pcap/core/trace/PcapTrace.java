@@ -224,8 +224,10 @@ public class PcapTrace extends TmfTrace implements ITmfPropertiesProvider {
         }
         Path filePath = checkNotNull(Paths.get(path));
         // We don't use magic number here but the file suffix instead due to the file not open yet
-        try {
-            fPcapFile = PcapHelper.getPcapFile(filePath);
+        try (PcapFile pcapFile = PcapHelper.getPcapFile(filePath);) {
+            if (pcapFile == null) {
+                return new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Not a pcap trace"); //$NON-NLS-1$
+            }
         } catch (IOException | BadPcapFileException e) {
             return new Status(IStatus.ERROR, Activator.PLUGIN_ID, e.toString());
         }

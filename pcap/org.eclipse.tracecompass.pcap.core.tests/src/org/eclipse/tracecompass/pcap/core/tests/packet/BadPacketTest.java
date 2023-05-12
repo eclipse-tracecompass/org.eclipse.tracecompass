@@ -83,7 +83,7 @@ public class BadPacketTest {
         PcapTestTrace trace = PcapTestTrace.MOSTLY_TCP;
         assumeTrue(trace.exists());
         // Get a right pcap/pcapNg trace
-        try (PcapFile dummy = trace.getTrace();) {
+        try (PcapFile dummy = trace.getTrace()) {
             ByteBuffer packet = fEthernetPacket;
             if (packet != null) {
                 new EthernetIIPacket(dummy, null, packet);

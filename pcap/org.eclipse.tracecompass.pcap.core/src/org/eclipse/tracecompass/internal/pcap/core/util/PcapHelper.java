@@ -22,6 +22,8 @@ import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.tracecompass.internal.pcap.core.Activator;
 import org.eclipse.tracecompass.internal.pcap.core.trace.BadPcapFileException;
 import org.eclipse.tracecompass.internal.pcap.core.trace.PcapFile;
 import org.eclipse.tracecompass.internal.pcap.core.trace.PcapFileValues;
@@ -49,7 +51,7 @@ public final class PcapHelper {
      * @throws BadPcapFileException
      *             Thrown when a packet header is invalid.
      */
-    public static PcapFile getPcapFile(Path filePath) throws IOException, BadPcapFileException {
+    public static @Nullable PcapFile getPcapFile(Path filePath) throws IOException, BadPcapFileException {
 
         // Check file validity
         if (Files.notExists(filePath) || !Files.isRegularFile(filePath) ||
@@ -66,14 +68,25 @@ public final class PcapHelper {
             // Read the packet header to get a magic number
             fileChannel.read(header);
             header.flip();
-            // Read 4 bytes from the packet header to verify if it is a true PCAPNG block type via a magic number
+            // Read 4 bytes from the packet header to verify if it is a true
+            // PCAPNG block type via a magic number
             int blockType = header.getInt();
             // If the magic number is 0x0A0D0D0A
-            if (blockType == PcapNgFileValues.SHB) {
-                return new PcapNgFile(filePath);
+            try {
+                if (blockType == PcapNgFileValues.SHB) {
+                    return new PcapNgFile(filePath);
+                }
+                if (!PcapOldFile.preValidate(filePath)) {
+                    return null;
+                }
+                return new PcapOldFile(filePath);
+            } catch (BadPcapFileException e) {
+                Activator activator = Activator.getDefault();
+                if (activator != null) {
+                    activator.logWarning(e.getMessage(), e);
+                }
             }
-
-            return new PcapOldFile(filePath);
+            return null;
         }
     }
 

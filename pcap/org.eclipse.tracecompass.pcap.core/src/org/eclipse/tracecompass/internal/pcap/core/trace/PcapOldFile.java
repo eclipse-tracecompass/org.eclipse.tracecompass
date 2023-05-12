@@ -14,9 +14,12 @@
 
 package org.eclipse.tracecompass.internal.pcap.core.trace;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.TreeMap;
 
@@ -39,6 +42,45 @@ public class PcapOldFile extends PcapFile {
     private long fDataLinkType;
 
     PcapTimestampScale fTimestampPrecision;
+
+    public static boolean preValidate(Path filePath) throws IOException {
+        if(!PcapFile.preValidate(filePath)) {
+            return false;
+        }
+        // Check file validity
+        if (Files.notExists(filePath) || !Files.isRegularFile(filePath) ||
+                Files.size(filePath) < PcapFileValues.GLOBAL_HEADER_SIZE) {
+            return false;
+        }
+
+        if (!Files.isReadable(filePath)) {
+            return false;
+        }
+        File reader = filePath.toFile();
+        try (FileInputStream fis = new FileInputStream(reader)){
+            byte[] data = new byte[PcapFileValues.GLOBAL_HEADER_SIZE];
+
+            int size = fis.read(data);
+            if(size != PcapFileValues.GLOBAL_HEADER_SIZE) {
+                return false;
+            }
+            ByteBuffer globalHeader = ByteBuffer.wrap(data);
+            int magicNumber = globalHeader.getInt();
+            switch (magicNumber) {
+            case PcapFileValues.MAGIC_BIG_ENDIAN_MICRO: // file is big endian
+                break;
+            case PcapFileValues.MAGIC_LITTLE_ENDIAN_MICRO: // file is little endian
+                break;
+            case PcapFileValues.MAGIC_BIG_ENDIAN_NANO: // file is big endian
+                break;
+            case PcapFileValues.MAGIC_LITTLE_ENDIAN_NANO: // file is little endian
+                break;
+            default:
+                return false;
+            }
+        }
+        return true;
+    }
 
     /**
      * Constructor of the PcapOldFile class where the parent is PcapFile class.

@@ -16,6 +16,7 @@
 package org.eclipse.tracecompass.pcap.core.tests.file;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeTrue;
 
@@ -39,17 +40,14 @@ public class PcapFileOpenFailTest {
      *
      * @throws IOException
      *             Thrown when an IO error occurs. Fails the test.
+     * @throws BadPcapFileException
+     *             Won't happen
      */
     @Test
-    public void FileOpenBadPcapTest() throws IOException {
+    public void fileOpenBadPcapTest() throws IOException, BadPcapFileException {
         PcapTestTrace trace = PcapTestTrace.BAD_PCAPFILE;
         assumeTrue(trace.exists());
-        try {
-            PcapHelper.getPcapFile(trace.getPath());
-            fail("The pcapNg was accepted even though the magic number is invalid!");
-        } catch (IOException | BadPcapFileException e) {
-            assertEquals("c3d4a1b2 is not a known magic number.", e.getMessage());
-        }
+        assertNull(PcapHelper.getPcapFile(trace.getPath()));
     }
 
     /**
@@ -57,17 +55,14 @@ public class PcapFileOpenFailTest {
      *
      * @throws IOException
      *             Thrown when an IO error occurs. Fails the test.
+     * @throws BadPcapFileException
+     *             Won't happen
      */
     @Test
-    public void FileOpenBinaryFile() throws IOException {
+    public void fileOpenBinaryFile() throws IOException, BadPcapFileException {
         PcapTestTrace trace = PcapTestTrace.KERNEL_TRACE;
         assumeTrue(trace.exists());
-        try {
-            PcapHelper.getPcapFile(trace.getPath());
-            fail("The file was accepted even though it is not a pcapNg file!");
-        } catch (IOException | BadPcapFileException e) {
-            assertEquals("c11ffcc1 is not a known magic number.", e.getMessage());
-        }
+        assertNull(PcapHelper.getPcapFile(trace.getPath()));
     }
 
     /**

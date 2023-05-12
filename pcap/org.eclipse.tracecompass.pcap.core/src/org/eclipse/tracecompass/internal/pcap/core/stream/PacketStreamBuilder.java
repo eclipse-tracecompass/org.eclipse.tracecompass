@@ -172,7 +172,7 @@ public class PacketStreamBuilder {
      */
     public synchronized void parsePcapFile(Path filePath) throws IOException, BadPcapFileException {
         try (PcapFile pcapFile = PcapHelper.getPcapFile(filePath)) {
-            while (true) {
+            while (pcapFile != null) {
                 try {
                     PcapPacket packet = pcapFile.parseNextPacket();
                     if (packet == null) { // end-of-file
