@@ -44,7 +44,7 @@ public class PcapOldFile extends PcapFile {
     PcapTimestampScale fTimestampPrecision;
 
     public static boolean preValidate(Path filePath) throws IOException {
-        if(!PcapFile.preValidate(filePath)) {
+        if (!PcapFile.preValidate(filePath)) {
             return false;
         }
         // Check file validity
@@ -57,11 +57,11 @@ public class PcapOldFile extends PcapFile {
             return false;
         }
         File reader = filePath.toFile();
-        try (FileInputStream fis = new FileInputStream(reader)){
+        try (FileInputStream fis = new FileInputStream(reader)) {
             byte[] data = new byte[PcapFileValues.GLOBAL_HEADER_SIZE];
 
             int size = fis.read(data);
-            if(size != PcapFileValues.GLOBAL_HEADER_SIZE) {
+            if (size != PcapFileValues.GLOBAL_HEADER_SIZE) {
                 return false;
             }
             ByteBuffer globalHeader = ByteBuffer.wrap(data);
@@ -69,11 +69,13 @@ public class PcapOldFile extends PcapFile {
             switch (magicNumber) {
             case PcapFileValues.MAGIC_BIG_ENDIAN_MICRO: // file is big endian
                 break;
-            case PcapFileValues.MAGIC_LITTLE_ENDIAN_MICRO: // file is little endian
+            case PcapFileValues.MAGIC_LITTLE_ENDIAN_MICRO: // file is little
+                                                           // endian
                 break;
             case PcapFileValues.MAGIC_BIG_ENDIAN_NANO: // file is big endian
                 break;
-            case PcapFileValues.MAGIC_LITTLE_ENDIAN_NANO: // file is little endian
+            case PcapFileValues.MAGIC_LITTLE_ENDIAN_NANO: // file is little
+                                                          // endian
                 break;
             default:
                 return false;
@@ -160,10 +162,10 @@ public class PcapOldFile extends PcapFile {
     public synchronized @Nullable PcapOldPacket parseNextPacket() throws IOException, BadPcapFileException, BadPacketException {
 
         // Parse the packet header
-        if (getFileChannel().size() - getFileChannel().position() == 0) {
+        if (getRemaining() == 0) {
             return null;
         }
-        if (getFileChannel().size() - getFileChannel().position() < PcapFileValues.PACKET_HEADER_SIZE) {
+        if (getRemaining() < PcapFileValues.PACKET_HEADER_SIZE) {
             throw new BadPcapFileException("A pcap header is invalid."); //$NON-NLS-1$
         }
 
@@ -176,7 +178,7 @@ public class PcapOldFile extends PcapFile {
         pcapPacketHeader.position(PcapFileValues.INCLUDED_LENGTH_POSITION);
         long includedPacketLength = ConversionHelper.unsignedIntToLong(pcapPacketHeader.getInt());
 
-        if (getFileChannel().size() - getFileChannel().position() < includedPacketLength) {
+        if (getRemaining() < includedPacketLength) {
             throw new BadPcapFileException("A packet header is invalid."); //$NON-NLS-1$
         }
 
@@ -199,14 +201,25 @@ public class PcapOldFile extends PcapFile {
 
     }
 
+    /**
+     * Get the remaining size in bytes
+     *
+     * @return the remaining size, in bytes
+     * @throws IOException
+     *             if the file is inaccessible
+     */
+    private long getRemaining() throws IOException {
+        return getFileChannel().size() - getFileChannel().position();
+    }
+
     @Override
     public synchronized boolean skipNextPacket() throws IOException, BadPcapFileException {
 
         // Parse the packet header
-        if (getFileChannel().size() - getFileChannel().position() == 0) {
+        if (getRemaining() == 0) {
             return false;
         }
-        if (getFileChannel().size() - getFileChannel().position() < PcapFileValues.GLOBAL_HEADER_SIZE) {
+        if (getRemaining() < PcapFileValues.GLOBAL_HEADER_SIZE) {
             throw new BadPcapFileException("A pcap header is invalid."); //$NON-NLS-1$
         }
 
@@ -218,7 +231,7 @@ public class PcapOldFile extends PcapFile {
         pcapPacketHeader.position(PcapFileValues.INCLUDED_LENGTH_POSITION);
         long includedPacketLength = ConversionHelper.unsignedIntToLong(pcapPacketHeader.getInt());
 
-        if (getFileChannel().size() - getFileChannel().position() < includedPacketLength) {
+        if (getRemaining() < includedPacketLength) {
             throw new BadPcapFileException("A packet header is invalid."); //$NON-NLS-1$
         }
 
