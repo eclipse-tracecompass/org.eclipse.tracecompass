@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017, 2020 Ericsson
+ * Copyright (c) 2017, 2023 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -33,6 +33,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.compress.archivers.ArchiveException;
@@ -45,7 +46,10 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.tracecompass.tmf.core.tests.TmfCoreTestPlugin;
+import org.eclipse.tracecompass.tmf.core.timestamp.ITmfTimePreferencesConstants;
 import org.eclipse.tracecompass.tmf.core.timestamp.ITmfTimestamp;
 import org.eclipse.tracecompass.tmf.core.timestamp.TmfTimePreferences;
 import org.eclipse.tracecompass.tmf.core.timestamp.TmfTimestamp;
@@ -80,6 +84,12 @@ public class TraceImportOperationTest {
      */
     @BeforeClass
     public static void beforeClass() throws Exception {
+        /* use fixed locale for tests */
+        @SuppressWarnings("restriction")
+        IEclipsePreferences defaultPreferences = InstanceScope.INSTANCE.getNode(org.eclipse.tracecompass.internal.tmf.core.Activator.PLUGIN_ID);
+        defaultPreferences.put(ITmfTimePreferencesConstants.LOCALE, Locale.US.toLanguageTag());
+        TmfTimestampFormat.updateDefaultFormats();
+
         URL resource = TmfCoreTestPlugin.getDefault().getBundle().getResource("testfiles");
         fSourcePath = FileLocator.toFileURL(resource).toURI().getPath();
         IProject project = TmfProjectRegistry.createProject("Test Project", null, null);

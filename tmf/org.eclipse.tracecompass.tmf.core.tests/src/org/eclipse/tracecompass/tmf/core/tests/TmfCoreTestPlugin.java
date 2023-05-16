@@ -16,13 +16,19 @@ package org.eclipse.tracecompass.tmf.core.tests;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Locale;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Plugin;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.tracecompass.internal.tmf.core.Activator;
 import org.eclipse.tracecompass.internal.tmf.core.TmfCoreTracer;
+import org.eclipse.tracecompass.tmf.core.timestamp.ITmfTimePreferencesConstants;
+import org.eclipse.tracecompass.tmf.core.timestamp.TmfTimestampFormat;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -81,10 +87,16 @@ public class TmfCoreTestPlugin extends Plugin {
         super.start(context);
         setDefault(this);
         TmfCoreTracer.init();
+        IEclipsePreferences defaultPreferences = InstanceScope.INSTANCE.getNode(Activator.PLUGIN_ID);
+        defaultPreferences.put(ITmfTimePreferencesConstants.LOCALE, Locale.US.toLanguageTag());
+        TmfTimestampFormat.updateDefaultFormats();
     }
 
     @Override
     public void stop(BundleContext context) throws Exception {
+        IEclipsePreferences defaultPreferences = InstanceScope.INSTANCE.getNode(Activator.PLUGIN_ID);
+        defaultPreferences.put(ITmfTimePreferencesConstants.LOCALE, Locale.getDefault().toLanguageTag());
+        TmfTimestampFormat.updateDefaultFormats();
         TmfCoreTracer.stop();
         setDefault(null);
         super.stop(context);

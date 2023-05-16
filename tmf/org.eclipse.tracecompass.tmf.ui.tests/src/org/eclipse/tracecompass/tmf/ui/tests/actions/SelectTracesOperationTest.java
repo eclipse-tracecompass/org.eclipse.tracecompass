@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017, 2018 Ericsson and others
+ * Copyright (c) 2017, 2023 Ericsson and others
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -25,6 +25,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 import org.eclipse.core.resources.IFolder;
@@ -33,12 +34,15 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.tracecompass.internal.tmf.ui.Activator;
 import org.eclipse.tracecompass.internal.tmf.ui.project.model.TmfImportHelper;
 import org.eclipse.tracecompass.internal.tmf.ui.project.operations.SelectTracesOperation;
 import org.eclipse.tracecompass.tmf.core.TmfCommonConstants;
 import org.eclipse.tracecompass.tmf.core.tests.shared.TmfTestTrace;
+import org.eclipse.tracecompass.tmf.core.timestamp.ITmfTimePreferencesConstants;
 import org.eclipse.tracecompass.tmf.core.timestamp.ITmfTimestamp;
 import org.eclipse.tracecompass.tmf.core.timestamp.TmfTimePreferences;
 import org.eclipse.tracecompass.tmf.core.timestamp.TmfTimestamp;
@@ -53,6 +57,7 @@ import org.eclipse.tracecompass.tmf.ui.tests.shared.ProjectModelTestData;
 import org.eclipse.ui.PlatformUI;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
@@ -69,6 +74,18 @@ public class SelectTracesOperationTest {
 
     private ITmfTimestamp fStartTimeRange;
     private ITmfTimestamp fEndTimeRange;
+
+    /**
+     * Setup class
+     */
+    @BeforeClass
+    public static void beforeClass() {
+        /* use fixed locale for tests */
+        @SuppressWarnings("restriction")
+        IEclipsePreferences defaultPreferences = InstanceScope.INSTANCE.getNode(org.eclipse.tracecompass.internal.tmf.core.Activator.PLUGIN_ID);
+        defaultPreferences.put(ITmfTimePreferencesConstants.LOCALE, Locale.US.toLanguageTag());
+        TmfTimestampFormat.updateDefaultFormats();
+    }
 
     /**
      * Setup before test
