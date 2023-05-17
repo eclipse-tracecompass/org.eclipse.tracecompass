@@ -34,7 +34,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.osgi.util.NLS;
-import org.eclipse.tracecompass.analysis.os.linux.core.kernel.KernelAnalysisModule;
+import org.eclipse.tracecompass.tmf.core.statesystem.TmfStateSystemAnalysisModule;
 import org.eclipse.tracecompass.analysis.os.linux.core.kernel.StateValues;
 import org.eclipse.tracecompass.analysis.os.linux.core.model.OsStrings;
 import org.eclipse.tracecompass.analysis.os.linux.core.trace.IKernelTrace;
@@ -95,7 +95,7 @@ import com.google.common.primitives.Ints;
  *
  * @author Loic Prieur-Drevon
  */
-public class ResourcesStatusDataProvider extends AbstractTimeGraphDataProvider<@NonNull KernelAnalysisModule, @NonNull ResourcesEntryModel> implements IOutputAnnotationProvider, IOutputStyleProvider {
+public class ResourcesStatusDataProvider extends AbstractTimeGraphDataProvider<@NonNull TmfStateSystemAnalysisModule, @NonNull ResourcesEntryModel> implements IOutputAnnotationProvider, IOutputStyleProvider {
 
     /**
      * Extension point ID.
@@ -212,10 +212,10 @@ public class ResourcesStatusDataProvider extends AbstractTimeGraphDataProvider<@
      * @param trace
      *            The trace for which this provider will be built.
      * @param module
-     *            the {@link KernelAnalysisModule} to access the underlying
+     *            the {@link TmfStateSystemAnalysisModule} to access the underlying
      *            {@link ITmfStateSystem}
      */
-    protected ResourcesStatusDataProvider(@NonNull ITmfTrace trace, @NonNull KernelAnalysisModule module) {
+    protected ResourcesStatusDataProvider(@NonNull ITmfTrace trace, @NonNull TmfStateSystemAnalysisModule module) {
         super(trace, module);
         Predicate<@NonNull ResourcesEntryModel> additional = model -> ResourcesEntryModel.Type.CURRENT_THREAD.equals(model.getType());
         fEventAnnotatonProvider = new EventAnnotationProvider<>(TmfStrings.cpu(), additional,
