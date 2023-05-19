@@ -144,7 +144,7 @@ public class ImportTraceWizardPage extends WizardResourceImportPage {
      * Threshold size in byte of an archive to decide if we extract the archive in a
      * folder instead of a temporary folder to avoid copying large archive.
      */
-    private static final long ARCHIVE_SIZE_THRESHOLD = 400000000;
+    private static final long ARCHIVE_SIZE_THRESHOLD = ArchiveUtil.THRESHOLD_SIZE;
 
     /**
      * Preserve the folder structure of the import traces.
@@ -1230,7 +1230,10 @@ public class ImportTraceWizardPage extends WizardResourceImportPage {
         if (importFromArchive && sourceArchiveFile != null) {
             archiveName = sourceArchiveFile.getName();
             long archiveSize = ArchiveUtil.getArchiveSize(sourceArchiveFile.getAbsolutePath());
-            keepArchive = (archiveSize != -1 && archiveSize >= ARCHIVE_SIZE_THRESHOLD) ? true : false;
+            keepArchive = (archiveSize != -1 && archiveSize >= ARCHIVE_SIZE_THRESHOLD);
+            if (archiveSize == -1) {
+                return false;
+            }
         } else {
             archiveName = null;
             keepArchive = false;

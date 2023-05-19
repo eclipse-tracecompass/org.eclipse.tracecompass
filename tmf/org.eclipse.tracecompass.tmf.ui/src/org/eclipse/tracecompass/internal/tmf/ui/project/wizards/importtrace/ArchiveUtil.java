@@ -14,12 +14,13 @@
 
 package org.eclipse.tracecompass.internal.tmf.ui.project.wizards.importtrace;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.InputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
-import java.util.Objects;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -41,12 +42,16 @@ import com.google.common.annotations.VisibleForTesting;
 public class ArchiveUtil {
 
     /**
-     * Threshold for size was selected according to SonarCloud suggestion and
-     * entries were revised to be smaller than SonarCould suggestion:
+     * Threshold for size was selected according to SonarCloud suggestion,
+     * entries were revised to be smaller than SonarCould suggestion, and
+     * compression ratio was revised to be larger using the template of our own
+     * testing files:
      * https://sonarcloud.io/organizations/eclipse/rules?open=java%3AS5042&rule_key=java%3AS5042&tab=how_to_fix
+     *
      */
     private static final int THRESHOLD_ENTRIES = 5000;
-    private static final int THRESHOLD_SIZE = 1000000000;
+    static final int THRESHOLD_SIZE = 1000000000;
+    private static final double THRESHOLD_RATIO = 100;
 
     private ArchiveUtil() {
         // Do nothing, not meant to be instantiated
@@ -123,7 +128,8 @@ public class ArchiveUtil {
             return null;
         }
 
-        // FIXME: Work around Bug 463633. Remove this block once we move to Eclipse 4.5.
+        // FIXME: Work around Bug 463633. Remove this block once we move to
+        // Eclipse 4.5.
         File tarCandidate = new File(fileName);
         if (tarCandidate.length() < 512) {
             return null;
@@ -179,7 +185,7 @@ public class ArchiveUtil {
     }
 
     /**
-     * Get the archive size.
+     * Get the archive size and make sure that each of the entries are valid
      *
      * Since an archive entry could also be an archive: a variable counting the
      * number of file entries was added to the method as per SonarCloud
@@ -206,8 +212,17 @@ public class ArchiveUtil {
         if (zipFile != null) {
             Enumeration<? extends ZipEntry> entries = zipFile.entries();
             long archiveEntries = 0;
+            long entrySize = 0;
             while (entries.hasMoreElements()) {
-                archiveSize += Objects.requireNonNull(entries.nextElement()).getSize();
+                ZipEntry entry = entries.nextElement();
+                entrySize = getZipEntrySize(zipFile, entry);
+                if (entrySize == -1) {
+                    closeZipFile(zipFile);
+                    return -1; // could return -1 if compression ratio of an
+                               // entry is too high
+                }
+
+                archiveSize += entrySize;
                 ++archiveEntries;
             }
             closeZipFile(zipFile);
@@ -216,8 +231,81 @@ public class ArchiveUtil {
                 return archiveSize;
             }
         }
+        if (zipFile == null) {
+            return 0; // is neither a zip or tar file, not a security issue
+        }
 
         return -1;
+    }
+
+    /**
+     * Get the size of each zip entry and make sure it is a valid file
+     *
+     * @param zipFile
+     *            - file to be opened
+     * @param entry
+     *            - the entry in archive that we are calculating the size of
+     * @return size of the entry or -1 if there is an error
+     */
+    private static long getZipEntrySize(ZipFile zipFile, ZipEntry entry) {
+        long entrySize = 0;
+
+        InputStream in;
+        try {
+            in = new BufferedInputStream(zipFile.getInputStream(entry));
+
+            int numBytes = -1;
+            byte[] inputBuffer = new byte[2048];
+
+            while ((numBytes = in.read(inputBuffer)) > 0) {
+                entrySize += numBytes;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return -1;
+
+        }
+
+        if (verifyEntryIsSafe(entrySize, entry.getCompressedSize())) {
+            return entrySize;
+        }
+
+        return -1;
+
+    }
+
+    /**
+     * Verify if the entry is valid by checking its compression ratio against
+     * the set one
+     *
+     * @param entrySize
+     *            - uncompressed size of the archive entry
+     * @param compressedSize
+     *            - compressed size of the archive entry
+     * @return true if the compression ratio is less than the threshold ratio,
+     *         otherwise false
+     */
+    private static boolean verifyEntryIsSafe(long entrySize, long compressedSize) {
+        String unsafeZipEntriesMessage = ". File seems unsafe to open."; //$NON-NLS-1$
+        if (compressedSize < 0) {
+            Activator activator = new Activator();
+            activator.logError("Zip file has invalid compression size: " + compressedSize + unsafeZipEntriesMessage); //$NON-NLS-1$
+            return false;
+        }
+
+        if (compressedSize == 0) {
+            return true; // some default files, including our own test ones have
+                         // this set to 0
+        }
+
+        double compressionRatio = entrySize / compressedSize;
+
+        if (compressionRatio > THRESHOLD_RATIO) {
+            Activator activator = new Activator();
+            activator.logError("Zip file has entries with too high a compression ratio: " + compressionRatio + unsafeZipEntriesMessage); //$NON-NLS-1$
+            return false;
+        }
+        return true;
     }
 
     /**
