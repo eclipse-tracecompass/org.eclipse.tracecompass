@@ -27,9 +27,6 @@ import java.text.ParseException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Logger;
-import org.apache.log4j.SimpleLayout;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.swtbot.eclipse.finder.SWTWorkbenchBot;
@@ -45,7 +42,6 @@ import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
 import org.eclipse.tracecompass.tmf.core.trace.TmfTraceManager;
 import org.eclipse.tracecompass.tmf.ui.swtbot.tests.shared.SWTBotUtils;
 import org.eclipse.tracecompass.tmf.ui.tests.shared.WaitUtils;
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -100,8 +96,6 @@ public class TestImportExportPackageWizard {
             "<event timestamp=\"533\" name=\"event1\"><field name=\"field\" value=\"3\" type=\"int\" /></event>" +
             "</trace>";
 
-    /** The Log4j logger instance. */
-    private static final Logger fLogger = Logger.getRootLogger();
     private static SWTWorkbenchBot fBot;
 
     /** Test Class setup */
@@ -112,21 +106,11 @@ public class TestImportExportPackageWizard {
         Thread.currentThread().setName(SWT_BOT_THREAD_NAME); // for the debugger
         /* set up for swtbot */
         SWTBotPreferences.TIMEOUT = 20000; /* 20 second timeout */
-        fLogger.removeAllAppenders();
-        fLogger.addAppender(new ConsoleAppender(new SimpleLayout()));
         fBot = new SWTWorkbenchBot();
 
         /* finish waiting for eclipse to load */
         WaitUtils.waitForJobs();
 
-    }
-
-    /**
-     * Clean up
-     */
-    @AfterClass
-    public static void afterClass() {
-        fLogger.removeAllAppenders();
     }
 
     /**

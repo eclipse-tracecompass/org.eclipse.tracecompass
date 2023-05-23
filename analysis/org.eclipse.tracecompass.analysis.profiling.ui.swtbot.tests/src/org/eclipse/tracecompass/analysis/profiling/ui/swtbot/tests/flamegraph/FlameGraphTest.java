@@ -24,9 +24,6 @@ import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.stream.StreamSupport;
 
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Logger;
-import org.apache.log4j.SimpleLayout;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.swtbot.eclipse.finder.SWTWorkbenchBot;
 import org.eclipse.swtbot.eclipse.finder.widgets.SWTBotView;
@@ -49,7 +46,6 @@ import org.eclipse.tracecompass.tmf.ui.widgets.timegraph.model.ITimeGraphEntry;
 import org.eclipse.tracecompass.tmf.ui.widgets.timegraph.model.NullTimeEvent;
 import org.eclipse.tracecompass.tmf.ui.widgets.timegraph.model.TimeEvent;
 import org.eclipse.ui.IViewPart;
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -67,8 +63,6 @@ public class FlameGraphTest extends AggregationTreeTest {
     private SWTWorkbenchBot fBot;
     private SWTBotView fView;
     private FlameGraphView fFg;
-    /** The Log4j logger instance. */
-    private static final Logger fLogger = Logger.getRootLogger();
     private TimeGraphViewer fTimeGraphViewer;
 
     /**
@@ -82,18 +76,8 @@ public class FlameGraphTest extends AggregationTreeTest {
         /* set up for swtbot */
         SWTBotPreferences.TIMEOUT = 20000; /* 20 second timeout */
         SWTBotPreferences.KEYBOARD_LAYOUT = "EN_US";
-        fLogger.removeAllAppenders();
-        fLogger.addAppender(new ConsoleAppender(new SimpleLayout(), ConsoleAppender.SYSTEM_OUT));
         /* Finish waiting for eclipse to load */
         WaitUtils.waitForJobs();
-    }
-
-    /**
-     * Clean up
-     */
-    @AfterClass
-    public static void afterClass() {
-        fLogger.removeAllAppenders();
     }
 
     /**

@@ -20,8 +20,6 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.log4j.Logger;
-import org.apache.log4j.varia.NullAppender;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.swtbot.eclipse.finder.SWTWorkbenchBot;
 import org.eclipse.swtbot.eclipse.finder.widgets.SWTBotEditor;
@@ -70,9 +68,6 @@ public class CtfTmfExperimentTrimmingTest {
 
     private static final int NUM_TRACES = 4;
 
-    /** The Log4j logger instance. */
-    protected static final Logger fLogger = Logger.getRootLogger();
-
     /** Test timeout */
     @Rule
     public TestRule globalTimeout = new Timeout(6, TimeUnit.MINUTES);
@@ -106,8 +101,6 @@ public class CtfTmfExperimentTrimmingTest {
 
         /* set up for swtbot */
         SWTBotPreferences.TIMEOUT = 50000; /* 50 second timeout */
-        fLogger.removeAllAppenders();
-        fLogger.addAppender(new NullAppender());
 
         File parentDir = FileUtils.toFile(FileLocator.toFileURL(CtfTestTrace.TRACE_EXPERIMENT.getTraceURL()));
         File[] traceFiles = parentDir.listFiles();

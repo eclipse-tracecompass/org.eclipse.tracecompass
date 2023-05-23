@@ -17,9 +17,6 @@ import static org.junit.Assert.assertNotNull;
 import java.util.Arrays;
 import java.util.Collections;
 
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Logger;
-import org.apache.log4j.SimpleLayout;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyleRange;
@@ -38,8 +35,8 @@ import org.eclipse.swtbot.swt.finder.widgets.AbstractSWTBotControl;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotMenu;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotRootMenu;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTreeItem;
+import org.eclipse.swtchart.Chart;
 import org.eclipse.tracecompass.analysis.lami.core.tests.shared.analysis.LamiAnalyses;
-import org.eclipse.tracecompass.common.core.NonNullUtils;
 import org.eclipse.tracecompass.internal.provisional.analysis.lami.core.module.LamiResultTable;
 import org.eclipse.tracecompass.internal.provisional.analysis.lami.core.module.LamiTableEntry;
 import org.eclipse.tracecompass.internal.provisional.analysis.lami.core.types.LamiLongNumber;
@@ -61,7 +58,6 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.eclipse.swtchart.Chart;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
@@ -84,9 +80,6 @@ public class LamiChartViewerTest {
     private static final String VIEW_ID = LamiReportView.VIEW_ID;
     private static final TmfTestTrace TRACE = TmfTestTrace.A_TEST_10K;
 
-    /** The Log4j logger instance. */
-    private static final Logger fLogger = NonNullUtils.checkNotNull(Logger.getRootLogger());
-
     private final SWTWorkbenchBot fBot = new SWTWorkbenchBot();
     private @Nullable SWTBotView fViewBot = null;
     private @Nullable LamiReportViewTabPage fCurrentTab;
@@ -103,8 +96,6 @@ public class LamiChartViewerTest {
         /* set up for swtbot */
         SWTBotPreferences.TIMEOUT = 20000; /* 20 second timeout */
         SWTBotPreferences.KEYBOARD_LAYOUT = "EN_US";
-        fLogger.removeAllAppenders();
-        fLogger.addAppender(new ConsoleAppender(new SimpleLayout(), ConsoleAppender.SYSTEM_OUT));
         /* Finish waiting for eclipse to load */
         WaitUtils.waitForJobs();
 
@@ -127,7 +118,6 @@ public class LamiChartViewerTest {
         SWTWorkbenchBot bot = new SWTWorkbenchBot();
         bot.closeAllEditors();
         SWTBotUtils.deleteProject(PROJECT_NAME, bot);
-        fLogger.removeAllAppenders();
         OnDemandAnalysisManager.getInstance().unregisterAnalysis(LamiAnalyses.MULTIPLE_ROW.getAnalysis());
         OnDemandAnalysisManager.getInstance().unregisterAnalysis(LamiAnalyses.MULTIPLE_SIMILAR_ROW.getAnalysis());
     }

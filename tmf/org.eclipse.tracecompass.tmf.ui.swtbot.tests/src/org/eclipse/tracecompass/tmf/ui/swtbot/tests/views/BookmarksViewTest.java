@@ -18,9 +18,6 @@ import static org.junit.Assert.assertNull;
 import java.io.IOException;
 import java.util.function.Predicate;
 
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Logger;
-import org.apache.log4j.SimpleLayout;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.swt.graphics.Image;
@@ -47,7 +44,6 @@ import org.eclipse.tracecompass.tmf.ui.swtbot.tests.shared.SWTBotUtils;
 import org.eclipse.tracecompass.tmf.ui.tests.shared.WaitUtils;
 import org.eclipse.ui.internal.views.markers.BookmarksView;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
@@ -63,9 +59,6 @@ import com.google.common.base.Objects;
  */
 @RunWith(SWTBotJunit4ClassRunner.class)
 public class BookmarksViewTest {
-
-    /** The Log4j logger instance. */
-    private static final Logger fLogger = Logger.getRootLogger();
 
     private static final String PROJECT_NAME = "TestBookmarks";
     private static final String TRACE_TYPE = "org.eclipse.linuxtools.tmf.core.tests.secondtt";
@@ -85,8 +78,6 @@ public class BookmarksViewTest {
         Thread.currentThread().setName("SWTBot Thread"); // for the debugger
         /* set up for swtbot */
         SWTBotPreferences.TIMEOUT = 20000; /* 20 second timeout */
-        fLogger.removeAllAppenders();
-        fLogger.addAppender(new ConsoleAppender(new SimpleLayout()));
         fBot = new SWTWorkbenchBot();
 
         SWTBotUtils.switchToTracingPerspective();
@@ -253,13 +244,4 @@ public class BookmarksViewTest {
         fBot.closeAllEditors();
         SWTBotUtils.deleteProject(PROJECT_NAME, fBot);
     }
-
-    /**
-     * Delete the file
-     */
-    @AfterClass
-    public static void cleanUp() {
-        fLogger.removeAllAppenders();
-    }
-
 }

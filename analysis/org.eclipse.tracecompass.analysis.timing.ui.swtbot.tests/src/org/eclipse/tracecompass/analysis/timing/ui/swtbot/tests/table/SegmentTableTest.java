@@ -30,9 +30,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Logger;
-import org.apache.log4j.SimpleLayout;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jface.viewers.TableViewer;
@@ -65,7 +62,6 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -162,9 +158,6 @@ public class SegmentTableTest {
      */
     protected static SWTWorkbenchBot fBot;
 
-    /** The Log4j logger instance. */
-    private static final Logger fLogger = Logger.getRootLogger();
-
     /**
      * Before class, call by all subclassed
      */
@@ -176,19 +169,9 @@ public class SegmentTableTest {
         /* set up for swtbot */
         SWTBotPreferences.TIMEOUT = 20000; /* 20 second timeout */
         SWTBotPreferences.KEYBOARD_LAYOUT = "EN_US";
-        fLogger.removeAllAppenders();
-        fLogger.addAppender(new ConsoleAppender(new SimpleLayout(), ConsoleAppender.SYSTEM_OUT));
         fBot = new SWTWorkbenchBot();
         /* Finish waiting for eclipse to load */
         WaitUtils.waitForJobs();
-    }
-
-    /**
-     * Clean up
-     */
-    @AfterClass
-    public static void afterClass() {
-        fLogger.removeAllAppenders();
     }
 
     /**

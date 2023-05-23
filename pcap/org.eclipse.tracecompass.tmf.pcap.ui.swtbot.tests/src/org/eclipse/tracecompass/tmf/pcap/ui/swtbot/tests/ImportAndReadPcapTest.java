@@ -24,9 +24,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Logger;
-import org.apache.log4j.SimpleLayout;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -57,7 +54,6 @@ import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IViewReference;
 import org.eclipse.ui.PlatformUI;
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -77,9 +73,6 @@ public class ImportAndReadPcapTest {
     private ITmfEvent fDesired1;
     private static PcapTmfTestTrace pttt = PcapTmfTestTrace.BENCHMARK_TRACE;
 
-    /** The Log4j logger instance. */
-    private static final Logger fLogger = Logger.getRootLogger();
-
     /**
      * Test Class setup
      */
@@ -90,8 +83,6 @@ public class ImportAndReadPcapTest {
 
         /* set up for swtbot */
         SWTBotPreferences.TIMEOUT = 300000; /* 300 second timeout */
-        fLogger.removeAllAppenders();
-        fLogger.addAppender(new ConsoleAppender(new SimpleLayout(), ConsoleAppender.SYSTEM_OUT));
         fBot = new SWTWorkbenchBot();
 
         SWTBotUtils.closeView("welcome", fBot);
@@ -99,14 +90,6 @@ public class ImportAndReadPcapTest {
         SWTBotUtils.switchToPerspective(NETWORK_PERSPECTIVE_ID);
         /* Finish waiting for eclipse to load */
         WaitUtils.waitForJobs();
-    }
-
-    /**
-     * Test Class teardown
-     */
-    @AfterClass
-    public static void terminate() {
-        fLogger.removeAllAppenders();
     }
 
     /**

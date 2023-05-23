@@ -24,8 +24,6 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.varia.NullAppender;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.FileLocator;
@@ -95,9 +93,6 @@ public class FetchRemoteTracesTest {
 
     private static SWTWorkbenchBot fBot;
 
-    /** The Log4j logger instance. */
-    private static final Logger fLogger = Logger.getRootLogger();
-
     static {
         String traceLocation = "";
         String profilesLocation = "";
@@ -134,8 +129,6 @@ public class FetchRemoteTracesTest {
         SWTBotPreferences.KEYBOARD_LAYOUT = "EN_US";
         SWTBotUtils.initialize();
         SWTBotPreferences.TIMEOUT = 20000; /* 20 second timeout */
-        fLogger.removeAllAppenders();
-        fLogger.addAppender(new NullAppender());
         fBot = new SWTWorkbenchBot();
 
         /* finish waiting for eclipse to load */
@@ -168,7 +161,6 @@ public class FetchRemoteTracesTest {
     @AfterClass
     public static void afterClass() {
         clearProfiles();
-        fLogger.removeAllAppenders();
     }
 
     private static class TraceCountCondition extends DefaultCondition {

@@ -29,9 +29,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Logger;
-import org.apache.log4j.SimpleLayout;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.resource.ColorRegistry;
@@ -54,7 +51,6 @@ import org.eclipse.tracecompass.tmf.ui.swtbot.tests.shared.SWTBotUtils;
 import org.eclipse.tracecompass.tmf.ui.tests.shared.WaitUtils;
 import org.eclipse.ui.PlatformUI;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -82,8 +78,6 @@ public class FilterColorEditorTest {
 
     private static SWTWorkbenchBot fBot;
 
-    /** The Log4j logger instance. */
-    private static final Logger fLogger = Logger.getRootLogger();
     private SWTBotTable fTableBot;
     private static final int ROW = 8;
     /** Expected color values */
@@ -115,8 +109,6 @@ public class FilterColorEditorTest {
         SWTBotPreferences.TIMEOUT = 20000; /* 20 second timeout */
         SWTBotPreferences.KEYBOARD_LAYOUT = "EN_US";
 
-        fLogger.removeAllAppenders();
-        fLogger.addAppender(new ConsoleAppender(new SimpleLayout(), ConsoleAppender.SYSTEM_OUT));
         fBot = new SWTWorkbenchBot();
 
         /* Finish waiting for eclipse to load */
@@ -125,14 +117,6 @@ public class FilterColorEditorTest {
         ColorRegistry colorRegistry = PlatformUI.getWorkbench().getThemeManager().getCurrentTheme().getColorRegistry();
         fHighlight = ImageHelper.adjustExpectedColor(colorRegistry.get(HIGHLIGHT_COLOR_DEFINITION_ID).getRGB());
         fGreen = ImageHelper.adjustExpectedColor(GREEN);
-    }
-
-    /**
-     * Test class tear down method.
-     */
-    @AfterClass
-    public static void tearDown() {
-        fLogger.removeAllAppenders();
     }
 
     /**

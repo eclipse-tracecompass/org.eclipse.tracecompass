@@ -19,9 +19,6 @@ import static org.junit.Assert.fail;
 import java.io.File;
 import java.util.Arrays;
 
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Logger;
-import org.apache.log4j.SimpleLayout;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.swtbot.eclipse.finder.SWTWorkbenchBot;
@@ -42,7 +39,6 @@ import org.eclipse.tracecompass.tmf.ui.swtbot.tests.shared.ConditionHelpers;
 import org.eclipse.tracecompass.tmf.ui.swtbot.tests.shared.SWTBotUtils;
 import org.eclipse.tracecompass.tmf.ui.tests.shared.WaitUtils;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -56,8 +52,6 @@ import org.junit.runner.RunWith;
 @RunWith(SWTBotJunit4ClassRunner.class)
 public class XMLAnalysesManagerPreferencePageTest {
 
-    /** The Log4j logger instance. */
-    private static final Logger fLogger = Logger.getRootLogger();
     /** Default project name */
     protected static final String TRACE_PROJECT_NAME = "xml-test";
     /** XML files */
@@ -102,8 +96,6 @@ public class XMLAnalysesManagerPreferencePageTest {
         /* set up for swtbot */
         SWTBotPreferences.TIMEOUT = 20000; /* 20 second timeout */
         SWTBotPreferences.KEYBOARD_LAYOUT = "EN_US";
-        fLogger.removeAllAppenders();
-        fLogger.addAppender(new ConsoleAppender(new SimpleLayout(), ConsoleAppender.SYSTEM_OUT));
         fBot = new SWTWorkbenchBot();
     }
 
@@ -374,14 +366,6 @@ public class XMLAnalysesManagerPreferencePageTest {
             deleteShell.bot().button("Yes").click();
         }
         SWTBotUtils.pressOKishButtonInPreferences(bot);
-    }
-
-    /**
-     * After Class for cleanup
-     */
-    @AfterClass
-    public static void afterClass() {
-        fLogger.removeAllAppenders();
     }
 
     private static String[] getRelativePaths(String folder, String[] files) {

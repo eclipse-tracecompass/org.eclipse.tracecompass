@@ -9,8 +9,7 @@ Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-11
 Export-Package: org.eclipse.tracecompass.analysis.os.linux.ui.swtbot.tests.latency,
  org.eclipse.tracecompass.analysis.os.linux.ui.swtbot.tests.perf.views
-Require-Bundle: org.apache.log4j,
- org.eclipse.core.resources,
+Require-Bundle: org.eclipse.core.resources,
  org.eclipse.core.runtime,
  org.eclipse.tracecompass.tmf.core,
  org.eclipse.tracecompass.tmf.core.tests,
@@ -38,5 +37,6 @@ Require-Bundle: org.apache.log4j,
 Import-Package: com.google.common.collect,
  org.apache.commons.io,
  org.eclipse.swtchart,
- org.eclipse.tracecompass.testtraces.ctf
+ org.eclipse.tracecompass.testtraces.ctf,
+ org.slf4j
 Automatic-Module-Name: org.eclipse.tracecompass.analysis.os.linux.ui.swtbot.tests

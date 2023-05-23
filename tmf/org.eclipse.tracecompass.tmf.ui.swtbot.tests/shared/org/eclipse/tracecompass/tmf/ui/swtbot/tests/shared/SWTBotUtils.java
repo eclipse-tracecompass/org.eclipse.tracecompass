@@ -20,20 +20,20 @@ import static org.eclipse.swtbot.swt.finder.matchers.WidgetMatcherFactory.widget
 import static org.eclipse.swtbot.swt.finder.matchers.WidgetMatcherFactory.withMnemonic;
 import static org.eclipse.swtbot.swt.finder.matchers.WidgetMatcherFactory.withStyle;
 import static org.eclipse.swtbot.swt.finder.matchers.WidgetMatcherFactory.withText;
-import static org.eclipse.tracecompass.common.core.NonNullUtils.checkNotNull;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.TimeZone;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-import org.apache.log4j.Logger;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.NotEnabledException;
 import org.eclipse.core.commands.NotHandledException;
@@ -82,7 +82,6 @@ import org.eclipse.swtbot.swt.finder.keyboard.Keystrokes;
 import org.eclipse.swtbot.swt.finder.results.IntResult;
 import org.eclipse.swtbot.swt.finder.results.Result;
 import org.eclipse.swtbot.swt.finder.results.VoidResult;
-import org.eclipse.swtbot.swt.finder.utils.MessageFormat;
 import org.eclipse.swtbot.swt.finder.utils.SWTBotPreferences;
 import org.eclipse.swtbot.swt.finder.utils.SWTUtils;
 import org.eclipse.swtbot.swt.finder.waits.Conditions;
@@ -126,6 +125,8 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.WorkbenchException;
 import org.eclipse.ui.handlers.IHandlerService;
 import org.hamcrest.Matcher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 
@@ -141,7 +142,7 @@ public final class SWTBotUtils {
     private static final String PREFERENCES_MENU_ITEM = "Preferences";
     private static final String PREFERENCES_SHELL = "Preferences";
     private static boolean fPrintedEnvironment = false;
-    private static Logger log = Logger.getLogger(SWTBotUtils.class);
+    private static Logger log = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
     private static final int ACTIVE_EDITOR_TIMEOUT = 120000;
     private static final int DELETE_PROJECT_TIMEOUT = 240000;
 
@@ -891,7 +892,7 @@ public final class SWTBotUtils {
      */
     public static Rectangle getBoundsToDisplay(AbstractSWTBot<?> bot) {
         if (bot.widget instanceof Control) {
-            final Control control = checkNotNull((Control) bot.widget);
+            final Control control = Objects.requireNonNull((Control) bot.widget);
             return UIThreadRunnable.syncExec(new Result<Rectangle>() {
                 @Override
                 public Rectangle run() {

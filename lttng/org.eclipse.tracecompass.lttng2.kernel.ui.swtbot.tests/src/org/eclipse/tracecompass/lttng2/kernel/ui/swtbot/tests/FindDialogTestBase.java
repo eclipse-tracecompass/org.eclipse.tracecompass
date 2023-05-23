@@ -15,9 +15,6 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Logger;
-import org.apache.log4j.SimpleLayout;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jface.bindings.keys.KeyStroke;
@@ -76,8 +73,6 @@ public abstract class FindDialogTestBase {
     /** The workbench bot */
     protected static SWTWorkbenchBot fBot;
 
-    /** The Log4j logger instance. */
-    private static final Logger fLogger = Logger.getRootLogger();
     private static final @NonNull ITmfTimestamp START_TIME = TmfTimestamp.create(1412670961211260539L, ITmfTimestamp.NANOSECOND_SCALE);
     private static final @NonNull String SPACE = " ";
     private static final String REGEX_PREFIX = "\\A";
@@ -115,8 +110,6 @@ public abstract class FindDialogTestBase {
         /* set up for swtbot */
         SWTBotPreferences.TIMEOUT = 20000; /* 20 second timeout */
         SWTBotPreferences.KEYBOARD_LAYOUT = "EN_US";
-        fLogger.removeAllAppenders();
-        fLogger.addAppender(new ConsoleAppender(new SimpleLayout(), ConsoleAppender.SYSTEM_OUT));
         fBot = new SWTWorkbenchBot();
         SWTBotUtils.closeView("welcome", fBot);
         /* Switch perspectives */
@@ -136,7 +129,6 @@ public abstract class FindDialogTestBase {
     @AfterClass
     public static void afterClass() {
         SWTBotUtils.deleteProject(TRACE_PROJECT_NAME, fBot);
-        fLogger.removeAllAppenders();
     }
 
     /**

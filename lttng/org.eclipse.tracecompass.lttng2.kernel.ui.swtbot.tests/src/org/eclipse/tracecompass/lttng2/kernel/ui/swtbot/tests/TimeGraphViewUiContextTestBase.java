@@ -17,9 +17,6 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Logger;
-import org.apache.log4j.SimpleLayout;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
@@ -66,9 +63,6 @@ public abstract class TimeGraphViewUiContextTestBase {
     /** The workbench bot */
     protected static SWTWorkbenchBot fBot;
 
-    /** The Log4j logger instance. */
-    private static final Logger fLogger = Logger.getRootLogger();
-
     /**
      * Before Class
      *
@@ -82,8 +76,6 @@ public abstract class TimeGraphViewUiContextTestBase {
         /* set up for swtbot */
         SWTBotPreferences.TIMEOUT = 20000; /* 20 second timeout */
         SWTBotPreferences.KEYBOARD_LAYOUT = "EN_US";
-        fLogger.removeAllAppenders();
-        fLogger.addAppender(new ConsoleAppender(new SimpleLayout(), ConsoleAppender.SYSTEM_OUT));
         fBot = new SWTWorkbenchBot();
         SWTBotUtils.closeView("welcome", fBot);
         /* Switch perspectives */
@@ -100,7 +92,6 @@ public abstract class TimeGraphViewUiContextTestBase {
     @AfterClass
     public static void afterClass() {
         SWTBotUtils.deleteProject(TRACE_PROJECT_NAME, fBot);
-        fLogger.removeAllAppenders();
     }
 
     /**

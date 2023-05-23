@@ -19,9 +19,6 @@ import static org.junit.Assert.assertNotNull;
 import java.io.File;
 import java.io.IOException;
 
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Logger;
-import org.apache.log4j.SimpleLayout;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.swtbot.eclipse.finder.SWTWorkbenchBot;
@@ -76,8 +73,6 @@ public class FilterViewerTest {
 
     private static final String PROJECT_NAME = "TestForFiltering";
 
-    /** The Log4j logger instance. */
-    private static final Logger fLogger = Logger.getRootLogger();
     private static final String OR = "OR";
     private static SWTWorkbenchBot fBot;
 
@@ -103,8 +98,6 @@ public class FilterViewerTest {
         Thread.currentThread().setName("SWTBot Thread"); // for the debugger
         /* set up for swtbot */
         SWTBotPreferences.TIMEOUT = 20000; /* 20 second timeout */
-        fLogger.removeAllAppenders();
-        fLogger.addAppender(new ConsoleAppender(new SimpleLayout()));
         fBot = new SWTWorkbenchBot();
 
         /* finish waiting for eclipse to load */
@@ -139,7 +132,6 @@ public class FilterViewerTest {
     public static void cleanUp() {
         fFileLocation.delete();
         SWTBotUtils.deleteProject(PROJECT_NAME, fBot);
-        fLogger.removeAllAppenders();
         SWTBotUtils.closeViewById(FilterView.ID, fBot);
 
         IEclipsePreferences defaultPreferences = InstanceScope.INSTANCE.getNode(Activator.PLUGIN_ID);

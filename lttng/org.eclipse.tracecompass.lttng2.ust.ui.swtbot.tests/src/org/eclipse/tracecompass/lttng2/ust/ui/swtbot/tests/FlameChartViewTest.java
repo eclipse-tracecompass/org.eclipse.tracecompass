@@ -24,9 +24,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Logger;
-import org.apache.log4j.SimpleLayout;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.swtbot.eclipse.finder.SWTWorkbenchBot;
@@ -57,7 +54,6 @@ import org.eclipse.tracecompass.tmf.ui.tests.shared.WaitUtils;
 import org.eclipse.tracecompass.tmf.ui.views.timegraph.AbstractTimeGraphView;
 import org.eclipse.ui.IWorkbenchPart;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -79,8 +75,6 @@ public class FlameChartViewTest {
     private static final String PROCESS = "UNKNOWN";
     private static final @NonNull String THREAD = "glxgears-16073";
 
-    /** The Log4j logger instance. */
-    private static final Logger sfLogger = Logger.getRootLogger();
     private static SWTWorkbenchBot sfBot;
 
     /**
@@ -175,21 +169,11 @@ public class FlameChartViewTest {
         Thread.currentThread().setName("SWTBot Thread"); // for the debugger
         /* set up for swtbot */
         SWTBotPreferences.TIMEOUT = 20000; /* 20 second timeout */
-        sfLogger.removeAllAppenders();
-        sfLogger.addAppender(new ConsoleAppender(new SimpleLayout()));
         sfBot = new SWTWorkbenchBot();
 
         SWTBotUtils.closeView("Statistics", sfBot);
         /* finish waiting for eclipse to load */
         WaitUtils.waitForJobs();
-    }
-
-    /**
-     * Clean up
-     */
-    @AfterClass
-    public static void afterClass() {
-        sfLogger.removeAllAppenders();
     }
 
     /**

@@ -7,8 +7,7 @@ Bundle-Localization: plugin
 Bundle-SymbolicName: org.eclipse.tracecompass.lttng2.ust.ui.swtbot.tests;singleton:=true
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-11
-Require-Bundle: org.apache.log4j,
- org.eclipse.core.resources,
+Require-Bundle: org.eclipse.core.resources,
  org.eclipse.core.runtime,
  org.eclipse.tracecompass.analysis.os.linux.ui,
  org.eclipse.tracecompass.tmf.core,
@@ -36,5 +35,6 @@ Import-Package: com.google.common.base,
  org.apache.commons.io,
  org.eclipse.swtchart,
  org.eclipse.tracecompass.common.core,
- org.eclipse.tracecompass.testtraces.ctf
+ org.eclipse.tracecompass.testtraces.ctf,
+ org.slf4j
 Automatic-Module-Name: org.eclipse.tracecompass.lttng2.ust.ui.swtbot.tests

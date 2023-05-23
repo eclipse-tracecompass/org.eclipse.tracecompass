@@ -22,9 +22,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Logger;
-import org.apache.log4j.SimpleLayout;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -39,7 +36,6 @@ import org.eclipse.swtbot.swt.finder.widgets.SWTBotCheckBox;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotMenu;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotRootMenu;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTable;
-import org.eclipse.tracecompass.common.core.NonNullUtils;
 import org.eclipse.tracecompass.internal.provisional.tmf.chart.core.chart.ChartType;
 import org.eclipse.tracecompass.internal.provisional.tmf.chart.core.descriptor.DataChartDurationDescriptor;
 import org.eclipse.tracecompass.internal.provisional.tmf.chart.core.descriptor.DataChartNumericalDescriptor;
@@ -54,7 +50,6 @@ import org.eclipse.tracecompass.tmf.chart.ui.swtbot.tests.shared.SWTBotCustomCha
 import org.eclipse.tracecompass.tmf.chart.ui.swtbot.tests.shared.SWTBotCustomChartUtils.AxisType;
 import org.eclipse.tracecompass.tmf.ui.swtbot.tests.shared.SWTBotUtils;
 import org.eclipse.tracecompass.tmf.ui.tests.shared.WaitUtils;
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -67,9 +62,6 @@ import org.junit.runner.RunWith;
 @NonNullByDefault
 @RunWith(SWTBotJunit4ClassRunner.class)
 public class ChartMakerDialogTest {
-
-    /** The Log4j logger instance. */
-    private static final Logger fLogger = NonNullUtils.checkNotNull(Logger.getRootLogger());
 
     private final SWTWorkbenchBot fBot = new SWTWorkbenchBot();
 
@@ -86,20 +78,10 @@ public class ChartMakerDialogTest {
         /* set up for swtbot */
         SWTBotPreferences.TIMEOUT = 20000; /* 20 second timeout */
         SWTBotPreferences.KEYBOARD_LAYOUT = "EN_US";
-        fLogger.removeAllAppenders();
-        fLogger.addAppender(new ConsoleAppender(new SimpleLayout(), ConsoleAppender.SYSTEM_OUT));
         /* Finish waiting for eclipse to load */
         WaitUtils.waitForJobs();
         SWTBotUtils.openView(CustomChartStubView.ID);
         CustomChartStubView.setChartProvider(CHART_PROVIDER);
-    }
-
-    /**
-     * Clean up
-     */
-    @AfterClass
-    public static void afterClass() {
-        fLogger.removeAllAppenders();
     }
 
     private void openDialog() {

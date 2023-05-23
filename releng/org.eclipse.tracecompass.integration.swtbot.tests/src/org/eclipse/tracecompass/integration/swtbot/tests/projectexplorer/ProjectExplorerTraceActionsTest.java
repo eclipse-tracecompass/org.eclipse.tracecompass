@@ -21,9 +21,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Logger;
-import org.apache.log4j.SimpleLayout;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -100,9 +97,6 @@ public class ProjectExplorerTraceActionsTest {
 
     private static SWTWorkbenchBot fBot;
 
-    /** The Log4j logger instance. */
-    private static final Logger fLogger = Logger.getRootLogger();
-
     private static final long DISK_ACCESS_TIMEOUT = 120000L;
 
     private static final File TEST_TRACES_PATH = new File(new Path(TmfTraceManager.getTemporaryDirPath()).append("testtraces").toOSString());
@@ -137,8 +131,6 @@ public class ProjectExplorerTraceActionsTest {
         /* Set up for swtbot */
         SWTBotPreferences.TIMEOUT = 20000; /* 20 second timeout */
         SWTBotPreferences.KEYBOARD_LAYOUT = "EN_US";
-        fLogger.removeAllAppenders();
-        fLogger.addAppender(new ConsoleAppender(new SimpleLayout(), ConsoleAppender.SYSTEM_OUT));
         fBot = new SWTWorkbenchBot();
 
         /* Finish waiting for eclipse to load */
@@ -152,7 +144,6 @@ public class ProjectExplorerTraceActionsTest {
     @AfterClass
     public static void tearDown() {
         SWTBotUtils.deleteProject(TRACE_PROJECT_NAME, fBot);
-        fLogger.removeAllAppenders();
     }
 
     /**

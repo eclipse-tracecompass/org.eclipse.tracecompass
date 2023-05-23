@@ -290,6 +290,26 @@
               </environmentVariables>
             </configuration>
           </plugin>
+          <plugin>
+            <groupId>org.eclipse.tycho</groupId>
+            <artifactId>target-platform-configuration</artifactId>
+            <configuration>
+              <dependency-resolution>
+                <extraRequirements>
+                  <requirement>
+                    <type>eclipse-plugin</type>
+                    <id>org.slf4j.binding.simple</id>
+                    <versionRange>1.7.30</versionRange>
+                  </requirement>
+                  <requirement>
+                    <type>eclipse-plugin</type>
+                    <id>org.eclipse.tracecompass.slf4j.binding.simple.properties</id>
+                    <versionRange>1.0.0</versionRange>
+                  </requirement>
+                </extraRequirements>
+              </dependency-resolution>
+            </configuration>
+          </plugin>
         </plugins>
       </build>
     </profile>

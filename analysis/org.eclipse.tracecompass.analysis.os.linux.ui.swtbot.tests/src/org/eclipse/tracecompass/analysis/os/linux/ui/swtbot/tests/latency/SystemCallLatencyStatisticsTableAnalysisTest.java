@@ -25,9 +25,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Logger;
-import org.apache.log4j.SimpleLayout;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.swtbot.eclipse.finder.SWTWorkbenchBot;
@@ -48,7 +45,6 @@ import org.eclipse.tracecompass.tmf.ui.tests.shared.WaitUtils;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IViewReference;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -72,8 +68,6 @@ public class SystemCallLatencyStatisticsTableAnalysisTest {
     private static final String PRIMARY_VIEW_ID = SegmentStoreStatisticsView.ID;
     private static final String SECONDARY_VIEW_ID = SystemCallLatencyAnalysis.ID;
 
-    /** The Log4j logger instance. */
-    private static final Logger fLogger = Logger.getRootLogger();
     private SWTBotTree fTreeBot;
     private static SWTWorkbenchBot fBot;
 
@@ -87,20 +81,10 @@ public class SystemCallLatencyStatisticsTableAnalysisTest {
         /* set up for swtbot */
         SWTBotPreferences.TIMEOUT = 20000; /* 20 second timeout */
         SWTBotPreferences.KEYBOARD_LAYOUT = "EN_US";
-        fLogger.removeAllAppenders();
-        fLogger.addAppender(new ConsoleAppender(new SimpleLayout(), ConsoleAppender.SYSTEM_OUT));
         fBot = new SWTWorkbenchBot();
         /* Finish waiting for eclipse to load */
         WaitUtils.waitForJobs();
 
-    }
-
-    /**
-     * Clean up
-     */
-    @AfterClass
-    public static void afterClass() {
-        fLogger.removeAllAppenders();
     }
 
     /**

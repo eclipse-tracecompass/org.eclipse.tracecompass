@@ -25,9 +25,6 @@ import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Logger;
-import org.apache.log4j.SimpleLayout;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jface.bindings.keys.KeyStroke;
 import org.eclipse.swt.SWT;
@@ -101,8 +98,6 @@ import com.google.common.collect.Multisets;
  */
 @RunWith(SWTBotJunit4ClassRunner.class)
 public class TimeGraphViewTest {
-
-    private static final Logger fLogger = Logger.getRootLogger();
 
     private static RGB fHair;
     private static RGB fHat;
@@ -191,8 +186,6 @@ public class TimeGraphViewTest {
         SWTBotUtils.initialize();
         SWTBotPreferences.TIMEOUT = 20000; /* 20 second timeout */
         SWTBotPreferences.KEYBOARD_LAYOUT = "EN_US";
-        fLogger.removeAllAppenders();
-        fLogger.addAppender(new ConsoleAppender(new SimpleLayout(), ConsoleAppender.SYSTEM_OUT));
         fHair = ImageHelper.adjustExpectedColor(new RGB(0, 64, 128));
         fHat = ImageHelper.adjustExpectedColor(new RGB(0, 255, 0));
         fLaser = ImageHelper.adjustExpectedColor(new RGB(255, 0, 0));
@@ -321,7 +314,6 @@ public class TimeGraphViewTest {
     public static void afterClass() {
         SWTWorkbenchBot bot = new SWTWorkbenchBot();
         bot.closeAllEditors();
-        fLogger.removeAllAppenders();
     }
 
     /**

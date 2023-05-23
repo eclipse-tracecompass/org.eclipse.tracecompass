@@ -23,9 +23,6 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Logger;
-import org.apache.log4j.SimpleLayout;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResourceChangeListener;
@@ -63,9 +60,6 @@ public class ProjectExplorerRefreshTest {
     private static final String TRACE_PROJECT_NAME = "test";
     private static final String C_PROJECT_NAME = "c-project";
 
-    /** The Log4j logger instance. */
-    private static final Logger fLogger = Logger.getRootLogger();
-
     private static final long DISK_ACCESS_TIMEOUT = 120000L;
 
     private static final File TEST_TRACES_PATH = new File(new Path(TmfTraceManager.getTemporaryDirPath()).append("testtraces").toOSString());
@@ -98,8 +92,6 @@ public class ProjectExplorerRefreshTest {
         /* Set up for SWTBot */
         SWTBotPreferences.TIMEOUT = 20000; /* 20 second timeout */
         SWTBotPreferences.KEYBOARD_LAYOUT = "EN_US";
-        fLogger.removeAllAppenders();
-        fLogger.addAppender(new ConsoleAppender(new SimpleLayout(), ConsoleAppender.SYSTEM_OUT));
         fBot = new SWTWorkbenchBot();
 
         /* Finish waiting for eclipse to load */
@@ -122,7 +114,6 @@ public class ProjectExplorerRefreshTest {
     public static void tearDown() {
         SWTBotUtils.deleteProject(TRACE_PROJECT_NAME, fBot);
         SWTBotUtils.deleteProject(C_PROJECT_NAME, fBot);
-        fLogger.removeAllAppenders();
     }
 
     /**

@@ -32,6 +32,7 @@
     <module>org.eclipse.tracecompass.integration.core.tests</module>
     <module>org.eclipse.tracecompass.integration.swtbot.tests</module>
     <module>org.eclipse.tracecompass.releng-site</module>
+    <module>org.eclipse.tracecompass.slf4j.binding.simple.properties</module>
     <module>org.eclipse.tracecompass.testing</module>
   </modules>
 </project>

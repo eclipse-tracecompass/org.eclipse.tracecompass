@@ -21,8 +21,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.varia.NullAppender;
 import org.eclipse.swtbot.eclipse.finder.SWTWorkbenchBot;
 import org.eclipse.swtbot.eclipse.finder.widgets.SWTBotEditor;
 import org.eclipse.swtbot.swt.finder.junit.SWTBotJunit4ClassRunner;
@@ -35,7 +33,6 @@ import org.eclipse.tracecompass.tmf.ui.swtbot.tests.shared.ConditionHelpers;
 import org.eclipse.tracecompass.tmf.ui.swtbot.tests.shared.SWTBotUtils;
 import org.eclipse.tracecompass.tmf.ui.tests.shared.WaitUtils;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -62,9 +59,6 @@ public class TestRefreshTextTrace {
     private static final String TRACE_LOCATION = TmfTraceManager.getTemporaryDirPath() + File.separator + "test.txt";
     private static SWTWorkbenchBot fBot;
 
-    /** The Log4j logger instance. */
-    private static final Logger fLogger = Logger.getRootLogger();
-
     private long fNbWrittenEvents = 0;
 
     /** Test Class setup */
@@ -73,20 +67,10 @@ public class TestRefreshTextTrace {
         SWTBotPreferences.KEYBOARD_LAYOUT = "EN_US";
         SWTBotUtils.initialize();
         SWTBotPreferences.TIMEOUT = 20000; /* 20 second timeout */
-        fLogger.removeAllAppenders();
-        fLogger.addAppender(new NullAppender());
         fBot = new SWTWorkbenchBot();
 
         /* finish waiting for eclipse to load */
         WaitUtils.waitForJobs();
-    }
-
-    /**
-     * Clean up
-     */
-    @AfterClass
-    public static void afterClass() {
-        fLogger.removeAllAppenders();
     }
 
     /**

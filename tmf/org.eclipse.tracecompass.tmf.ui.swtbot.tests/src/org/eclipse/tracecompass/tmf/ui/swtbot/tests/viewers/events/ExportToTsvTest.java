@@ -27,9 +27,6 @@ import java.net.URL;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Logger;
-import org.apache.log4j.SimpleLayout;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -105,10 +102,6 @@ public class ExportToTsvTest {
     private @Nullable SWTBotEditor fEditorBot;
     private @Nullable String fAbsolutePath;
 
-    /** The Log4j logger instance. */
-    @SuppressWarnings("null")
-    private static final Logger fLogger = Logger.getRootLogger();
-
     /**
      * Test Class setup
      */
@@ -133,8 +126,6 @@ public class ExportToTsvTest {
         /* Set up for swtbot */
         SWTBotPreferences.TIMEOUT = TIMEOUT;
         SWTBotPreferences.KEYBOARD_LAYOUT = "EN_US";
-        fLogger.removeAllAppenders();
-        fLogger.addAppender(new ConsoleAppender(new SimpleLayout(), ConsoleAppender.SYSTEM_OUT));
         fBot = new SWTWorkbenchBot();
 
         /* Finish waiting for eclipse to load */
@@ -149,7 +140,6 @@ public class ExportToTsvTest {
     @AfterClass
     public static void afterClass() {
         SWTBotUtils.deleteProject(TRACE_PROJECT_NAME, fBot);
-        fLogger.removeAllAppenders();
     }
 
     /**

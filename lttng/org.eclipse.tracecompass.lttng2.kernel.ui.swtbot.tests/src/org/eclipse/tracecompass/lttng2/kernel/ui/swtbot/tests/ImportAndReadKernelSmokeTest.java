@@ -37,7 +37,6 @@ import org.eclipse.swtbot.eclipse.finder.SWTWorkbenchBot;
 import org.eclipse.swtbot.eclipse.finder.matchers.WidgetMatcherFactory;
 import org.eclipse.swtbot.eclipse.finder.widgets.SWTBotView;
 import org.eclipse.swtbot.swt.finder.finders.UIThreadRunnable;
-import org.eclipse.swtbot.swt.finder.junit.SWTBotJunit4ClassRunner;
 import org.eclipse.swtbot.swt.finder.results.VoidResult;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotToolbarButton;
 import org.eclipse.tracecompass.internal.analysis.os.linux.ui.views.controlflow.ControlFlowView;
@@ -64,7 +63,6 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.hamcrest.Matcher;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import com.google.common.collect.ImmutableSet;
 
@@ -73,7 +71,6 @@ import com.google.common.collect.ImmutableSet;
  *
  * @author Matthew Khouzam
  */
-@RunWith(SWTBotJunit4ClassRunner.class)
 public class ImportAndReadKernelSmokeTest extends KernelTestBase {
 
     private static final @NonNull Set<Entry<String, Set<String>>> EXPECTED_ANALYSES;

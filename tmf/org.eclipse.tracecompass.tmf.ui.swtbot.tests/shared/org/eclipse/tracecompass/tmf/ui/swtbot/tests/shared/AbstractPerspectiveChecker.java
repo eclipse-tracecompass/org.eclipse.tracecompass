@@ -21,8 +21,6 @@ import static org.junit.Assert.assertTrue;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.varia.NullAppender;
 import org.eclipse.swtbot.eclipse.finder.SWTWorkbenchBot;
 import org.eclipse.swtbot.eclipse.finder.widgets.SWTBotView;
 import org.eclipse.swtbot.swt.finder.junit.SWTBotJunit4ClassRunner;
@@ -31,7 +29,6 @@ import org.eclipse.tracecompass.tmf.ui.tests.shared.WaitUtils;
 import org.eclipse.ui.IViewReference;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,8 +42,6 @@ import org.junit.runner.RunWith;
 public abstract class AbstractPerspectiveChecker {
 
     private static SWTWorkbenchBot fBot;
-    /** The Log4j logger instance. */
-    private static final Logger fLogger = Logger.getRootLogger();
 
     /**
      * The perspective id
@@ -64,20 +59,10 @@ public abstract class AbstractPerspectiveChecker {
 
         /* set up for swtbot */
         SWTBotPreferences.TIMEOUT = 50000; /* 50 second timeout */
-        fLogger.removeAllAppenders();
-        fLogger.addAppender(new NullAppender());
         fBot = new SWTWorkbenchBot();
 
         SWTBotUtils.closeView("welcome", fBot);
 
-    }
-
-    /**
-     * Test Class teardown
-     */
-    @AfterClass
-    public static void terminate() {
-        fLogger.removeAllAppenders();
     }
 
     /**

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><?pde version="3.8"?><target name="tracecompass-e4.23" sequenceNumber="14">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><?pde version="3.8"?><target name="tracecompass-e4.23" sequenceNumber="15">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.cdt.gnu.dsf.feature.group" version="0.0.0"/>
@@ -9,7 +9,7 @@
 <unit id="org.eclipse.swtbot.eclipse.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.swtbot.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.swtbot.generator.feature.feature.group" version="0.0.0"/>
-<repository location="https://download.eclipse.org/technology/swtbot/releases/3.1.0/"/>
+<repository location="https://download.eclipse.org/technology/swtbot/releases/4.0.0/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.remote.core" version="0.0.0"/>
@@ -19,6 +19,11 @@
 <repository location="https://download.eclipse.org/tools/ptp/builds/remote/3.0/2021-09/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="com.google.guava" version="30.1.0.v20210127-2300"/>
+<unit id="jakarta.xml.bind" version="2.3.3.v20201118-1818"/>
+<unit id="javax.activation" version="1.1.0.v201211130549"/>
+<unit id="javax.xml.bind" version="0.0.0"/>
+<unit id="javax.xml.stream" version="0.0.0"/>
 <unit id="org.antlr.runtime" version="3.2.0.v201101311130"/>
 <unit id="org.antlr.runtime.source" version="3.2.0.v201101311130"/>
 <unit id="org.apache.commons.cli" version="0.0.0"/>
@@ -26,17 +31,13 @@
 <unit id="org.apache.commons.io" version="0.0.0"/>
 <unit id="org.apache.commons.lang" version="0.0.0"/>
 <unit id="org.apache.commons.lang3" version="0.0.0"/>
-<unit id="org.apache.xml.serializer" version="0.0.0"/>
-<unit id="com.google.guava" version="30.1.0.v20210127-2300"/>
-<unit id="org.json" version="0.0.0"/>
 <unit id="org.apache.derby" version="0.0.0"/>
+<unit id="org.apache.xml.serializer" version="0.0.0"/>
 <unit id="org.hamcrest" version="0.0.0"/>
-<unit id="jakarta.xml.bind" version="2.3.3.v20201118-1818"/>
-<unit id="javax.xml.bind" version="0.0.0"/>
-<unit id="javax.activation" version="1.1.0.v201211130549"/>
-<unit id="javax.xml.stream" version="0.0.0"/>
-<unit id="org.slf4j.api" version="0.0.0"/>
+<unit id="org.json" version="0.0.0"/>
 <unit id="org.mozilla.javascript" version="1.7.10.v20190430-1943"/>
+<unit id="org.slf4j.api" version="0.0.0"/>
+<unit id="org.slf4j.binding.simple" version="0.0.0"/>
 <repository location="https://download.eclipse.org/tools/orbit/downloads/drops/R20220302172233/repository/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">

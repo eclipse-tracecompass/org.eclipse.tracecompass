@@ -14,9 +14,6 @@ package org.eclipse.tracecompass.tmf.ui.swtbot.tests.views.xychart;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Logger;
-import org.apache.log4j.SimpleLayout;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.swtbot.eclipse.finder.SWTWorkbenchBot;
 import org.eclipse.swtbot.eclipse.finder.widgets.SWTBotView;
@@ -25,6 +22,9 @@ import org.eclipse.swtbot.swt.finder.junit.SWTBotJunit4ClassRunner;
 import org.eclipse.swtbot.swt.finder.utils.SWTBotPreferences;
 import org.eclipse.swtbot.swt.finder.waits.DefaultCondition;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotToolbarButton;
+import org.eclipse.swtchart.Chart;
+import org.eclipse.swtchart.ISeries;
+import org.eclipse.swtchart.ISeriesSet;
 import org.eclipse.tracecompass.tmf.core.event.ITmfEvent;
 import org.eclipse.tracecompass.tmf.core.exceptions.TmfTraceException;
 import org.eclipse.tracecompass.tmf.core.signal.TmfSelectionRangeUpdatedSignal;
@@ -49,17 +49,12 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.eclipse.swtchart.Chart;
-import org.eclipse.swtchart.ISeries;
-import org.eclipse.swtchart.ISeriesSet;
 
 /**
  * Test for XY Chart views in Trace Compass.
  */
 @RunWith(SWTBotJunit4ClassRunner.class)
 public class XYChartViewTest {
-
-    private static final Logger fLogger = Logger.getRootLogger();
 
     private SWTBotView fViewBot;
 
@@ -79,8 +74,6 @@ public class XYChartViewTest {
         SWTBotUtils.initialize();
         SWTBotPreferences.TIMEOUT = 20000; /* 20 second timeout */
         SWTBotPreferences.KEYBOARD_LAYOUT = "EN_US";
-        fLogger.removeAllAppenders();
-        fLogger.addAppender(new ConsoleAppender(new SimpleLayout(), ConsoleAppender.SYSTEM_OUT));
     }
 
     /**
@@ -166,7 +159,6 @@ public class XYChartViewTest {
     public static void afterClass() {
         SWTWorkbenchBot bot = new SWTWorkbenchBot();
         bot.closeAllEditors();
-        fLogger.removeAllAppenders();
     }
 
     /**

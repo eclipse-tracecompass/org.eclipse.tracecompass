@@ -18,16 +18,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Logger;
-import org.apache.log4j.SimpleLayout;
 import org.eclipse.swtbot.eclipse.finder.SWTWorkbenchBot;
 import org.eclipse.swtbot.swt.finder.utils.SWTBotPreferences;
 import org.eclipse.swtbot.swt.finder.waits.DefaultCondition;
 import org.eclipse.tracecompass.tmf.core.io.BufferedRandomAccessFile;
 import org.eclipse.tracecompass.tmf.ui.swtbot.tests.shared.SWTBotUtils;
 import org.eclipse.tracecompass.tmf.ui.tests.shared.WaitUtils;
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
 /**
@@ -36,9 +32,6 @@ import org.junit.BeforeClass;
  * @author Matthew Khouzam
  */
 public class AbstractCustomParserWizard {
-
-    /** The Log4j logger instance. */
-    private static final Logger fLogger = Logger.getRootLogger();
 
     /**
      * The SWTBot running the test
@@ -52,20 +45,10 @@ public class AbstractCustomParserWizard {
         Thread.currentThread().setName("SWTBot Thread"); // for the debugger
         /* set up for swtbot */
         SWTBotPreferences.TIMEOUT = 20000; /* 20 second timeout */
-        fLogger.removeAllAppenders();
-        fLogger.addAppender(new ConsoleAppender(new SimpleLayout()));
         fBot = new SWTWorkbenchBot();
 
         /* finish waiting for eclipse to load */
         WaitUtils.waitForJobs();
-    }
-
-    /**
-     * Test Class teardown
-     */
-    @AfterClass
-    public static void terminate() {
-        fLogger.removeAllAppenders();
     }
 
     /**

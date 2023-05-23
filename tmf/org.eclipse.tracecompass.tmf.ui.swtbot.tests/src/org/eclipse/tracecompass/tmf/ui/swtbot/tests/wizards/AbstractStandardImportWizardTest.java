@@ -12,8 +12,6 @@ package org.eclipse.tracecompass.tmf.ui.swtbot.tests.wizards;
 
 import static org.junit.Assert.assertNotNull;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.varia.NullAppender;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardDialog;
@@ -31,7 +29,6 @@ import org.eclipse.tracecompass.tmf.ui.tests.shared.WaitUtils;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
 /**
@@ -54,9 +51,6 @@ public abstract class AbstractStandardImportWizardTest {
      */
     private static SWTWorkbenchBot fBot;
 
-    /** The Log4j logger instance. */
-    private static final Logger fLogger = Logger.getRootLogger();
-
     /**
      * Class setup
      */
@@ -64,16 +58,6 @@ public abstract class AbstractStandardImportWizardTest {
     public static void init() {
         SWTBotUtils.initialize();
         fBot = new SWTWorkbenchBot();
-        fLogger.removeAllAppenders();
-        fLogger.addAppender(new NullAppender());
-    }
-
-    /**
-     * Class teardown
-     */
-    @AfterClass
-    public static void terminate() {
-        fLogger.removeAllAppenders();
     }
 
     /**
