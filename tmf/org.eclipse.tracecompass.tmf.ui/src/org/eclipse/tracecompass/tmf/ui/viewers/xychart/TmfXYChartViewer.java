@@ -162,6 +162,7 @@ public abstract class TmfXYChartViewer extends TmfTimeViewer implements ITmfChar
                 return fSwtChart.getPlotArea().getControl().forceFocus();
             }
         };
+        fSwtChart.getAxisSet().getYAxis(0).setDrawAxisLine(false);
         fSwtChart.getAxisSet().getXAxis(0).getGrid().setStyle(LineStyle.NONE);
         fSwtChart.getPlotArea().addCustomPaintListener(new ICustomPaintListener() {
 
