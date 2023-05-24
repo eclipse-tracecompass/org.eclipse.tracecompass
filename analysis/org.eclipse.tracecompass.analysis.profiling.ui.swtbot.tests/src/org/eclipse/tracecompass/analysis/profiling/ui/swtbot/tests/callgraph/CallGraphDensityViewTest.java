@@ -20,7 +20,6 @@ import static org.junit.Assert.fail;
 import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.StreamSupport;
 
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Logger;
@@ -35,6 +34,7 @@ import org.eclipse.swtbot.swt.finder.utils.SWTBotPreferences;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTable;
 import org.eclipse.swtchart.ISeries;
 import org.eclipse.swtchart.model.CartesianSeriesModel;
+import org.eclipse.swtchart.model.DoubleArraySeriesModel;
 import org.eclipse.tracecompass.analysis.profiling.core.tests.flamegraph.AggregationTreeTest;
 import org.eclipse.tracecompass.analysis.timing.core.segmentstore.ISegmentStoreProvider;
 import org.eclipse.tracecompass.analysis.timing.ui.views.segmentstore.density2.AbstractSegmentStoreDensityViewer;
@@ -303,23 +303,29 @@ public class CallGraphDensityViewTest extends AggregationTreeTest {
         assertArrayEquals(expected, getYSeries(), 0.1);
     }
 
-    private ISeries<Integer> getSeries() {
+    private ISeries<?> getSeries() {
         AbstractSegmentStoreDensityViewer densityViewer = fDensityViewer;
         assertNotNull(densityViewer);
-        ISeries<Integer>[] serieses = densityViewer.getControl().getSeriesSet().getSeries();
+        ISeries<?>[] serieses = densityViewer.getControl().getSeriesSet().getSeries();
         assertNotNull(serieses);
         assertTrue(serieses.length > 0);
-        ISeries<Integer> series = serieses[0];
+        ISeries<?> series = serieses[0];
         assertNotNull(series);
         return series;
     }
 
     private double[] getYSeries() {
-        CartesianSeriesModel<Integer> dataModel = getSeries().getDataModel();
-        if (dataModel == null) {
+        CartesianSeriesModel<?> dataModel = getSeries().getDataModel();
+        if (!(dataModel instanceof DoubleArraySeriesModel)) {
             return new double[0];
         }
-        return StreamSupport.stream(dataModel.spliterator(), false).filter(t -> dataModel.getY(t) != null).mapToDouble(value -> dataModel.getY(value).doubleValue()).toArray();
+        DoubleArraySeriesModel model = (DoubleArraySeriesModel) dataModel;
+        int size = model.size();
+        double[] data = new double[size];
+        for (int index = 0; index < size; index++) {
+            data[index] = (double) model.getY(index);
+        }
+        return data;
     }
 
     private void loadData() {

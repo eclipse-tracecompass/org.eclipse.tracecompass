@@ -509,7 +509,7 @@ public final class SwtScatterChart extends SwtXYChartViewer {
             double closestDistance = -1.0;
 
             boolean found = false;
-            for (ISeries<Integer> swtSeries : getChart().getSeriesSet().getSeries()) {
+            for (ISeries<?> swtSeries : getChart().getSeriesSet().getSeries()) {
                 ILineSeries<Integer> series = (ILineSeries<Integer>) swtSeries;
                 Iterator<Integer> iterator = series.getDataModel().iterator();
                 while (iterator.hasNext()) {

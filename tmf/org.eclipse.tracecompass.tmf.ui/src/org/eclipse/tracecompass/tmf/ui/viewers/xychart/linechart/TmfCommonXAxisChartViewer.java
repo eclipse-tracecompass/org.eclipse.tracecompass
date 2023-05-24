@@ -494,8 +494,11 @@ public abstract class TmfCommonXAxisChartViewer extends TmfXYChartViewer {
 
                                 // Create and fill the series
                                 ISeriesSet seriesSet = getSwtChart().getSeriesSet();
-                                ISeries<Integer> series = seriesSet.getSeries(entry.getName());
-                                ISeries<Integer> dimmedSeries = seriesSet.getSeries(entry.getName() + DIMMED_SERIES_SUFFIX);
+                                // New to SWTChart 13
+                                @SuppressWarnings("unchecked")
+                                ISeries<Integer> series = (ISeries<Integer>) seriesSet.getSeries(entry.getName());
+                                @SuppressWarnings("unchecked")
+                                ISeries<Integer> dimmedSeries = (ISeries<Integer>) seriesSet.getSeries(entry.getName() + DIMMED_SERIES_SUFFIX);
                                 if (brightX.isEmpty()) {
                                     // Remove the base series since there is
                                     // nothing to show

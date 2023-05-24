@@ -23,7 +23,6 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.StreamSupport;
 
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Logger;
@@ -46,6 +45,7 @@ import org.eclipse.swtchart.ILineSeries;
 import org.eclipse.swtchart.ISeries;
 import org.eclipse.swtchart.LineStyle;
 import org.eclipse.swtchart.model.CartesianSeriesModel;
+import org.eclipse.swtchart.model.DoubleArraySeriesModel;
 import org.eclipse.tracecompass.tmf.core.model.TmfCommonXAxisModel;
 import org.eclipse.tracecompass.tmf.core.model.YModel;
 import org.eclipse.tracecompass.tmf.core.model.xy.IYModel;
@@ -204,7 +204,7 @@ public abstract class XYDataProviderBaseTest {
      */
     protected TmfCommonXAxisModel extractModelFromChart(final Chart chart, String... otherSeries) {
         String mainSeriesName = getMainSeriesName();
-        ISeries<Integer> mainSeries = chart.getSeriesSet().getSeries(mainSeriesName);
+        ISeries<?> mainSeries = chart.getSeriesSet().getSeries(mainSeriesName);
         if (mainSeries == null) {
             System.out.println("Main Series " + mainSeriesName + " not found in chart");
             return null;
@@ -219,7 +219,7 @@ public abstract class XYDataProviderBaseTest {
 
         for (String other : otherSeries) {
             if (other != null) {
-                ISeries<Integer> series = chart.getSeriesSet().getSeries(other);
+                ISeries<?> series = chart.getSeriesSet().getSeries(other);
                 if (series == null) {
                     System.out.println("Series " + other + " not found in chart");
                     return null;
@@ -243,20 +243,32 @@ public abstract class XYDataProviderBaseTest {
         return new TmfCommonXAxisModel(getTitle(), x, yModels.values());
     }
 
-    private static double[] getXSeries(ISeries<Integer> series) {
-        CartesianSeriesModel<Integer> dataModel = series.getDataModel();
-        if (dataModel == null) {
+    private static double[] getXSeries(ISeries<?> series) {
+        CartesianSeriesModel<?> dataModel = series.getDataModel();
+        if (!(dataModel instanceof DoubleArraySeriesModel)) {
             return new double[0];
         }
-        return StreamSupport.stream(dataModel.spliterator(), false).filter(t -> dataModel.getX(t) != null).mapToDouble(value -> dataModel.getX(value).doubleValue()).toArray();
+        DoubleArraySeriesModel model = (DoubleArraySeriesModel) dataModel;
+        int size = model.size();
+        double data[] = new double[size];
+        for (Integer index : model) {
+           data[index] = (double) model.getX(index);
+        }
+        return data;
     }
 
-    private static double[] getYSeries(ISeries<Integer> series) {
-        CartesianSeriesModel<Integer> dataModel = series.getDataModel();
-        if (dataModel == null) {
+    private static double[] getYSeries(ISeries<?> series) {
+        CartesianSeriesModel<?> dataModel = series.getDataModel();
+        if (!(dataModel instanceof DoubleArraySeriesModel)) {
             return new double[0];
         }
-        return StreamSupport.stream(dataModel.spliterator(), false).filter(t -> dataModel.getY(t) != null).mapToDouble(value -> dataModel.getY(value).doubleValue()).toArray();
+        DoubleArraySeriesModel model = (DoubleArraySeriesModel) dataModel;
+        int size = model.size();
+        double data[] = new double[size];
+        for (Integer index : model) {
+           data[index] = (double) model.getY(index);
+        }
+        return data;
     }
 
     /**
