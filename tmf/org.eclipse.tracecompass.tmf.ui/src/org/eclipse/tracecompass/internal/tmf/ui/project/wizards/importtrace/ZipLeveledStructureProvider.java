@@ -227,11 +227,13 @@ public class ZipLeveledStructureProvider implements
         Enumeration<? extends ZipEntry> entries = zipFile.entries();
         long archiveEntries = 0;
         long archiveSize = 0;
+        long entrySize = 0;
 
         while (entries.hasMoreElements()) {
             ZipEntry entry = Objects.requireNonNull(entries.nextElement());
+            entrySize = ArchiveUtil.getZipEntrySize(zipFile, entry);
             IPath path = new Path(entry.getName()).addTrailingSeparator();
-            archiveSize += entry.getSize();
+            archiveSize += entrySize;
             ++archiveEntries;
 
             if (entry.isDirectory()) {
@@ -244,7 +246,7 @@ public class ZipLeveledStructureProvider implements
                 if (pathSegmentCount > 1) {
                     createContainer(path.uptoSegment(pathSegmentCount - 1));
                 }
-                if (ArchiveUtil.verifyZipFileIsSafe(archiveSize, archiveEntries)) {
+                if (ArchiveUtil.verifyZipFileIsSafe(archiveSize, archiveEntries) && entrySize != -1) {
                     createFile(new ZipArchiveEntry(entry.getName()));
                 } else {
                     Activator activator = new Activator();

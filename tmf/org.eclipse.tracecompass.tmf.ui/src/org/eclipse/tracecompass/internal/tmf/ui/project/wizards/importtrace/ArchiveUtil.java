@@ -247,7 +247,7 @@ public class ArchiveUtil {
      *            - the entry in archive that we are calculating the size of
      * @return size of the entry or -1 if there is an error
      */
-    private static long getZipEntrySize(ZipFile zipFile, ZipEntry entry) {
+    public static long getZipEntrySize(ZipFile zipFile, ZipEntry entry) {
         long entrySize = 0;
 
         InputStream in;
