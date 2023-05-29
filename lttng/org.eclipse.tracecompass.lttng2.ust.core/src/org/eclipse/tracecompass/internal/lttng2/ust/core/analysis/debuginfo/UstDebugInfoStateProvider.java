@@ -132,7 +132,7 @@ public class UstDebugInfoStateProvider extends AbstractTmfStateProvider {
      *
      * <value> <type> <name> <source>:<line>
      */
-    private static final Pattern fNmPattern = Pattern.compile("(\\w+)(\\s+)(\\w)(\\s{1,})([^\\t]*)(\\t*)([^\\:]*)(:*)(.*)"); //$NON-NLS-1$
+    private static final Pattern fNmPattern = Pattern.compile("^\\s*(\\S++)\\s++(\\w)\\s++(\\S++)\\s++([^\\:\\s]*):(.*)$"); //$NON-NLS-1$
 
     private final LttngUst28EventLayout fLayout;
     private final Map<String, Integer> fEventNames;
@@ -660,10 +660,10 @@ public class UstDebugInfoStateProvider extends AbstractTmfStateProvider {
                 Matcher nmLineMatcher = fNmPattern.matcher(nmLine);
                 if (nmLineMatcher.matches()) {
                     String offset = nmLineMatcher.group(1).replaceFirst("^0+(?!$)", ""); //$NON-NLS-1$ //$NON-NLS-2$
-                    String functionName = nmLineMatcher.group(5);
+                    String functionName = nmLineMatcher.group(3);
                     if ((offset != null) && (functionName != null)) {
-                        String sourceFile = nmLineMatcher.group(7);
-                        String lineNr = nmLineMatcher.group(9);
+                        String sourceFile = nmLineMatcher.group(4);
+                        String lineNr = nmLineMatcher.group(5);
                         // push in ss
                         int funNameQuark = ssb.getQuarkAbsoluteAndAdd(binFilePath, FUNCTION_NAME);
                         int sourceFileQuark = ssb.getQuarkAbsoluteAndAdd(binFilePath, SOURCE_FILE_NAME);
