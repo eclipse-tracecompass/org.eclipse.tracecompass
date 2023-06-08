@@ -28,10 +28,9 @@ import org.eclipse.tracecompass.internal.analysis.callstack.core.callgraph.CallG
 import org.eclipse.tracecompass.internal.analysis.callstack.core.callgraph.CallGraphAnalysis;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.callgraph.ICallGraphProvider;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.callstack.CallStackHostUtils;
-import org.eclipse.tracecompass.internal.analysis.callstack.core.callstack.CallStackSeries;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.callstack.CallStackHostUtils.TraceHostIdResolver;
+import org.eclipse.tracecompass.internal.analysis.callstack.core.callstack.CallStackSeries;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.callstack.CallStackSeries.IThreadIdResolver;
-import org.eclipse.tracecompass.internal.analysis.callstack.core.model.ModelManager;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.tree.IWeightedTreeGroupDescriptor;
 import org.eclipse.tracecompass.segmentstore.core.ISegment;
 import org.eclipse.tracecompass.segmentstore.core.ISegmentStore;
@@ -251,7 +250,6 @@ public abstract class InstrumentedCallStackAnalysis extends TmfStateSystemAnalys
     public void dispose() {
         super.dispose();
         fCallGraph.dispose();
-        ModelManager.disposeModels();
     }
 
     @Override
