@@ -318,6 +318,11 @@ public class CompositeHostModel implements IHostModel {
                 }
             }
         });
+
+        /* Dispose all models when the last trace is closed. */
+        if (TmfTraceManager.getInstance().getOpenedTraces().isEmpty()) {
+            ModelManager.disposeModels();
+        }
     }
 
     @Override
