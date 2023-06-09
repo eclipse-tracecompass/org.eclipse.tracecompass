@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Ericsson
+ * Copyright (c) 2015, 2023 Ericsson
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -15,7 +15,6 @@ import static org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.Tsd
 import java.nio.ByteOrder;
 import java.util.List;
 
-import org.antlr.runtime.tree.CommonTree;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -34,6 +33,7 @@ import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.integer.In
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.string.StringDeclarationParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.struct.StructParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.variant.VariantParser;
+import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.types.composite.EventHeaderCompactDeclaration;
 import org.eclipse.tracecompass.internal.ctf.core.event.types.composite.EventHeaderLargeDeclaration;
 
@@ -55,9 +55,9 @@ public final class TypeSpecifierListParser extends AbstractScopedCommonTreeParse
     @NonNullByDefault
     public static final class Param implements ICommonTreeParserParameter {
         private final DeclarationScope fDeclarationScope;
-        private final @Nullable List<CommonTree> fListNode;
+        private final @Nullable List<ICTFMetadataNode> fListNode;
         private final CTFTrace fTrace;
-        private final @Nullable CommonTree fIdentifier;
+        private final @Nullable ICTFMetadataNode fIdentifier;
 
         /**
          * Constructor
@@ -71,7 +71,7 @@ public final class TypeSpecifierListParser extends AbstractScopedCommonTreeParse
          * @param scope
          *            the current scope
          */
-        public Param(CTFTrace trace, @Nullable List<CommonTree> listNode, @Nullable CommonTree identifier, DeclarationScope scope) {
+        public Param(CTFTrace trace, @Nullable List<ICTFMetadataNode> listNode, @Nullable ICTFMetadataNode identifier, DeclarationScope scope) {
             fTrace = trace;
             fListNode = listNode;
             fIdentifier = identifier;
@@ -101,21 +101,21 @@ public final class TypeSpecifierListParser extends AbstractScopedCommonTreeParse
      *             creating the declaration.
      */
     @Override
-    public IDeclaration parse(CommonTree typeSpecifierList, ICommonTreeParserParameter param) throws ParseException {
+    public IDeclaration parse(ICTFMetadataNode typeSpecifierList, ICommonTreeParserParameter param) throws ParseException {
         if (!(param instanceof Param)) {
             throw new IllegalArgumentException("Param must be a " + Param.class.getCanonicalName()); //$NON-NLS-1$
         }
         final DeclarationScope scope = ((Param) param).fDeclarationScope;
-        List<@NonNull CommonTree> pointerList = ((Param) param).fListNode;
+        List<@NonNull ICTFMetadataNode> pointerList = ((Param) param).fListNode;
         CTFTrace trace = ((Param) param).fTrace;
-        CommonTree identifier = ((Param) param).fIdentifier;
+        ICTFMetadataNode identifier = ((Param) param).fIdentifier;
         IDeclaration declaration = null;
 
         /*
          * By looking at the first element of the type specifier list, we can
          * determine which type it belongs to.
          */
-        CommonTree firstChild = (CommonTree) typeSpecifierList.getChild(0);
+        ICTFMetadataNode firstChild = typeSpecifierList.getChild(0);
 
         switch (firstChild.getType()) {
         case CTFParser.FLOATING_POINT:

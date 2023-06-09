@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Ericsson
+ * Copyright (c) 2015, 2023 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0 which
@@ -15,11 +15,11 @@ import static org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.Tsd
 import static org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.TsdlUtils.isUnaryInteger;
 import static org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.TsdlUtils.isUnaryString;
 
-import org.antlr.runtime.tree.CommonTree;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ICommonTreeParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.MetadataStrings;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.UnaryIntegerParser;
+import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
 
 /**
  * Singed status, whether an integer is capable of accepting negative values or
@@ -52,9 +52,9 @@ public final class SignedParser implements ICommonTreeParser {
      *             on a malformed tree
      */
     @Override
-    public Boolean parse(CommonTree tree, ICommonTreeParserParameter unused) throws ParseException {
+    public Boolean parse(ICTFMetadataNode tree, ICommonTreeParserParameter unused) throws ParseException {
         boolean ret = false;
-        CommonTree firstChild = (CommonTree) tree.getChild(0);
+        ICTFMetadataNode firstChild = tree.getChild(0);
 
         if (isUnaryString(firstChild)) {
             String strval = concatenateUnaryStrings(tree.getChildren());

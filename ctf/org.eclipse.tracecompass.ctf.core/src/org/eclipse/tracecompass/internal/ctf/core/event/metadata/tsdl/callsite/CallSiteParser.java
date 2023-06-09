@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016 Ericsson
+ * Copyright (c) 2016, 2023 Ericsson
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -12,10 +12,10 @@ package org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.callsite;
 
 import java.util.List;
 
-import org.antlr.runtime.tree.CommonTree;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.tracecompass.ctf.core.event.CTFCallsite;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ICommonTreeParser;
+import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
 
 /**
  * Callsite as described in section 7.4 of the TSDL spec in CTF 1.8.2
@@ -52,7 +52,7 @@ public final class CallSiteParser implements ICommonTreeParser {
     }
 
     @Override
-    public @NonNull CTFCallsite parse(CommonTree tree, ICommonTreeParserParameter param)  {
+    public @NonNull CTFCallsite parse(ICTFMetadataNode tree, ICommonTreeParserParameter param)  {
         /*
          * this is to replace the previous quotes with nothing...
          * effectively deleting them
@@ -68,8 +68,8 @@ public final class CallSiteParser implements ICommonTreeParser {
         long lineNumber =-1;
         long ip = -1;
 
-        List<CommonTree> children = tree.getChildren();
-        for (CommonTree child : children) {
+        List<ICTFMetadataNode> children = tree.getChildren();
+        for (ICTFMetadataNode child : children) {
             String left = child.getChild(0).getChild(0).getChild(0).getText();
             if (left.equals(NAME)) {
                 name = child.getChild(1).getChild(0).getChild(0).getText().replaceAll(regex, emptyString);

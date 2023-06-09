@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Ericsson
+ * Copyright (c) 2015, 2023 Ericsson
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.antlr.runtime.tree.CommonTree;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.ctf.core.event.metadata.DeclarationScope;
@@ -29,6 +28,7 @@ import org.eclipse.tracecompass.internal.ctf.core.event.metadata.MetadataStrings
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.TypeAliasParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.TypedefParser;
+import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
 
 /**
  * Variant body parser. This handles all the inside of a variant, so it handles
@@ -92,18 +92,18 @@ public final class VariantBodyParser extends AbstractScopedCommonTreeParser {
      *             if the AST is malformed
      */
     @Override
-    public VariantDeclaration parse(CommonTree variantBody, ICommonTreeParserParameter param) throws ParseException {
+    public VariantDeclaration parse(ICTFMetadataNode variantBody, ICommonTreeParserParameter param) throws ParseException {
         if (!(param instanceof Param)) {
             throw new IllegalArgumentException("Param must be a " + Param.class.getCanonicalName()); //$NON-NLS-1$
         }
 
         String variantName = ((Param) param).fName;
         VariantDeclaration variantDeclaration = ((Param) param).fVariantDeclaration;
-        List<CommonTree> variantDeclarations = variantBody.getChildren();
+        List<ICTFMetadataNode> variantDeclarations = variantBody.getChildren();
 
         final DeclarationScope scope = new DeclarationScope(((Param) param).fDeclarationScope, variantName == null ? MetadataStrings.VARIANT : variantName);
         CTFTrace trace = ((Param) param).fTrace;
-        for (CommonTree declarationNode : variantDeclarations) {
+        for (ICTFMetadataNode declarationNode : variantDeclarations) {
             switch (declarationNode.getType()) {
             case CTFParser.TYPEALIAS:
                 TypeAliasParser.INSTANCE.parse(declarationNode, new TypeAliasParser.Param(trace, scope));

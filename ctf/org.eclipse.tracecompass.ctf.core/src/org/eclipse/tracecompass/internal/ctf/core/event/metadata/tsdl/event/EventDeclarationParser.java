@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Ericsson
+ * Copyright (c) 2015, 2023 Ericsson
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -15,7 +15,6 @@ import static org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.Tsd
 
 import java.util.List;
 
-import org.antlr.runtime.tree.CommonTree;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.tracecompass.ctf.core.event.metadata.DeclarationScope;
 import org.eclipse.tracecompass.ctf.core.event.types.IDeclaration;
@@ -31,6 +30,7 @@ import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.TypeSpecif
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.UnaryIntegerParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.UnaryStringParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.stream.StreamIdParser;
+import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.trace.CTFStream;
 
 /**
@@ -80,7 +80,7 @@ public final class EventDeclarationParser extends AbstractScopedCommonTreeParser
     }
 
     @Override
-    public EventDeclaration parse(CommonTree eventDecl, ICommonTreeParserParameter param) throws ParseException {
+    public EventDeclaration parse(ICTFMetadataNode eventDecl, ICommonTreeParserParameter param) throws ParseException {
         if (!(param instanceof Param)) {
             throw new IllegalArgumentException("Param must be a " + Param.class.getCanonicalName()); //$NON-NLS-1$
         }
@@ -90,10 +90,10 @@ public final class EventDeclarationParser extends AbstractScopedCommonTreeParser
 
         /* There should be a left and right */
 
-        CommonTree leftNode = (CommonTree) eventDecl.getChild(0);
-        CommonTree rightNode = (CommonTree) eventDecl.getChild(1);
+        ICTFMetadataNode leftNode = eventDecl.getChild(0);
+        ICTFMetadataNode rightNode = eventDecl.getChild(1);
 
-        List<CommonTree> leftStrings = leftNode.getChildren();
+        List<ICTFMetadataNode> leftStrings = leftNode.getChildren();
 
         if (!isAnyUnaryString(leftStrings.get(0))) {
             throw new ParseException("Left side of CTF assignment must be a string"); //$NON-NLS-1$
@@ -145,7 +145,7 @@ public final class EventDeclarationParser extends AbstractScopedCommonTreeParser
                 throw new ParseException("context already defined"); //$NON-NLS-1$
             }
 
-            CommonTree typeSpecifier = (CommonTree) rightNode.getChild(0);
+            ICTFMetadataNode typeSpecifier = rightNode.getChild(0);
 
             if (typeSpecifier.getType() != CTFParser.TYPE_SPECIFIER_LIST) {
                 throw new ParseException("context expects a type specifier"); //$NON-NLS-1$
@@ -163,7 +163,7 @@ public final class EventDeclarationParser extends AbstractScopedCommonTreeParser
                 throw new ParseException("fields already defined"); //$NON-NLS-1$
             }
 
-            CommonTree typeSpecifier = (CommonTree) rightNode.getChild(0);
+            ICTFMetadataNode typeSpecifier = rightNode.getChild(0);
 
             if (typeSpecifier.getType() != CTFParser.TYPE_SPECIFIER_LIST) {
                 throw new ParseException("fields expects a type specifier"); //$NON-NLS-1$
@@ -182,11 +182,11 @@ public final class EventDeclarationParser extends AbstractScopedCommonTreeParser
             final StructDeclaration fields = (StructDeclaration) fieldsDecl;
             event.setFields(fields);
         } else if (left.equals(MetadataStrings.LOGLEVEL2)) {
-            long logLevel = UnaryIntegerParser.INSTANCE.parse((CommonTree) rightNode.getChild(0), null);
+            long logLevel = UnaryIntegerParser.INSTANCE.parse(rightNode.getChild(0), null);
             event.setLogLevel(logLevel);
         } else {
             /* Custom event attribute, we'll add it to the attributes map */
-            String right = UnaryStringParser.INSTANCE.parse((CommonTree) rightNode.getChild(0), null);
+            String right = UnaryStringParser.INSTANCE.parse(rightNode.getChild(0), null);
             event.setCustomAttribute(left, right);
         }
         return event;

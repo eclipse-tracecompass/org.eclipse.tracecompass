@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Ericsson
+ * Copyright (c) 2015, 2023 Ericsson
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -14,7 +14,6 @@ import static org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.Tsd
 
 import java.util.List;
 
-import org.antlr.runtime.tree.CommonTree;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.tracecompass.ctf.core.event.metadata.DeclarationScope;
 import org.eclipse.tracecompass.ctf.core.event.types.IDeclaration;
@@ -22,6 +21,7 @@ import org.eclipse.tracecompass.ctf.core.trace.CTFTrace;
 import org.eclipse.tracecompass.ctf.parser.CTFParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.AbstractScopedCommonTreeParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
+import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
 
 /**
  * Type alias targets are the nodes of the declaration of the typealiases.
@@ -84,20 +84,20 @@ public final class TypeAliasTargetParser extends AbstractScopedCommonTreeParser 
      *             an invalid child in the tree
      */
     @Override
-    public IDeclaration parse(CommonTree target, ICommonTreeParserParameter param) throws ParseException {
+    public IDeclaration parse(ICTFMetadataNode target, ICommonTreeParserParameter param) throws ParseException {
         if (!(param instanceof Param)) {
             throw new IllegalArgumentException("Param must be a " + Param.class.getCanonicalName()); //$NON-NLS-1$
         }
         DeclarationScope scope = ((Param) param).fDeclarationScope;
 
-        List<CommonTree> children = target.getChildren();
+        List<ICTFMetadataNode> children = target.getChildren();
 
-        CommonTree typeSpecifierList = null;
-        CommonTree typeDeclaratorList = null;
-        CommonTree typeDeclarator = null;
+        ICTFMetadataNode typeSpecifierList = null;
+        ICTFMetadataNode typeDeclaratorList = null;
+        ICTFMetadataNode typeDeclarator = null;
         StringBuilder identifierSB = new StringBuilder();
 
-        for (CommonTree child : children) {
+        for (ICTFMetadataNode child : children) {
             switch (child.getType()) {
             case CTFParser.TYPE_SPECIFIER_LIST:
                 typeSpecifierList = child;
@@ -122,7 +122,7 @@ public final class TypeAliasTargetParser extends AbstractScopedCommonTreeParser 
                 throw new ParseException("Only one type declarator is allowed in the typealias target"); //$NON-NLS-1$
             }
 
-            typeDeclarator = (CommonTree) typeDeclaratorList.getChild(0);
+            typeDeclarator = typeDeclaratorList.getChild(0);
         }
         if (typeSpecifierList == null) {
             throw new ParseException("Cannot have a typealias with no specifiers"); //$NON-NLS-1$

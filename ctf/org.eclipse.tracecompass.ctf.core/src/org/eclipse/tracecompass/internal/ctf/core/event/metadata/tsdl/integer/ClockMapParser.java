@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Ericsson
+ * Copyright (c) 2015, 2023 Ericsson
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -11,9 +11,9 @@
 
 package org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.integer;
 
-import org.antlr.runtime.tree.CommonTree;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ICommonTreeParser;
+import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
 
 /**
  * A reference to the clock map in a given integer.
@@ -34,7 +34,7 @@ public final class ClockMapParser implements ICommonTreeParser {
     }
 
     @Override
-    public String parse(CommonTree tree, ICommonTreeParserParameter param) {
+    public String parse(ICTFMetadataNode tree, ICommonTreeParserParameter param) {
         String clock = tree.getChild(1).getChild(0).getChild(0).getText();
         return clock == null ? EMPTY_STRING : clock;
     }

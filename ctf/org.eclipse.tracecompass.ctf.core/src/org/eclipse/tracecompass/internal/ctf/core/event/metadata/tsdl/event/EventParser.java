@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Ericsson
+ * Copyright (c) 2015, 2023 Ericsson
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -15,7 +15,6 @@ import static org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.Tsd
 
 import java.util.List;
 
-import org.antlr.runtime.tree.CommonTree;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.tracecompass.ctf.core.event.metadata.DeclarationScope;
 import org.eclipse.tracecompass.ctf.core.trace.CTFTrace;
@@ -27,6 +26,7 @@ import org.eclipse.tracecompass.internal.ctf.core.event.metadata.MetadataStrings
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.TypeAliasParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.TypedefParser;
+import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.trace.CTFStream;
 
 /**
@@ -95,13 +95,13 @@ public final class EventParser extends AbstractScopedCommonTreeParser {
      *             event stream was badly defined
      */
     @Override
-    public EventDeclaration parse(CommonTree eventNode, ICommonTreeParserParameter param) throws ParseException {
+    public EventDeclaration parse(ICTFMetadataNode eventNode, ICommonTreeParserParameter param) throws ParseException {
         if (!(param instanceof Param)) {
             throw new IllegalArgumentException("Param must be a " + Param.class.getCanonicalName()); //$NON-NLS-1$
         }
         Param parameter = (Param) param;
         CTFTrace trace = ((Param) param).fTrace;
-        List<CommonTree> children = eventNode.getChildren();
+        List<ICTFMetadataNode> children = eventNode.getChildren();
         if (children == null) {
             throw new ParseException("Empty event block"); //$NON-NLS-1$
         }
@@ -110,7 +110,7 @@ public final class EventParser extends AbstractScopedCommonTreeParser {
 
         DeclarationScope scope = new DeclarationScope(parameter.fCurrentScope, MetadataStrings.EVENT);
 
-        for (CommonTree child : children) {
+        for (ICTFMetadataNode child : children) {
             switch (child.getType()) {
             case CTFParser.TYPEALIAS:
                 TypeAliasParser.INSTANCE.parse(child, new TypeAliasParser.Param(trace, scope));

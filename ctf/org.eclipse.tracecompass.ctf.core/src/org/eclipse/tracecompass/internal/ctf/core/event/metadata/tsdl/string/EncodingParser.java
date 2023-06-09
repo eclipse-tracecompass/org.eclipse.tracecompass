@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Ericsson
+ * Copyright (c) 2015, 2023 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0 which
@@ -14,11 +14,11 @@ package org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.string;
 import static org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.TsdlUtils.concatenateUnaryStrings;
 import static org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.TsdlUtils.isUnaryString;
 
-import org.antlr.runtime.tree.CommonTree;
 import org.eclipse.tracecompass.ctf.core.event.types.Encoding;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ICommonTreeParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.MetadataStrings;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
+import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
 
 /**
  * Parse the encoding field. This can be "ascii", "utf8" or "none"
@@ -44,8 +44,8 @@ public final class EncodingParser implements ICommonTreeParser {
      *             for unknown or malformed encoding
      */
     @Override
-    public Encoding parse(CommonTree tree, ICommonTreeParserParameter param) throws ParseException {
-        CommonTree firstChild = (CommonTree) tree.getChild(0);
+    public Encoding parse(ICTFMetadataNode tree, ICommonTreeParserParameter param) throws ParseException {
+        ICTFMetadataNode firstChild = tree.getChild(0);
 
         if (isUnaryString(firstChild)) {
             String strval = concatenateUnaryStrings(tree.getChildren());

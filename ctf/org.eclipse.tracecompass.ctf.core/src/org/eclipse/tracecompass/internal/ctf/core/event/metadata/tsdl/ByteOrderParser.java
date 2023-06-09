@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Ericsson
+ * Copyright (c) 2015, 2023 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0 which
@@ -16,11 +16,11 @@ import static org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.Tsd
 
 import java.nio.ByteOrder;
 
-import org.antlr.runtime.tree.CommonTree;
 import org.eclipse.tracecompass.ctf.core.trace.CTFTrace;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ICommonTreeParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.MetadataStrings;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
+import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
 
 /**
  * By default, byte order of a basic type is the byte order described in the
@@ -91,12 +91,12 @@ public final class ByteOrderParser implements ICommonTreeParser {
      *             if the value is invalid
      */
     @Override
-    public final ByteOrder parse(CommonTree byteOrderTree, ICommonTreeParserParameter param) throws ParseException {
+    public final ByteOrder parse(ICTFMetadataNode byteOrderTree, ICommonTreeParserParameter param) throws ParseException {
         if (!(param instanceof Param)) {
             throw new IllegalArgumentException("Param must be a " + Param.class.getCanonicalName()); //$NON-NLS-1$
         }
         CTFTrace trace = ((Param) param).fTrace;
-        CommonTree firstChild = (CommonTree) byteOrderTree.getChild(0);
+        ICTFMetadataNode firstChild = byteOrderTree.getChild(0);
 
         if (isUnaryString(firstChild)) {
             String strval = concatenateUnaryStrings(byteOrderTree.getChildren());

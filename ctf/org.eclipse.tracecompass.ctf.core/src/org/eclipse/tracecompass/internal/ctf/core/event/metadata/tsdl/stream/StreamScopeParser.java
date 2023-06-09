@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Ericsson
+ * Copyright (c) 2015, 2023 Ericsson
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -15,7 +15,6 @@ import static org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.Tsd
 
 import java.util.List;
 
-import org.antlr.runtime.tree.CommonTree;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.tracecompass.ctf.parser.CTFParser;
@@ -24,6 +23,7 @@ import org.eclipse.tracecompass.internal.ctf.core.event.metadata.MetadataStrings
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.UnaryStringParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.event.EventScopeParser;
+import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
 
 /**
  * The stream scope parser, this parses a scope of a given stream. It can get
@@ -42,7 +42,7 @@ public final class StreamScopeParser implements ICommonTreeParser {
      */
     @NonNullByDefault
     public static final class Param implements ICommonTreeParserParameter {
-        private final List<CommonTree> fList;
+        private final List<ICTFMetadataNode> fList;
 
         /**
          * Constructor
@@ -50,7 +50,7 @@ public final class StreamScopeParser implements ICommonTreeParser {
          * @param list
          *            a list of commonTrees to parse
          */
-        public Param(List<CommonTree> list) {
+        public Param(List<ICTFMetadataNode> list) {
             fList = list;
         }
 
@@ -78,14 +78,14 @@ public final class StreamScopeParser implements ICommonTreeParser {
      *             if the ASTs are malformed
      */
     @Override
-    public String parse(CommonTree unused, ICommonTreeParserParameter param) throws ParseException {
+    public String parse(ICTFMetadataNode unused, ICommonTreeParserParameter param) throws ParseException {
         if (!(param instanceof Param)) {
             throw new IllegalArgumentException("Param must be a " + Param.class.getCanonicalName()); //$NON-NLS-1$
         }
-        List<@NonNull CommonTree> lengthChildren = ((Param) param).fList;
-        final List<@NonNull CommonTree> sublist = lengthChildren.subList(1, lengthChildren.size());
+        List<@NonNull ICTFMetadataNode> lengthChildren = ((Param) param).fList;
+        final List<@NonNull ICTFMetadataNode> sublist = lengthChildren.subList(1, lengthChildren.size());
 
-        CommonTree nextElem = (CommonTree) lengthChildren.get(1).getChild(0);
+        ICTFMetadataNode nextElem = lengthChildren.get(1).getChild(0);
         String lengthName = null;
         if (isUnaryString(nextElem)) {
             lengthName = UnaryStringParser.INSTANCE.parse(nextElem, null);

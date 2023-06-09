@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Ericsson
+ * Copyright (c) 2015, 2023 Ericsson
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -18,7 +18,6 @@ import static org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.Tsd
 import java.nio.ByteOrder;
 import java.util.List;
 
-import org.antlr.runtime.tree.CommonTree;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -35,6 +34,7 @@ import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.AlignmentP
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.ByteOrderParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.SizeParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.string.EncodingParser;
+import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
 
 /**
  * Signed integers are represented in two-complement. Integer alignment, size,
@@ -116,12 +116,12 @@ public final class IntegerDeclarationParser implements ICommonTreeParser {
      * @return The corresponding integer declaration.
      */
     @Override
-    public IntegerDeclaration parse(CommonTree integer, ICommonTreeParserParameter parameter) throws ParseException {
+    public IntegerDeclaration parse(ICTFMetadataNode integer, ICommonTreeParserParameter parameter) throws ParseException {
         if (!(parameter instanceof Param)) {
             throw new IllegalArgumentException("Param must be a " + Param.class.getCanonicalName()); //$NON-NLS-1$
         }
         CTFTrace trace = ((Param) parameter).fTrace;
-        List<CommonTree> children = integer.getChildren();
+        List<ICTFMetadataNode> children = integer.getChildren();
 
         /*
          * If the integer has no attributes, then it is missing the size
@@ -144,17 +144,17 @@ public final class IntegerDeclarationParser implements ICommonTreeParser {
         Encoding encoding = Encoding.NONE;
 
         /* Iterate on all integer children */
-        for (CommonTree child : children) {
+        for (ICTFMetadataNode child : children) {
             switch (child.getType()) {
             case CTFParser.CTF_EXPRESSION_VAL:
                 /*
                  * An assignment expression must have 2 children, left and right
                  */
 
-                CommonTree leftNode = (CommonTree) child.getChild(0);
-                CommonTree rightNode = (CommonTree) child.getChild(1);
+                ICTFMetadataNode leftNode = child.getChild(0);
+                ICTFMetadataNode rightNode = child.getChild(1);
 
-                List<CommonTree> leftStrings = leftNode.getChildren();
+                List<ICTFMetadataNode> leftStrings = leftNode.getChildren();
 
                 if (!isAnyUnaryString(leftStrings.get(0))) {
                     throw new ParseException("Left side of ctf expression must be a string"); //$NON-NLS-1$

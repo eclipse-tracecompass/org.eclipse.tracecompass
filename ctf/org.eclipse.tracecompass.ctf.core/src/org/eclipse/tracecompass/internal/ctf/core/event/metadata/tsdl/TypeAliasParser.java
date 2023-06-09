@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Ericsson
+ * Copyright (c) 2015, 2023 Ericsson
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -14,7 +14,6 @@ import static org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.Tsd
 
 import java.util.List;
 
-import org.antlr.runtime.tree.CommonTree;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.tracecompass.ctf.core.event.metadata.DeclarationScope;
 import org.eclipse.tracecompass.ctf.core.event.types.IDeclaration;
@@ -23,6 +22,7 @@ import org.eclipse.tracecompass.ctf.core.trace.CTFTrace;
 import org.eclipse.tracecompass.ctf.parser.CTFParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.AbstractScopedCommonTreeParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
+import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
 
 /**
  * The "typealias" declaration can be used to give a name (including pointer
@@ -71,18 +71,18 @@ public final class TypeAliasParser extends AbstractScopedCommonTreeParser {
     }
 
     @Override
-    public IDeclaration parse(CommonTree typealias, ICommonTreeParserParameter param) throws ParseException {
+    public IDeclaration parse(ICTFMetadataNode typealias, ICommonTreeParserParameter param) throws ParseException {
         if (!(param instanceof Param)) {
             throw new IllegalArgumentException("Param must be a " + Param.class.getCanonicalName()); //$NON-NLS-1$
         }
         DeclarationScope scope = ((Param) param).fDeclarationScope;
 
-        List<CommonTree> children = typealias.getChildren();
+        List<ICTFMetadataNode> children = typealias.getChildren();
 
-        CommonTree target = null;
-        CommonTree alias = null;
+        ICTFMetadataNode target = null;
+        ICTFMetadataNode alias = null;
 
-        for (CommonTree child : children) {
+        for (ICTFMetadataNode child : children) {
             switch (child.getType()) {
             case CTFParser.TYPEALIAS_TARGET:
                 target = child;

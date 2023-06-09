@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Ericsson
+ * Copyright (c) 2015, 2023 Ericsson
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -12,7 +12,6 @@ package org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.variant;
 
 import java.util.List;
 
-import org.antlr.runtime.tree.CommonTree;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.tracecompass.ctf.core.event.metadata.DeclarationScope;
 import org.eclipse.tracecompass.ctf.core.event.types.IDeclaration;
@@ -22,6 +21,7 @@ import org.eclipse.tracecompass.ctf.parser.CTFParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.AbstractScopedCommonTreeParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.TypeDeclaratorParser;
+import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
 
 /**
  * This parses the (sub)declarations located IN a variant declaration.
@@ -80,31 +80,31 @@ public final class VariantDeclarationParser extends AbstractScopedCommonTreePars
      *             if the AST is malformed
      */
     @Override
-    public VariantDeclaration parse(CommonTree declaration, ICommonTreeParserParameter param) throws ParseException {
+    public VariantDeclaration parse(ICTFMetadataNode declaration, ICommonTreeParserParameter param) throws ParseException {
         if (!(param instanceof Param)) {
             throw new IllegalArgumentException("Param must be a " + Param.class.getCanonicalName()); //$NON-NLS-1$
         }
         VariantDeclaration variant = ((Param) param).fVariant;
         final DeclarationScope scope = ((Param) param).fDeclarationScope;
         /* Get the type specifier list node */
-        CommonTree typeSpecifierListNode = (CommonTree) declaration.getFirstChildWithType(CTFParser.TYPE_SPECIFIER_LIST);
+        ICTFMetadataNode typeSpecifierListNode = declaration.getFirstChildWithType(CTFParser.TYPE_SPECIFIER_LIST);
         if (typeSpecifierListNode == null) {
             throw new ParseException("Variant need type specifiers"); //$NON-NLS-1$
         }
 
         /* Get the type declarator list node */
-        CommonTree typeDeclaratorListNode = (CommonTree) declaration.getFirstChildWithType(CTFParser.TYPE_DECLARATOR_LIST);
+        ICTFMetadataNode typeDeclaratorListNode = declaration.getFirstChildWithType(CTFParser.TYPE_DECLARATOR_LIST);
         if (typeDeclaratorListNode == null) {
             throw new ParseException("Cannot have empty variant"); //$NON-NLS-1$
         }
         /* Get the type declarator list */
-        List<CommonTree> typeDeclaratorList = typeDeclaratorListNode.getChildren();
+        List<ICTFMetadataNode> typeDeclaratorList = typeDeclaratorListNode.getChildren();
 
         /*
          * For each type declarator, parse the declaration and add a field to
          * the variant
          */
-        for (CommonTree typeDeclaratorNode : typeDeclaratorList) {
+        for (ICTFMetadataNode typeDeclaratorNode : typeDeclaratorList) {
 
             StringBuilder identifierSB = new StringBuilder();
             CTFTrace trace = ((Param) param).fTrace;

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Ericsson
+ * Copyright (c) 2015, 2023 Ericsson
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -12,8 +12,8 @@ package org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl;
 
 import java.util.List;
 
-import org.antlr.runtime.tree.CommonTree;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ICommonTreeParser;
+import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
 
 /**
  * A parser of pointer lists... like x.y.z
@@ -41,14 +41,14 @@ public final class PointerListStringParser implements ICommonTreeParser {
      * @return A StringBuilder to which will be appended the string.
      */
     @Override
-    public StringBuilder parse(CommonTree pointers, ICommonTreeParserParameter param) {
+    public StringBuilder parse(ICTFMetadataNode pointers, ICommonTreeParserParameter param) {
         StringBuilder sb = new StringBuilder();
-        List<CommonTree> pointerList = pointers.getChildren();
+        List<ICTFMetadataNode> pointerList = pointers.getChildren();
         if (pointers.getChildCount() == 0) {
             return sb;
         }
 
-        for (CommonTree pointer : pointerList) {
+        for (ICTFMetadataNode pointer : pointerList) {
 
             sb.append(" *"); //$NON-NLS-1$
             if (pointer.getChildCount() > 0) {

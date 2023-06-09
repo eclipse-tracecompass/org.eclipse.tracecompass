@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Ericsson
+ * Copyright (c) 2015, 2023 Ericsson
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -19,7 +19,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.antlr.runtime.tree.CommonTree;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.tracecompass.ctf.core.event.metadata.DeclarationScope;
@@ -33,6 +32,7 @@ import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.event.Even
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.stream.StreamScopeParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.trace.TraceScopeParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.types.ArrayDeclaration;
+import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.types.SequenceDeclaration;
 
 /**
@@ -52,7 +52,7 @@ public final class TypeDeclaratorParser extends AbstractScopedCommonTreeParser {
     @NonNullByDefault
     public static final class Param implements ICommonTreeParserParameter {
         private final DeclarationScope fDeclarationScope;
-        private final CommonTree fListNode;
+        private final ICTFMetadataNode fListNode;
         private final StringBuilder fBuilder;
         private final CTFTrace fTrace;
 
@@ -68,7 +68,7 @@ public final class TypeDeclaratorParser extends AbstractScopedCommonTreeParser {
          * @param builder
          *            the string builder to populate
          */
-        public Param(CTFTrace trace, CommonTree listNode, DeclarationScope scope, StringBuilder builder) {
+        public Param(CTFTrace trace, ICTFMetadataNode listNode, DeclarationScope scope, StringBuilder builder) {
             fTrace = trace;
             fListNode = listNode;
             fDeclarationScope = scope;
@@ -98,24 +98,24 @@ public final class TypeDeclaratorParser extends AbstractScopedCommonTreeParser {
      *             If there is an error finding or creating the declaration.
      */
     @Override
-    public IDeclaration parse(CommonTree typeDeclarator, ICommonTreeParserParameter param) throws ParseException {
+    public IDeclaration parse(ICTFMetadataNode typeDeclarator, ICommonTreeParserParameter param) throws ParseException {
         if (!(param instanceof Param)) {
             throw new IllegalArgumentException("Param must be a " + Param.class.getCanonicalName()); //$NON-NLS-1$
         }
         DeclarationScope scope = ((Param) param).fDeclarationScope;
         CTFTrace trace = ((Param) param).fTrace;
-        CommonTree typeSpecifierList = ((Param) param).fListNode;
+        ICTFMetadataNode typeSpecifierList = ((Param) param).fListNode;
 
         IDeclaration declaration = null;
-        List<CommonTree> children = null;
-        List<@NonNull CommonTree> pointers = new LinkedList<>();
-        List<CommonTree> lengths = new LinkedList<>();
-        CommonTree identifier = null;
+        List<ICTFMetadataNode> children = null;
+        List<@NonNull ICTFMetadataNode> pointers = new LinkedList<>();
+        List<ICTFMetadataNode> lengths = new LinkedList<>();
+        ICTFMetadataNode identifier = null;
 
         /* Separate the tokens by type */
         if (typeDeclarator != null) {
             children = typeDeclarator.getChildren();
-            for (CommonTree child : children) {
+            for (ICTFMetadataNode child : children) {
 
                 switch (child.getType()) {
                 case CTFParser.POINTER:
@@ -149,14 +149,14 @@ public final class TypeDeclaratorParser extends AbstractScopedCommonTreeParser {
             /* We begin at the end */
             Collections.reverse(lengths);
 
-            for (CommonTree length : lengths) {
+            for (ICTFMetadataNode length : lengths) {
                 /*
                  * By looking at the first expression, we can determine whether
                  * it is an array or a sequence.
                  */
-                List<CommonTree> lengthChildren = length.getChildren();
+                List<ICTFMetadataNode> lengthChildren = length.getChildren();
 
-                CommonTree first = lengthChildren.get(0);
+                ICTFMetadataNode first = lengthChildren.get(0);
                 if (isUnaryInteger(first)) {
                     /* Array */
                     int arrayLength = UnaryIntegerParser.INSTANCE.parse(first, null).intValue();
@@ -239,15 +239,15 @@ public final class TypeDeclaratorParser extends AbstractScopedCommonTreeParser {
 
     }
 
-    private static boolean isEvent(CommonTree first) {
+    private static boolean isEvent(ICTFMetadataNode first) {
         return first.getType() == CTFParser.EVENT;
     }
 
-    private static boolean isStream(CommonTree first) {
+    private static boolean isStream(ICTFMetadataNode first) {
         return first.getType() == CTFParser.STREAM;
     }
 
-    private static boolean isTrace(CommonTree first) {
+    private static boolean isTrace(ICTFMetadataNode first) {
         return first.getType() == CTFParser.TRACE;
     }
 

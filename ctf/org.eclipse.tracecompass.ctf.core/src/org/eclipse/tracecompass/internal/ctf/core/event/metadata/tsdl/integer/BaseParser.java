@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Ericsson
+ * Copyright (c) 2015, 2023 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0 which
@@ -15,11 +15,11 @@ import static org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.Tsd
 import static org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.TsdlUtils.isUnaryInteger;
 import static org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.TsdlUtils.isUnaryString;
 
-import org.antlr.runtime.tree.CommonTree;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ICommonTreeParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.MetadataStrings;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.UnaryIntegerParser;
+import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
 
 /**
  * Parse the base of an integer, can return 16, 10, 8 or 2
@@ -42,12 +42,12 @@ public final class BaseParser implements ICommonTreeParser {
     private BaseParser() { }
 
     @Override
-    public Integer parse(CommonTree tree, ICommonTreeParserParameter param) throws ParseException {
+    public Integer parse(ICTFMetadataNode tree, ICommonTreeParserParameter param) throws ParseException {
 
-        CommonTree firstChild = (CommonTree) tree.getChild(0);
+        ICTFMetadataNode firstChild = tree.getChild(0);
 
         if (isUnaryInteger(firstChild)) {
-            if (tree.getChildCount() > 1) {
+            if (tree.getChildren().size() > 1) {
                 throw new ParseException("invalid base value"); //$NON-NLS-1$
             }
 

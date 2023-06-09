@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Ericsson
+ * Copyright (c) 2015, 2023 Ericsson
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -18,7 +18,6 @@ import java.nio.ByteOrder;
 import java.util.List;
 import java.util.UUID;
 
-import org.antlr.runtime.tree.CommonTree;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.tracecompass.ctf.core.event.metadata.DeclarationScope;
@@ -37,6 +36,7 @@ import org.eclipse.tracecompass.internal.ctf.core.event.metadata.MetadataStrings
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.ByteOrderParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.TypeSpecifierListParser;
+import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
 
 /**
  *
@@ -119,7 +119,7 @@ public final class TraceDeclarationParser extends AbstractScopedCommonTreeParser
      *             if the AST is malformed
      */
     @Override
-    public CTFTrace parse(CommonTree traceDecl, ICommonTreeParserParameter param) throws ParseException {
+    public CTFTrace parse(ICTFMetadataNode traceDecl, ICommonTreeParserParameter param) throws ParseException {
         if (!(param instanceof Param)) {
             throw new IllegalArgumentException("Param must be a " + Param.class.getCanonicalName()); //$NON-NLS-1$
         }
@@ -127,10 +127,10 @@ public final class TraceDeclarationParser extends AbstractScopedCommonTreeParser
         DeclarationScope scope = ((Param) param).fCurrentScope;
 
         /* There should be a left and right */
-        CommonTree leftNode = (CommonTree) traceDecl.getChild(0);
-        CommonTree rightNode = (CommonTree) traceDecl.getChild(1);
+        ICTFMetadataNode leftNode = traceDecl.getChild(0);
+        ICTFMetadataNode rightNode = traceDecl.getChild(1);
 
-        List<CommonTree> leftStrings = leftNode.getChildren();
+        List<ICTFMetadataNode> leftStrings = leftNode.getChildren();
 
         if (!isAnyUnaryString(leftStrings.get(0))) {
             throw new ParseException("Left side of CTF assignment must be a string"); //$NON-NLS-1$
@@ -157,14 +157,7 @@ public final class TraceDeclarationParser extends AbstractScopedCommonTreeParser
              * If uuid was already set by a metadata packet, compare it to see
              * if it matches
              */
-            if (trace.uuidIsSet()) {
-                if (trace.getUUID().compareTo(uuid) != 0) {
-                    throw new ParseException("UUID mismatch. Packet says " //$NON-NLS-1$
-                            + trace.getUUID() + " but metadata says " + uuid); //$NON-NLS-1$
-                }
-            } else {
-                trace.setUUID(uuid);
-            }
+            uuidIsConsistent(trace, uuid);
 
         } else if (left.equals(MetadataStrings.BYTE_ORDER)) {
             ByteOrder byteOrder = ByteOrderParser.INSTANCE.parse(rightNode, new ByteOrderParser.Param(trace));
@@ -202,7 +195,7 @@ public final class TraceDeclarationParser extends AbstractScopedCommonTreeParser
                 throw new ParseException("packet.header already defined"); //$NON-NLS-1$
             }
 
-            CommonTree typeSpecifier = (CommonTree) rightNode.getChild(0);
+            ICTFMetadataNode typeSpecifier = rightNode.getChild(0);
 
             if (typeSpecifier.getType() != CTFParser.TYPE_SPECIFIER_LIST) {
                 throw new ParseException("packet.header expects a type specifier"); //$NON-NLS-1$
@@ -218,7 +211,28 @@ public final class TraceDeclarationParser extends AbstractScopedCommonTreeParser
         } else {
             Activator.log(IStatus.WARNING, Messages.IOStructGen_UnknownTraceAttributeWarning + " " + left); //$NON-NLS-1$
         }
+
         return trace;
+
+    }
+
+    /**
+     * @param trace
+     *            current trace
+     * @param uuid
+     *            the uuid that was found in the preamble json block
+     * @throws ParseException
+     *             error if there are conflicting uuids found
+     */
+    public static void uuidIsConsistent(CTFTrace trace, UUID uuid) throws ParseException {
+        if (trace.uuidIsSet()) {
+            if (trace.getUUID().compareTo(uuid) != 0) {
+                throw new ParseException("UUID mismatch. Packet uuid is " //$NON-NLS-1$
+                        + trace.getUUID() + " but metadata uuid is " + uuid); //$NON-NLS-1$
+            }
+        } else {
+            trace.setUUID(uuid);
+        }
     }
 
     private static void addByteOrder(ByteOrder byteOrder,

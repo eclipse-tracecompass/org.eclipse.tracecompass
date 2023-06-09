@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Ericsson
+ * Copyright (c) 2015, 2023 Ericsson
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -12,10 +12,10 @@ package org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.stream;
 
 import static org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.TsdlUtils.isUnaryInteger;
 
-import org.antlr.runtime.tree.CommonTree;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ICommonTreeParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.UnaryIntegerParser;
+import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
 
 /**
  * <strong>Stream ID</strong>, used as reference to stream description in
@@ -43,8 +43,8 @@ public final class StreamIdParser implements ICommonTreeParser {
      * @return the value of the stream as a {@link Long}
      */
     @Override
-    public Long parse(CommonTree tree, ICommonTreeParserParameter param) throws ParseException {
-        CommonTree firstChild = (CommonTree) tree.getChild(0);
+    public Long parse(ICTFMetadataNode tree, ICommonTreeParserParameter param) throws ParseException {
+        ICTFMetadataNode firstChild = tree.getChild(0);
         if (isUnaryInteger(firstChild)) {
             if (tree.getChildCount() > 1) {
                 throw new ParseException("invalid value for stream id"); //$NON-NLS-1$

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Ericsson
+ * Copyright (c) 2015, 2023 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0 which
@@ -13,10 +13,10 @@ package org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl;
 
 import static org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.TsdlUtils.isUnaryInteger;
 
-import org.antlr.runtime.tree.CommonTree;
 import org.eclipse.tracecompass.ctf.parser.CTFParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ICommonTreeParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
+import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
 
 /**
  * Alignment parser, we define byte-packed types as aligned on the byte size,
@@ -69,7 +69,7 @@ public final class AlignmentParser implements ICommonTreeParser {
      *             Invalid alignment value
      */
     @Override
-    public Long parse(CommonTree tree, ICommonTreeParserParameter param) throws ParseException {
+    public Long parse(ICTFMetadataNode tree, ICommonTreeParserParameter param) throws ParseException {
         /*
          * If a CTF_RIGHT node was passed, call getAlignment with the first
          * child
@@ -79,7 +79,7 @@ public final class AlignmentParser implements ICommonTreeParser {
                 throw new ParseException(INVALID_VALUE_FOR_ALIGNMENT);
             }
 
-            return parse((CommonTree) tree.getChild(0), param);
+            return parse(tree.getChild(0), param);
         } else if (isUnaryInteger(tree)) {
             long alignment = UnaryIntegerParser.INSTANCE.parse(tree, null);
 

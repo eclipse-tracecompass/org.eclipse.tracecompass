@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Ericsson
+ * Copyright (c) 2015, 2023 Ericsson
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -15,8 +15,6 @@ import static org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.Tsd
 
 import java.util.List;
 
-import org.antlr.runtime.tree.CommonTree;
-import org.antlr.runtime.tree.Tree;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.tracecompass.ctf.core.CTFStrings;
@@ -32,6 +30,7 @@ import org.eclipse.tracecompass.internal.ctf.core.event.metadata.Messages;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.MetadataStrings;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.TypeSpecifierListParser;
+import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.trace.CTFStream;
 
 /**
@@ -131,7 +130,7 @@ public final class StreamDeclarationParser extends AbstractScopedCommonTreeParse
      *             if the stream AST node is malformed
      */
     @Override
-    public CTFStream parse(CommonTree streamDecl, ICommonTreeParserParameter param) throws ParseException {
+    public CTFStream parse(ICTFMetadataNode streamDecl, ICommonTreeParserParameter param) throws ParseException {
         if (!(param instanceof Param)) {
             throw new IllegalArgumentException("Param must be a " + Param.class.getCanonicalName()); //$NON-NLS-1$
         }
@@ -141,10 +140,10 @@ public final class StreamDeclarationParser extends AbstractScopedCommonTreeParse
 
         /* There should be a left and right */
 
-        CommonTree leftNode = (CommonTree) streamDecl.getChild(0);
-        CommonTree rightNode = (CommonTree) streamDecl.getChild(1);
+        ICTFMetadataNode leftNode = streamDecl.getChild(0);
+        ICTFMetadataNode rightNode = streamDecl.getChild(1);
 
-        List<CommonTree> leftStrings = leftNode.getChildren();
+        List<ICTFMetadataNode> leftStrings = leftNode.getChildren();
 
         if (!isAnyUnaryString(leftStrings.get(0))) {
             throw new ParseException(IDENTIFIER_MUST_BE_A_STRING);
@@ -165,7 +164,7 @@ public final class StreamDeclarationParser extends AbstractScopedCommonTreeParse
                 throw new ParseException(EVENT_HEADER + ALREADY_DEFINED);
             }
 
-            CommonTree typeSpecifier = (CommonTree) rightNode.getChild(0);
+            ICTFMetadataNode typeSpecifier = rightNode.getChild(0);
 
             if (typeSpecifier.getType() != CTFParser.TYPE_SPECIFIER_LIST) {
                 throw new ParseException(EVENT_HEADER + EXPECTS_A_TYPE_SPECIFIER);
@@ -193,7 +192,7 @@ public final class StreamDeclarationParser extends AbstractScopedCommonTreeParse
                 throw new ParseException(EVENT_CONTEXT + ALREADY_DEFINED);
             }
 
-            CommonTree typeSpecifier = (CommonTree) rightNode.getChild(0);
+            ICTFMetadataNode typeSpecifier = rightNode.getChild(0);
 
             if (typeSpecifier.getType() != CTFParser.TYPE_SPECIFIER_LIST) {
                 throw new ParseException(EVENT_CONTEXT + EXPECTS_A_TYPE_SPECIFIER);
@@ -211,7 +210,7 @@ public final class StreamDeclarationParser extends AbstractScopedCommonTreeParse
                 throw new ParseException(PACKET_CONTEXT + ALREADY_DEFINED);
             }
 
-            CommonTree typeSpecifier = (CommonTree) rightNode.getChild(0);
+            ICTFMetadataNode typeSpecifier = rightNode.getChild(0);
 
             if (typeSpecifier.getType() != CTFParser.TYPE_SPECIFIER_LIST) {
                 throw new ParseException(PACKET_CONTEXT + EXPECTS_A_TYPE_SPECIFIER);
@@ -230,15 +229,15 @@ public final class StreamDeclarationParser extends AbstractScopedCommonTreeParse
         return stream;
     }
 
-    private static DeclarationScope lookupStructName(CommonTree typeSpecifier, DeclarationScope scope) {
+    private static DeclarationScope lookupStructName(ICTFMetadataNode typeSpecifier, DeclarationScope scope) {
         /*
          * This needs a struct.struct_name.name to work, luckily, that is 99.99%
          * of traces we receive.
          */
-        final Tree potentialStruct = typeSpecifier.getChild(0);
+        final ICTFMetadataNode potentialStruct = typeSpecifier.getChild(0);
         DeclarationScope eventHeaderScope = null;
         if (potentialStruct.getType() == (CTFParser.STRUCT)) {
-            final Tree potentialStructName = potentialStruct.getChild(0);
+            final ICTFMetadataNode potentialStructName = potentialStruct.getChild(0);
             if (potentialStructName.getType() == (CTFParser.STRUCT_NAME)) {
                 final String name = potentialStructName.getChild(0).getText();
                 eventHeaderScope = scope.lookupChildRecursive(name);

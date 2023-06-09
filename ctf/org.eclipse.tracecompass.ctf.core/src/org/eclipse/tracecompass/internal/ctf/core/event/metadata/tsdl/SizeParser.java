@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Ericsson
+ * Copyright (c) 2015, 2023 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0 which
@@ -13,9 +13,9 @@ package org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl;
 
 import static org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.TsdlUtils.isUnaryInteger;
 
-import org.antlr.runtime.tree.CommonTree;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ICommonTreeParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
+import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
 
 /**
  * Type size, in bits, for integers and floats is that returned by sizeof() in C
@@ -54,8 +54,8 @@ public final class SizeParser implements ICommonTreeParser {
      *             if the size is not an int or a negative
      */
     @Override
-    public Long parse(CommonTree rightNode, ICommonTreeParserParameter param) throws ParseException {
-        CommonTree firstChild = (CommonTree) rightNode.getChild(0);
+    public Long parse(ICTFMetadataNode rightNode, ICommonTreeParserParameter param) throws ParseException {
+        ICTFMetadataNode firstChild = rightNode.getChild(0);
         if (isUnaryInteger(firstChild)) {
             if (rightNode.getChildCount() > 1) {
                 throw new ParseException(INVALID_VALUE_FOR_SIZE);

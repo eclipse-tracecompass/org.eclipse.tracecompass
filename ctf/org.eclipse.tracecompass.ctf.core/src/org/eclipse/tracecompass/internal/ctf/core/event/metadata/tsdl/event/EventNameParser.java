@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Ericsson
+ * Copyright (c) 2015, 2023 Ericsson
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -14,9 +14,9 @@ package org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.event;
 import static org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.TsdlUtils.concatenateUnaryStrings;
 import static org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.TsdlUtils.isAnyUnaryString;
 
-import org.antlr.runtime.tree.CommonTree;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ICommonTreeParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
+import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
 
 /**
  * Parser for event names
@@ -34,8 +34,8 @@ public final class EventNameParser implements ICommonTreeParser {
     }
 
     @Override
-    public String parse(CommonTree tree, ICommonTreeParserParameter param) throws ParseException {
-        CommonTree firstChild = (CommonTree) tree.getChild(0);
+    public String parse(ICTFMetadataNode tree, ICommonTreeParserParameter param) throws ParseException {
+        ICTFMetadataNode firstChild = tree.getChild(0);
 
         if (isAnyUnaryString(firstChild)) {
             return concatenateUnaryStrings(tree.getChildren());

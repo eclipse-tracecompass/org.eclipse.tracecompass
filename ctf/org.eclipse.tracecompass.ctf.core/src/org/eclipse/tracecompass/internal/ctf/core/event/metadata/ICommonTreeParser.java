@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Ericsson
+ * Copyright (c) 2015, 2023 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0 which
@@ -11,12 +11,12 @@
 
 package org.eclipse.tracecompass.internal.ctf.core.event.metadata;
 
-import org.antlr.runtime.tree.CommonTree;
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
 
 /**
  * Common tree parser interface. Should only have one method
- * {@link #parse(CommonTree, ICommonTreeParserParameter)}
+ * {@link #parse(ICTFMetadataNode, ICommonTreeParserParameter)}
  *
  * It is recommended to add to the javadoc on this inerface as it is not
  * specific
@@ -50,6 +50,6 @@ public interface ICommonTreeParser {
      *             if the tree or data is wrong
      */
     @NonNull
-    Object parse(CommonTree tree, ICommonTreeParserParameter param) throws ParseException;
+    Object parse(ICTFMetadataNode tree, ICommonTreeParserParameter param) throws ParseException;
 
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Ericsson
+ * Copyright (c) 2015, 2023 Ericsson
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -15,7 +15,6 @@ import static org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.Tsd
 import java.util.Collections;
 import java.util.List;
 
-import org.antlr.runtime.tree.CommonTree;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.ctf.core.event.metadata.DeclarationScope;
@@ -27,6 +26,7 @@ import org.eclipse.tracecompass.internal.ctf.core.event.metadata.MetadataStrings
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.TypeAliasParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.TypedefParser;
+import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
 
 /**
  * A struct body can have any of the following elements, even though some of
@@ -120,14 +120,14 @@ public final class StructBodyParser extends AbstractScopedCommonTreeParser {
      *             The AST is malformed
      */
     @Override
-    public StructDeclaration parse(CommonTree structBody, ICommonTreeParserParameter param) throws ParseException {
+    public StructDeclaration parse(ICTFMetadataNode structBody, ICommonTreeParserParameter param) throws ParseException {
         if (!(param instanceof Param)) {
             throw new IllegalArgumentException("Param must be a " + Param.class.getCanonicalName()); //$NON-NLS-1$
         }
         String structName = ((Param) param).fName;
         final DeclarationScope scope = new DeclarationScope(((Param) param).fDeclarationScope, structName == null ? MetadataStrings.STRUCT : structName);
         StructDeclaration structDeclaration = ((Param) param).fStructDeclaration;
-        List<CommonTree> structDeclarations = structBody.getChildren();
+        List<ICTFMetadataNode> structDeclarations = structBody.getChildren();
         if (structDeclarations == null) {
             structDeclarations = Collections.emptyList();
         }
@@ -139,7 +139,7 @@ public final class StructBodyParser extends AbstractScopedCommonTreeParser {
 
         CTFTrace trace = ((Param) param).fTrace;
 
-        for (CommonTree declarationNode : structDeclarations) {
+        for (ICTFMetadataNode declarationNode : structDeclarations) {
             switch (declarationNode.getType()) {
             case CTFParser.TYPEALIAS:
                 TypeAliasParser.INSTANCE.parse(declarationNode, new TypeAliasParser.Param(trace, scope));

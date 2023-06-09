@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Ericsson
+ * Copyright (c) 2015, 2023 Ericsson
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -18,7 +18,6 @@ import static org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.Tsd
 import java.nio.ByteOrder;
 import java.util.List;
 
-import org.antlr.runtime.tree.CommonTree;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.tracecompass.ctf.core.event.types.FloatDeclaration;
 import org.eclipse.tracecompass.ctf.core.trace.CTFTrace;
@@ -29,6 +28,7 @@ import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.AlignmentParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.ByteOrderParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.UnaryIntegerParser;
+import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
 
 /**
  *
@@ -109,12 +109,12 @@ public final class FloatDeclarationParser implements ICommonTreeParser {
      *             if a float AST is malformed
      */
     @Override
-    public FloatDeclaration parse(CommonTree floatingPoint, ICommonTreeParserParameter param) throws ParseException {
+    public FloatDeclaration parse(ICTFMetadataNode floatingPoint, ICommonTreeParserParameter param) throws ParseException {
         if (!(param instanceof Param)) {
             throw new IllegalArgumentException("Param must be a " + Param.class.getCanonicalName()); //$NON-NLS-1$
         }
         CTFTrace trace = ((Param) param).fTrace;
-        List<CommonTree> children = floatingPoint.getChildren();
+        List<ICTFMetadataNode> children = floatingPoint.getChildren();
 
         /*
          * If the integer has no attributes, then it is missing the size
@@ -132,17 +132,17 @@ public final class FloatDeclarationParser implements ICommonTreeParser {
         int mantissa = DEFAULT_FLOAT_MANTISSA;
 
         /* Iterate on all integer children */
-        for (CommonTree child : children) {
+        for (ICTFMetadataNode child : children) {
             switch (child.getType()) {
             case CTFParser.CTF_EXPRESSION_VAL:
                 /*
                  * An assignment expression must have 2 children, left and right
                  */
 
-                CommonTree leftNode = (CommonTree) child.getChild(0);
-                CommonTree rightNode = (CommonTree) child.getChild(1);
+                ICTFMetadataNode leftNode = child.getChild(0);
+                ICTFMetadataNode rightNode = child.getChild(1);
 
-                List<CommonTree> leftStrings = leftNode.getChildren();
+                List<ICTFMetadataNode> leftStrings = leftNode.getChildren();
 
                 if (!isAnyUnaryString(leftStrings.get(0))) {
                     throw new ParseException(IDENTIFIER_MUST_BE_A_STRING);
@@ -150,11 +150,11 @@ public final class FloatDeclarationParser implements ICommonTreeParser {
                 String left = concatenateUnaryStrings(leftStrings);
 
                 if (left.equals(MetadataStrings.EXP_DIG)) {
-                    exponent = UnaryIntegerParser.INSTANCE.parse((CommonTree) rightNode.getChild(0), null).intValue();
+                    exponent = UnaryIntegerParser.INSTANCE.parse(rightNode.getChild(0), null).intValue();
                 } else if (left.equals(MetadataStrings.BYTE_ORDER)) {
                     byteOrder = ByteOrderParser.INSTANCE.parse(rightNode, new ByteOrderParser.Param(trace));
                 } else if (left.equals(MetadataStrings.MANT_DIG)) {
-                    mantissa = UnaryIntegerParser.INSTANCE.parse((CommonTree) rightNode.getChild(0), null).intValue();
+                    mantissa = UnaryIntegerParser.INSTANCE.parse(rightNode.getChild(0), null).intValue();
                 } else if (left.equals(MetadataStrings.ALIGN)) {
                     alignment = AlignmentParser.INSTANCE.parse(rightNode, null);
                 } else {

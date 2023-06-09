@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Ericsson
+ * Copyright (c) 2015, 2023 Ericsson
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -12,13 +12,13 @@ package org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl;
 
 import java.util.List;
 
-import org.antlr.runtime.tree.CommonTree;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.ctf.core.event.metadata.DeclarationScope;
 import org.eclipse.tracecompass.ctf.core.event.types.IDeclaration;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.AbstractScopedCommonTreeParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
+import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
 
 /**
  * Basic parser for all abstract data types
@@ -37,7 +37,7 @@ public final class TypeDeclarationParser extends AbstractScopedCommonTreeParser 
     @NonNullByDefault
     public static final class Param implements ICommonTreeParserParameter {
         private final DeclarationScope fDeclarationScope;
-        private final @Nullable List<CommonTree> fPointerList;
+        private final @Nullable List<ICTFMetadataNode> fPointerList;
 
         /**
          * Constructor
@@ -47,7 +47,7 @@ public final class TypeDeclarationParser extends AbstractScopedCommonTreeParser 
          * @param scope
          *            the current scope
          */
-        public Param(@Nullable List<CommonTree> pointerList, DeclarationScope scope) {
+        public Param(@Nullable List<ICTFMetadataNode> pointerList, DeclarationScope scope) {
             fPointerList = pointerList;
             fDeclarationScope = scope;
         }
@@ -75,13 +75,13 @@ public final class TypeDeclarationParser extends AbstractScopedCommonTreeParser 
      *             If the type does not exist (has not been found).
      */
     @Override
-    public IDeclaration parse(CommonTree typeSpecifierList, ICommonTreeParserParameter param) throws ParseException {
+    public IDeclaration parse(ICTFMetadataNode typeSpecifierList, ICommonTreeParserParameter param) throws ParseException {
         if (!(param instanceof Param)) {
             throw new IllegalArgumentException("Param must be a " + Param.class.getCanonicalName()); //$NON-NLS-1$
         }
         DeclarationScope scope = ((Param) param).fDeclarationScope;
 
-        List<CommonTree> pointerList = ((Param) param).fPointerList;
+        List<ICTFMetadataNode> pointerList = ((Param) param).fPointerList;
         /* Create the string representation of the type declaration */
         String typeStringRepresentation = TypeDeclarationStringParser.INSTANCE.parse(typeSpecifierList, new TypeDeclarationStringParser.Param(pointerList));
 

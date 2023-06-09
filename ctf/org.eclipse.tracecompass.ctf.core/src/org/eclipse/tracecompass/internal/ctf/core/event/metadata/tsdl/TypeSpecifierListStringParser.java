@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Ericsson
+ * Copyright (c) 2015, 2023 Ericsson
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -12,9 +12,9 @@ package org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl;
 
 import java.util.List;
 
-import org.antlr.runtime.tree.CommonTree;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ICommonTreeParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
+import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
 
 /**
  * Type specifier list string parser, parses a list of names
@@ -45,13 +45,13 @@ public final class TypeSpecifierListStringParser implements ICommonTreeParser {
      *             invalid node
      */
     @Override
-    public StringBuilder parse(CommonTree typeSpecifierList, ICommonTreeParserParameter param) throws ParseException {
+    public StringBuilder parse(ICTFMetadataNode typeSpecifierList, ICommonTreeParserParameter param) throws ParseException {
         StringBuilder sb = new StringBuilder();
-        List<CommonTree> children = typeSpecifierList.getChildren();
+        List<ICTFMetadataNode> children = typeSpecifierList.getChildren();
 
         boolean firstItem = true;
 
-        for (CommonTree child : children) {
+        for (ICTFMetadataNode child : children) {
             if (!firstItem) {
                 sb.append(' ');
 

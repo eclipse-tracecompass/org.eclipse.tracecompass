@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Ericsson
+ * Copyright (c) 2015, 2023 Ericsson
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -12,10 +12,10 @@ package org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl;
 
 import static org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.TsdlUtils.childTypeError;
 
-import org.antlr.runtime.tree.CommonTree;
 import org.eclipse.tracecompass.ctf.parser.CTFParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ICommonTreeParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
+import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
 
 /**
  * Type specifier list name parser (is it a bool? a string... )
@@ -44,7 +44,7 @@ public final class TypeSpecifierListNameParser implements ICommonTreeParser {
      *             invalid node
      */
     @Override
-    public StringBuilder parse(CommonTree typeSpecifier, ICommonTreeParserParameter param) throws ParseException {
+    public StringBuilder parse(ICTFMetadataNode typeSpecifier, ICommonTreeParserParameter param) throws ParseException {
         StringBuilder sb = new StringBuilder();
         switch (typeSpecifier.getType()) {
         case CTFParser.FLOATTOK:
@@ -86,39 +86,39 @@ public final class TypeSpecifierListNameParser implements ICommonTreeParser {
 
     }
 
-    private static void parseEnum(CommonTree typeSpecifier, StringBuilder sb) throws ParseException {
-        CommonTree enumName = (CommonTree) typeSpecifier.getFirstChildWithType(CTFParser.ENUM_NAME);
+    private static void parseEnum(ICTFMetadataNode typeSpecifier, StringBuilder sb) throws ParseException {
+        ICTFMetadataNode enumName = typeSpecifier.getFirstChildWithType(CTFParser.ENUM_NAME);
         if (enumName == null) {
             throw new ParseException("nameless enum found in createTypeSpecifierString"); //$NON-NLS-1$
         }
 
-        CommonTree enumNameIdentifier = (CommonTree) enumName.getChild(0);
+        ICTFMetadataNode enumNameIdentifier = enumName.getChild(0);
 
         parseSimple(enumNameIdentifier, sb);
     }
 
-    private static void parseVariant(CommonTree typeSpecifier, StringBuilder sb) throws ParseException {
-        CommonTree variantName = (CommonTree) typeSpecifier.getFirstChildWithType(CTFParser.VARIANT_NAME);
+    private static void parseVariant(ICTFMetadataNode typeSpecifier, StringBuilder sb) throws ParseException {
+        ICTFMetadataNode variantName = typeSpecifier.getFirstChildWithType(CTFParser.VARIANT_NAME);
         if (variantName == null) {
             throw new ParseException("nameless variant found in createTypeSpecifierString"); //$NON-NLS-1$
         }
 
-        CommonTree variantNameIdentifier = (CommonTree) variantName.getChild(0);
+        ICTFMetadataNode variantNameIdentifier = variantName.getChild(0);
 
         parseSimple(variantNameIdentifier, sb);
     }
 
-    private static void parseSimple(CommonTree typeSpecifier, StringBuilder sb) {
+    private static void parseSimple(ICTFMetadataNode typeSpecifier, StringBuilder sb) {
         sb.append(typeSpecifier.getText());
     }
 
-    private static void parseStruct(CommonTree typeSpecifier, StringBuilder sb) throws ParseException {
-        CommonTree structName = (CommonTree) typeSpecifier.getFirstChildWithType(CTFParser.STRUCT_NAME);
+    private static void parseStruct(ICTFMetadataNode typeSpecifier, StringBuilder sb) throws ParseException {
+        ICTFMetadataNode structName = typeSpecifier.getFirstChildWithType(CTFParser.STRUCT_NAME);
         if (structName == null) {
             throw new ParseException("nameless struct found in createTypeSpecifierString"); //$NON-NLS-1$
         }
 
-        CommonTree structNameIdentifier = (CommonTree) structName.getChild(0);
+        ICTFMetadataNode structNameIdentifier = structName.getChild(0);
 
         parseSimple(structNameIdentifier, sb);
     }

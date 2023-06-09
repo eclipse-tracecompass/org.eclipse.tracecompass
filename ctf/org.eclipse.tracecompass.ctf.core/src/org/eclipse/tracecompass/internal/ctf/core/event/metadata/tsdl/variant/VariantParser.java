@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Ericsson
+ * Copyright (c) 2015, 2023 Ericsson
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -15,7 +15,6 @@ import static org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.Tsd
 import java.util.List;
 import java.util.Set;
 
-import org.antlr.runtime.tree.CommonTree;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.tracecompass.ctf.core.event.metadata.DeclarationScope;
 import org.eclipse.tracecompass.ctf.core.event.types.EnumDeclaration;
@@ -25,6 +24,7 @@ import org.eclipse.tracecompass.ctf.core.trace.CTFTrace;
 import org.eclipse.tracecompass.ctf.parser.CTFParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.AbstractScopedCommonTreeParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
+import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
 
 /**
  *
@@ -232,31 +232,31 @@ public final class VariantParser extends AbstractScopedCommonTreeParser {
      *             the AST is malformed
      */
     @Override
-    public VariantDeclaration parse(CommonTree variant, ICommonTreeParserParameter param) throws ParseException {
+    public VariantDeclaration parse(ICTFMetadataNode variant, ICommonTreeParserParameter param) throws ParseException {
         if (!(param instanceof Param)) {
             throw new IllegalArgumentException("Param must be a " + Param.class.getCanonicalName()); //$NON-NLS-1$
         }
         final DeclarationScope scope = ((Param) param).fDeclarationScope;
 
-        List<CommonTree> children = variant.getChildren();
+        List<ICTFMetadataNode> children = variant.getChildren();
         VariantDeclaration variantDeclaration = null;
 
         boolean hasName = false;
         String variantName = null;
 
         boolean hasBody = false;
-        CommonTree variantBody = null;
+        ICTFMetadataNode variantBody = null;
 
         boolean hasTag = false;
         String variantTag = null;
 
-        for (CommonTree child : children) {
+        for (ICTFMetadataNode child : children) {
             switch (child.getType()) {
             case CTFParser.VARIANT_NAME:
 
                 hasName = true;
 
-                CommonTree variantNameIdentifier = (CommonTree) child.getChild(0);
+                ICTFMetadataNode variantNameIdentifier = child.getChild(0);
 
                 variantName = variantNameIdentifier.getText();
 
@@ -265,7 +265,7 @@ public final class VariantParser extends AbstractScopedCommonTreeParser {
 
                 hasTag = true;
 
-                CommonTree variantTagIdentifier = (CommonTree) child.getChild(0);
+                ICTFMetadataNode variantTagIdentifier = child.getChild(0);
 
                 variantTag = variantTagIdentifier.getText();
 

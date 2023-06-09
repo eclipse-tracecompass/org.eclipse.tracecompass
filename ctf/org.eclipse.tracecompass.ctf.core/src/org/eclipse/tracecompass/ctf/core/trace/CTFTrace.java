@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2018 Ericsson, Ecole Polytechnique de Montreal and others
+ * Copyright (c) 2011, 2023 Ericsson, Ecole Polytechnique de Montreal and others
  *
  * All rights reserved. This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0 which
@@ -916,7 +916,7 @@ class MetadataFileFilter implements FileFilter {
         if (pathname.isHidden()) {
             return false;
         }
-        return !(pathname.getName().equals("metadata"));
+        return !(pathname.getName().equals("metadata")); //$NON-NLS-1$
     }
 
 }

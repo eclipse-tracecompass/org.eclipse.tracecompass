@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Ericsson
+ * Copyright (c) 2015, 2023 Ericsson
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -14,7 +14,6 @@ import static org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.Tsd
 
 import java.util.List;
 
-import org.antlr.runtime.tree.CommonTree;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.ctf.core.event.metadata.DeclarationScope;
@@ -24,6 +23,7 @@ import org.eclipse.tracecompass.ctf.parser.CTFParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.AbstractScopedCommonTreeParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.AlignmentParser;
+import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.types.StructDeclarationFlattener;
 
 /**
@@ -97,7 +97,7 @@ public final class StructParser extends AbstractScopedCommonTreeParser {
     @NonNullByDefault
     public static final class Param implements ICommonTreeParserParameter {
         private final DeclarationScope fDeclarationScope;
-        private final @Nullable CommonTree fIdentifier;
+        private final @Nullable ICTFMetadataNode fIdentifier;
         private final CTFTrace fTrace;
 
         /**
@@ -110,7 +110,7 @@ public final class StructParser extends AbstractScopedCommonTreeParser {
          * @param scope
          *            the current scope
          */
-        public Param(CTFTrace trace, @Nullable CommonTree identifier, DeclarationScope scope) {
+        public Param(CTFTrace trace, @Nullable ICTFMetadataNode identifier, DeclarationScope scope) {
             fTrace = trace;
             fIdentifier = identifier;
             fDeclarationScope = scope;
@@ -137,14 +137,14 @@ public final class StructParser extends AbstractScopedCommonTreeParser {
      *             the AST is malformed
      */
     @Override
-    public StructDeclaration parse(CommonTree struct, ICommonTreeParserParameter param) throws ParseException {
+    public StructDeclaration parse(ICTFMetadataNode struct, ICommonTreeParserParameter param) throws ParseException {
         if (!(param instanceof Param)) {
             throw new IllegalArgumentException("Param must be a " + Param.class.getCanonicalName()); //$NON-NLS-1$
         }
         final DeclarationScope scope = ((Param) param).fDeclarationScope;
-        CommonTree identifier = ((Param) param).fIdentifier;
+        ICTFMetadataNode identifier = ((Param) param).fIdentifier;
 
-        List<CommonTree> children = struct.getChildren();
+        List<ICTFMetadataNode> children = struct.getChildren();
 
         /* The return value */
         StructDeclaration structDeclaration = null;
@@ -154,18 +154,18 @@ public final class StructParser extends AbstractScopedCommonTreeParser {
         boolean hasName = false;
 
         /* Body */
-        CommonTree structBody = null;
+        ICTFMetadataNode structBody = null;
         boolean hasBody = false;
 
         /* Align */
         long structAlign = 0;
 
         /* Loop on all children and identify what we have to work with. */
-        for (CommonTree child : children) {
+        for (ICTFMetadataNode child : children) {
             switch (child.getType()) {
             case CTFParser.STRUCT_NAME: {
                 hasName = true;
-                CommonTree structNameIdentifier = (CommonTree) child.getChild(0);
+                ICTFMetadataNode structNameIdentifier = child.getChild(0);
                 structName = structNameIdentifier.getText();
                 break;
             }
@@ -176,7 +176,7 @@ public final class StructParser extends AbstractScopedCommonTreeParser {
                 break;
             }
             case CTFParser.ALIGN: {
-                CommonTree structAlignExpression = (CommonTree) child.getChild(0);
+                ICTFMetadataNode structAlignExpression = child.getChild(0);
 
                 structAlign = AlignmentParser.INSTANCE.parse(structAlignExpression, null);
                 break;

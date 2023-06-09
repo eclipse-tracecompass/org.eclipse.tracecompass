@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Ericsson
+ * Copyright (c) 2015, 2023 Ericsson
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -11,7 +11,6 @@
 
 package org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.enumeration;
 
-import org.antlr.runtime.tree.CommonTree;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.tracecompass.ctf.core.event.metadata.DeclarationScope;
 import org.eclipse.tracecompass.ctf.core.event.types.IDeclaration;
@@ -20,6 +19,7 @@ import org.eclipse.tracecompass.ctf.core.trace.CTFTrace;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.AbstractScopedCommonTreeParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.TypeSpecifierListParser;
+import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
 
 /**
  * This parses the internal type of the enum
@@ -76,7 +76,7 @@ public final class EnumContainerParser extends AbstractScopedCommonTreeParser {
      *             integer type.
      */
     @Override
-    public IntegerDeclaration parse(CommonTree enumContainerType, ICommonTreeParserParameter param) throws ParseException {
+    public IntegerDeclaration parse(ICTFMetadataNode enumContainerType, ICommonTreeParserParameter param) throws ParseException {
         if (!(param instanceof Param)) {
             throw new IllegalArgumentException("Param must be a " + Param.class.getCanonicalName()); //$NON-NLS-1$
         }
@@ -84,7 +84,7 @@ public final class EnumContainerParser extends AbstractScopedCommonTreeParser {
         DeclarationScope scope = parameter.fCurrentScope;
 
         /* Get the child, which should be a type specifier list */
-        CommonTree typeSpecifierList = (CommonTree) enumContainerType.getChild(0);
+        ICTFMetadataNode typeSpecifierList = enumContainerType.getChild(0);
 
         CTFTrace trace = ((Param) param).fTrace;
         /* Parse it and get the corresponding declaration */

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 Ericsson, Ecole Polytechnique de Montreal and others
+ * Copyright (c) 2011, 2023 Ericsson, Ecole Polytechnique de Montreal and others
  *
  * All rights reserved. This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0 which
@@ -21,7 +21,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.antlr.runtime.tree.CommonTree;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.tracecompass.common.core.NonNullUtils;
 import org.eclipse.tracecompass.ctf.core.event.CTFCallsite;
@@ -39,6 +38,7 @@ import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.environmen
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.event.EventParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.stream.StreamParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.trace.TraceDeclarationParser;
+import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.trace.CTFStream;
 
 import com.google.common.collect.Iterables;
@@ -56,7 +56,7 @@ public class IOStructGen {
      * The trace
      */
     private final @NonNull CTFTrace fTrace;
-    private CommonTree fTree;
+    private ICTFMetadataNode fTree;
 
     /**
      * The current declaration scope.
@@ -81,7 +81,7 @@ public class IOStructGen {
      * @param trace
      *            the trace containing the places to put all the read metadata
      */
-    public IOStructGen(CommonTree tree, @NonNull CTFTrace trace) {
+    public IOStructGen(ICTFMetadataNode tree, @NonNull CTFTrace trace) {
         fTrace = trace;
         fTree = tree;
         fRoot = NonNullUtils.checkNotNull(trace.getScope());
@@ -119,7 +119,7 @@ public class IOStructGen {
      * @param newTree
      *            the new tree to parse
      */
-    public void setTree(CommonTree newTree) {
+    public void setTree(ICTFMetadataNode newTree) {
         fTree = newTree;
     }
 
@@ -130,15 +130,15 @@ public class IOStructGen {
      *            A ROOT node.
      * @throws ParseException
      */
-    private void parseRoot(CommonTree root) throws ParseException {
+    private void parseRoot(ICTFMetadataNode root) throws ParseException {
 
-        List<CommonTree> children = root.getChildren();
+        List<ICTFMetadataNode> children = root.getChildren();
 
-        CommonTree traceNode = null;
+        ICTFMetadataNode traceNode = null;
         boolean hasStreams = false;
-        List<CommonTree> events = new ArrayList<>();
+        List<ICTFMetadataNode> events = new ArrayList<>();
         Collection<CTFCallsite> callsites = new ArrayList<>();
-        for (CommonTree child : children) {
+        for (ICTFMetadataNode child : children) {
             final int type = child.getType();
             switch (type) {
             case CTFParser.DECLARATION:
@@ -180,12 +180,12 @@ public class IOStructGen {
         fHasBeenParsed = true;
     }
 
-    private void parseEvents(List<CommonTree> events, Collection<CTFCallsite> staticCallsites, boolean hasStreams) throws ParseException {
+    private void parseEvents(List<ICTFMetadataNode> events, Collection<CTFCallsite> staticCallsites, boolean hasStreams) throws ParseException {
         if (!hasStreams && !events.isEmpty()) {
             /* Add an empty stream that will have a null id */
             fTrace.addStream(new CTFStream(fTrace));
         }
-        for (CommonTree event : events) {
+        for (ICTFMetadataNode event : events) {
             EventDeclaration ev = EventParser.INSTANCE.parse(event, new EventParser.Param(fTrace, fRoot));
             List<CTFCallsite> callsites = staticCallsites.stream().filter(cs -> ev.getName().equals(cs.getEventName())).collect(Collectors.toList());
             ev.addCallsites(callsites);
@@ -193,14 +193,14 @@ public class IOStructGen {
         }
     }
 
-    private void parseIncompleteRoot(CommonTree root) throws ParseException {
+    private void parseIncompleteRoot(ICTFMetadataNode root) throws ParseException {
         if (!fHasBeenParsed) {
             throw new ParseException("You need to run generate first"); //$NON-NLS-1$
         }
-        List<CommonTree> children = root.getChildren();
-        List<CommonTree> events = new ArrayList<>();
+        List<ICTFMetadataNode> children = root.getChildren();
+        List<ICTFMetadataNode> events = new ArrayList<>();
         Collection<CTFCallsite> callsites = new ArrayList<>();
-        for (CommonTree child : children) {
+        for (ICTFMetadataNode child : children) {
             final int type = child.getType();
             switch (type) {
             case CTFParser.DECLARATION:
@@ -232,15 +232,15 @@ public class IOStructGen {
         parseEvents(events, callsites, !Iterables.isEmpty(fTrace.getStreams()));
     }
 
-    private void parseTrace(CommonTree traceNode) throws ParseException {
+    private void parseTrace(ICTFMetadataNode traceNode) throws ParseException {
 
         CTFTrace trace = fTrace;
-        List<CommonTree> children = traceNode.getChildren();
+        List<ICTFMetadataNode> children = traceNode.getChildren();
         if (children == null) {
             throw new ParseException("Trace block is empty"); //$NON-NLS-1$
         }
 
-        for (CommonTree child : children) {
+        for (ICTFMetadataNode child : children) {
             switch (child.getType()) {
             case CTFParser.TYPEALIAS:
                 TypeAliasParser.INSTANCE.parse(child, new TypeAliasParser.Param(trace, fRoot));
@@ -273,12 +273,12 @@ public class IOStructGen {
      *            The declaration subtree.
      * @throws ParseException
      */
-    private void parseRootDeclaration(CommonTree declaration)
+    private void parseRootDeclaration(ICTFMetadataNode declaration)
             throws ParseException {
 
-        List<CommonTree> children = declaration.getChildren();
+        List<ICTFMetadataNode> children = declaration.getChildren();
 
-        for (CommonTree child : children) {
+        for (ICTFMetadataNode child : children) {
             switch (child.getType()) {
             case CTFParser.TYPEDEF:
                 TypedefParser.INSTANCE.parse(child, new TypedefParser.Param(fTrace, fRoot));
@@ -304,8 +304,8 @@ public class IOStructGen {
      *            The invalid child node.
      * @return ParseException with details
      */
-    private static ParseException childTypeError(CommonTree child) {
-        CommonTree parent = (CommonTree) child.getParent();
+    private static ParseException childTypeError(ICTFMetadataNode child) {
+        ICTFMetadataNode parent = child.getParent();
         String error = "Parent " + CTFParser.tokenNames[parent.getType()] //$NON-NLS-1$
                 + " can't have a child of type " //$NON-NLS-1$
                 + CTFParser.tokenNames[child.getType()] + "."; //$NON-NLS-1$

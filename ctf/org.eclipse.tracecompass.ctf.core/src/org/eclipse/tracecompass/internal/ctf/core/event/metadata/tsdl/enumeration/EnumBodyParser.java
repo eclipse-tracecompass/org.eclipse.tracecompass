@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Ericsson
+ * Copyright (c) 2015, 2023 Ericsson
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -13,11 +13,11 @@ package org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.enumerati
 
 import java.util.List;
 
-import org.antlr.runtime.tree.CommonTree;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.tracecompass.ctf.core.event.types.EnumDeclaration;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ICommonTreeParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
+import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
 
 /**
  * Body parser for an enumeration, this parses the list of elements in an enum
@@ -59,18 +59,18 @@ public final class EnumBodyParser implements ICommonTreeParser {
     }
 
     @Override
-    public EnumDeclaration parse(CommonTree tree, ICommonTreeParserParameter param) throws ParseException {
+    public EnumDeclaration parse(ICTFMetadataNode tree, ICommonTreeParserParameter param) throws ParseException {
         if (!(param instanceof Param)) {
             throw new IllegalArgumentException("Param must be a " + Param.class.getCanonicalName()); //$NON-NLS-1$
         }
         Param parameter = (Param) param;
         EnumDeclaration enumDeclaration = parameter.fEnumDeclaration;
-        List<CommonTree> enumerators = tree.getChildren();
+        List<ICTFMetadataNode> enumerators = tree.getChildren();
         /*
          * Start at -1, so that if the first enumrator has no explicit value, it
          * will choose 0
          */
-        for (CommonTree enumerator : enumerators) {
+        for (ICTFMetadataNode enumerator : enumerators) {
             EnumeratorParser.INSTANCE.parse(enumerator, new EnumeratorParser.Param(enumDeclaration));
         }
         return enumDeclaration;

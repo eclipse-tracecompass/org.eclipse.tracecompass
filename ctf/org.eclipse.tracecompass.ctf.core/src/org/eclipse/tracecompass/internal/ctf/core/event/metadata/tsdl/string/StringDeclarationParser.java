@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Ericsson
+ * Copyright (c) 2015, 2023 Ericsson
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -16,13 +16,13 @@ import static org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.Tsd
 
 import java.util.List;
 
-import org.antlr.runtime.tree.CommonTree;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.tracecompass.ctf.core.event.types.Encoding;
 import org.eclipse.tracecompass.ctf.core.event.types.StringDeclaration;
 import org.eclipse.tracecompass.ctf.parser.CTFParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ICommonTreeParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
+import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
 
 /**
  * Strings are an array of bytes of variable size and are terminated by a '\0'
@@ -73,15 +73,15 @@ public final class StringDeclarationParser implements ICommonTreeParser {
      *             the AST is malformed
      */
     @Override
-    public StringDeclaration parse(CommonTree string, ICommonTreeParserParameter unused) throws ParseException {
-        List<CommonTree> children = string.getChildren();
+    public StringDeclaration parse(ICTFMetadataNode string, ICommonTreeParserParameter unused) throws ParseException {
+        List<ICTFMetadataNode> children = string.getChildren();
         StringDeclaration stringDeclaration = null;
 
         if (children == null) {
             stringDeclaration = StringDeclaration.getStringDeclaration(Encoding.UTF8);
         } else {
             Encoding encoding = Encoding.UTF8;
-            for (CommonTree child : children) {
+            for (ICTFMetadataNode child : children) {
                 switch (child.getType()) {
                 case CTFParser.CTF_EXPRESSION_VAL:
                     /*
@@ -89,10 +89,10 @@ public final class StringDeclarationParser implements ICommonTreeParser {
                      * right
                      */
 
-                    CommonTree leftNode = (CommonTree) child.getChild(0);
-                    CommonTree rightNode = (CommonTree) child.getChild(1);
+                    ICTFMetadataNode leftNode = child.getChild(0);
+                    ICTFMetadataNode rightNode = child.getChild(1);
 
-                    List<CommonTree> leftStrings = leftNode.getChildren();
+                    List<ICTFMetadataNode> leftStrings = leftNode.getChildren();
 
                     if (!isAnyUnaryString(leftStrings.get(0))) {
                         throw new ParseException("Left side of ctf expression must be a string"); //$NON-NLS-1$

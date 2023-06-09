@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Ericsson
+ * Copyright (c) 2015, 2023 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0 which
@@ -11,10 +11,10 @@
 
 package org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl;
 
-import org.antlr.runtime.tree.CommonTree;
 import org.eclipse.tracecompass.ctf.parser.CTFParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ICommonTreeParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
+import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
 
 /**
  * Unary String Parser, along with Unary integer parser, one of the two most
@@ -48,10 +48,10 @@ public final class UnaryStringParser implements ICommonTreeParser {
      * parser.
      */
     @Override
-    public String parse(CommonTree unaryString, ICommonTreeParserParameter notUsed) throws ParseException {
-        CommonTree value = (CommonTree) unaryString.getChild(0);
+    public String parse(ICTFMetadataNode unaryString, ICommonTreeParserParameter notUsed) throws ParseException {
+        ICTFMetadataNode value = unaryString.getChild(0);
         if (value.getType() == CTFParser.UNARY_EXPRESSION_STRING) {
-            value = (CommonTree) value.getChild(0);
+            value = value.getChild(0);
         }
         String strval = value.getText();
         if (strval == null) {

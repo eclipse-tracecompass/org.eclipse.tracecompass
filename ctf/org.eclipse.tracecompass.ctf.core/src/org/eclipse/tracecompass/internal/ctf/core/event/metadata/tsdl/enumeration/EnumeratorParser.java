@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Ericsson
+ * Copyright (c) 2015, 2023 Ericsson
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -17,7 +17,6 @@ import static org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.Tsd
 import java.math.BigInteger;
 import java.util.List;
 
-import org.antlr.runtime.tree.CommonTree;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.tracecompass.ctf.core.event.types.EnumDeclaration;
@@ -28,6 +27,7 @@ import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ICommonTreePars
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.UnaryIntegerParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.UnaryStringParser;
+import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
 
 /**
  * The parser for individual enumerators within an enum body
@@ -83,34 +83,34 @@ public final class EnumeratorParser implements ICommonTreeParser {
      *             if the element failed to add
      */
     @Override
-    public Long parse(CommonTree enumerator, ICommonTreeParserParameter param) throws ParseException {
+    public Long parse(ICTFMetadataNode enumerator, ICommonTreeParserParameter param) throws ParseException {
         if (!(param instanceof Param)) {
             throw new IllegalArgumentException("Param must be a " + Param.class.getCanonicalName()); //$NON-NLS-1$
         }
         EnumDeclaration enumDeclaration = ((Param) param).fEnumDeclaration;
 
-        List<CommonTree> children = enumerator.getChildren();
+        List<ICTFMetadataNode> children = enumerator.getChildren();
 
         long low = 0;
         long high = 0;
         boolean valueSpecified = false;
         String label = null;
 
-        for (CommonTree child : children) {
+        for (ICTFMetadataNode child : children) {
             if (isAnyUnaryString(child)) {
                 label = UnaryStringParser.INSTANCE.parse(child, null);
             } else if (child.getType() == CTFParser.ENUM_VALUE) {
 
                 valueSpecified = true;
 
-                low = UnaryIntegerParser.INSTANCE.parse((CommonTree) child.getChild(0), null);
+                low = UnaryIntegerParser.INSTANCE.parse(child.getChild(0), null);
                 high = low;
             } else if (child.getType() == CTFParser.ENUM_VALUE_RANGE) {
 
                 valueSpecified = true;
 
-                low = UnaryIntegerParser.INSTANCE.parse((CommonTree) child.getChild(0), null);
-                high = UnaryIntegerParser.INSTANCE.parse((CommonTree) child.getChild(1), null);
+                low = UnaryIntegerParser.INSTANCE.parse(child.getChild(0), null);
+                high = UnaryIntegerParser.INSTANCE.parse(child.getChild(1), null);
             } else {
                 throw childTypeError(child);
             }

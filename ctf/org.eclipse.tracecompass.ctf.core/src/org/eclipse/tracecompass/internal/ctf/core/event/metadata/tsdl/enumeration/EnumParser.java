@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Ericsson
+ * Copyright (c) 2015, 2023 Ericsson
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -15,7 +15,6 @@ import static org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.Tsd
 
 import java.util.List;
 
-import org.antlr.runtime.tree.CommonTree;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.ctf.core.event.metadata.DeclarationScope;
@@ -26,6 +25,7 @@ import org.eclipse.tracecompass.ctf.core.trace.CTFTrace;
 import org.eclipse.tracecompass.ctf.parser.CTFParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.AbstractScopedCommonTreeParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
+import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
 
 /**
  *
@@ -141,14 +141,14 @@ public final class EnumParser extends AbstractScopedCommonTreeParser {
      *             tree.
      */
     @Override
-    public EnumDeclaration parse(CommonTree theEnum, ICommonTreeParserParameter param) throws ParseException {
+    public EnumDeclaration parse(ICTFMetadataNode theEnum, ICommonTreeParserParameter param) throws ParseException {
         if (!(param instanceof Param)) {
             throw new IllegalArgumentException("Param must be a " + Param.class.getCanonicalName()); //$NON-NLS-1$
         }
         Param parameter = (Param) param;
         DeclarationScope scope = parameter.fCurrentScope;
 
-        List<CommonTree> children = theEnum.getChildren();
+        List<ICTFMetadataNode> children = theEnum.getChildren();
 
         /* The return value */
         EnumDeclaration enumDeclaration = null;
@@ -157,16 +157,16 @@ public final class EnumParser extends AbstractScopedCommonTreeParser {
         @Nullable String enumName = null;
 
         /* Body */
-        CommonTree enumBody = null;
+        ICTFMetadataNode enumBody = null;
 
         /* Container type */
         IntegerDeclaration containerTypeDeclaration = null;
 
         /* Loop on all children and identify what we have to work with. */
-        for (CommonTree child : children) {
+        for (ICTFMetadataNode child : children) {
             switch (child.getType()) {
             case CTFParser.ENUM_NAME: {
-                CommonTree enumNameIdentifier = (CommonTree) child.getChild(0);
+                ICTFMetadataNode enumNameIdentifier = child.getChild(0);
                 enumName = enumNameIdentifier.getText();
                 break;
             }

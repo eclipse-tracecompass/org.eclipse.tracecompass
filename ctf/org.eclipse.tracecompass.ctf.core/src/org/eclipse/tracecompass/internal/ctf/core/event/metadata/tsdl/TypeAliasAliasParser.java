@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Ericsson
+ * Copyright (c) 2015, 2023 Ericsson
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -15,10 +15,10 @@ import static org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.Tsd
 import java.util.LinkedList;
 import java.util.List;
 
-import org.antlr.runtime.tree.CommonTree;
 import org.eclipse.tracecompass.ctf.parser.CTFParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ICommonTreeParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
+import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
 
 /**
  * The "typealias" declaration can be used to give a name (including pointer
@@ -58,16 +58,16 @@ public final class TypeAliasAliasParser implements ICommonTreeParser {
      *             if an alias is not allowed here
      */
     @Override
-    public String parse(CommonTree typeSpecifier, ICommonTreeParserParameter param) throws ParseException {
+    public String parse(ICTFMetadataNode typeSpecifier, ICommonTreeParserParameter param) throws ParseException {
 
-        List<CommonTree> children = typeSpecifier.getChildren();
+        List<ICTFMetadataNode> children = typeSpecifier.getChildren();
 
-        CommonTree typeSpecifierList = null;
-        CommonTree typeDeclaratorList = null;
-        CommonTree typeDeclarator = null;
-        List<CommonTree> pointers = new LinkedList<>();
+        ICTFMetadataNode typeSpecifierList = null;
+        ICTFMetadataNode typeDeclaratorList = null;
+        ICTFMetadataNode typeDeclarator = null;
+        List<ICTFMetadataNode> pointers = new LinkedList<>();
 
-        for (CommonTree child : children) {
+        for (ICTFMetadataNode child : children) {
             switch (child.getType()) {
             case CTFParser.TYPE_SPECIFIER_LIST:
                 typeSpecifierList = child;
@@ -91,11 +91,11 @@ public final class TypeAliasAliasParser implements ICommonTreeParser {
                 throw new ParseException("Only one type declarator is allowed in the typealias alias"); //$NON-NLS-1$
             }
 
-            typeDeclarator = (CommonTree) typeDeclaratorList.getChild(0);
+            typeDeclarator = typeDeclaratorList.getChild(0);
 
-            List<CommonTree> typeDeclaratorChildren = typeDeclarator.getChildren();
+            List<ICTFMetadataNode> typeDeclaratorChildren = typeDeclarator.getChildren();
 
-            for (CommonTree child : typeDeclaratorChildren) {
+            for (ICTFMetadataNode child : typeDeclaratorChildren) {
                 switch (child.getType()) {
                 case CTFParser.POINTER:
                     pointers.add(child);

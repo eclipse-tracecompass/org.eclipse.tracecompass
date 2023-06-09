@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Ericsson
+ * Copyright (c) 2015, 2023 Ericsson
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -13,13 +13,13 @@ package org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl;
 
 import java.util.List;
 
-import org.antlr.runtime.tree.CommonTree;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.tracecompass.ctf.core.event.CTFClock;
 import org.eclipse.tracecompass.ctf.parser.CTFParser;
 import org.eclipse.tracecompass.internal.ctf.core.Activator;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ICommonTreeParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
+import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
 
 /**
  * Clock metadata allows to describe the clock topology of the system, as well
@@ -119,12 +119,12 @@ public final class ClockParser implements ICommonTreeParser {
     }
 
     @Override
-    public CTFClock parse(CommonTree clock, ICommonTreeParserParameter unused) throws ParseException {
-        List<CommonTree> children = clock.getChildren();
+    public CTFClock parse(ICTFMetadataNode clock, ICommonTreeParserParameter unused) throws ParseException {
+        List<ICTFMetadataNode> children = clock.getChildren();
         CTFClock ctfClock = new CTFClock();
-        for (CommonTree child : children) {
+        for (ICTFMetadataNode child : children) {
             final String key = child.getChild(0).getChild(0).getChild(0).getText();
-            final CommonTree value = (CommonTree) child.getChild(1).getChild(0).getChild(0);
+            final ICTFMetadataNode value = child.getChild(1).getChild(0).getChild(0);
             final int type = value.getType();
             final String text = value.getText();
             switch (type) {

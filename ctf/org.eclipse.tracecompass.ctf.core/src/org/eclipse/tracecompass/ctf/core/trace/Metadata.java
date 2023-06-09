@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Ericsson, Ecole Polytechnique de Montreal and others
+ * Copyright (c) 2011, 2023 Ericsson, Ecole Polytechnique de Montreal and others
  *
  * All rights reserved. This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0 which
@@ -32,11 +32,13 @@ import java.nio.charset.Charset;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.UUID;
 
 import org.antlr.runtime.ANTLRReaderStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
+import org.antlr.runtime.tree.BaseTree;
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.RewriteCardinalityException;
 import org.eclipse.tracecompass.common.core.NonNullUtils;
@@ -44,9 +46,11 @@ import org.eclipse.tracecompass.ctf.core.CTFException;
 import org.eclipse.tracecompass.ctf.parser.CTFLexer;
 import org.eclipse.tracecompass.ctf.parser.CTFParser;
 import org.eclipse.tracecompass.ctf.parser.CTFParser.parse_return;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.CTFAntlrMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.CtfAntlrException;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.IOStructGen;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
+import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.utils.Utils;
 
 /**
@@ -152,8 +156,9 @@ public class Metadata {
     public void parseFile() throws CTFException {
 
         /*
-         * Reader. It will contain a StringReader if we are using packet-based metadata
-         * and it will contain a FileReader if we have text-based metadata.
+         * Reader. It will contain a StringReader if we are using packet-based
+         * metadata and it will contain a FileReader if we have text-based
+         * metadata.
          */
 
         File metadataFile = new File(getMetadataPath());
@@ -162,7 +167,7 @@ public class Metadata {
         try (FileInputStream fis = new FileInputStream(metadataFile);
                 FileChannel metadataFileChannel = fis.getChannel();
                 /* Check if metadata is packet-based, if not it is text based */
-                Reader metadataTextInput = ( byteOrder!= null ? readBinaryMetaData(metadataFileChannel) : new FileReader(metadataFile));) {
+                Reader metadataTextInput = (byteOrder != null ? readBinaryMetaData(metadataFileChannel) : new FileReader(metadataFile));) {
 
             readMetaDataText(metadataTextInput);
 
@@ -172,7 +177,8 @@ public class Metadata {
             throw new CTFException(e);
         } catch (RecognitionException e) {
             throw new CtfAntlrException(e);
-        } catch (RewriteCardinalityException e) { /* needs to be separate to avoid casting as exception */
+        } catch (RewriteCardinalityException e) {
+            /* needs to be separate to avoid casting as exception */
             throw new CtfAntlrException(e);
         }
 
@@ -183,7 +189,8 @@ public class Metadata {
         StringBuffer metadataText = new StringBuffer();
 
         /*
-         * Read metadata packet one by one, appending the text to the StringBuffer
+         * Read metadata packet one by one, appending the text to the
+         * StringBuffer
          */
         MetadataPacketHeader packetHeader = readMetadataPacket(
                 metadataFileChannel, metadataText);
@@ -202,7 +209,8 @@ public class Metadata {
      * <ul>
      * <li>For text-only metadata, the file starts with "/* CTF" (without the
      * quotes)</li>
-     * <li>For packet-based metadata, the file starts with correct magic number</li>
+     * <li>For packet-based metadata, the file starts with correct magic
+     * number</li>
      * </ul>
      *
      * @param path
@@ -252,10 +260,9 @@ public class Metadata {
     }
 
     private void readMetaDataText(Reader metadataTextInput) throws IOException, RecognitionException, ParseException {
-        CommonTree tree = createAST(metadataTextInput);
-
-        /* Generate IO structures (declarations) */
+        ICTFMetadataNode tree = createAST(metadataTextInput);
         fTreeParser = new IOStructGen(tree, NonNullUtils.checkNotNull(fTrace));
+        /* Generate IO structures (declarations) */
         fTreeParser.generate();
         /* store locally in case of concurrent modification */
         ByteOrder detectedByteOrder = getDetectedByteOrder();
@@ -286,12 +293,12 @@ public class Metadata {
     }
 
     private void readMetaDataTextFragment(Reader metadataTextInput) throws IOException, RecognitionException, ParseException {
-        CommonTree tree = createAST(metadataTextInput);
+        ICTFMetadataNode tree = createAST(metadataTextInput);
         fTreeParser.setTree(tree);
         fTreeParser.generateFragment();
     }
 
-    private static CommonTree createAST(Reader metadataTextInput) throws IOException,
+    private static ICTFMetadataNode createAST(Reader metadataTextInput) throws IOException,
             RecognitionException {
         /* Create an ANTLR reader */
         ANTLRReaderStream antlrStream;
@@ -303,7 +310,26 @@ public class Metadata {
         CTFParser ctfParser = new CTFParser(tokens, false);
 
         parse_return pr = ctfParser.parse();
-        return pr.getTree();
+
+        ICTFMetadataNode root = new CTFAntlrMetadataNode(null, -1, null); // $NON-NLS-1$
+        CommonTree tree = pr.getTree();
+        populate(tree, root);
+        ICTFMetadataNode newRoot = root.getChild(0);
+        newRoot.setParent(null);
+
+        return newRoot;
+    }
+
+    private static void populate(BaseTree tree, ICTFMetadataNode dest) {
+        ICTFMetadataNode current = new CTFAntlrMetadataNode(dest, tree.getType(), tree.getText());
+        List<?> children = tree.getChildren();
+        if (children != null) {
+            for (Object childObj : children) {
+                if (childObj instanceof BaseTree) {
+                    populate((BaseTree) childObj, current);
+                }
+            }
+        }
     }
 
     private String getMetadataPath() {
@@ -316,15 +342,15 @@ public class Metadata {
     }
 
     /**
-     * Reads a metadata packet from the given metadata FileChannel, do some basic
-     * validation and append the text to the StringBuffer.
+     * Reads a metadata packet from the given metadata FileChannel, do some
+     * basic validation and append the text to the StringBuffer.
      *
      * @param metadataFileChannel
      *            Metadata FileChannel
      * @param metadataText
      *            StringBuffer to which the metadata text will be appended.
-     * @return A structure describing the header of the metadata packet, or null if
-     *         the end of the file is reached.
+     * @return A structure describing the header of the metadata packet, or null
+     *         if the end of the file is reached.
      * @throws CTFException
      */
     private MetadataPacketHeader readMetadataPacket(
@@ -479,4 +505,5 @@ public class Metadata {
         Path destPath = FileSystems.getDefault().getPath(path.getAbsolutePath());
         return Files.copy(source, destPath.resolve(source.getFileName()));
     }
+
 }

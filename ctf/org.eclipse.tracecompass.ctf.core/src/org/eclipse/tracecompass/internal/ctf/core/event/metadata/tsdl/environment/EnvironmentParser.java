@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Ericsson
+ * Copyright (c) 2015, 2023 Ericsson
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -13,8 +13,8 @@ package org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.environme
 import java.util.List;
 import java.util.Map;
 
-import org.antlr.runtime.tree.CommonTree;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ICommonTreeParser;
+import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -35,11 +35,11 @@ public final class EnvironmentParser implements ICommonTreeParser {
     }
 
     @Override
-    public Map<String, String> parse(CommonTree environment, ICommonTreeParserParameter param) {
+    public Map<String, String> parse(ICTFMetadataNode environment, ICommonTreeParserParameter param) {
 
         ImmutableMap.Builder<String, String> builder = new ImmutableMap.Builder<>();
-        List<CommonTree> children = environment.getChildren();
-        for (CommonTree child : children) {
+        List<ICTFMetadataNode> children = environment.getChildren();
+        for (ICTFMetadataNode child : children) {
             String left;
             String right;
             left = child.getChild(0).getChild(0).getChild(0).getText();
