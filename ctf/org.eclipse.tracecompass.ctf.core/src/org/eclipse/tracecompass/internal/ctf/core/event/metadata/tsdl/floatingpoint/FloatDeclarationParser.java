@@ -133,22 +133,15 @@ public final class FloatDeclarationParser implements ICommonTreeParser {
 
         /* Iterate on all integer children */
         for (ICTFMetadataNode child : children) {
-            switch (child.getType()) {
-            case CTFParser.CTF_EXPRESSION_VAL:
-                /*
-                 * An assignment expression must have 2 children, left and right
-                 */
-
+            String type = child.getType();
+            if (CTFParser.tokenNames[CTFParser.CTF_EXPRESSION_VAL].equals(type)) {
                 ICTFMetadataNode leftNode = child.getChild(0);
                 ICTFMetadataNode rightNode = child.getChild(1);
-
                 List<ICTFMetadataNode> leftStrings = leftNode.getChildren();
-
                 if (!isAnyUnaryString(leftStrings.get(0))) {
                     throw new ParseException(IDENTIFIER_MUST_BE_A_STRING);
                 }
                 String left = concatenateUnaryStrings(leftStrings);
-
                 if (left.equals(MetadataStrings.EXP_DIG)) {
                     exponent = UnaryIntegerParser.INSTANCE.parse(rightNode.getChild(0), null).intValue();
                 } else if (left.equals(MetadataStrings.BYTE_ORDER)) {
@@ -160,9 +153,7 @@ public final class FloatDeclarationParser implements ICommonTreeParser {
                 } else {
                     throw new ParseException(FLOAT_UNKNOWN_ATTRIBUTE + left);
                 }
-
-                break;
-            default:
+            } else {
                 throw childTypeError(child);
             }
         }

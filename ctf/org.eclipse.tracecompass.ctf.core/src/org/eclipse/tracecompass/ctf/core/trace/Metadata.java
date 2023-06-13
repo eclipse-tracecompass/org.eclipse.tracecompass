@@ -311,7 +311,7 @@ public class Metadata {
 
         parse_return pr = ctfParser.parse();
 
-        ICTFMetadataNode root = new CTFAntlrMetadataNode(null, -1, null); // $NON-NLS-1$
+        ICTFMetadataNode root = new CTFAntlrMetadataNode(null, CTFParser.tokenNames[CTFParser.ROOT], null); // $NON-NLS-1$
         CommonTree tree = pr.getTree();
         populate(tree, root);
         ICTFMetadataNode newRoot = root.getChild(0);
@@ -321,7 +321,7 @@ public class Metadata {
     }
 
     private static void populate(BaseTree tree, ICTFMetadataNode dest) {
-        ICTFMetadataNode current = new CTFAntlrMetadataNode(dest, tree.getType(), tree.getText());
+        ICTFMetadataNode current = new CTFAntlrMetadataNode(dest, CTFParser.tokenNames[tree.getType()], tree.getText());
         List<?> children = tree.getChildren();
         if (children != null) {
             for (Object childObj : children) {

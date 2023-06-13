@@ -12,6 +12,7 @@ package org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl;
 
 import java.util.List;
 
+import org.eclipse.tracecompass.ctf.parser.CTFParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.CTFAntlrMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ICommonTreeParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
@@ -72,7 +73,7 @@ public final class TypeDeclarationStringParser implements ICommonTreeParser {
         StringBuilder sb = new StringBuilder();
         sb.append(TypeSpecifierListStringParser.INSTANCE.parse(typeSpecifierList, null));
         if (pointers != null) {
-            ICTFMetadataNode temp = new CTFAntlrMetadataNode(null, 0, null);
+            ICTFMetadataNode temp = new CTFAntlrMetadataNode(null, CTFParser.tokenNames[CTFParser.ROOT], null);
             for (ICTFMetadataNode pointer : pointers) {
                 temp.addChild(pointer);
             }

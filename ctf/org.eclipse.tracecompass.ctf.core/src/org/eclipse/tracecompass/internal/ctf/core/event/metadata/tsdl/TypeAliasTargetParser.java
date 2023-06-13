@@ -98,14 +98,12 @@ public final class TypeAliasTargetParser extends AbstractScopedCommonTreeParser 
         StringBuilder identifierSB = new StringBuilder();
 
         for (ICTFMetadataNode child : children) {
-            switch (child.getType()) {
-            case CTFParser.TYPE_SPECIFIER_LIST:
+            String type = child.getType();
+            if (CTFParser.tokenNames[CTFParser.TYPE_SPECIFIER_LIST].equals(type)) {
                 typeSpecifierList = child;
-                break;
-            case CTFParser.TYPE_DECLARATOR_LIST:
+            } else if (CTFParser.tokenNames[CTFParser.TYPE_DECLARATOR_LIST].equals(type)) {
                 typeDeclaratorList = child;
-                break;
-            default:
+            } else {
                 throw childTypeError(child);
             }
         }

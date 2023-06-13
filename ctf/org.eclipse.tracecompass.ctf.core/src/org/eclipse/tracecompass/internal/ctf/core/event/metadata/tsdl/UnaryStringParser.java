@@ -50,7 +50,7 @@ public final class UnaryStringParser implements ICommonTreeParser {
     @Override
     public String parse(ICTFMetadataNode unaryString, ICommonTreeParserParameter notUsed) throws ParseException {
         ICTFMetadataNode value = unaryString.getChild(0);
-        if (value.getType() == CTFParser.UNARY_EXPRESSION_STRING) {
+        if (CTFParser.tokenNames[CTFParser.UNARY_EXPRESSION_STRING].equals(value.getType())) {
             value = value.getChild(0);
         }
         String strval = value.getText();
@@ -59,7 +59,7 @@ public final class UnaryStringParser implements ICommonTreeParser {
         }
 
         /* Remove quotes */
-        if (unaryString.getType() == CTFParser.UNARY_EXPRESSION_STRING_QUOTES) {
+        if (CTFParser.tokenNames[CTFParser.UNARY_EXPRESSION_STRING_QUOTES].equals(unaryString.getType())) {
             strval = strval.substring(1, strval.length() - 1);
         }
 

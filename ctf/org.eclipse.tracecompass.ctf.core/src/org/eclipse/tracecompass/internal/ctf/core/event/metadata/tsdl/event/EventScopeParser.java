@@ -138,13 +138,11 @@ public final class EventScopeParser implements ICommonTreeParser {
         List<ICTFMetadataNode> lengthChildren = ((Param) param).fList;
         ICTFMetadataNode nextElem = lengthChildren.get(1).getChild(0);
         String lengthName;
-        switch (nextElem.getType()) {
-        case CTFParser.UNARY_EXPRESSION_STRING:
-        case CTFParser.IDENTIFIER:
+        String type = nextElem.getType();
+        if (CTFParser.tokenNames[CTFParser.UNARY_EXPRESSION_STRING].equals(type) || CTFParser.tokenNames[CTFParser.IDENTIFIER].equals(type)) {
             List<ICTFMetadataNode> sublist = lengthChildren.subList(1, lengthChildren.size());
             lengthName = MetadataStrings.EVENT + '.' + concatenateUnaryStrings(sublist);
-            break;
-        default:
+        } else {
             throw new ParseException("Unsupported scope event." + nextElem); //$NON-NLS-1$
         }
         return lengthName;

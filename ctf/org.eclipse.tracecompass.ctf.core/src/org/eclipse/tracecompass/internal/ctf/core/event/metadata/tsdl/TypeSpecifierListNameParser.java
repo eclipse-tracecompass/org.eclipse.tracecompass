@@ -46,40 +46,36 @@ public final class TypeSpecifierListNameParser implements ICommonTreeParser {
     @Override
     public StringBuilder parse(ICTFMetadataNode typeSpecifier, ICommonTreeParserParameter param) throws ParseException {
         StringBuilder sb = new StringBuilder();
-        switch (typeSpecifier.getType()) {
-        case CTFParser.FLOATTOK:
-        case CTFParser.INTTOK:
-        case CTFParser.LONGTOK:
-        case CTFParser.SHORTTOK:
-        case CTFParser.SIGNEDTOK:
-        case CTFParser.UNSIGNEDTOK:
-        case CTFParser.CHARTOK:
-        case CTFParser.DOUBLETOK:
-        case CTFParser.VOIDTOK:
-        case CTFParser.BOOLTOK:
-        case CTFParser.COMPLEXTOK:
-        case CTFParser.IMAGINARYTOK:
-        case CTFParser.CONSTTOK:
-        case CTFParser.IDENTIFIER:
+        String type = typeSpecifier.getType();
+        if (CTFParser.tokenNames[CTFParser.FLOATTOK].equals(type) ||
+                CTFParser.tokenNames[CTFParser.INTTOK].equals(type) ||
+                CTFParser.tokenNames[CTFParser.LONGTOK].equals(type) ||
+                CTFParser.tokenNames[CTFParser.SHORTTOK].equals(type) ||
+                CTFParser.tokenNames[CTFParser.SIGNEDTOK].equals(type) ||
+                CTFParser.tokenNames[CTFParser.UNSIGNEDTOK].equals(type) ||
+                CTFParser.tokenNames[CTFParser.CHARTOK].equals(type) ||
+                CTFParser.tokenNames[CTFParser.DOUBLETOK].equals(type) ||
+                CTFParser.tokenNames[CTFParser.VOIDTOK].equals(type) ||
+                CTFParser.tokenNames[CTFParser.BOOLTOK].equals(type) ||
+                CTFParser.tokenNames[CTFParser.COMPLEXTOK].equals(type) ||
+                CTFParser.tokenNames[CTFParser.IMAGINARYTOK].equals(type) ||
+                CTFParser.tokenNames[CTFParser.CONSTTOK].equals(type) ||
+                CTFParser.tokenNames[CTFParser.IDENTIFIER].equals(type)) {
             parseSimple(typeSpecifier, sb);
-            break;
-        case CTFParser.STRUCT: {
+
+        } else if (CTFParser.tokenNames[CTFParser.STRUCT].equals(type)) {
             parseStruct(typeSpecifier, sb);
-            break;
-        }
-        case CTFParser.VARIANT: {
+
+        } else if (CTFParser.tokenNames[CTFParser.VARIANT].equals(type)) {
             parseVariant(typeSpecifier, sb);
-            break;
-        }
-        case CTFParser.ENUM: {
+
+        } else if (CTFParser.tokenNames[CTFParser.ENUM].equals(type)) {
             parseEnum(typeSpecifier, sb);
-            break;
-        }
-        case CTFParser.FLOATING_POINT:
-        case CTFParser.INTEGER:
-        case CTFParser.STRING:
+
+        } else if (CTFParser.tokenNames[CTFParser.FLOATING_POINT].equals(type) || CTFParser.tokenNames[CTFParser.INTEGER].equals(type)
+                || CTFParser.tokenNames[CTFParser.STRING].equals(type)) {
             throw new ParseException("CTF type found in createTypeSpecifierString"); //$NON-NLS-1$
-        default:
+        } else {
             throw childTypeError(typeSpecifier);
         }
         return sb;
@@ -87,7 +83,7 @@ public final class TypeSpecifierListNameParser implements ICommonTreeParser {
     }
 
     private static void parseEnum(ICTFMetadataNode typeSpecifier, StringBuilder sb) throws ParseException {
-        ICTFMetadataNode enumName = typeSpecifier.getFirstChildWithType(CTFParser.ENUM_NAME);
+        ICTFMetadataNode enumName = typeSpecifier.getFirstChildWithType(CTFParser.tokenNames[CTFParser.ENUM_NAME]);
         if (enumName == null) {
             throw new ParseException("nameless enum found in createTypeSpecifierString"); //$NON-NLS-1$
         }
@@ -98,7 +94,7 @@ public final class TypeSpecifierListNameParser implements ICommonTreeParser {
     }
 
     private static void parseVariant(ICTFMetadataNode typeSpecifier, StringBuilder sb) throws ParseException {
-        ICTFMetadataNode variantName = typeSpecifier.getFirstChildWithType(CTFParser.VARIANT_NAME);
+        ICTFMetadataNode variantName = typeSpecifier.getFirstChildWithType(CTFParser.tokenNames[CTFParser.VARIANT_NAME]);
         if (variantName == null) {
             throw new ParseException("nameless variant found in createTypeSpecifierString"); //$NON-NLS-1$
         }
@@ -113,7 +109,7 @@ public final class TypeSpecifierListNameParser implements ICommonTreeParser {
     }
 
     private static void parseStruct(ICTFMetadataNode typeSpecifier, StringBuilder sb) throws ParseException {
-        ICTFMetadataNode structName = typeSpecifier.getFirstChildWithType(CTFParser.STRUCT_NAME);
+        ICTFMetadataNode structName = typeSpecifier.getFirstChildWithType(CTFParser.tokenNames[CTFParser.STRUCT_NAME]);
         if (structName == null) {
             throw new ParseException("nameless struct found in createTypeSpecifierString"); //$NON-NLS-1$
         }

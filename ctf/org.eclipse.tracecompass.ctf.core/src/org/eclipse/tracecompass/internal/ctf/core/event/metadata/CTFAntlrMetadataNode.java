@@ -17,8 +17,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
-import org.eclipse.tracecompass.ctf.parser.CTFParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
 
 /**
@@ -32,7 +32,7 @@ public class CTFAntlrMetadataNode implements ICTFMetadataNode {
     private ICTFMetadataNode fParent;
     private final Map<String, ICTFMetadataNode> fChildren;
     private final String fValue;
-    private final int fType;
+    private final String fType;
     private final ArrayList<ICTFMetadataNode> fChildrenList;
 
     /**
@@ -43,12 +43,12 @@ public class CTFAntlrMetadataNode implements ICTFMetadataNode {
      * @param value
      *            the information contained by the node
      */
-    public CTFAntlrMetadataNode(ICTFMetadataNode parent, int type, String value) {
+    public CTFAntlrMetadataNode(ICTFMetadataNode parent, String type, String value) {
         fParent = parent;
         if (parent != null) {
             parent.addChild(this);
         }
-        fType = type;
+        fType = Objects.requireNonNull(type);
         fValue = value;
         fChildren = new HashMap<>();
         fChildrenList = new ArrayList<>();
@@ -56,7 +56,7 @@ public class CTFAntlrMetadataNode implements ICTFMetadataNode {
 
     @Override
     public void addChild(ICTFMetadataNode child) {
-        fChildren.put(CTFParser.tokenNames[child.getType()], child);
+        fChildren.put(child.getType(), child);
         fChildrenList.add(child);
     }
 
@@ -81,7 +81,7 @@ public class CTFAntlrMetadataNode implements ICTFMetadataNode {
     }
 
     @Override
-    public int getType() {
+    public String getType() {
         return fType;
     }
 
@@ -101,10 +101,12 @@ public class CTFAntlrMetadataNode implements ICTFMetadataNode {
     }
 
     @Override
-    public ICTFMetadataNode getFirstChildWithType(int typeDeclaratorList) {
-        for (ICTFMetadataNode child : this.getChildren()) {
-            if (child.getType() == typeDeclaratorList) {
-                return child;
+    public ICTFMetadataNode getFirstChildWithType(String type) {
+        if (type != null) {
+            for (ICTFMetadataNode child : this.getChildren()) {
+                if (type.equals(child.getType())) {
+                    return child;
+                }
             }
         }
         return null;

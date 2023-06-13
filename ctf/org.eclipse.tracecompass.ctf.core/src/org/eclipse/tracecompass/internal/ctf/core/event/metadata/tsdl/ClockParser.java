@@ -125,11 +125,9 @@ public final class ClockParser implements ICommonTreeParser {
         for (ICTFMetadataNode child : children) {
             final String key = child.getChild(0).getChild(0).getChild(0).getText();
             final ICTFMetadataNode value = child.getChild(1).getChild(0).getChild(0);
-            final int type = value.getType();
+            final String type = value.getType();
             final String text = value.getText();
-            switch (type) {
-            case CTFParser.INTEGER:
-            case CTFParser.DECIMAL_LITERAL:
+            if (CTFParser.tokenNames[CTFParser.INTEGER].equals(type) || CTFParser.tokenNames[CTFParser.DECIMAL_LITERAL].equals(type)) {
                 /*
                  * Not a pretty hack, this is to make sure that there is no
                  * number overflow due to 63 bit integers. The offset should
@@ -148,8 +146,7 @@ public final class ClockParser implements ICommonTreeParser {
                     numValue = Long.valueOf(0L);
                 }
                 ctfClock.addAttribute(key, numValue);
-                break;
-            default:
+            } else {
                 ctfClock.addAttribute(key, text);
             }
 

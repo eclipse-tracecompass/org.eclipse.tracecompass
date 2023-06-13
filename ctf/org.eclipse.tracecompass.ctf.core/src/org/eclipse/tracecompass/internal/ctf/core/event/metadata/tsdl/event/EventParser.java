@@ -111,18 +111,14 @@ public final class EventParser extends AbstractScopedCommonTreeParser {
         DeclarationScope scope = new DeclarationScope(parameter.fCurrentScope, MetadataStrings.EVENT);
 
         for (ICTFMetadataNode child : children) {
-            switch (child.getType()) {
-            case CTFParser.TYPEALIAS:
+            String type = child.getType();
+            if (CTFParser.tokenNames[CTFParser.TYPEALIAS].equals(type)) {
                 TypeAliasParser.INSTANCE.parse(child, new TypeAliasParser.Param(trace, scope));
-                break;
-            case CTFParser.TYPEDEF:
+            } else if (CTFParser.tokenNames[CTFParser.TYPEDEF].equals(type)) {
                 TypedefParser.INSTANCE.parse(child, new TypedefParser.Param(trace, scope));
-                break;
-            case CTFParser.CTF_EXPRESSION_TYPE:
-            case CTFParser.CTF_EXPRESSION_VAL:
+            } else if (CTFParser.tokenNames[CTFParser.CTF_EXPRESSION_TYPE].equals(type) || CTFParser.tokenNames[CTFParser.CTF_EXPRESSION_VAL].equals(type)) {
                 EventDeclarationParser.INSTANCE.parse(child, new EventDeclarationParser.Param(trace, event, scope));
-                break;
-            default:
+            } else {
                 throw childTypeError(child);
             }
         }

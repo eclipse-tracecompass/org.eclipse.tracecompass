@@ -87,13 +87,13 @@ public final class VariantDeclarationParser extends AbstractScopedCommonTreePars
         VariantDeclaration variant = ((Param) param).fVariant;
         final DeclarationScope scope = ((Param) param).fDeclarationScope;
         /* Get the type specifier list node */
-        ICTFMetadataNode typeSpecifierListNode = declaration.getFirstChildWithType(CTFParser.TYPE_SPECIFIER_LIST);
+        ICTFMetadataNode typeSpecifierListNode = declaration.getFirstChildWithType(CTFParser.tokenNames[CTFParser.TYPE_SPECIFIER_LIST]);
         if (typeSpecifierListNode == null) {
             throw new ParseException("Variant need type specifiers"); //$NON-NLS-1$
         }
 
         /* Get the type declarator list node */
-        ICTFMetadataNode typeDeclaratorListNode = declaration.getFirstChildWithType(CTFParser.TYPE_DECLARATOR_LIST);
+        ICTFMetadataNode typeDeclaratorListNode = declaration.getFirstChildWithType(CTFParser.tokenNames[CTFParser.TYPE_DECLARATOR_LIST]);
         if (typeDeclaratorListNode == null) {
             throw new ParseException("Cannot have empty variant"); //$NON-NLS-1$
         }

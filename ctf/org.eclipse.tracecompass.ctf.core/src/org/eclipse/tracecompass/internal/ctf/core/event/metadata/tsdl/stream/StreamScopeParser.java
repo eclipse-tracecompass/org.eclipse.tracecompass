@@ -91,18 +91,15 @@ public final class StreamScopeParser implements ICommonTreeParser {
             lengthName = UnaryStringParser.INSTANCE.parse(nextElem, null);
         }
 
-        int type = nextElem.getType();
+        String type = nextElem.getType();
         if ((CTFParser.tokenNames[CTFParser.EVENT]).equals(lengthName)) {
-            type = CTFParser.EVENT;
+            type = CTFParser.tokenNames[CTFParser.EVENT];
         }
-        switch (type) {
-        case CTFParser.IDENTIFIER:
+        if (CTFParser.tokenNames[CTFParser.IDENTIFIER].equals(type)) {
             lengthName = concatenateUnaryStrings(sublist);
-            break;
-        case CTFParser.EVENT:
+        } else if (CTFParser.tokenNames[CTFParser.EVENT].equals(type)) {
             lengthName = EventScopeParser.INSTANCE.parse(null, new EventScopeParser.Param(sublist));
-            break;
-        default:
+        } else {
             if (lengthName == null) {
                 throw new ParseException("Unsupported scope stream." + nextElem); //$NON-NLS-1$
             }

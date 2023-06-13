@@ -164,22 +164,16 @@ public final class EnumParser extends AbstractScopedCommonTreeParser {
 
         /* Loop on all children and identify what we have to work with. */
         for (ICTFMetadataNode child : children) {
-            switch (child.getType()) {
-            case CTFParser.ENUM_NAME: {
+            String type = child.getType();
+            if (CTFParser.tokenNames[CTFParser.ENUM_NAME].equals(type)) {
                 ICTFMetadataNode enumNameIdentifier = child.getChild(0);
                 enumName = enumNameIdentifier.getText();
-                break;
-            }
-            case CTFParser.ENUM_BODY: {
+            } else if (CTFParser.tokenNames[CTFParser.ENUM_BODY].equals(type)) {
                 enumBody = child;
-                break;
-            }
-            case CTFParser.ENUM_CONTAINER_TYPE: {
+            } else if (CTFParser.tokenNames[CTFParser.ENUM_CONTAINER_TYPE].equals(type)) {
                 CTFTrace trace = ((Param) param).fTrace;
                 containerTypeDeclaration = EnumContainerParser.INSTANCE.parse(child, new EnumContainerParser.Param(trace, scope));
-                break;
-            }
-            default:
+            } else {
                 throw childTypeError(child);
             }
         }

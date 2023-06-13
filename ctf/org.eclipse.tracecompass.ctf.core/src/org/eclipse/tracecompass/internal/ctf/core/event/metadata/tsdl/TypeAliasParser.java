@@ -83,14 +83,12 @@ public final class TypeAliasParser extends AbstractScopedCommonTreeParser {
         ICTFMetadataNode alias = null;
 
         for (ICTFMetadataNode child : children) {
-            switch (child.getType()) {
-            case CTFParser.TYPEALIAS_TARGET:
+            String type = child.getType();
+            if (CTFParser.tokenNames[CTFParser.TYPEALIAS_TARGET].equals(type)) {
                 target = child;
-                break;
-            case CTFParser.TYPEALIAS_ALIAS:
+            } else if (CTFParser.tokenNames[CTFParser.TYPEALIAS_ALIAS].equals(type)) {
                 alias = child;
-                break;
-            default:
+            } else {
                 throw childTypeError(child);
             }
         }

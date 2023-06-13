@@ -163,19 +163,18 @@ public final class TraceDeclarationParser extends AbstractScopedCommonTreeParser
             ByteOrder byteOrder = ByteOrderParser.INSTANCE.parse(rightNode, new ByteOrderParser.Param(trace));
 
             /*
-             * If byte order was already set by a metadata packet, compare it to
-             * see if it matches
+             * If byte order was already set by a metadata packet, compare
+             * it to see if it matches
              */
             if (trace.getByteOrder() != null) {
                 if (trace.getByteOrder() != byteOrder) {
                     throw new ParseException(
-                            "Endianness mismatch. Magic number says " //$NON-NLS-1$
+                            "Endianness mismatch. Magic number byte order is " //$NON-NLS-1$
                                     + trace.getByteOrder()
-                                    + " but metadata says " + byteOrder); //$NON-NLS-1$
+                                    + " but metadata byte order is " + byteOrder); //$NON-NLS-1$
                 }
             } else {
                 trace.setByteOrder(byteOrder);
-
                 final DeclarationScope currentScope = scope;
                 for (String type : currentScope.getTypeNames()) {
                     IDeclaration d = currentScope.lookupType(type);
@@ -197,7 +196,7 @@ public final class TraceDeclarationParser extends AbstractScopedCommonTreeParser
 
             ICTFMetadataNode typeSpecifier = rightNode.getChild(0);
 
-            if (typeSpecifier.getType() != CTFParser.TYPE_SPECIFIER_LIST) {
+            if (!(CTFParser.tokenNames[CTFParser.TYPE_SPECIFIER_LIST].equals(typeSpecifier.getType()))) {
                 throw new ParseException("packet.header expects a type specifier"); //$NON-NLS-1$
             }
 

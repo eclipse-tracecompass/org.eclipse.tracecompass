@@ -61,6 +61,7 @@ public final class AlignmentParser implements ICommonTreeParser {
 
     /**
      * Gets the value of a "align" integer or struct attribute.
+     *
      * @param tree
      *            A CTF_RIGHT node or directly an unary integer.
      *
@@ -74,7 +75,7 @@ public final class AlignmentParser implements ICommonTreeParser {
          * If a CTF_RIGHT node was passed, call getAlignment with the first
          * child
          */
-        if (tree.getType() == CTFParser.CTF_RIGHT) {
+        if (CTFParser.tokenNames[CTFParser.CTF_RIGHT].equals(tree.getType())) {
             if (tree.getChildCount() > 1) {
                 throw new ParseException(INVALID_VALUE_FOR_ALIGNMENT);
             }

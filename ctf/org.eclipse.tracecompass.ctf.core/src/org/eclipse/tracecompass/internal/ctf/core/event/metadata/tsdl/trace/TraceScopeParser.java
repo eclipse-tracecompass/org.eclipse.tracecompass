@@ -85,12 +85,12 @@ public final class TraceScopeParser implements ICommonTreeParser {
         }
         List<@NonNull ICTFMetadataNode> lengthChildren = ((Param) param).fList;
         ICTFMetadataNode nextElem = lengthChildren.get(1).getChild(0);
-        switch (nextElem.getType()) {
-        case CTFParser.IDENTIFIER:
+        String type = nextElem.getType();
+        if (CTFParser.tokenNames[CTFParser.IDENTIFIER].equals(type)) {
             return concatenateUnaryStrings(lengthChildren.subList(1, lengthChildren.size()));
-        case CTFParser.STREAM:
+        } else if (CTFParser.tokenNames[CTFParser.STREAM].equals(type)) {
             return StreamScopeParser.INSTANCE.parse(null, new StreamScopeParser.Param(lengthChildren.subList(1, lengthChildren.size())));
-        default:
+        } else {
             throw new ParseException("Unsupported scope trace." + nextElem); //$NON-NLS-1$
         }
     }

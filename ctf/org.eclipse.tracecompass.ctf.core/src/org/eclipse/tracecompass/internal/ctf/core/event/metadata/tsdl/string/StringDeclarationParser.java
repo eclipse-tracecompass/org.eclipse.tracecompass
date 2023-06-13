@@ -82,32 +82,22 @@ public final class StringDeclarationParser implements ICommonTreeParser {
         } else {
             Encoding encoding = Encoding.UTF8;
             for (ICTFMetadataNode child : children) {
-                switch (child.getType()) {
-                case CTFParser.CTF_EXPRESSION_VAL:
-                    /*
-                     * An assignment expression must have 2 children, left and
-                     * right
-                     */
-
+                String type = child.getType();
+                if (CTFParser.tokenNames[CTFParser.CTF_EXPRESSION_VAL].equals(type)) {
                     ICTFMetadataNode leftNode = child.getChild(0);
                     ICTFMetadataNode rightNode = child.getChild(1);
-
                     List<ICTFMetadataNode> leftStrings = leftNode.getChildren();
-
                     if (!isAnyUnaryString(leftStrings.get(0))) {
                         throw new ParseException("Left side of ctf expression must be a string"); //$NON-NLS-1$
                     }
                     String left = concatenateUnaryStrings(leftStrings);
-
                     if (left.equals(ENCODING)) {
                         encoding = EncodingParser.INSTANCE.parse(rightNode, null);
                     } else {
                         throw new ParseException("String: unknown attribute " //$NON-NLS-1$
                                 + left);
                     }
-
-                    break;
-                default:
+                } else {
                     throw childTypeError(child);
                 }
             }

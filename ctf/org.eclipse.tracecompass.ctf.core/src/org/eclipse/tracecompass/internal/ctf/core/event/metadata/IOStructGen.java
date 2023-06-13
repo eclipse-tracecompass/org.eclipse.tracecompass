@@ -139,37 +139,29 @@ public class IOStructGen {
         List<ICTFMetadataNode> events = new ArrayList<>();
         Collection<CTFCallsite> callsites = new ArrayList<>();
         for (ICTFMetadataNode child : children) {
-            final int type = child.getType();
-            switch (type) {
-            case CTFParser.DECLARATION:
+            final String type = child.getType();
+            if (CTFParser.tokenNames[CTFParser.DECLARATION].equals(type)) {
                 parseRootDeclaration(child);
-                break;
-            case CTFParser.TRACE:
+            } else if (CTFParser.tokenNames[CTFParser.TRACE].equals(type)) {
                 if (traceNode != null) {
                     throw new ParseException("Only one trace block is allowed"); //$NON-NLS-1$
                 }
                 traceNode = child;
                 parseTrace(traceNode);
-                break;
-            case CTFParser.STREAM:
+            } else if (CTFParser.tokenNames[CTFParser.STREAM].equals(type)) {
                 StreamParser.INSTANCE.parse(child, new StreamParser.Param(fTrace, fRoot));
                 hasStreams = true;
-                break;
-            case CTFParser.EVENT:
+            } else if (CTFParser.tokenNames[CTFParser.EVENT].equals(type)) {
                 events.add(child);
-                break;
-            case CTFParser.CLOCK:
+            } else if (CTFParser.tokenNames[CTFParser.CLOCK].equals(type)) {
                 CTFClock ctfClock = ClockParser.INSTANCE.parse(child, null);
                 String nameValue = ctfClock.getName();
                 fTrace.addClock(nameValue, ctfClock);
-                break;
-            case CTFParser.ENV:
+            } else if (CTFParser.tokenNames[CTFParser.ENV].equals(type)) {
                 fTrace.setEnvironment(EnvironmentParser.INSTANCE.parse(child, null));
-                break;
-            case CTFParser.CALLSITE:
+            } else if (CTFParser.tokenNames[CTFParser.CALLSITE].equals(type)) {
                 callsites.add(CallSiteParser.INSTANCE.parse(child, null));
-                break;
-            default:
+            } else {
                 throw childTypeError(child);
             }
         }
@@ -201,31 +193,30 @@ public class IOStructGen {
         List<ICTFMetadataNode> events = new ArrayList<>();
         Collection<CTFCallsite> callsites = new ArrayList<>();
         for (ICTFMetadataNode child : children) {
-            final int type = child.getType();
-            switch (type) {
-            case CTFParser.DECLARATION:
+            final String type = child.getType();
+            if (CTFParser.tokenNames[CTFParser.DECLARATION].equals(type)) {
                 parseRootDeclaration(child);
                 break;
-            case CTFParser.TRACE:
+            } else if (CTFParser.tokenNames[CTFParser.TRACE].equals(type)) {
                 throw new ParseException("Trace block defined here, please use generate and not generateFragment to parse this fragment"); //$NON-NLS-1$
-            case CTFParser.STREAM:
+            } else if (CTFParser.tokenNames[CTFParser.STREAM].equals(type)) {
                 StreamParser.INSTANCE.parse(child, new StreamParser.Param(fTrace, fRoot));
                 break;
-            case CTFParser.EVENT:
+            } else if (CTFParser.tokenNames[CTFParser.EVENT].equals(type)) {
                 events.add(child);
                 break;
-            case CTFParser.CLOCK:
+            } else if (CTFParser.tokenNames[CTFParser.CLOCK].equals(type)) {
                 CTFClock ctfClock = ClockParser.INSTANCE.parse(child, null);
                 String nameValue = ctfClock.getName();
                 fTrace.addClock(nameValue, ctfClock);
                 break;
-            case CTFParser.ENV:
+            } else if (CTFParser.tokenNames[CTFParser.ENV].equals(type)) {
                 fTrace.setEnvironment(EnvironmentParser.INSTANCE.parse(child, null));
                 break;
-            case CTFParser.CALLSITE:
+            } else if (CTFParser.tokenNames[CTFParser.CALLSITE].equals(type)) {
                 callsites.add(CallSiteParser.INSTANCE.parse(child, null));
                 break;
-            default:
+            } else {
                 throw childTypeError(child);
             }
         }
@@ -241,18 +232,14 @@ public class IOStructGen {
         }
 
         for (ICTFMetadataNode child : children) {
-            switch (child.getType()) {
-            case CTFParser.TYPEALIAS:
+            String type = child.getType();
+            if (CTFParser.tokenNames[CTFParser.TYPEALIAS].equals(type)) {
                 TypeAliasParser.INSTANCE.parse(child, new TypeAliasParser.Param(trace, fRoot));
-                break;
-            case CTFParser.TYPEDEF:
+            } else if (CTFParser.tokenNames[CTFParser.TYPEDEF].equals(type)) {
                 TypedefParser.INSTANCE.parse(child, new TypedefParser.Param(trace, fRoot));
-                break;
-            case CTFParser.CTF_EXPRESSION_TYPE:
-            case CTFParser.CTF_EXPRESSION_VAL:
+            } else if (CTFParser.tokenNames[CTFParser.CTF_EXPRESSION_TYPE].equals(type) || CTFParser.tokenNames[CTFParser.CTF_EXPRESSION_VAL].equals(type)) {
                 TraceDeclarationParser.INSTANCE.parse(child, new TraceDeclarationParser.Param(fTrace, fRoot));
-                break;
-            default:
+            } else {
                 throw childTypeError(child);
             }
         }
@@ -279,17 +266,14 @@ public class IOStructGen {
         List<ICTFMetadataNode> children = declaration.getChildren();
 
         for (ICTFMetadataNode child : children) {
-            switch (child.getType()) {
-            case CTFParser.TYPEDEF:
+            String type = child.getType();
+            if (CTFParser.tokenNames[CTFParser.TYPEDEF].equals(type)) {
                 TypedefParser.INSTANCE.parse(child, new TypedefParser.Param(fTrace, fRoot));
-                break;
-            case CTFParser.TYPEALIAS:
+            } else if (CTFParser.tokenNames[CTFParser.TYPEALIAS].equals(type)) {
                 TypeAliasParser.INSTANCE.parse(child, new TypeAliasParser.Param(fTrace, fRoot));
-                break;
-            case CTFParser.TYPE_SPECIFIER_LIST:
+            } else if (CTFParser.tokenNames[CTFParser.TYPE_SPECIFIER_LIST].equals(type)) {
                 TypeSpecifierListParser.INSTANCE.parse(child, new TypeSpecifierListParser.Param(fTrace, null, null, fRoot));
-                break;
-            default:
+            } else {
                 throw childTypeError(child);
             }
         }
@@ -306,9 +290,9 @@ public class IOStructGen {
      */
     private static ParseException childTypeError(ICTFMetadataNode child) {
         ICTFMetadataNode parent = child.getParent();
-        String error = "Parent " + CTFParser.tokenNames[parent.getType()] //$NON-NLS-1$
+        String error = "Parent " + parent.getType() //$NON-NLS-1$
                 + " can't have a child of type " //$NON-NLS-1$
-                + CTFParser.tokenNames[child.getType()] + "."; //$NON-NLS-1$
+                + child.getType() + "."; //$NON-NLS-1$
 
         return new ParseException(error);
     }

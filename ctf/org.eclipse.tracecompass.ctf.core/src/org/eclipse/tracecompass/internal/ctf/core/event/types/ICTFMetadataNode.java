@@ -60,7 +60,7 @@ public interface ICTFMetadataNode {
      *
      * @return the type of the node or null if it has not been set
      */
-    int getType();
+    String getType();
 
     /**
      * Set the parent of the node
@@ -100,5 +100,5 @@ public interface ICTFMetadataNode {
      * @return first child of the node matching the type, or null if none is
      *         found
      */
-    ICTFMetadataNode getFirstChildWithType(int typeDeclaratorList);
+    ICTFMetadataNode getFirstChildWithType(String typeDeclaratorList);
 }

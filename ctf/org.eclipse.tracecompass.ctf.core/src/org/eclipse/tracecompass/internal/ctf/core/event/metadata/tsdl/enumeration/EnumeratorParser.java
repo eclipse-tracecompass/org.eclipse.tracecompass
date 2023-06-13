@@ -99,13 +99,13 @@ public final class EnumeratorParser implements ICommonTreeParser {
         for (ICTFMetadataNode child : children) {
             if (isAnyUnaryString(child)) {
                 label = UnaryStringParser.INSTANCE.parse(child, null);
-            } else if (child.getType() == CTFParser.ENUM_VALUE) {
+            } else if (CTFParser.tokenNames[CTFParser.ENUM_VALUE].equals(child.getType())) {
 
                 valueSpecified = true;
 
                 low = UnaryIntegerParser.INSTANCE.parse(child.getChild(0), null);
                 high = low;
-            } else if (child.getType() == CTFParser.ENUM_VALUE_RANGE) {
+            } else if (CTFParser.tokenNames[CTFParser.ENUM_VALUE_RANGE].equals(child.getType())) {
 
                 valueSpecified = true;
 

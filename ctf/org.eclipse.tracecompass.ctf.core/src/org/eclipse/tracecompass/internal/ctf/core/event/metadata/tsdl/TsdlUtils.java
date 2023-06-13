@@ -40,7 +40,7 @@ public final class TsdlUtils {
      * @return True if the given node is an unary string.
      */
     public static boolean isUnaryString(ICTFMetadataNode node) {
-        return ((node.getType() == CTFParser.UNARY_EXPRESSION_STRING));
+        return (CTFParser.tokenNames[CTFParser.UNARY_EXPRESSION_STRING].equals(node.getType()));
     }
 
     /**
@@ -52,7 +52,7 @@ public final class TsdlUtils {
      *         quotes, etc).
      */
     public static boolean isAnyUnaryString(ICTFMetadataNode node) {
-        return (isUnaryString(node) || (node.getType() == CTFParser.UNARY_EXPRESSION_STRING_QUOTES));
+        return (isUnaryString(node) || (CTFParser.tokenNames[CTFParser.UNARY_EXPRESSION_STRING_QUOTES].equals(node.getType())));
     }
 
     /**
@@ -63,8 +63,8 @@ public final class TsdlUtils {
      * @return True if the given node is an unary integer.
      */
     public static boolean isUnaryInteger(ICTFMetadataNode node) {
-        return ((node.getType() == CTFParser.UNARY_EXPRESSION_DEC) ||
-                (node.getType() == CTFParser.UNARY_EXPRESSION_HEX) || (node.getType() == CTFParser.UNARY_EXPRESSION_OCT));
+        return (CTFParser.tokenNames[CTFParser.UNARY_EXPRESSION_DEC].equals(node.getType()) ||
+                CTFParser.tokenNames[CTFParser.UNARY_EXPRESSION_HEX].equals(node.getType()) || CTFParser.tokenNames[CTFParser.UNARY_EXPRESSION_OCT].equals(node.getType()));
     }
 
     /**
@@ -94,7 +94,7 @@ public final class TsdlUtils {
 
             ICTFMetadataNode id = ref.getChild(0);
 
-            if (ref.getType() == CTFParser.ARROW) {
+            if (CTFParser.tokenNames[CTFParser.ARROW].equals(ref.getType())) {
                 sb.append("->"); //$NON-NLS-1$
             } else { /* DOT */
                 sb.append('.');
@@ -117,9 +117,9 @@ public final class TsdlUtils {
      */
     public static ParseException childTypeError(ICTFMetadataNode child) {
         ICTFMetadataNode parent = child.getParent();
-        String error = "Parent " + CTFParser.tokenNames[parent.getType()] //$NON-NLS-1$
+        String error = "Parent " + parent.getType() //$NON-NLS-1$
                 + " can't have a child of type " //$NON-NLS-1$
-                + CTFParser.tokenNames[child.getType()] + "."; //$NON-NLS-1$
+                + child.getType() + "."; //$NON-NLS-1$
 
         return new ParseException(error);
     }

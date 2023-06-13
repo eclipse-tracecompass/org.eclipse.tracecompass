@@ -140,18 +140,15 @@ public final class StructBodyParser extends AbstractScopedCommonTreeParser {
         CTFTrace trace = ((Param) param).fTrace;
 
         for (ICTFMetadataNode declarationNode : structDeclarations) {
-            switch (declarationNode.getType()) {
-            case CTFParser.TYPEALIAS:
+            String type = declarationNode.getType();
+            if (CTFParser.tokenNames[CTFParser.TYPEALIAS].equals(type)) {
                 TypeAliasParser.INSTANCE.parse(declarationNode, new TypeAliasParser.Param(trace, scope));
-                break;
-            case CTFParser.TYPEDEF:
+            } else if (CTFParser.tokenNames[CTFParser.TYPEDEF].equals(type)) {
                 TypedefParser.INSTANCE.parse(declarationNode, new TypedefParser.Param(trace, scope));
                 StructDeclarationParser.INSTANCE.parse(declarationNode, new StructDeclarationParser.Param(structDeclaration, trace, scope));
-                break;
-            case CTFParser.SV_DECLARATION:
+            } else if (CTFParser.tokenNames[CTFParser.SV_DECLARATION].equals(type)) {
                 StructDeclarationParser.INSTANCE.parse(declarationNode, new StructDeclarationParser.Param(structDeclaration, trace, scope));
-                break;
-            default:
+            } else {
                 throw childTypeError(declarationNode);
             }
         }

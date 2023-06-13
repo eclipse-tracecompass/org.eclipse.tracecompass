@@ -147,7 +147,7 @@ public final class EventDeclarationParser extends AbstractScopedCommonTreeParser
 
             ICTFMetadataNode typeSpecifier = rightNode.getChild(0);
 
-            if (typeSpecifier.getType() != CTFParser.TYPE_SPECIFIER_LIST) {
+            if (!(CTFParser.tokenNames[CTFParser.TYPE_SPECIFIER_LIST].equals(typeSpecifier.getType()))) {
                 throw new ParseException("context expects a type specifier"); //$NON-NLS-1$
             }
 
@@ -165,7 +165,7 @@ public final class EventDeclarationParser extends AbstractScopedCommonTreeParser
 
             ICTFMetadataNode typeSpecifier = rightNode.getChild(0);
 
-            if (typeSpecifier.getType() != CTFParser.TYPE_SPECIFIER_LIST) {
+            if (!(CTFParser.tokenNames[CTFParser.TYPE_SPECIFIER_LIST].equals(typeSpecifier.getType()))) {
                 throw new ParseException("fields expects a type specifier"); //$NON-NLS-1$
             }
 

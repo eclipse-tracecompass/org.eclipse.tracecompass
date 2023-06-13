@@ -117,17 +117,14 @@ public final class TypeDeclaratorParser extends AbstractScopedCommonTreeParser {
             children = typeDeclarator.getChildren();
             for (ICTFMetadataNode child : children) {
 
-                switch (child.getType()) {
-                case CTFParser.POINTER:
+                String type = child.getType();
+                if (CTFParser.tokenNames[CTFParser.POINTER].equals(type)) {
                     pointers.add(child);
-                    break;
-                case CTFParser.IDENTIFIER:
+                } else if (CTFParser.tokenNames[CTFParser.IDENTIFIER].equals(type)) {
                     identifier = child;
-                    break;
-                case CTFParser.LENGTH:
+                } else if (CTFParser.tokenNames[CTFParser.LENGTH].equals(type)) {
                     lengths.add(child);
-                    break;
-                default:
+                } else {
                     throw childTypeError(child);
                 }
             }
@@ -240,15 +237,15 @@ public final class TypeDeclaratorParser extends AbstractScopedCommonTreeParser {
     }
 
     private static boolean isEvent(ICTFMetadataNode first) {
-        return first.getType() == CTFParser.EVENT;
+        return CTFParser.tokenNames[CTFParser.EVENT].equals(first.getType());
     }
 
     private static boolean isStream(ICTFMetadataNode first) {
-        return first.getType() == CTFParser.STREAM;
+        return CTFParser.tokenNames[CTFParser.STREAM].equals(first.getType());
     }
 
     private static boolean isTrace(ICTFMetadataNode first) {
-        return first.getType() == CTFParser.TRACE;
+        return CTFParser.tokenNames[CTFParser.TRACE].equals(first.getType());
     }
 
 }

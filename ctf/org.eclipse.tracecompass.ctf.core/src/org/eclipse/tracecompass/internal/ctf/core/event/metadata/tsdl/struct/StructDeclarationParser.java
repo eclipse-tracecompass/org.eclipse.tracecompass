@@ -86,14 +86,14 @@ public final class StructDeclarationParser extends AbstractScopedCommonTreeParse
         DeclarationScope scope = ((Param) param).fDeclarationScope;
         StructDeclaration struct = ((Param) param).fStruct;
         /* Get the type specifier list node */
-        ICTFMetadataNode typeSpecifierListNode = declaration.getFirstChildWithType(CTFParser.TYPE_SPECIFIER_LIST);
+        ICTFMetadataNode typeSpecifierListNode = declaration.getFirstChildWithType(CTFParser.tokenNames[CTFParser.TYPE_SPECIFIER_LIST]);
 
         if (typeSpecifierListNode == null) {
             throw new ParseException("Cannot have an struct without a type specifier"); //$NON-NLS-1$
         }
 
         /* Get the type declarator list node */
-        ICTFMetadataNode typeDeclaratorListNode = declaration.getFirstChildWithType(CTFParser.TYPE_DECLARATOR_LIST);
+        ICTFMetadataNode typeDeclaratorListNode = declaration.getFirstChildWithType(CTFParser.tokenNames[CTFParser.TYPE_DECLARATOR_LIST]);
 
         if (typeDeclaratorListNode == null) {
             throw new ParseException("Cannot have an struct without a declarator"); //$NON-NLS-1$

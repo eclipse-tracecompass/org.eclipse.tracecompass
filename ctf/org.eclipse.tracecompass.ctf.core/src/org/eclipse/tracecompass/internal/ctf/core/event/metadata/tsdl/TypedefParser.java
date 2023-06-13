@@ -83,11 +83,11 @@ public final class TypedefParser extends AbstractScopedCommonTreeParser {
         }
         DeclarationScope scope = ((Param) param).fDeclarationScope;
 
-        ICTFMetadataNode typeDeclaratorListNode = typedef.getFirstChildWithType(CTFParser.TYPE_DECLARATOR_LIST);
+        ICTFMetadataNode typeDeclaratorListNode = typedef.getFirstChildWithType(CTFParser.tokenNames[CTFParser.TYPE_DECLARATOR_LIST]);
         if (typeDeclaratorListNode == null) {
             throw new ParseException("Cannot have a typedef without a declarator"); //$NON-NLS-1$
         }
-        ICTFMetadataNode typeSpecifierListNode = typedef.getFirstChildWithType(CTFParser.TYPE_SPECIFIER_LIST);
+        ICTFMetadataNode typeSpecifierListNode = typedef.getFirstChildWithType(CTFParser.tokenNames[CTFParser.TYPE_SPECIFIER_LIST]);
         if (typeSpecifierListNode == null) {
             throw new ParseException("Cannot have a typedef without specifiers"); //$NON-NLS-1$
         }

@@ -68,14 +68,12 @@ public final class TypeAliasAliasParser implements ICommonTreeParser {
         List<ICTFMetadataNode> pointers = new LinkedList<>();
 
         for (ICTFMetadataNode child : children) {
-            switch (child.getType()) {
-            case CTFParser.TYPE_SPECIFIER_LIST:
+            String type = child.getType();
+            if (CTFParser.tokenNames[CTFParser.TYPE_SPECIFIER_LIST].equals(type)) {
                 typeSpecifierList = child;
-                break;
-            case CTFParser.TYPE_DECLARATOR_LIST:
+            } else if (CTFParser.tokenNames[CTFParser.TYPE_DECLARATOR_LIST].equals(type)) {
                 typeDeclaratorList = child;
-                break;
-            default:
+            } else {
                 throw childTypeError(child);
             }
         }
@@ -96,14 +94,13 @@ public final class TypeAliasAliasParser implements ICommonTreeParser {
             List<ICTFMetadataNode> typeDeclaratorChildren = typeDeclarator.getChildren();
 
             for (ICTFMetadataNode child : typeDeclaratorChildren) {
-                switch (child.getType()) {
-                case CTFParser.POINTER:
+                String type = child.getType();
+                if (CTFParser.tokenNames[CTFParser.POINTER].equals(type)) {
                     pointers.add(child);
-                    break;
-                case CTFParser.IDENTIFIER:
+                } else if (CTFParser.tokenNames[CTFParser.IDENTIFIER].equals(type)) {
                     throw new ParseException("Identifier (" + child.getText() //$NON-NLS-1$
                             + ") not expected in the typealias target"); //$NON-NLS-1$
-                default:
+                } else {
                     throw childTypeError(child);
                 }
             }

@@ -104,20 +104,17 @@ public final class VariantBodyParser extends AbstractScopedCommonTreeParser {
         final DeclarationScope scope = new DeclarationScope(((Param) param).fDeclarationScope, variantName == null ? MetadataStrings.VARIANT : variantName);
         CTFTrace trace = ((Param) param).fTrace;
         for (ICTFMetadataNode declarationNode : variantDeclarations) {
-            switch (declarationNode.getType()) {
-            case CTFParser.TYPEALIAS:
+            String type = declarationNode.getType();
+            if (CTFParser.tokenNames[CTFParser.TYPEALIAS].equals(type)) {
                 TypeAliasParser.INSTANCE.parse(declarationNode, new TypeAliasParser.Param(trace, scope));
-                break;
-            case CTFParser.TYPEDEF:
+            } else if (CTFParser.tokenNames[CTFParser.TYPEDEF].equals(type)) {
                 Map<String, IDeclaration> decs = TypedefParser.INSTANCE.parse(declarationNode, new TypedefParser.Param(trace, scope));
                 for (Entry<String, IDeclaration> declarationEntry : decs.entrySet()) {
                     variantDeclaration.addField(declarationEntry.getKey(), declarationEntry.getValue());
                 }
-                break;
-            case CTFParser.SV_DECLARATION:
+            } else if (CTFParser.tokenNames[CTFParser.SV_DECLARATION].equals(type)) {
                 VariantDeclarationParser.INSTANCE.parse(declarationNode, new VariantDeclarationParser.Param(variantDeclaration, trace, scope));
-                break;
-            default:
+            } else {
                 throw childTypeError(declarationNode);
             }
         }

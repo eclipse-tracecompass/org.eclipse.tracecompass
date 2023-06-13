@@ -162,26 +162,18 @@ public final class StructParser extends AbstractScopedCommonTreeParser {
 
         /* Loop on all children and identify what we have to work with. */
         for (ICTFMetadataNode child : children) {
-            switch (child.getType()) {
-            case CTFParser.STRUCT_NAME: {
+            String type = child.getType();
+            if (CTFParser.tokenNames[CTFParser.STRUCT_NAME].equals(type)) {
                 hasName = true;
                 ICTFMetadataNode structNameIdentifier = child.getChild(0);
                 structName = structNameIdentifier.getText();
-                break;
-            }
-            case CTFParser.STRUCT_BODY: {
+            } else if (CTFParser.tokenNames[CTFParser.STRUCT_BODY].equals(type)) {
                 hasBody = true;
-
                 structBody = child;
-                break;
-            }
-            case CTFParser.ALIGN: {
+            } else if (CTFParser.tokenNames[CTFParser.ALIGN].equals(type)) {
                 ICTFMetadataNode structAlignExpression = child.getChild(0);
-
                 structAlign = AlignmentParser.INSTANCE.parse(structAlignExpression, null);
-                break;
-            }
-            default:
+            } else {
                 throw childTypeError(child);
             }
         }

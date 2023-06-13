@@ -251,33 +251,19 @@ public final class VariantParser extends AbstractScopedCommonTreeParser {
         String variantTag = null;
 
         for (ICTFMetadataNode child : children) {
-            switch (child.getType()) {
-            case CTFParser.VARIANT_NAME:
-
+            String type = child.getType();
+            if (CTFParser.tokenNames[CTFParser.VARIANT_NAME].equals(type)) {
                 hasName = true;
-
                 ICTFMetadataNode variantNameIdentifier = child.getChild(0);
-
                 variantName = variantNameIdentifier.getText();
-
-                break;
-            case CTFParser.VARIANT_TAG:
-
+            } else if (CTFParser.tokenNames[CTFParser.VARIANT_TAG].equals(type)) {
                 hasTag = true;
-
                 ICTFMetadataNode variantTagIdentifier = child.getChild(0);
-
                 variantTag = variantTagIdentifier.getText();
-
-                break;
-            case CTFParser.VARIANT_BODY:
-
+            } else if (CTFParser.tokenNames[CTFParser.VARIANT_BODY].equals(type)) {
                 hasBody = true;
-
                 variantBody = child;
-
-                break;
-            default:
+            } else {
                 throw childTypeError(child);
             }
         }

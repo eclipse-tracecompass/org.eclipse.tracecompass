@@ -117,17 +117,14 @@ public final class TypeSpecifierListParser extends AbstractScopedCommonTreeParse
          */
         ICTFMetadataNode firstChild = typeSpecifierList.getChild(0);
 
-        switch (firstChild.getType()) {
-        case CTFParser.FLOATING_POINT:
+        String type = firstChild.getType();
+        if (CTFParser.tokenNames[CTFParser.FLOATING_POINT].equals(type)) {
             declaration = FloatDeclarationParser.INSTANCE.parse(firstChild, new FloatDeclarationParser.Param(trace));
-            break;
-        case CTFParser.INTEGER:
+        } else if (CTFParser.tokenNames[CTFParser.INTEGER].equals(type)) {
             declaration = IntegerDeclarationParser.INSTANCE.parse(firstChild, new IntegerDeclarationParser.Param(trace));
-            break;
-        case CTFParser.STRING:
+        } else if (CTFParser.tokenNames[CTFParser.STRING].equals(type)) {
             declaration = StringDeclarationParser.INSTANCE.parse(firstChild, null);
-            break;
-        case CTFParser.STRUCT:
+        } else if (CTFParser.tokenNames[CTFParser.STRUCT].equals(type)) {
             declaration = StructParser.INSTANCE.parse(firstChild, new StructParser.Param(trace, identifier, scope));
             StructDeclaration structDeclaration = (StructDeclaration) declaration;
             if (structDeclaration.hasField(MetadataStrings.ID)) {
@@ -142,29 +139,25 @@ public final class TypeSpecifierListParser extends AbstractScopedCommonTreeParse
                     }
                 }
             }
-            break;
-        case CTFParser.VARIANT:
+        } else if (CTFParser.tokenNames[CTFParser.VARIANT].equals(type)) {
             declaration = VariantParser.INSTANCE.parse(firstChild, new VariantParser.Param(trace, scope));
-            break;
-        case CTFParser.ENUM:
+        } else if (CTFParser.tokenNames[CTFParser.ENUM].equals(type)) {
             declaration = EnumParser.INSTANCE.parse(firstChild, new EnumParser.Param(trace, scope));
-            break;
-        case CTFParser.IDENTIFIER:
-        case CTFParser.FLOATTOK:
-        case CTFParser.INTTOK:
-        case CTFParser.LONGTOK:
-        case CTFParser.SHORTTOK:
-        case CTFParser.SIGNEDTOK:
-        case CTFParser.UNSIGNEDTOK:
-        case CTFParser.CHARTOK:
-        case CTFParser.DOUBLETOK:
-        case CTFParser.VOIDTOK:
-        case CTFParser.BOOLTOK:
-        case CTFParser.COMPLEXTOK:
-        case CTFParser.IMAGINARYTOK:
+        } else if (CTFParser.tokenNames[CTFParser.IDENTIFIER].equals(type) ||
+                    CTFParser.tokenNames[CTFParser.FLOATTOK].equals(type) ||
+                    CTFParser.tokenNames[CTFParser.INTTOK].equals(type) ||
+                    CTFParser.tokenNames[CTFParser.LONGTOK].equals(type) ||
+                    CTFParser.tokenNames[CTFParser.SHORTTOK].equals(type) ||
+                    CTFParser.tokenNames[CTFParser.SIGNEDTOK].equals(type) ||
+                    CTFParser.tokenNames[CTFParser.UNSIGNEDTOK].equals(type) ||
+                    CTFParser.tokenNames[CTFParser.CHARTOK].equals(type) ||
+                    CTFParser.tokenNames[CTFParser.DOUBLETOK].equals(type) ||
+                    CTFParser.tokenNames[CTFParser.VOIDTOK].equals(type) ||
+                    CTFParser.tokenNames[CTFParser.BOOLTOK].equals(type) ||
+                    CTFParser.tokenNames[CTFParser.COMPLEXTOK].equals(type) ||
+                    CTFParser.tokenNames[CTFParser.IMAGINARYTOK].equals(type)) {
             declaration = TypeDeclarationParser.INSTANCE.parse(typeSpecifierList, new TypeDeclarationParser.Param(pointerList, scope));
-            break;
-        default:
+        } else {
             throw childTypeError(firstChild);
         }
 

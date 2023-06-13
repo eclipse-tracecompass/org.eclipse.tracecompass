@@ -145,22 +145,15 @@ public final class IntegerDeclarationParser implements ICommonTreeParser {
 
         /* Iterate on all integer children */
         for (ICTFMetadataNode child : children) {
-            switch (child.getType()) {
-            case CTFParser.CTF_EXPRESSION_VAL:
-                /*
-                 * An assignment expression must have 2 children, left and right
-                 */
-
+            String type = child.getType();
+            if (CTFParser.tokenNames[CTFParser.CTF_EXPRESSION_VAL].equals(type)) {
                 ICTFMetadataNode leftNode = child.getChild(0);
                 ICTFMetadataNode rightNode = child.getChild(1);
-
                 List<ICTFMetadataNode> leftStrings = leftNode.getChildren();
-
                 if (!isAnyUnaryString(leftStrings.get(0))) {
                     throw new ParseException("Left side of ctf expression must be a string"); //$NON-NLS-1$
                 }
                 String left = concatenateUnaryStrings(leftStrings);
-
                 switch (left) {
                 case SIGNED:
                     signed = SignedParser.INSTANCE.parse(rightNode, null);
@@ -187,9 +180,7 @@ public final class IntegerDeclarationParser implements ICommonTreeParser {
                     Activator.log(IStatus.WARNING, Messages.IOStructGen_UnknownIntegerAttributeWarning + " " + left); //$NON-NLS-1$
                     break;
                 }
-
-                break;
-            default:
+            } else {
                 throw childTypeError(child);
             }
         }

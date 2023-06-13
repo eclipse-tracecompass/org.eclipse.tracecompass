@@ -166,7 +166,7 @@ public final class StreamDeclarationParser extends AbstractScopedCommonTreeParse
 
             ICTFMetadataNode typeSpecifier = rightNode.getChild(0);
 
-            if (typeSpecifier.getType() != CTFParser.TYPE_SPECIFIER_LIST) {
+            if (!(CTFParser.tokenNames[CTFParser.TYPE_SPECIFIER_LIST].equals(typeSpecifier.getType()))) {
                 throw new ParseException(EVENT_HEADER + EXPECTS_A_TYPE_SPECIFIER);
             }
 
@@ -194,7 +194,7 @@ public final class StreamDeclarationParser extends AbstractScopedCommonTreeParse
 
             ICTFMetadataNode typeSpecifier = rightNode.getChild(0);
 
-            if (typeSpecifier.getType() != CTFParser.TYPE_SPECIFIER_LIST) {
+            if (!(CTFParser.tokenNames[CTFParser.TYPE_SPECIFIER_LIST].equals(typeSpecifier.getType()))) {
                 throw new ParseException(EVENT_CONTEXT + EXPECTS_A_TYPE_SPECIFIER);
             }
 
@@ -212,7 +212,7 @@ public final class StreamDeclarationParser extends AbstractScopedCommonTreeParse
 
             ICTFMetadataNode typeSpecifier = rightNode.getChild(0);
 
-            if (typeSpecifier.getType() != CTFParser.TYPE_SPECIFIER_LIST) {
+            if (!(CTFParser.tokenNames[CTFParser.TYPE_SPECIFIER_LIST].equals(typeSpecifier.getType()))) {
                 throw new ParseException(PACKET_CONTEXT + EXPECTS_A_TYPE_SPECIFIER);
             }
 
@@ -236,9 +236,9 @@ public final class StreamDeclarationParser extends AbstractScopedCommonTreeParse
          */
         final ICTFMetadataNode potentialStruct = typeSpecifier.getChild(0);
         DeclarationScope eventHeaderScope = null;
-        if (potentialStruct.getType() == (CTFParser.STRUCT)) {
+        if (CTFParser.tokenNames[CTFParser.STRUCT].equals(potentialStruct.getType())) {
             final ICTFMetadataNode potentialStructName = potentialStruct.getChild(0);
-            if (potentialStructName.getType() == (CTFParser.STRUCT_NAME)) {
+            if (CTFParser.tokenNames[CTFParser.STRUCT_NAME].equals(potentialStructName.getType())) {
                 final String name = potentialStructName.getChild(0).getText();
                 eventHeaderScope = scope.lookupChildRecursive(name);
                 if (eventHeaderScope == null) {
