@@ -718,6 +718,9 @@ public class FlameGraphDataProvider<@NonNull N, E, @NonNull T extends WeightedTr
     /** Find the callsite at the time and depth requested */
     @SuppressWarnings("unchecked")
     private @Nullable WeightedTree<@NonNull N> findCallSite(WeightedTreeEntry cgEntry, Long time) {
+        if (time < 0 || time > cgEntry.fSs.getCurrentEndTime()) {
+            return null;
+        }
         try {
             ITmfStateInterval interval = cgEntry.fSs.querySingleState(time, cgEntry.fQuark);
 

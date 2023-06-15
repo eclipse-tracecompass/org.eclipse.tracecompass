@@ -25,8 +25,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.tracecompass.analysis.callstack.core.tests.CallStackTestBase;
 import org.eclipse.tracecompass.analysis.callstack.core.tests.FlameDataProviderTestUtils;
@@ -34,8 +36,10 @@ import org.eclipse.tracecompass.analysis.callstack.core.tests.stubs.CallStackAna
 import org.eclipse.tracecompass.internal.analysis.callstack.core.flamegraph.FlameGraphDataProvider;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.instrumented.FlameChartEntryModel;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.tree.AllGroupDescriptor;
+import org.eclipse.tracecompass.internal.tmf.core.model.filters.FetchParametersUtils;
 import org.eclipse.tracecompass.tmf.core.dataprovider.DataProviderParameterUtils;
 import org.eclipse.tracecompass.tmf.core.model.OutputElementStyle;
+import org.eclipse.tracecompass.tmf.core.model.filters.SelectionTimeQueryFilter;
 import org.eclipse.tracecompass.tmf.core.model.timegraph.ITimeGraphRowModel;
 import org.eclipse.tracecompass.tmf.core.model.timegraph.ITimeGraphState;
 import org.eclipse.tracecompass.tmf.core.model.timegraph.TimeGraphModel;
@@ -77,8 +81,9 @@ public class FlameGraphDataProviderTest extends CallStackTestBase {
     public void testFlameGraphDataProviderAllItems() throws IOException {
         CallStackAnalysisStub cga = getModule();
         FlameGraphDataProvider<?, ?, ?> provider = new FlameGraphDataProvider<>(getTrace(), cga, cga.getId());
-        Map<Long, FlameChartEntryModel> idsToNames = assertAndGetTree(provider, "expectedFgTreeFull", Collections.emptyMap());
+        Map<@NonNull Long, FlameChartEntryModel> idsToNames = assertAndGetTree(provider, "expectedFgTreeFull", Collections.emptyMap());
         assertRowsRequests(provider, idsToNames, "Full", 19);
+        assertWrongTooltipQueries(provider, idsToNames);
     }
 
     /**
@@ -93,8 +98,9 @@ public class FlameGraphDataProviderTest extends CallStackTestBase {
     public void testFlameGraphDataProviderGroupByProcess() throws IOException {
         CallStackAnalysisStub cga = getModule();
         FlameGraphDataProvider<?, ?, ?> provider = new FlameGraphDataProvider<>(getTrace(), cga, cga.getId());
-        Map<Long, FlameChartEntryModel> idsToNames = assertAndGetTree(provider, "expectedFgTreeProcess", ImmutableMap.of(FlameGraphDataProvider.GROUP_BY_KEY, "Processes/*"));
+        Map<@NonNull Long, FlameChartEntryModel> idsToNames = assertAndGetTree(provider, "expectedFgTreeProcess", ImmutableMap.of(FlameGraphDataProvider.GROUP_BY_KEY, "Processes/*"));
         assertRowsRequests(provider, idsToNames, "Process", 38);
+        assertWrongTooltipQueries(provider, idsToNames);
     }
 
     /**
@@ -109,8 +115,9 @@ public class FlameGraphDataProviderTest extends CallStackTestBase {
     public void testFlameGraphDataProviderGrouped() throws IOException {
         CallStackAnalysisStub cga = getModule();
         FlameGraphDataProvider<?, ?, ?> provider = new FlameGraphDataProvider<>(getTrace(), cga, cga.getId());
-        Map<Long, FlameChartEntryModel> idsToNames = assertAndGetTree(provider, "expectedFgTreeOne", ImmutableMap.of(FlameGraphDataProvider.GROUP_BY_KEY, AllGroupDescriptor.getInstance().getName()));
+        Map<@NonNull Long, FlameChartEntryModel> idsToNames = assertAndGetTree(provider, "expectedFgTreeOne", ImmutableMap.of(FlameGraphDataProvider.GROUP_BY_KEY, AllGroupDescriptor.getInstance().getName()));
         assertRowsRequests(provider, idsToNames, "One", 72);
+        assertWrongTooltipQueries(provider, idsToNames);
     }
 
     /**
@@ -125,8 +132,9 @@ public class FlameGraphDataProviderTest extends CallStackTestBase {
     public void testFlameGraphDataProviderSelection() throws IOException {
         CallStackAnalysisStub cga = getModule();
         FlameGraphDataProvider<?, ?, ?> provider = new FlameGraphDataProvider<>(getTrace(), cga, cga.getId());
-        Map<Long, FlameChartEntryModel> idsToNames = assertAndGetTree(provider, "expectedFgTreeSelection", ImmutableMap.of(FlameGraphDataProvider.SELECTION_RANGE_KEY, ImmutableList.of(5, 15)));
+        Map<@NonNull Long, FlameChartEntryModel> idsToNames = assertAndGetTree(provider, "expectedFgTreeSelection", ImmutableMap.of(FlameGraphDataProvider.SELECTION_RANGE_KEY, ImmutableList.of(5, 15)));
         assertRowsRequests(provider, idsToNames, "Selection", 10);
+        assertWrongTooltipQueries(provider, idsToNames);
     }
 
     private static void assertRowsRequests(FlameGraphDataProvider<?, ?, ?> provider, Map<Long, FlameChartEntryModel> idsToNames, String resultFileSuffix, long maxDuration) throws IOException {
@@ -149,7 +157,7 @@ public class FlameGraphDataProviderTest extends CallStackTestBase {
         assertRows(provider, idsToNames, builder.build(), filePrefix, "Zoom");
     }
 
-    private static Map<Long, FlameChartEntryModel> assertAndGetTree(FlameGraphDataProvider<?, ?, ?> provider, String filePath, @NonNull Map<@NonNull String, @NonNull Object> additionalParameters) throws IOException {
+    private static Map<@NonNull Long, FlameChartEntryModel> assertAndGetTree(FlameGraphDataProvider<?, ?, ?> provider, String filePath, @NonNull Map<@NonNull String, @NonNull Object> additionalParameters) throws IOException {
         Map<@NonNull String, @NonNull Object> parameters = new HashMap<>(TREE_PARAMETERS);
         parameters.putAll(additionalParameters);
         @SuppressWarnings("null")
@@ -181,11 +189,68 @@ public class FlameGraphDataProviderTest extends CallStackTestBase {
             assertEquals("End time of entry " + split[0] + ' ' + split[1] + WITH_PARENT + split[5], Long.parseLong(split[3]), fgEntry.getEndTime());
             assertEquals("Parent ID of entry " + split[0] + ' ' + split[1] + WITH_PARENT + split[5], parent == null ? -1 : parent.getId(), fgEntry.getParentId());
         }
-        Map<Long, FlameChartEntryModel> map = new HashMap<>();
+        Map<@NonNull Long, FlameChartEntryModel> map = new HashMap<>();
         for (FlameChartEntryModel fgModel : treeEntries) {
             map.put(fgModel.getId(), fgModel);
         }
         return map;
+    }
+
+    private static void assertWrongTooltipQueries(FlameGraphDataProvider<?, ?, ?> provider, Map<@NonNull Long, FlameChartEntryModel> idsToNames) {
+        @NonNull List<@NonNull Long> wrongEntry = Collections.singletonList(13213L);
+        @NonNull List<@NonNull Long> twoEntries = Objects.requireNonNull(List.of(1L, 2L));
+        FlameChartEntryModel entry = FlameDataProviderTestUtils.findEntryByNameAndType(idsToNames.values(), "1", FlameChartEntryModel.EntryType.FUNCTION);
+        assertNotNull(entry);
+        @NonNull List<@NonNull Long> correctEntry = Collections.singletonList(entry.getId());
+
+        /* No params */
+        TmfModelResponse<@NonNull Map<@NonNull String, @NonNull String>> tooltipResponse = provider.fetchTooltip(Collections.emptyMap(), new NullProgressMonitor());
+        assertNotNull(tooltipResponse);
+        assertEquals(ITmfResponse.Status.FAILED, tooltipResponse.getStatus());
+        Map<@NonNull String, @NonNull String> tooltipModel = tooltipResponse.getModel();
+        if (tooltipModel != null) {
+            assertTrue(tooltipModel.isEmpty());
+        }
+        /* Full query */
+        tooltipResponse = provider.fetchTooltip(FetchParametersUtils.selectionTimeQueryToMap(new SelectionTimeQueryFilter(0L, Long.MAX_VALUE, 2, idsToNames.keySet())), new NullProgressMonitor());
+        assertNotNull(tooltipResponse);
+        assertEquals(ITmfResponse.Status.FAILED, tooltipResponse.getStatus());
+        tooltipModel = tooltipResponse.getModel();
+        if (tooltipModel != null) {
+            assertTrue(tooltipModel.isEmpty());
+        }
+        /* Query with two entries */
+        tooltipResponse = provider.fetchTooltip(FetchParametersUtils.selectionTimeQueryToMap(new SelectionTimeQueryFilter(3L, 3L, 1, twoEntries)), new NullProgressMonitor());
+        assertNotNull(tooltipResponse);
+        assertEquals(ITmfResponse.Status.FAILED, tooltipResponse.getStatus());
+        tooltipModel = tooltipResponse.getModel();
+        if (tooltipModel != null) {
+            assertTrue(tooltipModel.isEmpty());
+        }
+        /* Query with wrong entry */
+        tooltipResponse = provider.fetchTooltip(FetchParametersUtils.selectionTimeQueryToMap(new SelectionTimeQueryFilter(3L, 3L, 1, wrongEntry)), new NullProgressMonitor());
+        assertNotNull(tooltipResponse);
+        assertEquals(ITmfResponse.Status.COMPLETED, tooltipResponse.getStatus());
+        tooltipModel = tooltipResponse.getModel();
+        if (tooltipModel != null) {
+            assertTrue(tooltipModel.isEmpty());
+        }
+        /* Off query */
+        tooltipResponse = provider.fetchTooltip(FetchParametersUtils.selectionTimeQueryToMap(new SelectionTimeQueryFilter(321837218L, 321837218L, 1, correctEntry)), new NullProgressMonitor());
+        assertNotNull(tooltipResponse);
+        assertEquals(ITmfResponse.Status.COMPLETED, tooltipResponse.getStatus());
+        tooltipModel = tooltipResponse.getModel();
+        if (tooltipModel != null) {
+            assertTrue(tooltipModel.isEmpty());
+        }
+        /* Wide query */
+        tooltipResponse = provider.fetchTooltip(FetchParametersUtils.selectionTimeQueryToMap(new SelectionTimeQueryFilter(0L, 3L, 2, correctEntry)), new NullProgressMonitor());
+        assertNotNull(tooltipResponse);
+        assertEquals(ITmfResponse.Status.FAILED, tooltipResponse.getStatus());
+        tooltipModel = tooltipResponse.getModel();
+        if (tooltipModel != null) {
+            assertTrue(tooltipModel.isEmpty());
+        }
     }
 
     @SuppressWarnings("null")
@@ -218,7 +283,29 @@ public class FlameGraphDataProviderTest extends CallStackTestBase {
             ITimeGraphRowModel row = rows.get(fgEntry.getId());
             assertNotNull(descriptor + ": Row entry exists" + split[0], row);
 
+            @NonNull String[] rowStates = split[1].split(",");
+            assertTooltip(provider, fgEntry.getId(), Long.parseLong(rowStates[0]), false, rowStates[3], Long.parseLong(rowStates[1]) + " ns");
+            assertTooltip(provider, fgEntry.getId(), Long.parseLong(rowStates[0]), true,  rowStates[3], Long.parseLong(rowStates[1]) + " ns");
+
             assertEqualsStates(split[1], row.getStates(), descriptor + ": " + split[0]);
+        }
+    }
+
+    private static void assertTooltip(FlameGraphDataProvider<?, ?, ?> provider, Long entryId, Long requestedTime, boolean isAction, String expectedObject, String expectedDuration) {
+        TmfModelResponse<@NonNull Map<@NonNull String, @NonNull String>> tooltipResponse = provider.fetchTooltip(prepareTooltipParameters(entryId, requestedTime, isAction), new NullProgressMonitor());
+        assertNotNull(tooltipResponse);
+        assertEquals(ITmfResponse.Status.COMPLETED, tooltipResponse.getStatus());
+        Map<@NonNull String, @NonNull String> tooltipModel = tooltipResponse.getModel();
+        assertNotNull(tooltipModel);
+        if (expectedObject.equals("null")) {
+            assertTrue(tooltipModel.isEmpty());
+        } else {
+            if (isAction) {
+                assertNotNull(tooltipModel);
+            } else {
+                assertEquals(expectedObject, tooltipModel.get("Object"));
+                assertEquals(expectedDuration, tooltipModel.get("\tTotal duration"));
+            }
         }
     }
 
@@ -233,6 +320,19 @@ public class FlameGraphDataProviderTest extends CallStackTestBase {
 
     private static @NonNull Map<@NonNull String, @NonNull Object> prepareRowParameters(@NonNull Set<Long> ids, @NonNull List<Long> requestedTimes) {
         return ImmutableMap.of(DataProviderParameterUtils.REQUESTED_TIME_KEY, requestedTimes, DataProviderParameterUtils.REQUESTED_ITEMS_KEY, ids);
+    }
+
+    private static @NonNull Map<@NonNull String, @NonNull Object> prepareTooltipParameters(Long entryId, Long requestedTime, boolean isAction) {
+        if (isAction) {
+            return ImmutableMap.of(
+                    DataProviderParameterUtils.REQUESTED_TIME_KEY, Collections.singletonList(requestedTime),
+                    DataProviderParameterUtils.REQUESTED_ITEMS_KEY, Collections.singletonList(entryId),
+                    FlameGraphDataProvider.TOOLTIP_ACTION_KEY, Collections.EMPTY_LIST);
+
+        }
+        return ImmutableMap.of(
+                DataProviderParameterUtils.REQUESTED_TIME_KEY, Collections.singletonList(requestedTime),
+                DataProviderParameterUtils.REQUESTED_ITEMS_KEY, Collections.singletonList(entryId));
     }
 
     private static void assertEqualsStates(String string, @NonNull List<@NonNull ITimeGraphState> states, String descriptor) {
