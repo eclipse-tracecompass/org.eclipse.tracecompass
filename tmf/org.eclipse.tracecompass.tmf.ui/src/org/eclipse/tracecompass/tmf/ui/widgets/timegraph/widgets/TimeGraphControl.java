@@ -153,7 +153,7 @@ import com.google.common.collect.Iterables;
 public class TimeGraphControl extends TimeGraphBaseControl
         implements FocusListener, KeyListener, MouseMoveListener, MouseListener,
         MouseWheelListener, MouseTrackListener, TraverseListener, ISelectionProvider,
-        MenuDetectListener, ITmfTimeGraphDrawingHelper, ITimeGraphColorListener, ControlListener, Listener {
+        MenuDetectListener, ITmfTimeGraphDrawingHelper, ITimeGraphColorListener, Listener {
 
     /**
      * Default state width ratio
@@ -332,7 +332,7 @@ public class TimeGraphControl extends TimeGraphBaseControl
 
         fItemData = new ItemData();
 
-        addControlListener(this);
+        addControlListener(new TimeGraphControlListener());
         addFocusListener(this);
         addMouseListener(this);
         addMouseMoveListener(this);
@@ -4343,14 +4343,16 @@ public class TimeGraphControl extends TimeGraphBaseControl
         fHideEmptyRowsFilterActive = hideEmptyRowsFilterActive;
     }
 
-    @Override
-    public void controlMoved(ControlEvent e) {
-        resetCache();
-    }
+    private final class TimeGraphControlListener implements ControlListener {
+        @Override
+        public void controlMoved(ControlEvent e) {
+            resetCache();
+        }
 
-    @Override
-    public void controlResized(ControlEvent e) {
-        resetCache();
+        @Override
+        public void controlResized(ControlEvent e) {
+            resetCache();
+        }
     }
 
     private void resetCache() {
