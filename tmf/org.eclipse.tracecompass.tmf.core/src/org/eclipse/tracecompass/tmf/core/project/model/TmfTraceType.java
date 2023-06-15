@@ -40,8 +40,11 @@ import org.eclipse.osgi.util.NLS;
 import org.eclipse.tracecompass.internal.tmf.core.Activator;
 import org.eclipse.tracecompass.internal.tmf.core.project.model.Messages;
 import org.eclipse.tracecompass.tmf.core.TmfCommonConstants;
+import org.eclipse.tracecompass.tmf.core.event.ITmfEvent;
+import org.eclipse.tracecompass.tmf.core.parsers.custom.CustomTxtEvent;
 import org.eclipse.tracecompass.tmf.core.parsers.custom.CustomTxtTrace;
 import org.eclipse.tracecompass.tmf.core.parsers.custom.CustomTxtTraceDefinition;
+import org.eclipse.tracecompass.tmf.core.parsers.custom.CustomXmlEvent;
 import org.eclipse.tracecompass.tmf.core.parsers.custom.CustomXmlTrace;
 import org.eclipse.tracecompass.tmf.core.parsers.custom.CustomXmlTraceDefinition;
 import org.eclipse.tracecompass.tmf.core.signal.TmfSignalManager;
@@ -701,11 +704,45 @@ public final class TmfTraceType {
      *             if trace cannot be instantiated
      * @since 9.0
      */
-    public static TmfExperiment instantiateExperiment(String typeID) throws CoreException {
+    public static @Nullable TmfExperiment instantiateExperiment(@NonNull String typeID) throws CoreException {
         IConfigurationElement ce = TRACE_TYPE_ATTRIBUTES.get(typeID);
         if (ce == null) {
             return null;
         }
         return (TmfExperiment) ce.createExecutableExtension(TmfTraceType.EXPERIMENT_TYPE_ATTR);
+    }
+
+    /**
+     * Instantiate {@link ITmfEvent} from trace type ID.
+     *
+     * @param traceTypeId
+     *            the trace type Id
+     * @return an instance of {@link ITmfEvent} or null
+     *
+     * @since 9.1
+     */
+    public static @Nullable ITmfEvent instantiateEvent(@NonNull String traceTypeId) throws CoreException {
+        if (CustomTxtTrace.isCustomTraceTypeId(traceTypeId)) {
+            for (CustomTxtTraceDefinition def : CustomTxtTraceDefinition.loadAll()) {
+                String id = CustomTxtTrace.buildTraceTypeId(def.categoryName, def.definitionName);
+                if (traceTypeId.equals(id)) {
+                    return new CustomTxtEvent(def);
+                }
+            }
+        }
+        if (CustomXmlTrace.isCustomTraceTypeId(traceTypeId)) {
+            for (CustomXmlTraceDefinition def : CustomXmlTraceDefinition.loadAll()) {
+                String id = CustomXmlTrace.buildTraceTypeId(def.categoryName, def.definitionName);
+                if (traceTypeId.equals(id)) {
+                    return new CustomXmlEvent(def);
+                }
+            }
+        }
+        IConfigurationElement ce = TRACE_TYPE_ATTRIBUTES.get(traceTypeId);
+        if (ce == null) {
+            return null;
+        }
+        ITmfEvent event = (ITmfEvent) ce.createExecutableExtension(TmfTraceType.EVENT_TYPE_ATTR);
+        return event;
     }
 }

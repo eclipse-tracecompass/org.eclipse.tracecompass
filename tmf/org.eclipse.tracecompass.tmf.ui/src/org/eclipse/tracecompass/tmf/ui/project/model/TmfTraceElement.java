@@ -54,12 +54,8 @@ import org.eclipse.tracecompass.internal.util.ByteBufferTracker;
 import org.eclipse.tracecompass.tmf.core.TmfCommonConstants;
 import org.eclipse.tracecompass.tmf.core.event.ITmfEvent;
 import org.eclipse.tracecompass.tmf.core.io.ResourceUtil;
-import org.eclipse.tracecompass.tmf.core.parsers.custom.CustomTxtEvent;
 import org.eclipse.tracecompass.tmf.core.parsers.custom.CustomTxtTrace;
-import org.eclipse.tracecompass.tmf.core.parsers.custom.CustomTxtTraceDefinition;
-import org.eclipse.tracecompass.tmf.core.parsers.custom.CustomXmlEvent;
 import org.eclipse.tracecompass.tmf.core.parsers.custom.CustomXmlTrace;
-import org.eclipse.tracecompass.tmf.core.parsers.custom.CustomXmlTraceDefinition;
 import org.eclipse.tracecompass.tmf.core.project.model.ITmfPropertiesProvider;
 import org.eclipse.tracecompass.tmf.core.project.model.TmfTraceType;
 import org.eclipse.tracecompass.tmf.core.project.model.TraceTypeHelper;
@@ -150,36 +146,18 @@ public class TmfTraceElement extends TmfCommonProjectElement implements IActionF
 
     // The mapping of available trace type IDs to their corresponding
     // configuration element
-    private static final Map<String, IConfigurationElement> TRACE_TYPE_ATTRIBUTES = new HashMap<>();
     private static final Map<String, IConfigurationElement> TRACE_TYPE_UI_ATTRIBUTES = new HashMap<>();
-    private static final Map<String, IConfigurationElement> TRACE_CATEGORIES = new HashMap<>();
 
     /**
      * Initialize statically at startup by getting extensions from the platform
      * extension registry.
      */
     public static void init() {
-        /* Read the tmf.core "tracetype" extension point */
-        IConfigurationElement[] config = Platform.getExtensionRegistry().getConfigurationElementsFor(TmfTraceType.TMF_TRACE_TYPE_ID);
-        for (IConfigurationElement ce : config) {
-            switch (ce.getName()) {
-            case TmfTraceType.TYPE_ELEM:
-                String traceTypeId = ce.getAttribute(TmfTraceType.ID_ATTR);
-                TRACE_TYPE_ATTRIBUTES.put(traceTypeId, ce);
-                break;
-            case TmfTraceType.CATEGORY_ELEM:
-                String categoryId = ce.getAttribute(TmfTraceType.ID_ATTR);
-                TRACE_CATEGORIES.put(categoryId, ce);
-                break;
-            default:
-            }
-        }
-
         /*
          * Read the corresponding tmf.ui "tracetypeui" extension point for this
          * trace type, if it exists.
          */
-        config = Platform.getExtensionRegistry().getConfigurationElementsFor(TmfTraceTypeUIUtils.TMF_TRACE_TYPE_UI_ID);
+        IConfigurationElement[] config = Platform.getExtensionRegistry().getConfigurationElementsFor(TmfTraceTypeUIUtils.TMF_TRACE_TYPE_UI_ID);
         for (IConfigurationElement ce : config) {
             String elemName = ce.getName();
             if (TmfTraceTypeUIUtils.TYPE_ELEM.equals(elemName)) {
@@ -296,28 +274,7 @@ public class TmfTraceElement extends TmfCommonProjectElement implements IActionF
         try {
             String traceTypeId = getTraceType();
             if (traceTypeId != null) {
-                if (CustomTxtTrace.isCustomTraceTypeId(traceTypeId)) {
-                    for (CustomTxtTraceDefinition def : CustomTxtTraceDefinition.loadAll()) {
-                        String id = CustomTxtTrace.buildTraceTypeId(def.categoryName, def.definitionName);
-                        if (traceTypeId.equals(id)) {
-                            return new CustomTxtEvent(def);
-                        }
-                    }
-                }
-                if (CustomXmlTrace.isCustomTraceTypeId(traceTypeId)) {
-                    for (CustomXmlTraceDefinition def : CustomXmlTraceDefinition.loadAll()) {
-                        String id = CustomXmlTrace.buildTraceTypeId(def.categoryName, def.definitionName);
-                        if (traceTypeId.equals(id)) {
-                            return new CustomXmlEvent(def);
-                        }
-                    }
-                }
-                IConfigurationElement ce = TRACE_TYPE_ATTRIBUTES.get(traceTypeId);
-                if (ce == null) {
-                    return null;
-                }
-                ITmfEvent event = (ITmfEvent) ce.createExecutableExtension(TmfTraceType.EVENT_TYPE_ATTR);
-                return event;
+                return TmfTraceType.instantiateEvent(traceTypeId);
             }
         } catch (CoreException e) {
             Activator.getDefault().logError("Error instantiating ITmfEvent object for trace " + getName(), e); //$NON-NLS-1$
