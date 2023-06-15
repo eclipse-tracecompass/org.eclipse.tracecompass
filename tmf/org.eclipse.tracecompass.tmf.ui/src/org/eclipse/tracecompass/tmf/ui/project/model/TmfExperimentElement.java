@@ -538,14 +538,9 @@ public class TmfExperimentElement extends TmfCommonProjectElement implements IPr
             // make sure that supplementary folder exists
             refreshSupplementaryFolder();
 
-            if (getTraceType() != null) {
-
-                IConfigurationElement ce = TRACE_TYPE_ATTRIBUTES.get(getTraceType());
-                if (ce == null) {
-                    return null;
-                }
-                TmfExperiment experiment = (TmfExperiment) ce.createExecutableExtension(TmfTraceType.EXPERIMENT_TYPE_ATTR);
-                return experiment;
+            String typeID = getTraceType();
+            if (typeID != null) {
+                return TmfTraceType.instantiateExperiment(typeID);
             }
         } catch (CoreException e) {
             Activator.getDefault().logError(NLS.bind(Messages.TmfExperimentElement_ErrorInstantiatingTrace, getName()), e);
