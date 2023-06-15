@@ -105,9 +105,7 @@ public class TmfExperimentElement extends TmfCommonProjectElement implements IPr
 
     // The mapping of available trace type IDs to their corresponding
     // configuration element
-    private static final Map<String, IConfigurationElement> TRACE_TYPE_ATTRIBUTES = new HashMap<>();
     private static final Map<String, IConfigurationElement> TRACE_TYPE_UI_ATTRIBUTES = new HashMap<>();
-    private static final Map<String, IConfigurationElement> TRACE_CATEGORIES = new HashMap<>();
 
     // ------------------------------------------------------------------------
     // Static initialization
@@ -118,23 +116,11 @@ public class TmfExperimentElement extends TmfCommonProjectElement implements IPr
      * extension registry.
      */
     public static void init() {
-        IConfigurationElement[] config = Platform.getExtensionRegistry().getConfigurationElementsFor(TmfTraceType.TMF_TRACE_TYPE_ID);
-        for (IConfigurationElement ce : config) {
-            String elementName = ce.getName();
-            if (elementName.equals(TmfTraceType.EXPERIMENT_ELEM)) {
-                String traceTypeId = ce.getAttribute(TmfTraceType.ID_ATTR);
-                TRACE_TYPE_ATTRIBUTES.put(traceTypeId, ce);
-            } else if (elementName.equals(TmfTraceType.CATEGORY_ELEM)) {
-                String categoryId = ce.getAttribute(TmfTraceType.ID_ATTR);
-                TRACE_CATEGORIES.put(categoryId, ce);
-            }
-        }
-
         /*
          * Read the corresponding tmf.ui "tracetypeui" extension point for this
          * trace type, if it exists.
          */
-        config = Platform.getExtensionRegistry().getConfigurationElementsFor(TmfTraceTypeUIUtils.TMF_TRACE_TYPE_UI_ID);
+        IConfigurationElement[] config = Platform.getExtensionRegistry().getConfigurationElementsFor(TmfTraceTypeUIUtils.TMF_TRACE_TYPE_UI_ID);
         for (IConfigurationElement ce : config) {
             String elemName = ce.getName();
             if (TmfTraceTypeUIUtils.EXPERIMENT_ELEM.equals(elemName)) {
@@ -582,26 +568,22 @@ public class TmfExperimentElement extends TmfCommonProjectElement implements IPr
             return getLocation().toString();
         }
 
-        if (EXPERIMENT_TYPE.equals(id) && getTraceType() != null) {
-            IConfigurationElement ce = TRACE_TYPE_ATTRIBUTES.get(getTraceType());
-            if (ce == null) {
-                return ""; //$NON-NLS-1$
-            }
-            String categoryId = ce.getAttribute(TmfTraceType.CATEGORY_ATTR);
-            if (categoryId != null) {
-                IConfigurationElement category = TRACE_CATEGORIES.get(categoryId);
-                if (category != null) {
-                    return category.getAttribute(TmfTraceType.NAME_ATTR) + ':' + ce.getAttribute(TmfTraceType.NAME_ATTR);
+        String typeId = getTraceType();
+        if (EXPERIMENT_TYPE.equals(id)) {
+            if (typeId != null) {
+                TraceTypeHelper helper = TmfTraceType.getTraceType(getTraceType());
+                if (helper != null) {
+                    return helper.getLabel();
                 }
             }
-            return ce.getAttribute(TmfTraceType.NAME_ATTR);
+            return ""; //$NON-NLS-1$
         }
-        if (EXPERIMENT_TYPE_ID.equals(id) && getTraceType() != null) {
-            IConfigurationElement ce = TRACE_TYPE_ATTRIBUTES.get(getTraceType());
-            if (ce == null) {
-                return ""; //$NON-NLS-1$
+
+        if (EXPERIMENT_TYPE_ID.equals(id)) {
+            if (typeId != null) {
+                return typeId;
             }
-            return ce.getAttribute(TmfTraceType.ID_ATTR);
+            return ""; //$NON-NLS-1$
         }
 
         return null;
