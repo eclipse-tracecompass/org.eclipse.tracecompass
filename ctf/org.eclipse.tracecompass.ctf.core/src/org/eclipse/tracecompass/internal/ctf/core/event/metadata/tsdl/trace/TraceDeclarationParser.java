@@ -31,6 +31,8 @@ import org.eclipse.tracecompass.ctf.core.trace.CTFTrace;
 import org.eclipse.tracecompass.ctf.parser.CTFParser;
 import org.eclipse.tracecompass.internal.ctf.core.Activator;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.AbstractScopedCommonTreeParser;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.CTFAntlrMetadataNode;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonPreambleMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.Messages;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.MetadataStrings;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
@@ -126,93 +128,102 @@ public final class TraceDeclarationParser extends AbstractScopedCommonTreeParser
         CTFTrace trace = ((Param) param).fTrace;
         DeclarationScope scope = ((Param) param).fCurrentScope;
 
-        /* There should be a left and right */
-        ICTFMetadataNode leftNode = traceDecl.getChild(0);
-        ICTFMetadataNode rightNode = traceDecl.getChild(1);
-
-        List<ICTFMetadataNode> leftStrings = leftNode.getChildren();
-
-        if (!isAnyUnaryString(leftStrings.get(0))) {
-            throw new ParseException("Left side of CTF assignment must be a string"); //$NON-NLS-1$
-        }
-
-        String left = concatenateUnaryStrings(leftStrings);
-
-        if (left.equals(MetadataStrings.MAJOR)) {
-            if (trace.majorIsSet()) {
-                throw new ParseException("major is already set"); //$NON-NLS-1$
-            }
-
-            trace.setMajor(VersionNumberParser.INSTANCE.parse(rightNode, null));
-        } else if (left.equals(MetadataStrings.MINOR)) {
-            if (trace.minorIsSet()) {
-                throw new ParseException("minor is already set"); //$NON-NLS-1$
-            }
-
-            trace.setMinor(VersionNumberParser.INSTANCE.parse(rightNode, null));
-        } else if (left.equals(MetadataStrings.UUID_STRING)) {
-            UUID uuid = UUIDParser.INSTANCE.parse(rightNode, null);
-
-            /*
-             * If uuid was already set by a metadata packet, compare it to see
-             * if it matches
-             */
-            uuidIsConsistent(trace, uuid);
-
-        } else if (left.equals(MetadataStrings.BYTE_ORDER)) {
-            ByteOrder byteOrder = ByteOrderParser.INSTANCE.parse(rightNode, new ByteOrderParser.Param(trace));
-
-            /*
-             * If byte order was already set by a metadata packet, compare
-             * it to see if it matches
-             */
-            if (trace.getByteOrder() != null) {
-                if (trace.getByteOrder() != byteOrder) {
-                    throw new ParseException(
-                            "Endianness mismatch. Magic number byte order is " //$NON-NLS-1$
-                                    + trace.getByteOrder()
-                                    + " but metadata byte order is " + byteOrder); //$NON-NLS-1$
-                }
+        if (traceDecl instanceof JsonPreambleMetadataNode) {
+            int version = ((JsonPreambleMetadataNode) traceDecl).getVersion();
+            if (version == 2) {
+                trace.setMajor(version);
             } else {
-                trace.setByteOrder(byteOrder);
-                final DeclarationScope currentScope = scope;
-                for (String type : currentScope.getTypeNames()) {
-                    IDeclaration d = currentScope.lookupType(type);
-                    if (d instanceof IntegerDeclaration) {
-                        addByteOrder(byteOrder, currentScope, type, (IntegerDeclaration) d);
-                    } else if (d instanceof FloatDeclaration) {
-                        addByteOrder(byteOrder, currentScope, type, (FloatDeclaration) d);
-                    } else if (d instanceof EnumDeclaration) {
-                        addByteOrder(byteOrder, currentScope, type, (EnumDeclaration) d);
-                    } else if (d instanceof StructDeclaration) {
-                        setAlign(currentScope, (StructDeclaration) d, byteOrder);
+                throw new ParseException("invalid version of trace"); //$NON-NLS-1$
+            }
+            UUID uuid = ((JsonPreambleMetadataNode) traceDecl).getUuid();
+            if (uuid != null) {
+                uuidIsConsistent(trace, uuid);
+            }
+        } else if (traceDecl instanceof CTFAntlrMetadataNode) {
+
+            /* There should be a left and right */
+            ICTFMetadataNode leftNode = traceDecl.getChild(0);
+            ICTFMetadataNode rightNode = traceDecl.getChild(1);
+
+            List<ICTFMetadataNode> leftStrings = leftNode.getChildren();
+
+            if (!isAnyUnaryString(leftStrings.get(0))) {
+                throw new ParseException("Left side of CTF assignment must be a string"); //$NON-NLS-1$
+            }
+
+            String left = concatenateUnaryStrings(leftStrings);
+
+            if (left.equals(MetadataStrings.MAJOR)) {
+                if (trace.majorIsSet()) {
+                    throw new ParseException("major is already set"); //$NON-NLS-1$
+                }
+                trace.setMajor(VersionNumberParser.INSTANCE.parse(rightNode, null));
+            } else if (left.equals(MetadataStrings.MINOR)) {
+                if (trace.minorIsSet()) {
+                    throw new ParseException("minor is already set"); //$NON-NLS-1$
+                }
+                trace.setMinor(VersionNumberParser.INSTANCE.parse(rightNode, null));
+            } else if (left.equals(MetadataStrings.UUID_STRING)) {
+                UUID uuid = UUIDParser.INSTANCE.parse(rightNode, null);
+
+                /*
+                 * If uuid was already set by a metadata packet, compare it to
+                 * see if it matches
+                 */
+                uuidIsConsistent(trace, uuid);
+            } else if (left.equals(MetadataStrings.BYTE_ORDER)) {
+                ByteOrder byteOrder = ByteOrderParser.INSTANCE.parse(rightNode, new ByteOrderParser.Param(trace));
+
+                /*
+                 * If byte order was already set by a metadata packet, compare
+                 * it to see if it matches
+                 */
+                if (trace.getByteOrder() != null) {
+                    if (trace.getByteOrder() != byteOrder) {
+                        throw new ParseException(
+                                "Endianness mismatch. Magic number byte order is " //$NON-NLS-1$
+                                        + trace.getByteOrder()
+                                        + " but metadata byte order is " + byteOrder); //$NON-NLS-1$
+                    }
+                } else {
+                    trace.setByteOrder(byteOrder);
+                    final DeclarationScope currentScope = scope;
+                    for (String type : currentScope.getTypeNames()) {
+                        IDeclaration d = currentScope.lookupType(type);
+                        if (d instanceof IntegerDeclaration) {
+                            addByteOrder(byteOrder, currentScope, type, (IntegerDeclaration) d);
+                        } else if (d instanceof FloatDeclaration) {
+                            addByteOrder(byteOrder, currentScope, type, (FloatDeclaration) d);
+                        } else if (d instanceof EnumDeclaration) {
+                            addByteOrder(byteOrder, currentScope, type, (EnumDeclaration) d);
+                        } else if (d instanceof StructDeclaration) {
+                            setAlign(currentScope, (StructDeclaration) d, byteOrder);
+                        }
                     }
                 }
+            } else if (left.equals(MetadataStrings.PACKET_HEADER)) {
+                if (trace.packetHeaderIsSet()) {
+                    throw new ParseException("packet.header already defined"); //$NON-NLS-1$
+                }
+
+                ICTFMetadataNode typeSpecifier = rightNode.getChild(0);
+
+                if (!(CTFParser.tokenNames[CTFParser.TYPE_SPECIFIER_LIST].equals(typeSpecifier.getType()))) {
+                    throw new ParseException("packet.header expects a type specifier"); //$NON-NLS-1$
+                }
+
+                IDeclaration packetHeaderDecl = TypeSpecifierListParser.INSTANCE.parse(typeSpecifier, new TypeSpecifierListParser.Param(trace, null, null, scope));
+
+                if (!(packetHeaderDecl instanceof StructDeclaration)) {
+                    throw new ParseException("packet.header expects a struct"); //$NON-NLS-1$
+                }
+
+                trace.setPacketHeader((StructDeclaration) packetHeaderDecl);
+            } else {
+                Activator.log(IStatus.WARNING, Messages.IOStructGen_UnknownTraceAttributeWarning + " " + left); //$NON-NLS-1$
             }
-        } else if (left.equals(MetadataStrings.PACKET_HEADER)) {
-            if (trace.packetHeaderIsSet()) {
-                throw new ParseException("packet.header already defined"); //$NON-NLS-1$
-            }
-
-            ICTFMetadataNode typeSpecifier = rightNode.getChild(0);
-
-            if (!(CTFParser.tokenNames[CTFParser.TYPE_SPECIFIER_LIST].equals(typeSpecifier.getType()))) {
-                throw new ParseException("packet.header expects a type specifier"); //$NON-NLS-1$
-            }
-
-            IDeclaration packetHeaderDecl = TypeSpecifierListParser.INSTANCE.parse(typeSpecifier, new TypeSpecifierListParser.Param(trace, null, null, scope));
-
-            if (!(packetHeaderDecl instanceof StructDeclaration)) {
-                throw new ParseException("packet.header expects a struct"); //$NON-NLS-1$
-            }
-
-            trace.setPacketHeader((StructDeclaration) packetHeaderDecl);
-        } else {
-            Activator.log(IStatus.WARNING, Messages.IOStructGen_UnknownTraceAttributeWarning + " " + left); //$NON-NLS-1$
         }
-
         return trace;
-
     }
 
     /**

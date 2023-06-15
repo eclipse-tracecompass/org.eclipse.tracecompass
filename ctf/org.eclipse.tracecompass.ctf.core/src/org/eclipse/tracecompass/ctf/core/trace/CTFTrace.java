@@ -177,6 +177,7 @@ public class CTFTrace implements IDefinitionScope {
     public CTFTrace(File path) throws CTFException {
         fPath = path;
         final Metadata metadata = new Metadata(this);
+        metadata.checkCTFVersion();
 
         /* Set up the internal containers for this trace */
         if (!fPath.exists()) {
@@ -188,8 +189,11 @@ public class CTFTrace implements IDefinitionScope {
         }
 
         /* Open and parse the metadata file */
-        metadata.parseFile();
-
+        if (Long.valueOf(2).equals(this.fMajor)) {
+            metadata.parseJsonFile();
+        } else {
+            metadata.parseFile();
+        }
         init(path);
     }
 
@@ -455,14 +459,14 @@ public class CTFTrace implements IDefinitionScope {
     }
 
     /**
-     * Tries to open the given file, reads the first packet header of the file and
-     * check its validity. This will add a file to a stream as a streaminput
+     * Tries to open the given file, reads the first packet header of the file
+     * and check its validity. This will add a file to a stream as a streaminput
      *
      * @param streamFile
      *            A trace file in the trace directory.
      * @param index
-     *            Which index in the class' streamFileChannel array this file must
-     *            use
+     *            Which index in the class' streamFileChannel array this file
+     *            must use
      * @return the {@link CTFStream} or null if invalid
      * @throws CTFException
      *             if there is a file error
@@ -526,7 +530,8 @@ public class CTFTrace implements IDefinitionScope {
         }
         CTFStream ctfStream = (CTFStream) stream;
         /*
-         * Create the stream input and add a reference to the streamInput in the stream.
+         * Create the stream input and add a reference to the streamInput in the
+         * stream.
          */
         ctfStream.addInput(new CTFStreamInput(ctfStream, streamFile));
         return ctfStream;
@@ -631,7 +636,8 @@ public class CTFTrace implements IDefinitionScope {
     // ------------------------------------------------------------------------
 
     /**
-     * Add a new stream file to support new streams while the trace is being read.
+     * Add a new stream file to support new streams while the trace is being
+     * read.
      *
      * @param streamFile
      *            the file of the stream
@@ -653,16 +659,16 @@ public class CTFTrace implements IDefinitionScope {
      */
     public void addStream(ICTFStream stream) throws ParseException {
         /*
-         * If there is already a stream without id (the null key), it must be the only
-         * one
+         * If there is already a stream without id (the null key), it must be
+         * the only one
          */
         if (fStreams.get(null) != null) {
             throw new ParseException("Stream without id with multiple streams"); //$NON-NLS-1$
         }
 
         /*
-         * If the stream we try to add has no key set, it must be the only one. Thus, if
-         * the streams container is not empty, it is not valid.
+         * If the stream we try to add has no key set, it must be the only one.
+         * Thus, if the streams container is not empty, it is not valid.
          */
         if ((!stream.isIdSet()) && (!fStreams.isEmpty())) {
             throw new ParseException("Stream without id with multiple streams"); //$NON-NLS-1$
@@ -683,8 +689,8 @@ public class CTFTrace implements IDefinitionScope {
     /**
      * Gets the Environment variables from the trace metadata (See CTF spec)
      *
-     * @return The environment variables in the form of an unmodifiable map (key,
-     *         value)
+     * @return The environment variables in the form of an unmodifiable map
+     *         (key, value)
      */
     public Map<String, String> getEnvironment() {
         return Collections.unmodifiableMap(fEnvironment);
@@ -818,8 +824,8 @@ public class CTFTrace implements IDefinitionScope {
     public long timestampCyclesToNanos(long cycles) {
         long retVal = cycles + getOffset();
         /*
-         * this fix is since quite often the offset will be > than 53 bits and therefore
-         * the conversion will be lossy
+         * this fix is since quite often the offset will be > than 53 bits and
+         * therefore the conversion will be lossy
          */
         if (clockNeedsScale()) {
             retVal = (long) (retVal * getTimeScale());
@@ -837,8 +843,8 @@ public class CTFTrace implements IDefinitionScope {
     public long timestampNanoToCycles(long nanos) {
         long retVal;
         /*
-         * this fix is since quite often the offset will be > than 53 bits and therefore
-         * the conversion will be lossy
+         * this fix is since quite often the offset will be > than 53 bits and
+         * therefore the conversion will be lossy
          */
         if (clockNeedsScale()) {
             retVal = (long) (nanos * getInverseTimeScale());
@@ -903,6 +909,36 @@ public class CTFTrace implements IDefinitionScope {
      */
     public void setEnvironment(@NonNull Map<String, String> parseEnvironment) {
         fEnvironment = ImmutableMap.copyOf(parseEnvironment);
+    }
+
+    /**
+     * Determines whether the file is a valid JSON file by looking at the
+     * initial byte for a CTF2 trace
+     *
+     * @param file
+     *            the file to test.
+     * @param recordSeparator
+     *            the expected initial character of a CTF2 trace
+     * @return true if the packet type matches, false otherwise
+     * @throws CTFException
+     *             If the file is not found.
+     * @since 4.2
+     */
+    public static boolean startsWithRecordSeparator(File file, int recordSeparator)
+            throws CTFException {
+
+        byte[] firstByte = new byte[1];
+        try (InputStream is = new FileInputStream(file)) {
+            is.read(firstByte, 0, firstByte.length);
+        } catch (IOException e) {
+            throw new CTFIOException(e);
+        }
+
+        if (Byte.toUnsignedInt(firstByte[0]) == recordSeparator) {
+            return true;
+        }
+
+        return false;
     }
 }
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Ericsson, Ecole Polytechnique de Montreal and others
+ * Copyright (c) 2011, 2023 Ericsson, Ecole Polytechnique de Montreal and others
  *
  * All rights reserved. This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0 which
@@ -45,6 +45,12 @@ public final class Utils {
     public static final int CTF_MAGIC = 0xC1FC1FC1;
 
     /**
+     * CTF2 starting byte. ASCII Record Separator (0x1E)
+     *
+     */
+    public static final int CTF2_START = 0x1E;
+
+    /**
      * TSDL magic number. (sort of looks like TSDL LSDT)
      */
     public static final int TSDL_MAGIC = 0x75D11D57;
@@ -55,7 +61,13 @@ public final class Utils {
     public static final int TSDL_MAGIC_LEN = 4;
 
     /**
-     * Directory separator on the current platform.
+     * Record separator character for CTF2 metadata
+     */
+    public static final String RECORD_SEPARATOR = "\u001e"; //$NON-NLS-1$
+
+    /**
+     *
+     * /** Directory separator on the current platform.
      */
     public static final String SEPARATOR = System.getProperty("file.separator"); //$NON-NLS-1$
 

@@ -23,6 +23,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.nio.ByteBuffer;
@@ -41,20 +42,35 @@ import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.tree.BaseTree;
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.RewriteCardinalityException;
+import org.apache.commons.io.IOUtils;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.common.core.NonNullUtils;
 import org.eclipse.tracecompass.ctf.core.CTFException;
 import org.eclipse.tracecompass.ctf.parser.CTFLexer;
 import org.eclipse.tracecompass.ctf.parser.CTFParser;
 import org.eclipse.tracecompass.ctf.parser.CTFParser.parse_return;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.CTFAntlrMetadataNode;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.CTFJsonMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.CtfAntlrException;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.IOStructGen;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonClockMetadataNode;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonDataStreamMetadataNode;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonEventRecordMetadataNode;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonFieldClassAliasMetadataNode;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonPreambleMetadataNode;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonTraceMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.trace.TraceDeclarationParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
+import org.eclipse.tracecompass.internal.ctf.core.utils.JsonMetadataStrings;
 import org.eclipse.tracecompass.internal.ctf.core.utils.Utils;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
+
 /**
- * The CTF trace metadata TSDL file
+ * The CTF trace metadata TSDL or JSON file
  *
  * @version 1.0
  * @author Matthew Khouzam
@@ -181,7 +197,102 @@ public class Metadata {
             /* needs to be separate to avoid casting as exception */
             throw new CtfAntlrException(e);
         }
+    }
 
+    /**
+     * Parse a json metadata file
+     *
+     * @throws CTFException
+     *             if there was an issue parsing the metadata
+     * @since 4.2
+     *
+     */
+    public void parseJsonFile() throws CTFException {
+        File metadataFile = new File(getMetadataPath());
+        try (InputStream is = new FileInputStream(metadataFile)) {
+            String json = IOUtils.toString(is, "UTF-8"); //$NON-NLS-1$
+            ICTFMetadataNode tree = parseJsonToTree(json);
+            fTreeParser = new IOStructGen(tree, NonNullUtils.checkNotNull(fTrace));
+            fTreeParser.generate();
+
+        } catch (FileNotFoundException e) {
+            throw new CTFException("Cannot find metadata file!", e); //$NON-NLS-1$
+        } catch (IOException | ParseException e) {
+            throw new CTFException(e);
+        }
+
+    }
+
+    /**
+     * Parse the json text to a tree with each fragment as a node
+     *
+     * @param json
+     *            String of json text that can be parsed
+     * @return root of a tree containing all the fragments
+     * @throws CTFException
+     * @since 4.1
+     */
+    private static ICTFMetadataNode parseJsonToTree(String json) throws CTFException {
+        String[] jsonBlocks = json.split("\u001e"); //$NON-NLS-1$
+        GsonBuilder builder = new GsonBuilder();
+        Gson gson = builder.create();
+        ICTFMetadataNode root = new CTFJsonMetadataNode(null, CTFParser.tokenNames[CTFParser.ROOT], null);
+
+        for (int i = 1; i < jsonBlocks.length; i++) {
+            @Nullable
+            ICTFMetadataNode fragment;
+            try {
+                fragment = gson.fromJson(jsonBlocks[i], CTFJsonMetadataNode.class);
+            } catch (JsonSyntaxException e) {
+                throw new CTFException("Trace cannot be parsed as CTF2"); //$NON-NLS-1$
+            }
+
+            String type = fragment.getType();
+            if (type.equals(JsonMetadataStrings.FRAGMENT_PREAMBLE)) {
+                fragment = gson.fromJson(jsonBlocks[i], JsonPreambleMetadataNode.class);
+            } else if (type.equals(JsonMetadataStrings.FRAGMENT_TRACE)) {
+                fragment = gson.fromJson(jsonBlocks[i], JsonTraceMetadataNode.class);
+            } else if (type.equals(JsonMetadataStrings.FRAGMENT_CLOCK)) {
+                fragment = gson.fromJson(jsonBlocks[i], JsonClockMetadataNode.class);
+            } else if (type.equals(JsonMetadataStrings.FRAGMENT_EVENT_RECORD)) {
+                fragment = gson.fromJson(jsonBlocks[i], JsonEventRecordMetadataNode.class);
+            } else if (type.equals(JsonMetadataStrings.FRAGMENT_DATA_STREAM)) {
+                fragment = gson.fromJson(jsonBlocks[i], JsonDataStreamMetadataNode.class);
+            } else if (type.equals(JsonMetadataStrings.FRAGMENT_FIELD_ALIAS)) {
+                fragment = gson.fromJson(jsonBlocks[i], JsonFieldClassAliasMetadataNode.class);
+            }
+
+            root.addChild(fragment);
+            fragment.setParent(root);
+        }
+        return root;
+    }
+
+    /**
+     * Checks the version of the CTF trace by reading the first JSON fragment
+     * if it is a CTF2 fragment it updates the major of the trace
+     *
+     * @throws CTFException
+     *             throws exception if file is invalid
+     *
+     * @since 4.2
+     */
+    public void checkCTFVersion() throws CTFException {
+        File metadataFile = new File(getMetadataPath());
+        if (CTFTrace.startsWithRecordSeparator(metadataFile, Utils.CTF2_START)) {
+            try (InputStream is = new FileInputStream(metadataFile)) {
+                String json = IOUtils.toString(is, "UTF-8").split(Utils.RECORD_SEPARATOR)[1]; //$NON-NLS-1$
+                GsonBuilder builder = new GsonBuilder();
+                Gson gson = builder.create();
+                @Nullable ICTFMetadataNode metadata;
+                metadata = gson.fromJson(json, JsonPreambleMetadataNode.class);
+
+                TraceDeclarationParser.INSTANCE.parse(metadata, new TraceDeclarationParser.Param(fTrace, NonNullUtils.checkNotNull(fTrace.getScope())));
+
+            } catch (IOException | ParseException e) {
+                throw new CTFIOException(e);
+            }
+        }
     }
 
     private Reader readBinaryMetaData(FileChannel metadataFileChannel) throws CTFException {
@@ -224,7 +335,7 @@ public class Metadata {
         String metadataPath = path + Utils.SEPARATOR + METADATA_FILENAME;
         File metadataFile = new File(metadataPath);
         if (metadataFile.exists() && metadataFile.length() > PREVALIDATION_SIZE) {
-            if (CTFTrace.startsWithMagicNumber(metadataFile, Utils.TSDL_MAGIC) != null) {
+            if (CTFTrace.startsWithMagicNumber(metadataFile, Utils.TSDL_MAGIC) != null || CTFTrace.startsWithRecordSeparator(metadataFile, Utils.CTF2_START)) {
                 return true;
             }
             try (BufferedReader br = new BufferedReader(new FileReader(metadataFile))) {
