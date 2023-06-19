@@ -33,6 +33,7 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.tracecompass.analysis.callstack.core.tests.CallStackTestBase;
 import org.eclipse.tracecompass.analysis.callstack.core.tests.FlameDataProviderTestUtils;
 import org.eclipse.tracecompass.analysis.callstack.core.tests.stubs.CallStackAnalysisStub;
+import org.eclipse.tracecompass.analysis.os.linux.core.model.ProcessStatus;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.flamegraph.FlameGraphDataProvider;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.instrumented.FlameChartEntryModel;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.tree.AllGroupDescriptor;
@@ -285,9 +286,9 @@ public class FlameGraphDataProviderTest extends CallStackTestBase {
 
             @NonNull String[] rowStates = split[1].split(",");
             assertTooltip(provider, fgEntry.getId(), Long.parseLong(rowStates[0]), false, rowStates[3], Long.parseLong(rowStates[1]) + " ns");
-            assertTooltip(provider, fgEntry.getId(), Long.parseLong(rowStates[0]), true,  rowStates[3], Long.parseLong(rowStates[1]) + " ns");
+            assertTooltip(provider, fgEntry.getId(), Long.parseLong(rowStates[0]), true, rowStates[3], Long.parseLong(rowStates[1]) + " ns");
 
-            assertEqualsStates(split[1], row.getStates(), descriptor + ": " + split[0]);
+            assertEqualsStates(split[1], row.getStates(), descriptor + ": " + split[0], getEntryType(split[0].split(",")[0]));
         }
     }
 
@@ -299,6 +300,13 @@ public class FlameGraphDataProviderTest extends CallStackTestBase {
         assertNotNull(tooltipModel);
         if (expectedObject.equals("null")) {
             assertTrue(tooltipModel.isEmpty());
+        } else if (List.of(ProcessStatus.RUN.toString(), ProcessStatus.WAIT_CPU.toString()).contains(expectedObject)) {
+            if (isAction) {
+                assertNotNull(tooltipModel);
+            } else {
+                assertEquals(expectedObject, tooltipModel.get("Object"));
+                assertEquals(expectedDuration, tooltipModel.get("Duration"));
+            }
         } else {
             if (isAction) {
                 assertNotNull(tooltipModel);
@@ -335,7 +343,7 @@ public class FlameGraphDataProviderTest extends CallStackTestBase {
                 DataProviderParameterUtils.REQUESTED_ITEMS_KEY, Collections.singletonList(entryId));
     }
 
-    private static void assertEqualsStates(String string, @NonNull List<@NonNull ITimeGraphState> states, String descriptor) {
+    private static void assertEqualsStates(String string, @NonNull List<@NonNull ITimeGraphState> states, String descriptor, FlameChartEntryModel.EntryType entryType) {
         String[] stringStates = string.split(",");
         for (int i = 0; i < stringStates.length / 4; i++) {
             assertTrue(descriptor + " has state " + i, states.size() > i);
@@ -349,15 +357,19 @@ public class FlameGraphDataProviderTest extends CallStackTestBase {
             } else {
                 assertNotNull(descriptor + ": existing style at position " + i, style);
                 String parentKey = style.getParentKey();
-                // The style should be a string that represents a number, so
-                // make sure it can be parsed as integer
-                try {
-                    Integer.parseInt(parentKey);
-                    String expectedStyle = VALUE_TO_STYLE.computeIfAbsent(strValue, str -> parentKey);
-                    assertEquals(descriptor + ": style at position " + i, expectedStyle, parentKey);
-                } catch (NumberFormatException e) {
-                    fail("Unexpected style: " + parentKey);
+
+                if (!entryType.equals(FlameChartEntryModel.EntryType.KERNEL)) {
+                    // The style should be a string that represents a number if
+                    // it is not a kernel entry, so make sure it can be parsed
+                    // as integer
+                    try {
+                        Integer.parseInt(parentKey);
+                    } catch (NumberFormatException e) {
+                        fail("Unexpected style: " + parentKey);
+                    }
                 }
+                String expectedStyle = VALUE_TO_STYLE.computeIfAbsent(strValue, str -> parentKey);
+                assertEquals(descriptor + ": style at position " + i, expectedStyle, parentKey);
             }
             assertEquals(descriptor + ": no value at position " + i, Integer.MIN_VALUE, state.getValue());
             assertEquals(descriptor + ": label at position " + i, stringStates[i * 4 + 3], String.valueOf(state.getLabel()));

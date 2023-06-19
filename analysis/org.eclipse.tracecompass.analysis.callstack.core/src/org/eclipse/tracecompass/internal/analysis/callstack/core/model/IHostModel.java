@@ -13,7 +13,9 @@ package org.eclipse.tracecompass.internal.analysis.callstack.core.model;
 
 import java.util.Collection;
 import java.util.EnumSet;
+import java.util.Map;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.callgraph.AggregatedCallSite;
 import org.eclipse.tracecompass.tmf.core.analysis.IAnalysisModule;
@@ -163,6 +165,34 @@ public interface IHostModel {
      * @return An iterator over the status intervals for the thread
      */
     Iterable<ProcessStatusInterval> getThreadStatusIntervals(int tid, long start, long end, long resolution);
+
+    /**
+     * Get the start time of the underlying model analyses.
+     *
+     * @return The start time
+     */
+    long getStartTime();
+
+    /**
+     * Get the end time of the underlying model analyses.
+     *
+     * @return The end time
+     */
+    long getEndTime();
+
+    /**
+     * Get a map with an entry for each tid and an iterable with all the process
+     * status intervals.
+     *
+     * @param tids
+     *            The tids for which to get the intervals
+     * @param times
+     *            The times requested from the query parameters
+     * @param monitor
+     *            A monitor to cancel the query
+     * @return A map with an iterable of status intervals for each tid entry
+     */
+    Map<Integer, Iterable<ProcessStatusInterval>> getThreadStatusIntervals(Collection<Integer> tids, Collection<Long> times, IProgressMonitor monitor);
 
     /**
      * Get whether sampling data is available for this host

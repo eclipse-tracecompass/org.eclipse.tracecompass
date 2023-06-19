@@ -11,5 +11,13 @@
                class="org.eclipse.tracecompass.tmf.tests.stubs.trace.xml.TmfXmlTraceStub">
          </tracetype>
       </module>
+      <module
+            analysis_module="org.eclipse.tracecompass.analysis.callstack.core.tests.stubs.KernelAnalysisModuleStub"
+            id="org.eclipse.tracecompass.analysis.callstack.core.tests.kernelanalysis.stub"
+            name="Test Kernel Analysis">
+         <tracetype
+               class="org.eclipse.tracecompass.tmf.tests.stubs.trace.xml.TmfXmlTraceStub">
+         </tracetype>
+      </module>
    </extension>
 </plugin>

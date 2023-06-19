@@ -11,6 +11,7 @@
 
 package org.eclipse.tracecompass.internal.analysis.callstack.core.model;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.analysis.os.linux.core.model.ProcessStatus;
 import org.eclipse.tracecompass.segmentstore.core.ISegment;
 
@@ -28,7 +29,9 @@ public class ProcessStatusInterval implements ISegment {
 
     private final long fStartTime;
     private final long fEndTime;
+    private final int fThreadId;
     private final ProcessStatus fStatus;
+    private final @Nullable String fSyscallName;
 
     /**
      * Constructor
@@ -37,13 +40,19 @@ public class ProcessStatusInterval implements ISegment {
      *            The start time of this interval
      * @param end
      *            The end time of this interval
+     * @param threadId
+     *            The thread id of this interval
      * @param status
      *            The status of this interval
+     * @param syscallName
+     *            The syscall name if necessary
      */
-    public ProcessStatusInterval(long start, long end, ProcessStatus status) {
+    public ProcessStatusInterval(long start, long end, int threadId, ProcessStatus status, @Nullable String syscallName) {
         fStartTime = start;
         fEndTime = end;
+        fThreadId = threadId;
         fStatus = status;
+        fSyscallName = syscallName;
     }
 
     @Override
@@ -57,11 +66,29 @@ public class ProcessStatusInterval implements ISegment {
     }
 
     /**
+     * Gets the thread id represented by this interval
+     *
+     * @return The thread id
+     */
+    public int getThreadId() {
+        return fThreadId;
+    }
+
+    /**
      * Get the process status represented by this interval
      *
      * @return The status of this interval
      */
     public ProcessStatus getProcessStatus() {
         return fStatus;
+    }
+
+    /**
+     * Get the syscall name represented by this interval
+     *
+     * @return The syscall name for this interval
+     */
+    public @Nullable String getSyscallName() {
+        return fSyscallName;
     }
 }

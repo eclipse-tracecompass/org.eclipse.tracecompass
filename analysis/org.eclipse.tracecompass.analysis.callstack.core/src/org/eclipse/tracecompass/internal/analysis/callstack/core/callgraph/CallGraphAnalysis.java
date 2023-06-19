@@ -17,7 +17,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.annotation.NonNull;
@@ -353,7 +352,7 @@ public class CallGraphAnalysis extends TmfAbstractAnalysisModule implements ICal
                 return ((AggregatedCalledFunction) object).getSelfTime();
             case 1:
                 long cpuTime = ((AggregatedCalledFunction) object).getCpuTime();
-                return cpuTime >= 0 ? cpuTime : StringUtils.EMPTY;
+                return cpuTime >= 0 ? cpuTime : 0L;
             case 2:
                 return ((AggregatedCalledFunction) object).getNbCalls();
             default:
@@ -362,7 +361,7 @@ public class CallGraphAnalysis extends TmfAbstractAnalysisModule implements ICal
                 break;
             }
         }
-        return StringUtils.EMPTY;
+        return 0L;
     }
 
     @Override

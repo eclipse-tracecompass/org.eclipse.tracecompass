@@ -79,7 +79,15 @@ public class FlameWithKernelPalette implements IDataPalette {
         return STYLE_MAP.computeIfAbsent(styleFor, style -> new OutputElementStyle(style));
     }
 
-    private static String getStyleFor(int stateValue) {
+    /**
+     * Gets the thread state label corresponding to the state value integer for
+     * threads
+     *
+     * @param stateValue
+     *            Integer corresponding to a thread state in the state system
+     * @return the thread state label
+     */
+    public static String getStyleFor(int stateValue) {
         switch (stateValue) {
         case StateValues.PROCESS_STATUS_UNKNOWN:
             return LinuxStyle.UNKNOWN.getLabel();

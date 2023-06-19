@@ -19,6 +19,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.tracecompass.analysis.callstack.core.tests.stubs.CallStackAnalysisStub;
+import org.eclipse.tracecompass.analysis.callstack.core.tests.stubs.KernelAnalysisModuleStub;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.base.ICallStackSymbol;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.callgraph.AggregatedCallSite;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.instrumented.InstrumentedCallStackAnalysis;
@@ -27,6 +28,7 @@ import org.eclipse.tracecompass.tmf.core.event.TmfEvent;
 import org.eclipse.tracecompass.tmf.core.exceptions.TmfTraceException;
 import org.eclipse.tracecompass.tmf.core.signal.TmfTraceOpenedSignal;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
+import org.eclipse.tracecompass.tmf.core.trace.TmfTraceManager;
 import org.eclipse.tracecompass.tmf.core.trace.TmfTraceUtils;
 import org.eclipse.tracecompass.tmf.tests.stubs.trace.xml.TmfXmlTraceStub;
 import org.eclipse.tracecompass.tmf.tests.stubs.trace.xml.TmfXmlTraceStubNs;
@@ -43,6 +45,7 @@ public class CallStackTestBase {
 
     private ITmfTrace fTrace;
     private CallStackAnalysisStub fModule;
+    private KernelAnalysisModuleStub fKernelModule;
 
     /**
      * Setup the trace for the tests
@@ -61,11 +64,18 @@ public class CallStackTestBase {
             fail(e.getMessage());
         }
         fTrace = trace;
+        TmfTraceManager traceManager = TmfTraceManager.getInstance();
+        traceManager.traceOpened(new TmfTraceOpenedSignal(this, trace, null));
         trace.traceOpened(new TmfTraceOpenedSignal(this, trace, null));
+
+        KernelAnalysisModuleStub kernelModule = TmfTraceUtils.getAnalysisModuleOfClass(trace, KernelAnalysisModuleStub.class, KernelAnalysisModuleStub.ID1);
+        assertNotNull(kernelModule);
+        kernelModule.schedule();
+        assertTrue(kernelModule.waitForCompletion());
+        fKernelModule = kernelModule;
 
         CallStackAnalysisStub module = TmfTraceUtils.getAnalysisModuleOfClass(trace, CallStackAnalysisStub.class, CallStackAnalysisStub.ID);
         assertNotNull(module);
-
         module.schedule();
         assertTrue(module.waitForCompletion());
         fModule = module;
@@ -114,6 +124,18 @@ public class CallStackTestBase {
      */
     public CallStackAnalysisStub getModule() {
         return fModule;
+    }
+
+    /**
+     * Get the kernel analysis module.
+     *
+     * It mimicks the kernel analysis by reproducing the thread states attribute
+     * tree.
+     *
+     * @return The analysis module
+     */
+    public KernelAnalysisModuleStub getKernelModule() {
+        return fKernelModule;
     }
 
     /**

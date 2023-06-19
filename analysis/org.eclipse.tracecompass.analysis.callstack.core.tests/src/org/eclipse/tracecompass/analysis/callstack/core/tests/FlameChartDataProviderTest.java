@@ -33,8 +33,10 @@ import org.eclipse.tracecompass.internal.analysis.callstack.core.instrumented.Fl
 import org.eclipse.tracecompass.internal.analysis.callstack.core.instrumented.FlameChartDataProviderFactory;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.instrumented.FlameChartEntryModel;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.instrumented.FlameChartEntryModel.EntryType;
+import org.eclipse.tracecompass.internal.analysis.os.linux.core.registry.LinuxStyle;
 import org.eclipse.tracecompass.internal.tmf.core.model.filters.FetchParametersUtils;
 import org.eclipse.tracecompass.tmf.core.dataprovider.IDataProviderDescriptor;
+import org.eclipse.tracecompass.tmf.core.model.OutputElementStyle;
 import org.eclipse.tracecompass.tmf.core.model.filters.SelectionTimeQueryFilter;
 import org.eclipse.tracecompass.tmf.core.model.filters.TimeQueryFilter;
 import org.eclipse.tracecompass.tmf.core.model.timegraph.ITimeGraphRowModel;
@@ -105,7 +107,7 @@ public class FlameChartDataProviderTest extends CallStackTestBase {
         TmfTreeModel<@NonNull FlameChartEntryModel> model = responseTree.getModel();
         assertNotNull(model);
         List<@NonNull FlameChartEntryModel> modelEntries = model.getEntries();
-        assertEquals(18, modelEntries.size());
+        assertEquals(26, modelEntries.size());
 
         String traceName = getTrace().getName();
 
@@ -113,10 +115,6 @@ public class FlameChartDataProviderTest extends CallStackTestBase {
         for (FlameChartEntryModel entry : modelEntries) {
             FlameChartEntryModel parent = FlameDataProviderTestUtils.findEntryById(modelEntries, entry.getParentId());
             switch (entry.getEntryType()) {
-            case FUNCTION:
-                assertNotNull(parent);
-                assertEquals(EntryType.LEVEL, parent.getEntryType());
-                break;
             case LEVEL: {
                 assertNotNull(parent);
                 // Verify the hierarchy of the elements
@@ -144,8 +142,10 @@ public class FlameChartDataProviderTest extends CallStackTestBase {
                 }
             }
                 break;
+            case FUNCTION:
             case KERNEL:
-                fail("There should be no kernel entry in this callstack");
+                assertNotNull(parent);
+                assertEquals(EntryType.LEVEL, parent.getEntryType());
                 break;
             case TRACE:
                 assertEquals(-1, entry.getParentId());
@@ -159,7 +159,7 @@ public class FlameChartDataProviderTest extends CallStackTestBase {
     /**
      * Test getting the model from the flame chart data provider
      */
-    @SuppressWarnings("null")
+    @SuppressWarnings({ "null" })
     @Test
     public void testFetchModel() {
         FlameChartDataProvider dataProvider = getDataProvider();
@@ -176,7 +176,7 @@ public class FlameChartDataProviderTest extends CallStackTestBase {
         assertNotNull(tid3);
         selectedIds.add(tid3.getId());
         List<FlameChartEntryModel> tid3Children = FlameDataProviderTestUtils.findEntriesByParent(modelEntries, tid3.getId());
-        assertEquals(2, tid3Children.size());
+        assertEquals(3, tid3Children.size());
         tid3Children.forEach(child -> selectedIds.add(child.getId()));
         // Pid 5
         FlameChartEntryModel pid5 = FlameDataProviderTestUtils.findEntryByNameAndType(modelEntries, "5", EntryType.LEVEL);
@@ -187,7 +187,7 @@ public class FlameChartDataProviderTest extends CallStackTestBase {
         assertNotNull(tid6);
         selectedIds.add(tid6.getId());
         List<FlameChartEntryModel> tid6Children = FlameDataProviderTestUtils.findEntriesByParent(modelEntries, tid6.getId());
-        assertEquals(3, tid6Children.size());
+        assertEquals(4, tid6Children.size());
         tid6Children.forEach(child -> selectedIds.add(child.getId()));
 
         // Get the row model for those entries with high resolution
@@ -197,7 +197,7 @@ public class FlameChartDataProviderTest extends CallStackTestBase {
         TimeGraphModel rowModel = rowResponse.getModel();
         assertNotNull(rowModel);
         List<@NonNull ITimeGraphRowModel> rows = rowModel.getRows();
-        assertEquals(8, rows.size());
+        assertEquals(10, rows.size());
 
         // Verify the level entries
         verifyStates(rows, tid3, Collections.emptyList());
@@ -212,6 +212,13 @@ public class FlameChartDataProviderTest extends CallStackTestBase {
                 new TimeGraphState(6, 1, Integer.MIN_VALUE),
                 new TimeGraphState(7, 6, Integer.MIN_VALUE, "op2"),
                 new TimeGraphState(13, 8, Integer.MIN_VALUE)));
+        // Verify kernel statuses of tid 3
+        verifyStates(rows, FlameDataProviderTestUtils.findEntryByDepthAndType(tid3Children, -1, EntryType.KERNEL), ImmutableList.of(
+                new TimeGraphState(3, 3, null, new OutputElementStyle(LinuxStyle.USERMODE.getLabel())),
+                new TimeGraphState(6, 1, null, new OutputElementStyle(LinuxStyle.WAIT_FOR_CPU.getLabel())),
+                new TimeGraphState(7, 6, null, new OutputElementStyle(LinuxStyle.USERMODE.getLabel())),
+                new TimeGraphState(13, 8, null, new OutputElementStyle(LinuxStyle.WAIT_FOR_CPU.getLabel()))), true);
+
         // Verify function level 1 of tid 6
         verifyStates(rows, FlameDataProviderTestUtils.findEntryByDepthAndType(tid6Children, 1, EntryType.FUNCTION), ImmutableList.of(new TimeGraphState(1, 19, Integer.MIN_VALUE, "op1")));
         // Verify function level 2 of tid 6
@@ -228,6 +235,13 @@ public class FlameChartDataProviderTest extends CallStackTestBase {
                 new TimeGraphState(6, 3, Integer.MIN_VALUE),
                 new TimeGraphState(9, 1, Integer.MIN_VALUE, "op3"),
                 new TimeGraphState(10, 11, Integer.MIN_VALUE)));
+        // Verify kernel statuses of tid 6
+        verifyStates(rows, FlameDataProviderTestUtils.findEntryByDepthAndType(tid6Children, -1, EntryType.KERNEL), ImmutableList.of(
+                new TimeGraphState(1, 5, null, new OutputElementStyle(LinuxStyle.USERMODE.getLabel())),
+                new TimeGraphState(6, 2, null, new OutputElementStyle(LinuxStyle.WAIT_FOR_CPU.getLabel())),
+                new TimeGraphState(8, 2, null, new OutputElementStyle(LinuxStyle.USERMODE.getLabel())),
+                new TimeGraphState(10, 2, null, new OutputElementStyle(LinuxStyle.WAIT_FOR_CPU.getLabel())),
+                new TimeGraphState(12, 8, null, new OutputElementStyle(LinuxStyle.USERMODE.getLabel()))), true);
 
         // Get the row model for those entries with low resolution
         rowResponse = dataProvider.fetchRowModel(FetchParametersUtils.selectionTimeQueryToMap(new SelectionTimeQueryFilter(3, 15, 2, selectedIds)), new NullProgressMonitor());
@@ -236,7 +250,7 @@ public class FlameChartDataProviderTest extends CallStackTestBase {
         rowModel = rowResponse.getModel();
         assertNotNull(rowModel);
         rows = rowModel.getRows();
-        assertEquals(8, rows.size());
+        assertEquals(10, rows.size());
 
         // Verify the level entries
         verifyStates(rows, tid3, Collections.emptyList());
@@ -248,6 +262,10 @@ public class FlameChartDataProviderTest extends CallStackTestBase {
         verifyStates(rows, FlameDataProviderTestUtils.findEntryByDepthAndType(tid3Children, 2, EntryType.FUNCTION), ImmutableList.of(
                 new TimeGraphState(1, 4, Integer.MIN_VALUE),
                 new TimeGraphState(13, 8, Integer.MIN_VALUE)));
+        // Verify kernel statuses of tid 3
+        verifyStates(rows, FlameDataProviderTestUtils.findEntryByDepthAndType(tid3Children, -1, EntryType.KERNEL), ImmutableList.of(
+                new TimeGraphState(3, 3, null, new OutputElementStyle(LinuxStyle.USERMODE.getLabel())),
+                new TimeGraphState(13, 8, null, new OutputElementStyle(LinuxStyle.WAIT_FOR_CPU.getLabel()))), true);
         // Verify function level 1 of tid 6
         verifyStates(rows, FlameDataProviderTestUtils.findEntryByDepthAndType(tid6Children, 1, EntryType.FUNCTION), ImmutableList.of(new TimeGraphState(1, 19, Integer.MIN_VALUE, "op1")));
         // Verify function level 2 of tid 6
@@ -258,6 +276,10 @@ public class FlameChartDataProviderTest extends CallStackTestBase {
         verifyStates(rows, FlameDataProviderTestUtils.findEntryByDepthAndType(tid6Children, 3, EntryType.FUNCTION), ImmutableList.of(
                 new TimeGraphState(1, 3, Integer.MIN_VALUE),
                 new TimeGraphState(10, 11, Integer.MIN_VALUE)));
+        // Verify kernel statuses of tid 6
+        verifyStates(rows, FlameDataProviderTestUtils.findEntryByDepthAndType(tid6Children, -1, EntryType.KERNEL), ImmutableList.of(
+                new TimeGraphState(1, 5, null, new OutputElementStyle(LinuxStyle.USERMODE.getLabel())),
+                new TimeGraphState(12, 8, null, new OutputElementStyle(LinuxStyle.USERMODE.getLabel()))), true);
     }
 
     /**
@@ -278,16 +300,18 @@ public class FlameChartDataProviderTest extends CallStackTestBase {
         FlameChartEntryModel tid2 = FlameDataProviderTestUtils.findEntryByNameAndType(modelEntries, "2", EntryType.LEVEL);
         assertNotNull(tid2);
         List<FlameChartEntryModel> tid2Children = FlameDataProviderTestUtils.findEntriesByParent(modelEntries, tid2.getId());
-        assertEquals(3, tid2Children.size());
+        assertEquals(4, tid2Children.size());
 
         // For each child, make sure the response is always the same
         for (FlameChartEntryModel tid2Child : tid2Children) {
             TmfModelResponse<@NonNull TimeGraphModel> rowModel = dataProvider.fetchRowModel(FetchParametersUtils.selectionTimeQueryToMap(new SelectionTimeQueryFilter(6, Long.MAX_VALUE, 2, Collections.singleton(tid2Child.getId()))), MONITOR);
-            verifyFollowResponse(rowModel, 1, 7);
+            if (!tid2Child.getEntryType().equals(EntryType.KERNEL)) {
+                verifyFollowResponse(rowModel, 1, 7);
+            }
         }
 
         // Go forward from time 7 till the end for one of the child element
-        Set<@NonNull Long> selectedEntry = Objects.requireNonNull(Collections.singleton(tid2Children.get(1).getId()));
+        Set<@NonNull Long> selectedEntry = Objects.requireNonNull(Collections.singleton(tid2Children.get(2).getId()));
         TmfModelResponse<@NonNull TimeGraphModel> rowModel = dataProvider.fetchRowModel(FetchParametersUtils.selectionTimeQueryToMap(new SelectionTimeQueryFilter(7, Long.MAX_VALUE, 2, selectedEntry)), MONITOR);
         verifyFollowResponse(rowModel, 0, 10);
 
@@ -342,6 +366,10 @@ public class FlameChartDataProviderTest extends CallStackTestBase {
     }
 
     private static void verifyStates(List<ITimeGraphRowModel> rowModels, FlameChartEntryModel entry, List<TimeGraphState> expectedStates) {
+        verifyStates(rowModels, entry, expectedStates, false);
+    }
+
+    private static void verifyStates(List<ITimeGraphRowModel> rowModels, FlameChartEntryModel entry, List<TimeGraphState> expectedStates, boolean checkStyles) {
         assertNotNull(entry);
         ITimeGraphRowModel rowModel = rowModels.stream()
                 .filter(model -> model.getEntryID() == entry.getId())
@@ -359,6 +387,9 @@ public class FlameChartDataProviderTest extends CallStackTestBase {
             assertEquals("State start time at " + i + FOR_ENTRY + entryName, expected.getStartTime(), actual.getStartTime());
             assertEquals("Duration at " + i + FOR_ENTRY + entryName, expected.getDuration(), actual.getDuration());
             assertEquals("Label at " + i + FOR_ENTRY + entryName, expected.getLabel(), actual.getLabel());
+            if (checkStyles) {
+                assertEquals("Style at " + i + FOR_ENTRY + entryName, expected.getStyle(), actual.getStyle());
+            }
         }
     }
 }

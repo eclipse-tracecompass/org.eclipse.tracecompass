@@ -16,8 +16,13 @@ package org.eclipse.tracecompass.analysis.os.linux.core.kernel;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.NavigableSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Predicate;
@@ -29,6 +34,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.analysis.os.linux.core.model.ProcessStatus;
 import org.eclipse.tracecompass.common.core.NonNullUtils;
 import org.eclipse.tracecompass.internal.analysis.os.linux.core.kernel.Attributes;
+import org.eclipse.tracecompass.internal.analysis.os.linux.core.kernel.StateValues;
 import org.eclipse.tracecompass.statesystem.core.ITmfStateSystem;
 import org.eclipse.tracecompass.statesystem.core.StateSystemUtils;
 import org.eclipse.tracecompass.statesystem.core.StateSystemUtils.QuarkIterator;
@@ -36,10 +42,12 @@ import org.eclipse.tracecompass.statesystem.core.exceptions.AttributeNotFoundExc
 import org.eclipse.tracecompass.statesystem.core.exceptions.StateSystemDisposedException;
 import org.eclipse.tracecompass.statesystem.core.exceptions.TimeRangeException;
 import org.eclipse.tracecompass.statesystem.core.interval.ITmfStateInterval;
+import org.eclipse.tracecompass.statesystem.core.interval.TmfStateInterval;
 import org.eclipse.tracecompass.statesystem.core.statevalue.ITmfStateValue;
 import org.eclipse.tracecompass.statesystem.core.statevalue.ITmfStateValue.Type;
 
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.TreeMultimap;
 
 /**
  * Information provider utility class that retrieves thread-related information
@@ -119,8 +127,8 @@ public final class KernelThreadInformationProvider {
         List<Integer> threadQuarks = ss.getSubAttributes(threadsQuark, false);
         return threadQuarks.stream()
                 /*
-                 * Keep only the quarks of threads that are on at least one of the
-                 * wanted CPUs' run queue.
+                 * Keep only the quarks of threads that are on at least one of
+                 * the wanted CPUs' run queue.
                  */
                 .filter(threadQuark -> {
                     int threadCurrentCpuQuark = ss.optQuarkRelative(threadQuark, Attributes.CURRENT_CPU_RQ);
@@ -128,7 +136,10 @@ public final class KernelThreadInformationProvider {
                         return false;
                     }
 
-                    /* Check if the thread was seen on any of the requested CPUs. */
+                    /*
+                     * Check if the thread was seen on any of the requested
+                     * CPUs.
+                     */
                     QuarkIterator it = new QuarkIterator(ss, threadCurrentCpuQuark, rangeStart, rangeEnd);
                     while (it.hasNext()) {
                         Object o = it.next().getValue();
@@ -158,8 +169,8 @@ public final class KernelThreadInformationProvider {
     };
 
     /**
-     * Return all the threads that are considered active in the given time range.
-     * Threads with TID 0 (swapper threads) will never be included.
+     * Return all the threads that are considered active in the given time
+     * range. Threads with TID 0 (swapper threads) will never be included.
      *
      * @param module
      *            The kernel analysis module to query
@@ -167,9 +178,9 @@ public final class KernelThreadInformationProvider {
      *            The start of the time range
      * @param rangeEnd
      *            The end of the time range
-     * @return A set of all the thread IDs that are considered active in the time
-     *         range. Empty set if there are none or if unavailable for the time
-     *         range.
+     * @return A set of all the thread IDs that are considered active in the
+     *         time range. Empty set if there are none or if unavailable for the
+     *         time range.
      * @since 2.5
      */
     public static Set<Integer> getActiveThreadsForRange(KernelAnalysisModule module, long rangeStart, long rangeEnd) {
@@ -196,7 +207,6 @@ public final class KernelThreadInformationProvider {
         } catch (StateSystemDisposedException e) {
             return Collections.emptySet();
         }
-
 
         List<Integer> threadQuarks = ss.getSubAttributes(threadsQuark, false);
         return threadQuarks.stream()
@@ -234,7 +244,10 @@ public final class KernelThreadInformationProvider {
                             return true;
                         }
                     }
-                    /* We haven't found an active state value in the whole range. */
+                    /*
+                     * We haven't found an active state value in the whole
+                     * range.
+                     */
                     return false;
                 })
 
@@ -261,7 +274,7 @@ public final class KernelThreadInformationProvider {
         int threadQuark;
         try {
             threadQuark = ss.getQuarkAbsolute(Attributes.THREADS);
-            Set<@NonNull Integer> tids = new TreeSet<>();
+            Set<Integer> tids = new TreeSet<>();
             for (Integer quark : ss.getSubAttributes(threadQuark, false)) {
                 final @NonNull String attributeName = ss.getAttributeName(quark);
                 tids.add(attributeName.startsWith(Attributes.THREAD_0_PREFIX) ? 0 : Integer.parseInt(attributeName));
@@ -360,7 +373,7 @@ public final class KernelThreadInformationProvider {
      */
     public static @Nullable String getExecutableName(KernelAnalysisModule module, Integer threadId) {
         ITmfStateSystem stateSystem = module.getStateSystem();
-        if(stateSystem == null) {
+        if (stateSystem == null) {
             return null;
         }
         return getExecutableName(module, threadId, stateSystem.getCurrentEndTime());
@@ -378,8 +391,8 @@ public final class KernelThreadInformationProvider {
      * never seen to be used in this trace, and
      * {@link #getExecutableName(KernelAnalysisModule, Integer, long)} returns
      * null</li>
-     * <li><em>ts</em> > trace end: the name of the last thread to run is returned.
-     * (could be null if the tid was never used)</li>
+     * <li><em>ts</em> > trace end: the name of the last thread to run is
+     * returned. (could be null if the tid was never used)</li>
      * <li>thread start > <em>ts</em> > thread end: the thread name will be the
      * thread name of the process at that time. This may be a parent as the
      * thread inherrits the parent's name until it is changed.</li>
@@ -482,7 +495,8 @@ public final class KernelThreadInformationProvider {
     }
 
     /**
-     * Get an iterator for the status intervals of a given thread in a time range
+     * Get an iterator for the status intervals of a given thread in a time
+     * range
      *
      * @param module
      *            The kernel analysis instance to run this method on
@@ -493,8 +507,9 @@ public final class KernelThreadInformationProvider {
      * @param end
      *            The end time of the requested range
      * @param resolution
-     *            The resolution, ie the number of nanoseconds between kernel status
-     *            queries. A value lower or equal to 1 will return all intervals
+     *            The resolution, ie the number of nanoseconds between kernel
+     *            status queries. A value lower or equal to 1 will return all
+     *            intervals
      * @return The list of status intervals for this thread, an empty list is
      *         returned if either the state system is {@code null} or the quark
      *         is not found
@@ -513,4 +528,97 @@ public final class KernelThreadInformationProvider {
         return new StateSystemUtils.QuarkIterator(ss, threadQuark, start, end - 1, resolution);
     }
 
+    /**
+     * Get a map of each tid with their associated thread status intervals
+     * containing syscalls if present
+     *
+     * @param module
+     *            The kernel analysis instance to run this method on
+     * @param threadIds
+     *            The ID of the threads to get the intervals for
+     * @param times
+     *            The times to execute the query on
+     * @param monitor
+     *            The monitor to cancel the query
+     * @return A Map associating the intervals to each tid
+     * @since 8.1
+     */
+    public static Map<Integer, List<ITmfStateInterval>> getStatusIntervalsForThreads(KernelAnalysisModule module, Collection<Integer> threadIds, Collection<Long> times, IProgressMonitor monitor) {
+        ITmfStateSystem ss = module.getStateSystem();
+        if (ss == null) {
+            return Objects.requireNonNull(Collections.emptyMap());
+        }
+        Map<Integer, String> quarkToThreadIds = getQuarkToThreadIds(module, threadIds);
+        TreeMultimap<String, ITmfStateInterval> intervals = TreeMultimap.create(Comparator.naturalOrder(),
+                Comparator.comparing(ITmfStateInterval::getStartTime));
+        Map<Integer, List<ITmfStateInterval>> kernelStatuses = new HashMap<>();
+        try {
+            for (ITmfStateInterval interval : ss.query2D(quarkToThreadIds.keySet(), times)) {
+                if (monitor.isCanceled()) {
+                    return Objects.requireNonNull(Collections.emptyMap());
+                }
+                String threadId = quarkToThreadIds.get(interval.getAttribute());
+                if (threadId != null) {
+                    intervals.put(threadId, interval);
+                }
+            }
+            for (Integer threadId : threadIds) {
+                NavigableSet<ITmfStateInterval> states = intervals.get(threadId.toString());
+                if (monitor.isCanceled()) {
+                    return Collections.emptyMap();
+                }
+                NavigableSet<ITmfStateInterval> syscalls = intervals.get(threadId.toString() + Attributes.SYSTEM_CALL);
+                if (syscalls != null) {
+                    kernelStatuses.put(threadId, states.stream().map(i -> addSyscallInformation(i, syscalls)).collect(Collectors.toList()));
+                    continue;
+                }
+                kernelStatuses.put(threadId, Objects.requireNonNull(states.stream().toList()));
+            }
+            return kernelStatuses;
+        } catch (IndexOutOfBoundsException | TimeRangeException | StateSystemDisposedException e) {
+            // Do nothing
+        }
+        return Objects.requireNonNull(Collections.emptyMap());
+    }
+
+    private static ITmfStateInterval addSyscallInformation(ITmfStateInterval interval, NavigableSet<ITmfStateInterval> syscalls) {
+        Object status = interval.getValue();
+        if (status instanceof Integer && ((int) status) == StateValues.PROCESS_STATUS_RUN_SYSCALL) {
+            // intervals are sorted by start time
+            ITmfStateInterval syscall = syscalls.floor(interval);
+
+            if (syscall != null) {
+                Object value = syscall.getValue();
+                if (value instanceof String) {
+                    return new TmfStateInterval(interval.getStartTime(), interval.getEndTime(), interval.getAttribute(), String.valueOf(value));
+                }
+            }
+        }
+        return interval;
+    }
+
+    /**
+     * @param module
+     *            The analysis module to query the state system
+     * @param threadIds
+     *            the threadIds to select the quarks
+     * @return A map associating the quarks to the thread ids or their syscall
+     *         quarks
+     */
+    private static Map<Integer, String> getQuarkToThreadIds(KernelAnalysisModule module, Collection<Integer> threadIds) {
+        ITmfStateSystem ss = module.getStateSystem();
+        if (ss == null) {
+            return Objects.requireNonNull(Collections.emptyMap());
+        }
+        Map<Integer, String> quarkToThreadIds = new HashMap<>();
+        for (Integer threadId : threadIds) {
+            int threadQuark = ss.optQuarkAbsolute(Attributes.THREADS, threadId.toString());
+            quarkToThreadIds.put(threadQuark, threadId.toString());
+            int syscallQuark = ss.optQuarkRelative(threadQuark, Attributes.SYSTEM_CALL);
+            if (syscallQuark != ITmfStateSystem.INVALID_ATTRIBUTE) {
+                quarkToThreadIds.put(syscallQuark, threadId.toString() + Attributes.SYSTEM_CALL);
+            }
+        }
+        return quarkToThreadIds;
+    }
 }

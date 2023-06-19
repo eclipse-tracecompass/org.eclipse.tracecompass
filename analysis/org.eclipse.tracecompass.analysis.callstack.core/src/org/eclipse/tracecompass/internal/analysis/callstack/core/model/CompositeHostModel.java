@@ -15,20 +15,27 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.WeakHashMap;
+import java.util.stream.Collectors;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.analysis.os.linux.core.kernel.KernelAnalysisModule;
 import org.eclipse.tracecompass.analysis.os.linux.core.kernel.KernelThreadInformationProvider;
 import org.eclipse.tracecompass.analysis.os.linux.core.model.ProcessStatus;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.callgraph.AggregatedCallSite;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.model.ModelListener.IModuleWrapper;
+import org.eclipse.tracecompass.statesystem.core.ITmfStateSystem;
 import org.eclipse.tracecompass.statesystem.core.interval.ITmfStateInterval;
 import org.eclipse.tracecompass.tmf.core.analysis.IAnalysisModule;
 import org.eclipse.tracecompass.tmf.core.signal.TmfSignalHandler;
@@ -50,14 +57,10 @@ import com.google.common.collect.Multimap;
 public class CompositeHostModel implements IHostModel {
     private final Multimap<ITmfTrace, Object> fTraceObjectMap = HashMultimap.create();
 
-    @SuppressWarnings("null")
-    private final Set<ICpuTimeProvider> fCpuTimeProviders = Objects.requireNonNull(Collections.newSetFromMap(new WeakHashMap<ICpuTimeProvider, Boolean>()));
-    @SuppressWarnings("null")
-    private final Set<IThreadOnCpuProvider> fThreadOnCpuProviders = Objects.requireNonNull(Collections.newSetFromMap(new WeakHashMap<IThreadOnCpuProvider, Boolean>()));
-    @SuppressWarnings("null")
-    private final Set<ISamplingDataProvider> fSamplingDataProviders = Objects.requireNonNull(Collections.newSetFromMap(new WeakHashMap<ISamplingDataProvider, Boolean>()));
-    @SuppressWarnings("null")
-    private final Set<KernelAnalysisModule> fKernelModules = Objects.requireNonNull(Collections.newSetFromMap(new WeakHashMap<KernelAnalysisModule, Boolean>()));
+    private final Set<ICpuTimeProvider> fCpuTimeProviders = Objects.requireNonNull(Collections.newSetFromMap(new WeakHashMap<>()));
+    private final Set<IThreadOnCpuProvider> fThreadOnCpuProviders = Objects.requireNonNull(Collections.newSetFromMap(new WeakHashMap<>()));
+    private final Set<ISamplingDataProvider> fSamplingDataProviders = Objects.requireNonNull(Collections.newSetFromMap(new WeakHashMap<>()));
+    private final Set<KernelAnalysisModule> fKernelModules = Objects.requireNonNull(Collections.newSetFromMap(new WeakHashMap<>()));
 
     private final String fHostId;
 
@@ -218,11 +221,13 @@ public class CompositeHostModel implements IHostModel {
         private final Iterator<ITmfStateInterval> fIntervalIterator;
         private final long fStart;
         private final long fEnd;
+        private final int fTid;
 
-        public ThreadStatusIterator(long start, long end, Iterator<ITmfStateInterval> iter) {
+        public ThreadStatusIterator(long start, long end, int tid, Iterator<ITmfStateInterval> iter) {
             fIntervalIterator = iter;
             fStart = start;
             fEnd = end;
+            fTid = tid;
         }
 
         @Override
@@ -237,8 +242,8 @@ public class CompositeHostModel implements IHostModel {
             }
             ITmfStateInterval interval = fIntervalIterator.next();
             long start = Math.max(interval.getStartTime(), fStart);
-            long end = Math.min(interval.getEndTime(), fEnd);
-            return new ProcessStatusInterval(start, end, ProcessStatus.getStatusFromStateValue(interval.getStateValue()));
+            long end = Math.min(interval.getEndTime() + 1, fEnd);
+            return new ProcessStatusInterval(start, end, fTid, ProcessStatus.getStatusFromStateValue(interval.getStateValue()), null);
         }
     }
 
@@ -264,7 +269,7 @@ public class CompositeHostModel implements IHostModel {
 
         @Override
         public Iterator<ProcessStatusInterval> iterator() {
-            return new ThreadStatusIterator(fStart, fEnd, KernelThreadInformationProvider.getStatusIntervalsForThread(fModule, fTid, fStart, fEnd, fResolution));
+            return new ThreadStatusIterator(fStart, fEnd, fTid, KernelThreadInformationProvider.getStatusIntervalsForThread(fModule, fTid, fStart, fEnd, fResolution));
         }
     }
 
@@ -279,6 +284,57 @@ public class CompositeHostModel implements IHostModel {
             return new ThreadStatusIterable(start, end, module, tid, resolution);
         }
         return Objects.requireNonNull(Collections.emptyList());
+    }
+
+    @Override
+    public Map<Integer, Iterable<ProcessStatusInterval>> getThreadStatusIntervals(Collection<Integer> tids, Collection<Long> times, IProgressMonitor monitor) {
+        Iterable<KernelAnalysisModule> modules = TmfTraceUtils.getAnalysisModulesOfClass(fHostId, KernelAnalysisModule.class);
+        if (modules.iterator().hasNext()) {
+            KernelAnalysisModule module = modules.iterator().next();
+            @NonNull Map<Integer, List<ITmfStateInterval>> kernelStatusIntervals = KernelThreadInformationProvider.getStatusIntervalsForThreads(module, tids, times, monitor);
+            // Mapping ITmfStateInterval to ProcessStatusInterval
+            Map<Integer, Iterable<ProcessStatusInterval>> threadStatusIntervals = new HashMap<>();
+            for (Entry<Integer, List<ITmfStateInterval>> intervalsEntry : kernelStatusIntervals.entrySet()) {
+                List<ITmfStateInterval> intervals = Objects.requireNonNull(intervalsEntry.getValue());
+                threadStatusIntervals.put(intervalsEntry.getKey(), intervals.stream()
+                        .map(i -> {
+                            Object state = i.getValue();
+                            if (state instanceof String) {
+                                return new ProcessStatusInterval(i.getStartTime(), i.getEndTime() + 1, intervalsEntry.getKey(), ProcessStatus.RUN_SYTEMCALL, i.getValueString());
+                            }
+                            return new ProcessStatusInterval(i.getStartTime(), i.getEndTime() + 1, intervalsEntry.getKey(), ProcessStatus.getStatusFromStateValue(i.getStateValue()), null);
+                        })
+                        .collect(Collectors.toList()));
+            }
+            return threadStatusIntervals;
+        }
+        return Objects.requireNonNull(Collections.emptyMap());
+    }
+
+    @Override
+    public long getStartTime() {
+        Optional<Long> start = fKernelModules.stream().map(v -> {
+            ITmfStateSystem ss = v.getStateSystem();
+            @NonNull Long startTime = ss != null ? ss.getStartTime() : Long.MIN_VALUE;
+            return startTime;
+        }).max(Long::compare);
+        if (start.isPresent()) {
+            return start.get();
+        }
+        return Long.MIN_VALUE;
+    }
+
+    @Override
+    public long getEndTime() {
+        Optional<Long> end = fKernelModules.stream().map(v -> {
+            ITmfStateSystem ss = v.getStateSystem();
+            @NonNull Long endTime = ss != null ? ss.getCurrentEndTime() : Long.MAX_VALUE;
+            return endTime;
+        }).min(Long::compare);
+        if (end.isPresent()) {
+            return end.get();
+        }
+        return Long.MAX_VALUE;
     }
 
     @Override

@@ -406,7 +406,7 @@ public class FlameGraphDataProvider<@NonNull N, E, @NonNull T extends WeightedTr
         // Add the extra sites
         List<String> extraDataSets = wtProvider.getExtraDataSets();
         for (int i = 0; i < extraDataSets.size(); i++) {
-            Collection<WeightedTree<@NonNull N>> extraDataTrees = callSite.getExtraDataTrees(i);
+            List<WeightedTree<@NonNull N>> extraDataTrees = callSite.getExtraDataTrees(i).stream().sorted(fCctComparator2).toList();
             if (extraDataTrees.isEmpty()) {
                 continue;
             }

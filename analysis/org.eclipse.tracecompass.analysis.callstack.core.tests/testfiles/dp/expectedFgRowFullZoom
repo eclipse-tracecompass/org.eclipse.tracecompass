@@ -1,11 +1,15 @@
 function,0,level,2:8,9,op1,op1
 function,1,level,2:8,4,op2,op2,12,5,-,null
 function,2,level,2:9,8,-,null
+kernel,Kernel statuses,level,2:8,4,RUN,RUN,12,5,WAIT_CPU,WAIT_CPU
 function,0,level,3:0,17,op2,op2
 function,1,level,3:7,10,-,null
+kernel,Kernel statuses,level,3:8,9,RUN,RUN
 function,0,level,6:0,19,op1,op1
 function,1,level,6:8,8,op4,op4,16,3,-,null
 function,2,level,6:5,14,-,null
+kernel,Kernel statuses,level,6:4,15,RUN,RUN
 function,0,level,7:0,19,op5,op5
 function,1,level,7:0,12,op2,op2,12,7,-,null
 function,2,level,7:1,18,-,null
+kernel,Kernel statuses,level,7:8,11,RUN,RUN
