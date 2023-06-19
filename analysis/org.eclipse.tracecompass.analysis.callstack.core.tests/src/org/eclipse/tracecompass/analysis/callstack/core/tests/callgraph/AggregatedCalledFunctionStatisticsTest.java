@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016 Ericsson
+ * Copyright (c) 2016, 2023 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -27,6 +27,7 @@ import org.eclipse.tracecompass.internal.analysis.callstack.core.base.ICallStack
 import org.eclipse.tracecompass.internal.analysis.callstack.core.callgraph.AggregatedCalledFunction;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.callgraph.AggregatedCalledFunctionStatistics;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.callgraph.ICallGraphProvider;
+import org.eclipse.tracecompass.internal.analysis.callstack.core.model.ModelManager;
 import org.eclipse.tracecompass.statesystem.core.ITmfStateSystemBuilder;
 import org.eclipse.tracecompass.statesystem.core.StateSystemFactory;
 import org.eclipse.tracecompass.statesystem.core.backend.IStateHistoryBackend;
@@ -107,6 +108,7 @@ public class AggregatedCalledFunctionStatisticsTest {
         if (cga != null) {
             cga.dispose();
         }
+        ModelManager.disposeModels();
     }
 
     /**

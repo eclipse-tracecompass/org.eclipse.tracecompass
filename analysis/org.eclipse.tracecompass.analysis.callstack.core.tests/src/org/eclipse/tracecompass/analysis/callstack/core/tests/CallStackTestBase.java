@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016 École Polytechnique de Montréal
+ * Copyright (c) 2016, 2023 École Polytechnique de Montréal and others
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -22,6 +22,7 @@ import org.eclipse.tracecompass.analysis.callstack.core.tests.stubs.CallStackAna
 import org.eclipse.tracecompass.internal.analysis.callstack.core.base.ICallStackSymbol;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.callgraph.AggregatedCallSite;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.instrumented.InstrumentedCallStackAnalysis;
+import org.eclipse.tracecompass.internal.analysis.callstack.core.model.ModelManager;
 import org.eclipse.tracecompass.tmf.core.event.TmfEvent;
 import org.eclipse.tracecompass.tmf.core.exceptions.TmfTraceException;
 import org.eclipse.tracecompass.tmf.core.signal.TmfTraceOpenedSignal;
@@ -83,6 +84,7 @@ public class CallStackTestBase {
         if (module != null) {
             module.dispose();
         }
+        ModelManager.disposeModels();
     }
 
     /**

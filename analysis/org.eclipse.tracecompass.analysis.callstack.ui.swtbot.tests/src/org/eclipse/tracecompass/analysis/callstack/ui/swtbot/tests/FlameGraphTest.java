@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016 Ericsson
+ * Copyright (c) 2016, 2023 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0 which
@@ -119,8 +119,10 @@ public class FlameGraphTest extends AggregationTreeTest {
      * Clean up after a test, reset the views and reset the states of the
      * timegraph by pressing reset on all the resets of the legend
      */
+    @Override
     @After
     public void after() {
+        super.after();
         // Calling maximize again will minimize
         FlameGraphView fg = fFg;
         if (fg != null) {

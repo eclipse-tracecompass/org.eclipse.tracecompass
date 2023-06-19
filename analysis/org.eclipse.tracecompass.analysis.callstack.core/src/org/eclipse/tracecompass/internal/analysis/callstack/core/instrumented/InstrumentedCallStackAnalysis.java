@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2015 Ericsson
+ * Copyright (c) 2013, 2023 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -157,6 +157,24 @@ public abstract class InstrumentedCallStackAnalysis extends TmfStateSystemAnalys
             fCallGraph.schedule();
         }
         return true;
+    }
+
+    @Override
+    public boolean waitForCompletion() {
+        boolean waitForCompletion = super.waitForCompletion();
+        if (fAutomaticCallgraph) {
+            waitForCompletion &= fCallGraph.waitForCompletion();
+        }
+        return waitForCompletion;
+    }
+
+    @Override
+    public boolean waitForCompletion(IProgressMonitor monitor) {
+        boolean waitForCompletion = super.waitForCompletion(monitor);
+        if (fAutomaticCallgraph) {
+            waitForCompletion &= fCallGraph.waitForCompletion(monitor);
+        }
+        return waitForCompletion;
     }
 
     /**

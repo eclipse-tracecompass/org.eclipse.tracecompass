@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016 Ericsson
+ * Copyright (c) 2016, 2023 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -25,6 +25,7 @@ import org.eclipse.tracecompass.internal.analysis.callstack.core.callgraph.Calle
 import org.eclipse.tracecompass.internal.analysis.callstack.core.callgraph.ICalledFunction;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.model.IHostModel;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.model.ModelManager;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -52,6 +53,14 @@ public class CalledFunctionTest {
         f42Fixture = fixture42;
         ICalledFunction hiFixture = CalledFunctionFactory.create(20, 50, "Hi", 0, 0, fFixture, fModel);
         fHiFixture = hiFixture;
+    }
+
+    /**
+     * Cleanup models
+     */
+    @After
+    public void after() {
+        ModelManager.disposeModels();
     }
 
     /**

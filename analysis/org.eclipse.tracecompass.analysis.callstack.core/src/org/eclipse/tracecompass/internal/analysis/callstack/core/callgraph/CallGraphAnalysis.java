@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016 Ericsson
+ * Copyright (c) 2016, 2023 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -37,7 +37,6 @@ import org.eclipse.tracecompass.internal.analysis.callstack.core.model.IHostMode
 import org.eclipse.tracecompass.internal.analysis.callstack.core.model.ModelManager;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.model.ProcessStatusInterval;
 import org.eclipse.tracecompass.internal.analysis.callstack.core.tree.IWeightedTreeGroupDescriptor;
-import org.eclipse.tracecompass.tmf.core.analysis.IAnalysisModule;
 import org.eclipse.tracecompass.tmf.core.analysis.TmfAbstractAnalysisModule;
 import org.eclipse.tracecompass.tmf.core.symbols.ISymbolProvider;
 import org.eclipse.tracecompass.tmf.core.symbols.SymbolProviderManager;
@@ -150,11 +149,6 @@ public class CallGraphAnalysis extends TmfAbstractAnalysisModule implements ICal
     }
 
     @Override
-    protected Iterable<IAnalysisModule> getDependentAnalyses() {
-        return Collections.singleton(fCsProvider);
-    }
-
-    @Override
     protected boolean executeAnalysis(@Nullable IProgressMonitor monitor) {
         return executeForRange(fCallGraph, TmfTimeRange.ETERNITY, monitor);
     }
@@ -164,29 +158,17 @@ public class CallGraphAnalysis extends TmfAbstractAnalysisModule implements ICal
         if (monitor == null || trace == null) {
             return false;
         }
-        Iterable<IAnalysisModule> dependentAnalyses = getDependentAnalyses();
-        for (IAnalysisModule module : dependentAnalyses) {
-            if (!(module instanceof IFlameChartProvider)) {
+        IFlameChartProvider callstackModule = fCsProvider;
+        IHostModel model = ModelManager.getModelFor(callstackModule.getHostId());
+
+        CallStackSeries callstack = callstackModule.getCallStackSeries();
+        if (callstack != null) {
+            long time0 = range.getStartTime().toNanos();
+            long time1 = range.getEndTime().toNanos();
+            long start = Math.min(time0, time1);
+            long end = Math.max(time0, time1);
+            if (!iterateOverCallstackSerie(callstack, model, callgraph, start, end, monitor)) {
                 return false;
-            }
-            module.schedule();
-        }
-        // TODO: Look at updates while the state system's being built
-        dependentAnalyses.forEach(t -> t.waitForCompletion(monitor));
-
-        for (IAnalysisModule module : dependentAnalyses) {
-            IFlameChartProvider callstackModule = (IFlameChartProvider) module;
-            IHostModel model = ModelManager.getModelFor(callstackModule.getHostId());
-
-            CallStackSeries callstack = callstackModule.getCallStackSeries();
-            if (callstack != null) {
-                long time0 = range.getStartTime().toNanos();
-                long time1 = range.getEndTime().toNanos();
-                long start = Math.min(time0, time1);
-                long end = Math.max(time0, time1);
-                if (!iterateOverCallstackSerie(callstack, model, callgraph, start, end, monitor)) {
-                    return false;
-                }
             }
         }
         monitor.worked(1);
@@ -298,15 +280,7 @@ public class CallGraphAnalysis extends TmfAbstractAnalysisModule implements ICal
      * @return The collection of callstack series
      */
     public @Nullable CallStackSeries getSeries() {
-        CallStackSeries series = null;
-        for (IAnalysisModule dependent : getDependentAnalyses()) {
-            if (!(dependent instanceof IFlameChartProvider)) {
-                continue;
-            }
-            IFlameChartProvider csProvider = (IFlameChartProvider) dependent;
-            series = csProvider.getCallStackSeries();
-        }
-        return series;
+        return fCsProvider.getCallStackSeries();
     }
 
     @Override
@@ -327,13 +301,9 @@ public class CallGraphAnalysis extends TmfAbstractAnalysisModule implements ICal
     @Override
     public Collection<IWeightedTreeGroupDescriptor> getGroupDescriptors() {
         List<IWeightedTreeGroupDescriptor> descriptors = new ArrayList<>();
-        for (IAnalysisModule module : getDependentAnalyses()) {
-            if (module instanceof IFlameChartProvider) {
-                CallStackSeries serie = ((IFlameChartProvider) module).getCallStackSeries();
-                if (serie != null) {
-                    descriptors.add(serie.getRootGroup());
-                }
-            }
+        CallStackSeries serie = fCsProvider.getCallStackSeries();
+        if (serie != null) {
+            descriptors.add(serie.getRootGroup());
         }
         return descriptors;
     }
