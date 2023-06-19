@@ -40,8 +40,14 @@ public abstract class TmfEdgeInterval implements IHTInterval {
     /**
      * Edge interval reader to deserialize intervals on disk. package-private to
      * share with the tree nodes.
+     *
+     * @param buffer
+     *            Byte buffer to read from disk
+     * @param contextStateFactory
+     *            Factory to build the edge context states
+     * @return Edge interval in the graph
      */
-    static final TmfEdgeInterval readBuffer(ISafeByteBufferReader buffer, IEdgeContextStateFactory contextStateFactory) {
+    public static final TmfEdgeInterval readBuffer(ISafeByteBufferReader buffer, IEdgeContextStateFactory contextStateFactory) {
         byte b = buffer.get();
         switch (b) {
         case 0: {
@@ -86,8 +92,8 @@ public abstract class TmfEdgeInterval implements IHTInterval {
      *            Vertex from which there is no horizontal transition
      * @param vertexTo
      *            New vertex for the object.
-     * @param edgeType
-     *            The type of this edge
+     * @param contextState
+     *            The state that describes the context behind the edge
      * @param edgeQualifier
      *            A qualifier for this link, can be <code>null</code>
      * @return A {@link TmfEdgeInterval} object of the proper sub-type
@@ -105,8 +111,8 @@ public abstract class TmfEdgeInterval implements IHTInterval {
      *            Vertex from which there is no horizontal transition
      * @param vertexTo
      *            New vertex for the object.
-     * @param edgeType
-     *            The type of this edge
+     * @param contextState
+     *            The state that describes the context behind the edge
      * @param edgeQualifier
      *            A qualifier for this link, can be <code>null</code>
      * @return A {@link TmfEdgeInterval} object of the proper sub-type

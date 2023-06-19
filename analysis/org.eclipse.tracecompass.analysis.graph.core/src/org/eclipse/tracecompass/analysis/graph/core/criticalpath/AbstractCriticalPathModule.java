@@ -124,7 +124,28 @@ public abstract class AbstractCriticalPathModule extends CriticalPathModule {
         ICriticalPathAlgorithm cp = getAlgorithm(graph);
         try {
             ITmfGraph criticalPath = createGraph();
-            cp.computeCriticalPath(criticalPath, head, null);
+            if (criticalPath == null) {
+                return false;
+            }
+            // If the critical path has already been computed previously
+            if (criticalPath.isDoneBuilding()) {
+                ITmfVertex previousGraphHead = criticalPath.getHead();
+                IGraphWorker previousGraphWorker = previousGraphHead == null ? null : criticalPath.getParentOf(previousGraphHead);
+                IGraphWorker currentWorker = graph.getParentOf(head);
+                // If it is the correct critical path
+                boolean isSameWorker = previousGraphWorker != null && compareWorker(previousGraphWorker, currentWorker);
+                if (isSameWorker) {
+                    fCriticalPath = criticalPath;
+                    return true;
+                }
+                // Else delete it
+                criticalPath.dispose();
+                getHistoryTreeFilePath().toFile().delete();
+                // Recreate a new graph with a brand new history tree file
+                criticalPath = createGraph();
+            }
+            criticalPath = cp.computeCriticalPath(criticalPath, head, null);
+            criticalPath.closeGraph(Long.MAX_VALUE);
             fCriticalPath = criticalPath;
             return true;
         } catch (CriticalPathAlgorithmException e) {
@@ -133,20 +154,44 @@ public abstract class AbstractCriticalPathModule extends CriticalPathModule {
         return false;
     }
 
+    private static boolean compareWorker(IGraphWorker worker1, IGraphWorker worker2) {
+        if (!worker1.getHostId().equals(worker2.getHostId())) {
+            return false;
+        }
+        for (String key: worker1.getWorkerAspects().keySet()) {
+            Object value1 = worker1.getWorkerAspects().get(key);
+            Object value2 = worker2.getWorkerAspects().get(key);
+            if (value1 == null && value2 == null) {
+                continue;
+            }
+            if (value1 == null || value2 == null || !value1.equals(value2)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     private @Nullable ITmfGraph createGraph() {
-        AbstractTmfGraphBuilderModule graphModule = fGraphModule;
-        ITmfTrace trace = graphModule.getTrace();
+        Path htFile = getHistoryTreeFilePath();
+        ITmfTrace trace = fGraphModule.getTrace();
         if (trace == null) {
-            throw new NullPointerException("The graph shouuld not be created if there is no trace set"); //$NON-NLS-1$
+            throw new NullPointerException("The graph should not be created if there is no trace set"); //$NON-NLS-1$
+        }
+        return createGraphInstance(htFile, fGraphModule.getWorkerSerializer(), trace.getStartTime().toNanos(), CRITICAL_PATH_GRAPH_VERSION);
+    }
+
+    private Path getHistoryTreeFilePath() {
+        ITmfTrace trace = fGraphModule.getTrace();
+        if (trace == null) {
+            throw new NullPointerException("The graph should not be created if there is no trace set"); //$NON-NLS-1$
         }
         String fileDirectory = TmfTraceManager.getSupplementaryFileDir(trace);
-
         // FIXME Move somewhere where both graph and crit path module can use
-        String id = graphModule.getId() + ".critPath"; //$NON-NLS-1$
-        Path htFile = Paths.get(fileDirectory + id + ".ht"); //$NON-NLS-1$
-
-        return createGraphInstance(htFile, graphModule.getWorkerSerializer(), trace.getStartTime().toNanos(), CRITICAL_PATH_GRAPH_VERSION);
+        String id = fGraphModule.getId() + ".critPath"; //$NON-NLS-1$
+        Path historyTreeFile = Paths.get(fileDirectory + id + ".ht"); //$NON-NLS-1$
+        return historyTreeFile;
     }
+
 
     /**
      * Create the graph instance.
@@ -171,7 +216,7 @@ public abstract class AbstractCriticalPathModule extends CriticalPathModule {
 
     @Override
     protected void parameterChanged(String name) {
-        fCriticalPath = null;
+        closeCriticalPath();
         cancel();
         resetAnalysis();
         if (fScheduleOnParameterChange) {
@@ -182,6 +227,13 @@ public abstract class AbstractCriticalPathModule extends CriticalPathModule {
     @Override
     public void dispose() {
         super.dispose();
+        closeCriticalPath();
+    }
+
+    private void closeCriticalPath() {
+        if (fCriticalPath != null) {
+            fCriticalPath.dispose();
+        }
         fCriticalPath = null;
     }
 
@@ -190,7 +242,7 @@ public abstract class AbstractCriticalPathModule extends CriticalPathModule {
     }
 
     @Override
-    public boolean canExecute(@NonNull ITmfTrace trace) {
+    public boolean canExecute(ITmfTrace trace) {
         /*
          * TODO: The critical path executes on a graph, so at least a graph must
          * be available for this trace
