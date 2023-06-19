@@ -15,10 +15,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
 import java.util.regex.Matcher;
@@ -209,7 +211,9 @@ public class BaseDataProviderTimeGraphView extends AbstractTimeGraphView {
                      */
                     List<TimeGraphEntry> orphaned = new ArrayList<>();
                     Map<Long, AtomicInteger> indexMap = new HashMap<>();
+                    Set<Long> entries = new HashSet<>();
                     for (TimeGraphEntryModel entry : model.getEntries()) {
+                        // Try to find entry that we have stored previously
                         TimeGraphEntry uiEntry = fScopedEntries.get(scope, entry.getId());
                         if (entry.getParentId() != -1) {
                             if (uiEntry == null) {
@@ -224,7 +228,11 @@ public class BaseDataProviderTimeGraphView extends AbstractTimeGraphView {
                                 }
                                 fScopedEntries.put(scope, entry.getId(), uiEntry);
                             } else {
-                                indexMap.computeIfAbsent(entry.getParentId(), l -> new AtomicInteger()).getAndIncrement();
+                                // This entry has a parent and was added in a previous iteration
+                                if (!entries.contains(entry.getId())) {
+                                    // If the entry is not a duplicate then update the index
+                                    indexMap.computeIfAbsent(entry.getParentId(), l -> new AtomicInteger()).getAndIncrement();
+                                }
                                 uiEntry.updateModel(entry);
                             }
                         } else {
@@ -245,6 +253,7 @@ public class BaseDataProviderTimeGraphView extends AbstractTimeGraphView {
                         }
                         fEntries.put(dataProvider, entry.getId(), uiEntry);
                         fEntryIds.put(uiEntry, dataProvider, entry.getId());
+                        entries.add(entry.getId());
                     }
                     // Find missing parents
                     // Orphans should be inserted before non-orphans
