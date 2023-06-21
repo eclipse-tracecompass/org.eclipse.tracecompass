@@ -261,7 +261,6 @@ public class ArchiveUtil {
                 entrySize += numBytes;
             }
         } catch (IOException e) {
-            e.printStackTrace();
             return -1;
 
         }
