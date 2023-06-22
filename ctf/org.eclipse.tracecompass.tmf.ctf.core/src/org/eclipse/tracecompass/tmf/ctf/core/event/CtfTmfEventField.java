@@ -282,6 +282,11 @@ final class CTFStringField extends CtfTmfEventField {
     public String getValue() {
         return (String) super.getValue();
     }
+
+    @Override
+    public String getFormattedValue() {
+        return "\""+getValue()+"\"";  //$NON-NLS-1$//$NON-NLS-2$
+    }
 }
 
 /**

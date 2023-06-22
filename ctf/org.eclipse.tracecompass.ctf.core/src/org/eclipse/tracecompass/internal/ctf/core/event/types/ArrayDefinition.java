@@ -22,6 +22,7 @@ import org.eclipse.tracecompass.ctf.core.event.scope.IDefinitionScope;
 import org.eclipse.tracecompass.ctf.core.event.types.AbstractArrayDefinition;
 import org.eclipse.tracecompass.ctf.core.event.types.CompoundDeclaration;
 import org.eclipse.tracecompass.ctf.core.event.types.Definition;
+import org.eclipse.tracecompass.ctf.core.event.types.IntegerDefinition;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
@@ -89,6 +90,27 @@ public final class ArrayDefinition extends AbstractArrayDefinition {
 
     @Override
     public String toString() {
+        if (fDefinitions.isEmpty() ) {
+            return "[]"; //$NON-NLS-1$
+        }
+        Definition firstDefinition = fDefinitions.get(0);
+        if (firstDefinition instanceof IntegerDefinition) {
+            IntegerDefinition integerDefinition = (IntegerDefinition) firstDefinition;
+            if (integerDefinition.getDeclaration().isCharacter()) {
+                // String will return "String", no brackets.
+                // Brackets can be added by others like fields
+                StringBuilder b = new StringBuilder();
+                for (Definition definition : fDefinitions) {
+                    // Blind cast since all definitions are of the same type.
+                    // 0 means the string is terminated.
+                    if (((IntegerDefinition) definition).getIntegerValue() == 0) {
+                        return b.toString();
+                    }
+                    b.append(definition);
+                }
+                return b.toString();
+            }
+        }
         StringBuilder b = new StringBuilder();
         b.append('[');
         Joiner joiner = Joiner.on(", ").skipNulls(); //$NON-NLS-1$

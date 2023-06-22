@@ -21,7 +21,8 @@ package org.eclipse.tracecompass.ctf.core.event.types;
  */
 public abstract class CompoundDeclaration extends Declaration {
 
-    private static final int BIT_MASK = 0x03;
+    private static final long BIT_MASK = 0x03;
+    private static final boolean[] ALIGNED_BYTES_ALIGNMENT = { true, true, true, false, true, false, false, false };
     private static final int BITS_PER_BYTE = 8;
 
     /**
@@ -63,7 +64,13 @@ public abstract class CompoundDeclaration extends Declaration {
         IDeclaration elementType = getElementType();
         if (elementType instanceof IntegerDeclaration) {
             IntegerDeclaration elemInt = (IntegerDeclaration) elementType;
-            return (elemInt.getLength() == BITS_PER_BYTE) && ((getAlignment() & BIT_MASK) == 0);
+            long alignment = getAlignment();
+            int lowBits = (int) (alignment & BIT_MASK);
+            /*
+             * Make sure that the alignment is 0, 1, 2 ,4 or 8. This would mean
+             * the bytes are aligned.
+             */
+            return (elemInt.getLength() == BITS_PER_BYTE) && alignment <= BITS_PER_BYTE && ALIGNED_BYTES_ALIGNMENT[lowBits];
         }
         return false;
     }

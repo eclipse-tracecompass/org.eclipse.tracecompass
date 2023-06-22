@@ -91,16 +91,7 @@ public final class StructDeclarationFlattener {
         if (dec instanceof ISimpleDatatypeDeclaration) {
             flatStruct.addField(path, dec);
         } else if (dec instanceof ArrayDeclaration) {
-            ArrayDeclaration ad = (ArrayDeclaration) dec;
-            int lastIndexOf = path.lastIndexOf('.');
-            String name = (lastIndexOf > 0) ? path.substring(lastIndexOf) : path;
-            if (ad.isAlignedBytes()) {
-                flatStruct.addField(path, dec);
-            } else {
-                for (int i = 0; i < ad.getLength(); i++) {
-                    depthFirstAdd(path + '.' + name + '[' + i + ']', flatStruct, ad.getElementType());
-                }
-            }
+            flatStruct.addField(path, dec);
         } else if (dec instanceof StructDeclaration) {
             StructDeclaration sDec = ((StructDeclaration) dec);
             for (String name : sDec.getFieldsList()) {

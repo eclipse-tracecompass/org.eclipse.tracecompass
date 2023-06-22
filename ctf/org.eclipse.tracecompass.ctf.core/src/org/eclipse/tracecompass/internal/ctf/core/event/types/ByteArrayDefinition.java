@@ -14,6 +14,7 @@
 
 package org.eclipse.tracecompass.internal.ctf.core.event.types;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -23,6 +24,7 @@ import org.eclipse.tracecompass.ctf.core.event.scope.IDefinitionScope;
 import org.eclipse.tracecompass.ctf.core.event.types.AbstractArrayDefinition;
 import org.eclipse.tracecompass.ctf.core.event.types.CompoundDeclaration;
 import org.eclipse.tracecompass.ctf.core.event.types.Definition;
+import org.eclipse.tracecompass.ctf.core.event.types.IDeclaration;
 import org.eclipse.tracecompass.ctf.core.event.types.IntegerDeclaration;
 import org.eclipse.tracecompass.ctf.core.event.types.IntegerDefinition;
 
@@ -87,7 +89,8 @@ public final class ByteArrayDefinition extends AbstractArrayDefinition {
 
     @Override
     public String toString() {
-        if (((CompoundDeclaration) getDeclaration()).isString()) {
+        CompoundDeclaration compoundDeclaration = (CompoundDeclaration) getDeclaration();
+        if (compoundDeclaration.isString()) {
             /*
              * the string is a byte array and may contain more than the string
              * plus a null char, this will truncate it back to a null char
@@ -104,7 +107,25 @@ public final class ByteArrayDefinition extends AbstractArrayDefinition {
         }
         StringBuilder b = new StringBuilder();
         b.append('[');
-        Joiner.on(", ").appendTo(b, Arrays.asList(fContent)); //$NON-NLS-1$
+        IDeclaration elementType = compoundDeclaration.getElementType();
+        // Handle 0xff hex
+        boolean isHex = false;
+        // this should ALWAYS be true, but in case...
+        if (elementType instanceof IntegerDeclaration) {
+            IntegerDeclaration integerDeclaration = (IntegerDeclaration) elementType;
+            isHex = integerDeclaration.getBase() == 16;
+        }
+        List<String> elements = new ArrayList<>();
+        if (isHex) {
+            for (byte element : fContent) {
+                elements.add(String.format("0x%02X", element)); //$NON-NLS-1$
+            }
+        } else {
+            for (byte element : fContent) {
+                elements.add(String.format("%d", element)); //$NON-NLS-1$
+            }
+        }
+        Joiner.on(", ").appendTo(b, elements); //$NON-NLS-1$
         b.append(']');
         return b.toString();
     }

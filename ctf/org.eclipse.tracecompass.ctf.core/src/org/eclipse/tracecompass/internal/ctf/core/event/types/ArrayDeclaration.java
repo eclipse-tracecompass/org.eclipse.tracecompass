@@ -110,7 +110,6 @@ public final class ArrayDeclaration extends CompoundDeclaration {
                 throw new CTFException("Buffer underflow"); //$NON-NLS-1$
             }
             input.get(data);
-
             return new ByteArrayDefinition(this, definitionScope, fieldName, data);
         }
         @NonNull List<@NonNull Definition> definitions = read(input, definitionScope, fieldName);

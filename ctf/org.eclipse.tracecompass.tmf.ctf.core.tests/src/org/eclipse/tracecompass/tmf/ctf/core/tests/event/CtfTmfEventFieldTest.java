@@ -252,7 +252,7 @@ public class CtfTmfEventFieldTest {
     public void testParseField_string() {
         IDefinition fieldDef = fixture.lookupDefinition(STR);
         CtfTmfEventField result = CtfTmfEventField.parseField(fieldDef, NAME);
-        assertEquals("test=two", result.toString());
+        assertEquals("test=\"two\"", result.toString());
     }
 
     /**
@@ -263,7 +263,7 @@ public class CtfTmfEventFieldTest {
     public void testParseField_array_string() {
         IDefinition fieldDef = fixture.lookupArrayDefinition(ARRAY_STR);
         CtfTmfEventField result = CtfTmfEventField.parseField(fieldDef, NAME);
-        assertEquals("test=[two, two]", result.toString());
+        assertEquals("test=[\"two\", \"two\"]", result.toString());
     }
 
     /**
@@ -273,7 +273,7 @@ public class CtfTmfEventFieldTest {
     public void testParseField_struct() {
         IDefinition fieldDef = fixture.lookupDefinition(STRUCT);
         CtfTmfEventField result = CtfTmfEventField.parseField(fieldDef, NAME);
-        assertEquals("test=[str=two, int=2]", result.toString());
+        assertEquals("test=[str=\"two\", int=2]", result.toString());
     }
 
     /**
@@ -284,7 +284,7 @@ public class CtfTmfEventFieldTest {
     public void testParseField_array_struct() {
         IDefinition fieldDef = fixture.lookupArrayDefinition(ARRAY_STRUCT);
         CtfTmfEventField result = CtfTmfEventField.parseField(fieldDef, NAME);
-        assertEquals("test=[[str=two, int=2], [str=two, int=2]]", result.toString());
+        assertEquals("test=[[str=\"two\", int=2], [str=\"two\", int=2]]", result.toString());
     }
 
     /**
