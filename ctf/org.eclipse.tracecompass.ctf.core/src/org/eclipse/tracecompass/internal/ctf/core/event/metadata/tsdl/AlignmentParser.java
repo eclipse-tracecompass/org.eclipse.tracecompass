@@ -15,6 +15,7 @@ import static org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.Tsd
 
 import org.eclipse.tracecompass.ctf.parser.CTFParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ICommonTreeParser;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonStructureFieldMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
 import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
 
@@ -90,7 +91,15 @@ public final class AlignmentParser implements ICommonTreeParser {
             }
 
             return alignment;
+        } else if (tree instanceof JsonStructureFieldMetadataNode) {
+            long alignment = ((JsonStructureFieldMetadataNode) tree).getMinimumAlignment();
+            if (!isValidAlignment(alignment)) {
+                throw new ParseException(INVALID_VALUE_FOR_ALIGNMENT + " : " //$NON-NLS-1$
+                        + alignment);
+            }
+            return alignment;
         }
+
         throw new ParseException(INVALID_VALUE_FOR_ALIGNMENT); // $NON-NLS-1$
     }
 

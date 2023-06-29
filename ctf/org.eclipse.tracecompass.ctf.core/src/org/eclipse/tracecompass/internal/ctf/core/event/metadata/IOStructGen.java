@@ -26,6 +26,8 @@ import org.eclipse.tracecompass.common.core.NonNullUtils;
 import org.eclipse.tracecompass.ctf.core.event.CTFCallsite;
 import org.eclipse.tracecompass.ctf.core.event.CTFClock;
 import org.eclipse.tracecompass.ctf.core.event.metadata.DeclarationScope;
+import org.eclipse.tracecompass.ctf.core.event.types.IDeclaration;
+import org.eclipse.tracecompass.ctf.core.event.types.StructDeclaration;
 import org.eclipse.tracecompass.ctf.core.trace.CTFTrace;
 import org.eclipse.tracecompass.ctf.parser.CTFParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.EventDeclaration;
@@ -40,6 +42,7 @@ import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.stream.Str
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.trace.TraceDeclarationParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.trace.CTFStream;
+import org.eclipse.tracecompass.internal.ctf.core.utils.JsonMetadataStrings;
 
 import com.google.common.collect.Iterables;
 
@@ -142,7 +145,7 @@ public class IOStructGen {
             final String type = child.getType();
             if (CTFParser.tokenNames[CTFParser.DECLARATION].equals(type)) {
                 parseRootDeclaration(child);
-            } else if (CTFParser.tokenNames[CTFParser.TRACE].equals(type)) {
+            } else if (CTFParser.tokenNames[CTFParser.TRACE].equals(type) || JsonMetadataStrings.FRAGMENT_TRACE.equals(type)) {
                 if (traceNode != null) {
                     throw new ParseException("Only one trace block is allowed"); //$NON-NLS-1$
                 }
@@ -161,6 +164,8 @@ public class IOStructGen {
                 fTrace.setEnvironment(EnvironmentParser.INSTANCE.parse(child, null));
             } else if (CTFParser.tokenNames[CTFParser.CALLSITE].equals(type)) {
                 callsites.add(CallSiteParser.INSTANCE.parse(child, null));
+            } else if (JsonMetadataStrings.FRAGMENT_PREAMBLE.equals(type)) {
+                // Do nothing for now
             } else {
                 throw childTypeError(child);
             }
@@ -235,6 +240,9 @@ public class IOStructGen {
             String type = child.getType();
             if (CTFParser.tokenNames[CTFParser.TYPEALIAS].equals(type)) {
                 TypeAliasParser.INSTANCE.parse(child, new TypeAliasParser.Param(trace, fRoot));
+            } else if (child instanceof JsonStructureFieldMetadataNode) {
+                IDeclaration packetHeaderDecl = TypeSpecifierListParser.INSTANCE.parse(child, new TypeSpecifierListParser.Param(fTrace, null, null, fRoot));
+                trace.setPacketHeader((StructDeclaration) packetHeaderDecl);
             } else if (CTFParser.tokenNames[CTFParser.TYPEDEF].equals(type)) {
                 TypedefParser.INSTANCE.parse(child, new TypedefParser.Param(trace, fRoot));
             } else if (CTFParser.tokenNames[CTFParser.CTF_EXPRESSION_TYPE].equals(type) || CTFParser.tokenNames[CTFParser.CTF_EXPRESSION_VAL].equals(type)) {

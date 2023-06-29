@@ -27,6 +27,7 @@ import org.eclipse.tracecompass.ctf.core.event.types.IntegerDeclaration;
 import org.eclipse.tracecompass.ctf.core.trace.CTFTrace;
 import org.eclipse.tracecompass.ctf.parser.CTFParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.AbstractScopedCommonTreeParser;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.CTFAntlrMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.event.EventScopeParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.stream.StreamScopeParser;
@@ -112,8 +113,8 @@ public final class TypeDeclaratorParser extends AbstractScopedCommonTreeParser {
         List<ICTFMetadataNode> lengths = new LinkedList<>();
         ICTFMetadataNode identifier = null;
 
-        /* Separate the tokens by type */
-        if (typeDeclarator != null) {
+        if (typeDeclarator instanceof CTFAntlrMetadataNode) {
+            /* Separate the tokens by type */
             children = typeDeclarator.getChildren();
             for (ICTFMetadataNode child : children) {
 
@@ -128,7 +129,8 @@ public final class TypeDeclaratorParser extends AbstractScopedCommonTreeParser {
                     throw childTypeError(child);
                 }
             }
-
+        } else {
+            identifier = typeDeclarator;
         }
 
         /*

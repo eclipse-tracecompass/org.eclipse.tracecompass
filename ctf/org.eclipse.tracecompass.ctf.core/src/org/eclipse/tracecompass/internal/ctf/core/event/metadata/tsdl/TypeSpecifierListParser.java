@@ -25,6 +25,9 @@ import org.eclipse.tracecompass.ctf.core.event.types.StructDeclaration;
 import org.eclipse.tracecompass.ctf.core.trace.CTFTrace;
 import org.eclipse.tracecompass.ctf.parser.CTFParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.AbstractScopedCommonTreeParser;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.CTFAntlrMetadataNode;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.CTFJsonMetadataNode;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonStructureFieldMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.MetadataStrings;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.enumeration.EnumParser;
@@ -110,21 +113,28 @@ public final class TypeSpecifierListParser extends AbstractScopedCommonTreeParse
         CTFTrace trace = ((Param) param).fTrace;
         ICTFMetadataNode identifier = ((Param) param).fIdentifier;
         IDeclaration declaration = null;
+        ICTFMetadataNode firstChild = null;
+        String type = null;
 
         /*
          * By looking at the first element of the type specifier list, we can
-         * determine which type it belongs to.
+         * determine which type it belongs to. If parsing JSON, there are no
+         * children
          */
-        ICTFMetadataNode firstChild = typeSpecifierList.getChild(0);
+        if (typeSpecifierList instanceof CTFAntlrMetadataNode) {
+            firstChild = typeSpecifierList.getChild(0);
+            type = firstChild.getType();
+        } else if (typeSpecifierList instanceof CTFJsonMetadataNode) {
+            firstChild = typeSpecifierList;
+        }
 
-        String type = firstChild.getType();
         if (CTFParser.tokenNames[CTFParser.FLOATING_POINT].equals(type)) {
             declaration = FloatDeclarationParser.INSTANCE.parse(firstChild, new FloatDeclarationParser.Param(trace));
         } else if (CTFParser.tokenNames[CTFParser.INTEGER].equals(type)) {
             declaration = IntegerDeclarationParser.INSTANCE.parse(firstChild, new IntegerDeclarationParser.Param(trace));
         } else if (CTFParser.tokenNames[CTFParser.STRING].equals(type)) {
             declaration = StringDeclarationParser.INSTANCE.parse(firstChild, null);
-        } else if (CTFParser.tokenNames[CTFParser.STRUCT].equals(type)) {
+        } else if (CTFParser.tokenNames[CTFParser.STRUCT].equals(type) || firstChild instanceof JsonStructureFieldMetadataNode) {
             declaration = StructParser.INSTANCE.parse(firstChild, new StructParser.Param(trace, identifier, scope));
             StructDeclaration structDeclaration = (StructDeclaration) declaration;
             if (structDeclaration.hasField(MetadataStrings.ID)) {

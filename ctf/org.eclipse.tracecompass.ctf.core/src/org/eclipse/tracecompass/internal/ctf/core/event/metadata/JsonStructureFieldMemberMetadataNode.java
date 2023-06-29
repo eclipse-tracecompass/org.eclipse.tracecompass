@@ -17,6 +17,7 @@ import org.eclipse.tracecompass.ctf.core.CTFException;
 import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.utils.JsonMetadataStrings;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
@@ -70,6 +71,24 @@ public class JsonStructureFieldMemberMetadataNode extends CTFJsonMetadataNode {
      */
     public JsonElement getFieldClass() {
         return fFieldClass;
+    }
+
+    /**
+     * Get the role of the field class in this member
+     *
+     * @return the role
+     */
+    public String getRole() {
+        String role = null;
+        if (fFieldClass != null && fFieldClass.isJsonObject()) {
+            JsonObject obj = fFieldClass.getAsJsonObject();
+            if (obj.has(JsonMetadataStrings.ROLES)) {
+                // Assuming only 1 role per field class
+                JsonArray roles = obj.get(JsonMetadataStrings.ROLES).getAsJsonArray();
+                role = roles.get(0).getAsString();
+            }
+        }
+        return role;
     }
 
     @Override

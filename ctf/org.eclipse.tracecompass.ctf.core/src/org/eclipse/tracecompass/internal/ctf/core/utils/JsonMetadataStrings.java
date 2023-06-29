@@ -21,6 +21,7 @@ package org.eclipse.tracecompass.internal.ctf.core.utils;
 public final class JsonMetadataStrings {
 
     private JsonMetadataStrings() {
+        // Do nothing
     }
 
     // ------------------------------------------------------------------------
@@ -63,7 +64,17 @@ public final class JsonMetadataStrings {
     public static final String TYPE = "type"; //$NON-NLS-1$
 
     /**
+     * String for the roles field of a field class
+     */
+    public static final String ROLES = "roles"; //$NON-NLS-1$
+
+    /**
      * Type string for a field class that points to an alias
      */
     public static final String ALIAS = "alias"; //$NON-NLS-1$
+
+    /**
+     * Type string for an unsigned integer field class
+     */
+    public static final String FIXED_UNSIGNED_INTEGER_FIELD = "fixed-length-unsigned-integer"; //$NON-NLS-1$
 }

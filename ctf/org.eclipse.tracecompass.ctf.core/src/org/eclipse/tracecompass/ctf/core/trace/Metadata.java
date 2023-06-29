@@ -34,6 +34,7 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 import org.antlr.runtime.ANTLRReaderStream;
@@ -239,27 +240,26 @@ public class Metadata {
         ICTFMetadataNode root = new CTFJsonMetadataNode(null, CTFParser.tokenNames[CTFParser.ROOT], null);
 
         for (int i = 1; i < jsonBlocks.length; i++) {
-            @Nullable
             ICTFMetadataNode fragment;
             try {
-                fragment = gson.fromJson(jsonBlocks[i], CTFJsonMetadataNode.class);
+                fragment = Objects.requireNonNull(gson.fromJson(jsonBlocks[i], CTFJsonMetadataNode.class));
             } catch (JsonSyntaxException e) {
                 throw new CTFException("Trace cannot be parsed as CTF2"); //$NON-NLS-1$
             }
 
             String type = fragment.getType();
             if (type.equals(JsonMetadataStrings.FRAGMENT_PREAMBLE)) {
-                fragment = gson.fromJson(jsonBlocks[i], JsonPreambleMetadataNode.class);
+                fragment = Objects.requireNonNull(gson.fromJson(jsonBlocks[i], JsonPreambleMetadataNode.class));
             } else if (type.equals(JsonMetadataStrings.FRAGMENT_TRACE)) {
-                fragment = gson.fromJson(jsonBlocks[i], JsonTraceMetadataNode.class);
+                fragment = Objects.requireNonNull(gson.fromJson(jsonBlocks[i], JsonTraceMetadataNode.class));
             } else if (type.equals(JsonMetadataStrings.FRAGMENT_CLOCK)) {
-                fragment = gson.fromJson(jsonBlocks[i], JsonClockMetadataNode.class);
+                fragment = Objects.requireNonNull(gson.fromJson(jsonBlocks[i], JsonClockMetadataNode.class));
             } else if (type.equals(JsonMetadataStrings.FRAGMENT_EVENT_RECORD)) {
-                fragment = gson.fromJson(jsonBlocks[i], JsonEventRecordMetadataNode.class);
+                fragment = Objects.requireNonNull(gson.fromJson(jsonBlocks[i], JsonEventRecordMetadataNode.class));
             } else if (type.equals(JsonMetadataStrings.FRAGMENT_DATA_STREAM)) {
-                fragment = gson.fromJson(jsonBlocks[i], JsonDataStreamMetadataNode.class);
+                fragment = Objects.requireNonNull(gson.fromJson(jsonBlocks[i], JsonDataStreamMetadataNode.class));
             } else if (type.equals(JsonMetadataStrings.FRAGMENT_FIELD_ALIAS)) {
-                fragment = gson.fromJson(jsonBlocks[i], JsonFieldClassAliasMetadataNode.class);
+                fragment = Objects.requireNonNull(gson.fromJson(jsonBlocks[i], JsonFieldClassAliasMetadataNode.class));
             }
 
             ((CTFJsonMetadataNode) fragment).initialize();

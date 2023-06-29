@@ -26,7 +26,10 @@ import org.eclipse.tracecompass.ctf.core.event.types.IntegerDeclaration;
 import org.eclipse.tracecompass.ctf.core.trace.CTFTrace;
 import org.eclipse.tracecompass.ctf.parser.CTFParser;
 import org.eclipse.tracecompass.internal.ctf.core.Activator;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.CTFAntlrMetadataNode;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.CTFJsonMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ICommonTreeParser;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonStructureFieldMemberMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.Messages;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.MetadataStrings;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
@@ -35,6 +38,8 @@ import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.ByteOrderP
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.SizeParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.string.EncodingParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
+
+import com.google.gson.JsonObject;
 
 /**
  * Signed integers are represented in two-complement. Integer alignment, size,
@@ -101,8 +106,12 @@ public final class IntegerDeclarationParser implements ICommonTreeParser {
     private static final int DEFAULT_INT_BASE = 10;
     private static final @NonNull String MAP = "map"; //$NON-NLS-1$
     private static final @NonNull String BASE = "base"; //$NON-NLS-1$
+    private static final @NonNull String PREFERRED_BASE = "preferred-display-base"; //$NON-NLS-1$
+    private static final @NonNull String BYTE_ORDER = "byte-order"; //$NON-NLS-1$
     private static final @NonNull String SIZE = "size"; //$NON-NLS-1$
+    private static final @NonNull String LENGTH = "length"; //$NON-NLS-1$
     private static final @NonNull String SIGNED = "signed"; //$NON-NLS-1$
+    private static final @NonNull String ALIGNMENT = "alignment"; //$NON-NLS-1$
 
     private IntegerDeclarationParser() {
     }
@@ -121,15 +130,6 @@ public final class IntegerDeclarationParser implements ICommonTreeParser {
             throw new IllegalArgumentException("Param must be a " + Param.class.getCanonicalName()); //$NON-NLS-1$
         }
         CTFTrace trace = ((Param) parameter).fTrace;
-        List<ICTFMetadataNode> children = integer.getChildren();
-
-        /*
-         * If the integer has no attributes, then it is missing the size
-         * attribute which is required
-         */
-        if (children == null) {
-            throw new ParseException("integer: missing size attribute"); //$NON-NLS-1$
-        }
 
         /* The return value */
         IntegerDeclaration integerDeclaration = null;
@@ -143,45 +143,69 @@ public final class IntegerDeclarationParser implements ICommonTreeParser {
 
         Encoding encoding = Encoding.NONE;
 
-        /* Iterate on all integer children */
-        for (ICTFMetadataNode child : children) {
-            String type = child.getType();
-            if (CTFParser.tokenNames[CTFParser.CTF_EXPRESSION_VAL].equals(type)) {
-                ICTFMetadataNode leftNode = child.getChild(0);
-                ICTFMetadataNode rightNode = child.getChild(1);
-                List<ICTFMetadataNode> leftStrings = leftNode.getChildren();
-                if (!isAnyUnaryString(leftStrings.get(0))) {
-                    throw new ParseException("Left side of ctf expression must be a string"); //$NON-NLS-1$
+        if (integer instanceof JsonStructureFieldMemberMetadataNode) {
+            JsonObject fieldclass = ((JsonStructureFieldMemberMetadataNode) integer).getFieldClass().getAsJsonObject();
+
+            size = fieldclass.get(LENGTH).getAsInt();
+            signed = fieldclass.get(SIGNED).getAsBoolean();
+            CTFJsonMetadataNode bo = new CTFJsonMetadataNode(integer, CTFParser.tokenNames[CTFParser.UNARY_EXPRESSION_STRING], fieldclass.get(BYTE_ORDER).getAsString());
+            byteOrder = ByteOrderParser.INSTANCE.parse(bo, new ByteOrderParser.Param(trace));
+            if (fieldclass.has(ALIGNMENT)) {
+                alignment = fieldclass.get(ALIGNMENT).getAsInt();
+            }
+            if (fieldclass.has(PREFERRED_BASE)) {
+                base = fieldclass.get(PREFERRED_BASE).getAsInt();
+            }
+        } else if (integer instanceof CTFAntlrMetadataNode) {
+            List<ICTFMetadataNode> children = integer.getChildren();
+            /*
+             * If the integer has no attributes, then it is missing the size
+             * attribute which is required
+             */
+            if (children == null) {
+                throw new ParseException("integer: missing size attribute"); //$NON-NLS-1$
+            }
+
+            /* Iterate on all integer children */
+            for (ICTFMetadataNode child : children) {
+                String type = child.getType();
+                if (CTFParser.tokenNames[CTFParser.CTF_EXPRESSION_VAL].equals(type)) {
+                    ICTFMetadataNode leftNode = child.getChild(0);
+                    ICTFMetadataNode rightNode = child.getChild(1);
+                    List<ICTFMetadataNode> leftStrings = leftNode.getChildren();
+                    if (!isAnyUnaryString(leftStrings.get(0))) {
+                        throw new ParseException("Left side of ctf expression must be a string"); //$NON-NLS-1$
+                    }
+                    String left = concatenateUnaryStrings(leftStrings);
+                    switch (left) {
+                    case SIGNED:
+                        signed = SignedParser.INSTANCE.parse(rightNode, null);
+                        break;
+                    case MetadataStrings.BYTE_ORDER:
+                        byteOrder = ByteOrderParser.INSTANCE.parse(rightNode, new ByteOrderParser.Param(trace));
+                        break;
+                    case SIZE:
+                        size = SizeParser.INSTANCE.parse(rightNode, null);
+                        break;
+                    case MetadataStrings.ALIGN:
+                        alignment = AlignmentParser.INSTANCE.parse(rightNode, null);
+                        break;
+                    case BASE:
+                        base = BaseParser.INSTANCE.parse(rightNode, null);
+                        break;
+                    case ENCODING:
+                        encoding = EncodingParser.INSTANCE.parse(rightNode, null);
+                        break;
+                    case MAP:
+                        clock = ClockMapParser.INSTANCE.parse(rightNode, null);
+                        break;
+                    default:
+                        Activator.log(IStatus.WARNING, Messages.IOStructGen_UnknownIntegerAttributeWarning + " " + left); //$NON-NLS-1$
+                        break;
+                    }
+                } else {
+                    throw childTypeError(child);
                 }
-                String left = concatenateUnaryStrings(leftStrings);
-                switch (left) {
-                case SIGNED:
-                    signed = SignedParser.INSTANCE.parse(rightNode, null);
-                    break;
-                case MetadataStrings.BYTE_ORDER:
-                    byteOrder = ByteOrderParser.INSTANCE.parse(rightNode, new ByteOrderParser.Param(trace));
-                    break;
-                case SIZE:
-                    size = SizeParser.INSTANCE.parse(rightNode, null);
-                    break;
-                case MetadataStrings.ALIGN:
-                    alignment = AlignmentParser.INSTANCE.parse(rightNode, null);
-                    break;
-                case BASE:
-                    base = BaseParser.INSTANCE.parse(rightNode, null);
-                    break;
-                case ENCODING:
-                    encoding = EncodingParser.INSTANCE.parse(rightNode, null);
-                    break;
-                case MAP:
-                    clock = ClockMapParser.INSTANCE.parse(rightNode, null);
-                    break;
-                default:
-                    Activator.log(IStatus.WARNING, Messages.IOStructGen_UnknownIntegerAttributeWarning + " " + left); //$NON-NLS-1$
-                    break;
-                }
-            } else {
-                throw childTypeError(child);
             }
         }
 

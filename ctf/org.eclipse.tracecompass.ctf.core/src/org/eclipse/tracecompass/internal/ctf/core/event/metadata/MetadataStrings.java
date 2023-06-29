@@ -70,6 +70,10 @@ public interface MetadataStrings {
     String BE = "be";
     /** Little endian */
     String LE = "le";
+    /** Little endian for CTF2 */
+    String LITTLE_ENDIAN = "little-endian";
+    /** Big endian for CTF2 */
+    String BIG_ENDIAN = "big-endian";
     /** Alignment of a field */
     String ALIGN = "align";
     /** Mantissa digits */

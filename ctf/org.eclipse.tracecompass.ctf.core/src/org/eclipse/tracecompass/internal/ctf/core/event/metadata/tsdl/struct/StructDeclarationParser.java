@@ -19,7 +19,10 @@ import org.eclipse.tracecompass.ctf.core.event.types.StructDeclaration;
 import org.eclipse.tracecompass.ctf.core.trace.CTFTrace;
 import org.eclipse.tracecompass.ctf.parser.CTFParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.AbstractScopedCommonTreeParser;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.CTFAntlrMetadataNode;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonStructureFieldMemberMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.TypeAliasParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.TypeDeclaratorParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
 
@@ -85,44 +88,55 @@ public final class StructDeclarationParser extends AbstractScopedCommonTreeParse
         }
         DeclarationScope scope = ((Param) param).fDeclarationScope;
         StructDeclaration struct = ((Param) param).fStruct;
-        /* Get the type specifier list node */
-        ICTFMetadataNode typeSpecifierListNode = declaration.getFirstChildWithType(CTFParser.tokenNames[CTFParser.TYPE_SPECIFIER_LIST]);
+        CTFTrace trace = ((Param) param).fTrace;
+        StringBuilder identifierSB = new StringBuilder();
+        IDeclaration decl = null;
+        String fieldName = null;
 
-        if (typeSpecifierListNode == null) {
-            throw new ParseException("Cannot have an struct without a type specifier"); //$NON-NLS-1$
-        }
+        if (declaration instanceof CTFAntlrMetadataNode) {
+            /* Get the type specifier list node */
+            ICTFMetadataNode typeSpecifierListNode = declaration.getFirstChildWithType(CTFParser.tokenNames[CTFParser.TYPE_SPECIFIER_LIST]);
 
-        /* Get the type declarator list node */
-        ICTFMetadataNode typeDeclaratorListNode = declaration.getFirstChildWithType(CTFParser.tokenNames[CTFParser.TYPE_DECLARATOR_LIST]);
-
-        if (typeDeclaratorListNode == null) {
-            throw new ParseException("Cannot have an struct without a declarator"); //$NON-NLS-1$
-        }
-
-        /* Get the type declarator list */
-        List<ICTFMetadataNode> typeDeclaratorList = typeDeclaratorListNode.getChildren();
-
-        /*
-         * For each type declarator, parse the declaration and add a field to
-         * the struct
-         */
-        for (ICTFMetadataNode typeDeclaratorNode : typeDeclaratorList) {
-
-            StringBuilder identifierSB = new StringBuilder();
-
-            CTFTrace trace = ((Param) param).fTrace;
-            IDeclaration decl = TypeDeclaratorParser.INSTANCE.parse(typeDeclaratorNode, new TypeDeclaratorParser.Param(trace, typeSpecifierListNode, scope, identifierSB));
-            String fieldName = identifierSB.toString();
-            scope.registerIdentifier(fieldName, decl);
-
-            if (struct.hasField(fieldName)) {
-                throw new ParseException("struct: duplicate field " //$NON-NLS-1$
-                        + fieldName);
+            if (typeSpecifierListNode == null) {
+                throw new ParseException("Cannot have a struct without a type specifier"); //$NON-NLS-1$
             }
 
-            struct.addField(fieldName, decl);
+            /* Get the type declarator list node */
+            ICTFMetadataNode typeDeclaratorListNode = declaration.getFirstChildWithType(CTFParser.tokenNames[CTFParser.TYPE_DECLARATOR_LIST]);
 
+            if (typeDeclaratorListNode == null) {
+                throw new ParseException("Cannot have a struct without a declarator"); //$NON-NLS-1$
+            }
+
+            /* Get the type declarator list */
+            List<ICTFMetadataNode> typeDeclaratorList = typeDeclaratorListNode.getChildren();
+
+            /*
+             * For each type declarator, parse the declaration and add a field
+             * to the struct
+             */
+            for (ICTFMetadataNode typeDeclaratorNode : typeDeclaratorList) {
+                decl = TypeDeclaratorParser.INSTANCE.parse(typeDeclaratorNode, new TypeDeclaratorParser.Param(trace, typeSpecifierListNode, scope, identifierSB));
+            }
+            fieldName = identifierSB.toString();
+        } else {
+            decl = TypeAliasParser.INSTANCE.parse(declaration, new TypeAliasParser.Param(trace, scope));
+            fieldName = ((JsonStructureFieldMemberMetadataNode) declaration).getRole();
+            if (fieldName == null) {
+                fieldName = ((JsonStructureFieldMemberMetadataNode) declaration).getName();
+            }
         }
+
+        scope.registerIdentifier(fieldName, decl);
+        if (struct.hasField(fieldName)) {
+            throw new ParseException("struct: duplicate field " //$NON-NLS-1$
+                    + fieldName);
+        }
+
+        if (fieldName != null && decl != null) {
+            struct.addField(fieldName, decl);
+        }
+
         return struct;
     }
 

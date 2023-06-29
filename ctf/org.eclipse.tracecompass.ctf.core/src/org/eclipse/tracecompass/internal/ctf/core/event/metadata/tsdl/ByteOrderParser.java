@@ -17,6 +17,8 @@ import static org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.Tsd
 import java.nio.ByteOrder;
 
 import org.eclipse.tracecompass.ctf.core.trace.CTFTrace;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.CTFAntlrMetadataNode;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.CTFJsonMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ICommonTreeParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.MetadataStrings;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
@@ -96,21 +98,30 @@ public final class ByteOrderParser implements ICommonTreeParser {
             throw new IllegalArgumentException("Param must be a " + Param.class.getCanonicalName()); //$NON-NLS-1$
         }
         CTFTrace trace = ((Param) param).fTrace;
-        ICTFMetadataNode firstChild = byteOrderTree.getChild(0);
 
-        if (isUnaryString(firstChild)) {
-            String strval = concatenateUnaryStrings(byteOrderTree.getChildren());
+        String strval = null;
+        ICTFMetadataNode firstChild = null;
 
-            if (strval.equals(MetadataStrings.LE)) {
-                return ByteOrder.LITTLE_ENDIAN;
-            } else if (strval.equals(MetadataStrings.BE)
-                    || strval.equals(MetadataStrings.NETWORK)) {
-                return ByteOrder.BIG_ENDIAN;
-            } else if (strval.equals(MetadataStrings.NATIVE)) {
-                ByteOrder byteOrder = trace.getByteOrder();
-                return (byteOrder == null) ? ByteOrder.nativeOrder() : byteOrder;
-            } else {
-                throw new ParseException(INVALID_VALUE_FOR_BYTE_ORDER);
+        if (byteOrderTree instanceof CTFAntlrMetadataNode) {
+            strval = concatenateUnaryStrings(byteOrderTree.getChildren());
+            firstChild = byteOrderTree.getChild(0);
+        } else if (byteOrderTree instanceof CTFJsonMetadataNode) {
+            strval = byteOrderTree.getText();
+        }
+
+        if (isUnaryString(byteOrderTree) || isUnaryString(firstChild)) {
+            if (strval != null) {
+                if (strval.equals(MetadataStrings.LE) || MetadataStrings.LITTLE_ENDIAN.equals(strval)) {
+                    return ByteOrder.LITTLE_ENDIAN;
+                } else if (strval.equals(MetadataStrings.BE)
+                        || strval.equals(MetadataStrings.NETWORK) || strval.equals(MetadataStrings.BIG_ENDIAN)) {
+                    return ByteOrder.BIG_ENDIAN;
+                } else if (strval.equals(MetadataStrings.NATIVE)) {
+                    ByteOrder byteOrder = trace.getByteOrder();
+                    return (byteOrder == null) ? ByteOrder.nativeOrder() : byteOrder;
+                } else {
+                    throw new ParseException(INVALID_VALUE_FOR_BYTE_ORDER);
+                }
             }
         }
         throw new ParseException(INVALID_VALUE_FOR_BYTE_ORDER);

@@ -21,6 +21,8 @@ import org.eclipse.tracecompass.ctf.core.event.types.StructDeclaration;
 import org.eclipse.tracecompass.ctf.core.trace.CTFTrace;
 import org.eclipse.tracecompass.ctf.parser.CTFParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.AbstractScopedCommonTreeParser;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.CTFAntlrMetadataNode;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonStructureFieldMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.AlignmentParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
@@ -160,29 +162,38 @@ public final class StructParser extends AbstractScopedCommonTreeParser {
         /* Align */
         long structAlign = 0;
 
-        /* Loop on all children and identify what we have to work with. */
-        for (ICTFMetadataNode child : children) {
-            String type = child.getType();
-            if (CTFParser.tokenNames[CTFParser.STRUCT_NAME].equals(type)) {
+        if (struct instanceof CTFAntlrMetadataNode) {
+            /* Loop on all children and identify what we have to work with. */
+            for (ICTFMetadataNode child : children) {
+                String type = child.getType();
+                if (CTFParser.tokenNames[CTFParser.STRUCT_NAME].equals(type)) {
+                    hasName = true;
+                    ICTFMetadataNode structNameIdentifier = child.getChild(0);
+                    structName = structNameIdentifier.getText();
+                } else if (CTFParser.tokenNames[CTFParser.STRUCT_BODY].equals(type)) {
+                    hasBody = true;
+                    structBody = child;
+                } else if (CTFParser.tokenNames[CTFParser.ALIGN].equals(type)) {
+                    ICTFMetadataNode structAlignExpression = child.getChild(0);
+                    structAlign = AlignmentParser.INSTANCE.parse(structAlignExpression, null);
+                } else {
+                    throw childTypeError(child);
+                }
+            }
+
+            if (!hasName && identifier != null) {
+                structName = identifier.getText();
                 hasName = true;
-                ICTFMetadataNode structNameIdentifier = child.getChild(0);
-                structName = structNameIdentifier.getText();
-            } else if (CTFParser.tokenNames[CTFParser.STRUCT_BODY].equals(type)) {
+            }
+        } else {
+            if (((JsonStructureFieldMetadataNode) struct).getMinimumAlignment() != 0) {
+                structAlign = AlignmentParser.INSTANCE.parse(struct, null);
+            }
+            if (((JsonStructureFieldMetadataNode) struct).getMemberClasses() != null) {
                 hasBody = true;
-                structBody = child;
-            } else if (CTFParser.tokenNames[CTFParser.ALIGN].equals(type)) {
-                ICTFMetadataNode structAlignExpression = child.getChild(0);
-                structAlign = AlignmentParser.INSTANCE.parse(structAlignExpression, null);
-            } else {
-                throw childTypeError(child);
+                structBody = struct;
             }
         }
-
-        if (!hasName && identifier != null) {
-            structName = identifier.getText();
-            hasName = true;
-        }
-
         /*
          * If a struct has just a body and no name (just like the song,
          * "A Struct With No Name" by America (sorry for that...)), it's a
