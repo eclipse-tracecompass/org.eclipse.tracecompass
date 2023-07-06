@@ -13,7 +13,11 @@
  *******************************************************************************/
 package org.eclipse.tracecompass.internal.ctf.core.event.metadata;
 
+import java.util.List;
+
+import org.eclipse.tracecompass.ctf.core.CTFException;
 import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -25,7 +29,7 @@ import com.google.gson.annotations.SerializedName;
 public class JsonStructureFieldMetadataNode extends CTFJsonMetadataNode {
 
     @SerializedName("member-classes")
-    private JsonStructureFieldMemberMetadataNode[] fMemberClasses;
+    private List<JsonStructureFieldMemberMetadataNode> fMemberClasses;
     @SerializedName("minimum-alignment")
     private int fMinimumAlignment;
 
@@ -48,7 +52,7 @@ public class JsonStructureFieldMetadataNode extends CTFJsonMetadataNode {
      *
      * @return the member classes
      */
-    public JsonStructureFieldMemberMetadataNode[] getMemberClasses() {
+    public List<JsonStructureFieldMemberMetadataNode> getMemberClasses() {
         return fMemberClasses;
     }
 
@@ -61,4 +65,15 @@ public class JsonStructureFieldMetadataNode extends CTFJsonMetadataNode {
         return fMinimumAlignment;
     }
 
+    @Override
+    public void initialize() throws CTFException {
+        super.initialize();
+        if (fMemberClasses != null) {
+            for (JsonStructureFieldMemberMetadataNode member : fMemberClasses) {
+                member.initialize();
+                addChild(member);
+                member.setParent(this);
+            }
+        }
+    }
 }

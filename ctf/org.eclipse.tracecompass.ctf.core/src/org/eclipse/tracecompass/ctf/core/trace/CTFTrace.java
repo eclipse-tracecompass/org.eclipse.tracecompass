@@ -922,7 +922,7 @@ public class CTFTrace implements IDefinitionScope {
      * @return true if the packet type matches, false otherwise
      * @throws CTFException
      *             If the file is not found.
-     * @since 4.2
+     * @since 4.3
      */
     public static boolean startsWithRecordSeparator(File file, int recordSeparator)
             throws CTFException {

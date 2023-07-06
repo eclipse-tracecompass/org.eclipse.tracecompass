@@ -13,8 +13,11 @@
  *******************************************************************************/
 package org.eclipse.tracecompass.internal.ctf.core.event.metadata;
 
+import org.eclipse.tracecompass.ctf.core.CTFException;
 import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
+import org.eclipse.tracecompass.internal.ctf.core.utils.JsonMetadataStrings;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
 
@@ -29,7 +32,7 @@ public class JsonStructureFieldMemberMetadataNode extends CTFJsonMetadataNode {
     @SerializedName("name")
     private final String fName;
     @SerializedName("field-class")
-    private final JsonObject fFieldClass;
+    private final JsonElement fFieldClass;
 
     /**
      * Constructor for a JsonStructureFieldMemberMetadataNode
@@ -47,8 +50,8 @@ public class JsonStructureFieldMemberMetadataNode extends CTFJsonMetadataNode {
      */
     public JsonStructureFieldMemberMetadataNode(ICTFMetadataNode parent, String type, String value, String name, JsonObject fieldClass) {
         super(parent, type, value);
-        this.fName = name;
-        this.fFieldClass = fieldClass;
+        fName = name;
+        fFieldClass = fieldClass;
     }
 
     /**
@@ -65,8 +68,17 @@ public class JsonStructureFieldMemberMetadataNode extends CTFJsonMetadataNode {
      *
      * @return the field class
      */
-    public JsonObject getFieldClass() {
+    public JsonElement getFieldClass() {
         return fFieldClass;
     }
 
+    @Override
+    public void initialize() throws CTFException {
+        if (fFieldClass.isJsonObject() && fFieldClass.getAsJsonObject().has(JsonMetadataStrings.TYPE)) {
+            setType(fFieldClass.getAsJsonObject().get(JsonMetadataStrings.TYPE).getAsString());
+        } else {
+            setType(JsonMetadataStrings.ALIAS);
+        }
+        super.initialize();
+    }
 }

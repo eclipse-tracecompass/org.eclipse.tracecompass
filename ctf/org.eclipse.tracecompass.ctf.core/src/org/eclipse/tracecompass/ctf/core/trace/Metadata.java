@@ -204,7 +204,7 @@ public class Metadata {
      *
      * @throws CTFException
      *             if there was an issue parsing the metadata
-     * @since 4.2
+     * @since 4.3
      *
      */
     public void parseJsonFile() throws CTFException {
@@ -262,6 +262,8 @@ public class Metadata {
                 fragment = gson.fromJson(jsonBlocks[i], JsonFieldClassAliasMetadataNode.class);
             }
 
+            ((CTFJsonMetadataNode) fragment).initialize();
+
             root.addChild(fragment);
             fragment.setParent(root);
         }
@@ -275,7 +277,7 @@ public class Metadata {
      * @throws CTFException
      *             throws exception if file is invalid
      *
-     * @since 4.2
+     * @since 4.3
      */
     public void checkCTFVersion() throws CTFException {
         File metadataFile = new File(getMetadataPath());

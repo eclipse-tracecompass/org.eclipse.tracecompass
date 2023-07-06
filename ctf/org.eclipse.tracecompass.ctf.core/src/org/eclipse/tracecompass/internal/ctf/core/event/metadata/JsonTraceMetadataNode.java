@@ -13,8 +13,10 @@
  *******************************************************************************/
 package org.eclipse.tracecompass.internal.ctf.core.event.metadata;
 
+import org.eclipse.tracecompass.ctf.core.CTFException;
 import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
 import org.json.JSONObject;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -64,4 +66,22 @@ public class JsonTraceMetadataNode extends CTFJsonMetadataNode {
         return fEnvironment;
     }
 
+    /**
+     * Get the packet header of the trace
+     *
+     * @return the packet header
+     */
+    public JsonStructureFieldMetadataNode getPacketHeader() {
+        return fPacketHeader;
+    }
+
+    @Override
+    public void initialize() throws CTFException {
+        super.initialize();
+        if (fPacketHeader != null) {
+            fPacketHeader.initialize();
+            addChild(fPacketHeader);
+            fPacketHeader.setParent(this);
+        }
+    }
 }

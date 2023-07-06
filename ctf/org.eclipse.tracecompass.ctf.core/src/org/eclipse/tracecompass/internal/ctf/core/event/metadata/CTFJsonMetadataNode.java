@@ -19,7 +19,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import org.eclipse.tracecompass.ctf.core.CTFException;
 import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -30,14 +32,14 @@ import com.google.gson.annotations.SerializedName;
 public class CTFJsonMetadataNode implements ICTFMetadataNode {
     //deserialized attributes from Json
     @SerializedName("type")
-    private final String fType;
+    private String fType;
     @SerializedName("user-attributes")
     private Map<String, String> fUserAttributes;
 
     //other attributes added for convenience
     private ICTFMetadataNode fParent;
-    private final Map<String, ICTFMetadataNode> fChildren;
-    private final ArrayList<ICTFMetadataNode> fChildrenList;
+    private Map<String, ICTFMetadataNode> fChildren;
+    private ArrayList<ICTFMetadataNode> fChildrenList;
     private final String fValue;
 
 
@@ -127,4 +129,42 @@ public class CTFJsonMetadataNode implements ICTFMetadataNode {
         return fUserAttributes;
     }
 
+    /**
+     * Set the type of the node, specifically used for nodes that do not have a
+     * type when created such as JsonStructureFieldMemberMetadataNode
+     *
+     * @param type
+     *            the new type of the node
+     */
+    public void setType(String type) {
+        fType = Objects.requireNonNull(type);
+    }
+
+    /**
+     * Set the childrenList of the node
+     *
+     * @param childrenList
+     *            the children of the node
+     */
+    public void setChildrenList(List<ICTFMetadataNode> childrenList) {
+        fChildrenList = (ArrayList<ICTFMetadataNode>) childrenList;
+    }
+
+    /**
+     * Helper method to initialize fields that aren't set by gson library
+     *
+     * @throws CTFException
+     *             if type is null but node is created with gson
+     */
+    public void initialize() throws CTFException {
+        if (fChildren == null) {
+            fChildren = new HashMap<>();
+        }
+        if (fChildrenList == null) {
+            fChildrenList = new ArrayList<>();
+        }
+        if (fType == null) {
+            throw new CTFException("type of node cannot be null"); //$NON-NLS-1$
+        }
+    }
 }

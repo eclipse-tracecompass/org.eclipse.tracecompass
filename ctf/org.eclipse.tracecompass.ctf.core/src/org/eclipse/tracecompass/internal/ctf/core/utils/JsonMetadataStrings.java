@@ -56,4 +56,14 @@ public final class JsonMetadataStrings {
      * Type string for a CTF2 event record class fragment
      */
     public static final String FRAGMENT_EVENT_RECORD = "event-record-class"; //$NON-NLS-1$
+
+    /**
+     * Field string for the type of a CTF2 node
+     */
+    public static final String TYPE = "type"; //$NON-NLS-1$
+
+    /**
+     * Type string for a field class that points to an alias
+     */
+    public static final String ALIAS = "alias"; //$NON-NLS-1$
 }

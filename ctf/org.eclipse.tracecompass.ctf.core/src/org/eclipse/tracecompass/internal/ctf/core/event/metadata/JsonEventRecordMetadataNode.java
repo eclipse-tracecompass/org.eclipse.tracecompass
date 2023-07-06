@@ -13,7 +13,9 @@
  *******************************************************************************/
 package org.eclipse.tracecompass.internal.ctf.core.event.metadata;
 
+import org.eclipse.tracecompass.ctf.core.CTFException;
 import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -105,4 +107,14 @@ public class JsonEventRecordMetadataNode extends CTFJsonMetadataNode {
         return fPayloadFieldClass;
     }
 
+    @Override
+    public void initialize() throws CTFException {
+        super.initialize();
+        if (fSpecificContextClass != null) {
+            fSpecificContextClass.initialize();
+        }
+        if (fPayloadFieldClass != null) {
+            fPayloadFieldClass.initialize();
+        }
+    }
 }
