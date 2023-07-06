@@ -93,11 +93,14 @@ public final class TypeAliasParser extends AbstractScopedCommonTreeParser {
         if (typealias instanceof JsonStructureFieldMemberMetadataNode) {
             JsonStructureFieldMemberMetadataNode member = ((JsonStructureFieldMemberMetadataNode) typealias);
             aliasString = member.getName();
+            String type = typealias.getType();
             if (member.getFieldClass().isJsonObject()) {
                 JsonObject fieldClass = member.getFieldClass().getAsJsonObject();
-                if (JsonMetadataStrings.FIXED_UNSIGNED_INTEGER_FIELD.equals(typealias.getType())) {
+                if (JsonMetadataStrings.FIXED_UNSIGNED_INTEGER_FIELD.equals(type)) {
                     fieldClass.addProperty("signed", false); //$NON-NLS-1$
                     targetDeclaration = IntegerDeclarationParser.INSTANCE.parse(typealias, new IntegerDeclarationParser.Param(trace));
+                } else if (JsonMetadataStrings.STATIC_LENGTH_BLOB.equals(type)) {
+                    targetDeclaration = BlobDeclarationParser.INSTANCE.parse(typealias, null);
                 } else {
                     throw new ParseException("Invalid field class"); //$NON-NLS-1$
                 }

@@ -256,7 +256,7 @@ public class IOStructGen {
          * If trace byte order was not specified and not using packet based
          * metadata
          */
-        if (fTrace.getByteOrder() == null) {
+        if (traceNode instanceof CTFAntlrMetadataNode && fTrace.getByteOrder() == null) {
             throw new ParseException("Trace byte order not set"); //$NON-NLS-1$
         }
     }
