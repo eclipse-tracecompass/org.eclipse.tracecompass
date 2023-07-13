@@ -21,6 +21,7 @@ import org.eclipse.tracecompass.ctf.core.event.types.Encoding;
 import org.eclipse.tracecompass.ctf.core.event.types.StringDeclaration;
 import org.eclipse.tracecompass.ctf.parser.CTFParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ICommonTreeParser;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonStructureFieldMemberMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
 import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
 
@@ -77,7 +78,7 @@ public final class StringDeclarationParser implements ICommonTreeParser {
         List<ICTFMetadataNode> children = string.getChildren();
         StringDeclaration stringDeclaration = null;
 
-        if (children == null) {
+        if (string instanceof JsonStructureFieldMemberMetadataNode || children == null) {
             stringDeclaration = StringDeclaration.getStringDeclaration(Encoding.UTF8);
         } else {
             Encoding encoding = Encoding.UTF8;

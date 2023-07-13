@@ -24,6 +24,10 @@ import org.eclipse.tracecompass.ctf.core.trace.ICTFStream;
 import org.eclipse.tracecompass.ctf.parser.CTFParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.EventDeclaration;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.AbstractScopedCommonTreeParser;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.CTFAntlrMetadataNode;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.CTFJsonMetadataNode;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonEventRecordMetadataNode;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonStructureFieldMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.MetadataStrings;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.TypeSpecifierListParser;
@@ -88,107 +92,156 @@ public final class EventDeclarationParser extends AbstractScopedCommonTreeParser
         EventDeclaration event = ((Param) param).fEvent;
         CTFTrace fTrace = ((Param) param).fTrace;
 
-        /* There should be a left and right */
+        if (eventDecl instanceof CTFJsonMetadataNode) {
+            JsonEventRecordMetadataNode rec = (JsonEventRecordMetadataNode) eventDecl;
 
-        ICTFMetadataNode leftNode = eventDecl.getChild(0);
-        ICTFMetadataNode rightNode = eventDecl.getChild(1);
-
-        List<ICTFMetadataNode> leftStrings = leftNode.getChildren();
-
-        if (!isAnyUnaryString(leftStrings.get(0))) {
-            throw new ParseException("Left side of CTF assignment must be a string"); //$NON-NLS-1$
-        }
-
-        String left = concatenateUnaryStrings(leftStrings);
-
-        if (left.equals(MetadataStrings.NAME2)) {
-            if (event.nameIsSet()) {
-                throw new ParseException("name already defined"); //$NON-NLS-1$
+            String name = rec.getName();
+            if (name != null) {
+                event.setName(name);
             }
 
-            String name = EventNameParser.INSTANCE.parse(rightNode, null);
+            // default is 0
+            long id = rec.getId();
+            verifyEventId(event, id);
+            event.setId(id);
 
-            event.setName(name);
-        } else if (left.equals(MetadataStrings.ID)) {
-            if (event.idIsSet()) {
-                throw new ParseException("id already defined"); //$NON-NLS-1$
-            }
-
-            long id = EventIDParser.INSTANCE.parse(rightNode, null);
-            if (id > Integer.MAX_VALUE) {
-                throw new ParseException("id is greater than int.maxvalue, unsupported. id : " + id); //$NON-NLS-1$
-            }
-            if (id < 0) {
-                throw new ParseException("negative id, unsupported. id : " + id); //$NON-NLS-1$
-            }
-            event.setId((int) id);
-        } else if (left.equals(MetadataStrings.STREAM_ID)) {
-            if (event.streamIsSet()) {
-                throw new ParseException("stream id already defined"); //$NON-NLS-1$
-            }
-
-            long streamId = StreamIdParser.INSTANCE.parse(rightNode, null);
-
-            /*
-             * If the event has a stream and it is defined, look up the stream,
-             * if it is the available, assign it. If not, the event is
-             * malformed.
-             */
-            ICTFStream iStream = fTrace.getStream(streamId);
-            if (!(iStream instanceof CTFStream)) {
-                throw new ParseException("Event specified stream with ID " + streamId + ". But no stream with that ID was defined"); //$NON-NLS-1$ //$NON-NLS-2$
-            }
-            CTFStream ctfStream = (CTFStream) iStream;
+            // default is 0
+            long streamId = rec.getDataStreamClassId();
+            CTFStream ctfStream = verifyStream(fTrace, streamId);
             event.setStream(ctfStream);
-        } else if (left.equals(MetadataStrings.CONTEXT)) {
-            if (event.contextIsSet()) {
-                throw new ParseException("context already defined"); //$NON-NLS-1$
+
+            JsonStructureFieldMetadataNode context = rec.getSpecificContextClass();
+            if (context != null) {
+                IDeclaration contextDecl = TypeSpecifierListParser.INSTANCE.parse(rec.getSpecificContextClass(), new TypeSpecifierListParser.Param(fTrace, null, null, scope));
+                verifyContext(contextDecl);
+                event.setContext((StructDeclaration) contextDecl);
             }
 
-            ICTFMetadataNode typeSpecifier = rightNode.getChild(0);
-
-            if (!(CTFParser.tokenNames[CTFParser.TYPE_SPECIFIER_LIST].equals(typeSpecifier.getType()))) {
-                throw new ParseException("context expects a type specifier"); //$NON-NLS-1$
+            JsonStructureFieldMetadataNode payload = rec.getPayloadFieldClass();
+            if (payload != null) {
+                IDeclaration fieldsDecl = TypeSpecifierListParser.INSTANCE.parse(rec.getPayloadFieldClass(), new TypeSpecifierListParser.Param(fTrace, null, null, scope));
+                StructDeclaration fields = verifyFieldsDeclaration(fieldsDecl);
+                event.setFields(fields);
             }
 
-            IDeclaration contextDecl = TypeSpecifierListParser.INSTANCE.parse(typeSpecifier, new TypeSpecifierListParser.Param(fTrace, null, null, scope));
+        } else if (eventDecl instanceof CTFAntlrMetadataNode) {
+            /* There should be a left and right */
 
-            if (!(contextDecl instanceof StructDeclaration)) {
-                throw new ParseException("context expects a struct"); //$NON-NLS-1$
+            ICTFMetadataNode leftNode = eventDecl.getChild(0);
+            ICTFMetadataNode rightNode = eventDecl.getChild(1);
+
+            List<ICTFMetadataNode> leftStrings = leftNode.getChildren();
+
+            if (!isAnyUnaryString(leftStrings.get(0))) {
+                throw new ParseException("left side of CTF assignment must be a string"); //$NON-NLS-1$
             }
 
-            event.setContext((StructDeclaration) contextDecl);
-        } else if (left.equals(MetadataStrings.FIELDS_STRING)) {
-            if (event.fieldsIsSet()) {
-                throw new ParseException("fields already defined"); //$NON-NLS-1$
+            String left = concatenateUnaryStrings(leftStrings);
+
+            if (left.equals(MetadataStrings.NAME2)) {
+                if (event.nameIsSet()) {
+                    throw new ParseException("name already defined"); //$NON-NLS-1$
+                }
+
+                String name = EventNameParser.INSTANCE.parse(rightNode, null);
+
+                event.setName(name);
+            } else if (left.equals(MetadataStrings.ID)) {
+                long id = EventIDParser.INSTANCE.parse(rightNode, null);
+
+                verifyEventId(event, id);
+                event.setId((int) id);
+            } else if (left.equals(MetadataStrings.STREAM_ID)) {
+                if (event.streamIsSet()) {
+                    throw new ParseException("stream id already defined"); //$NON-NLS-1$
+                }
+
+                long streamId = StreamIdParser.INSTANCE.parse(rightNode, null);
+
+                CTFStream ctfStream = verifyStream(fTrace, streamId);
+                event.setStream(ctfStream);
+            } else if (left.equals(MetadataStrings.CONTEXT)) {
+                if (event.contextIsSet()) {
+                    throw new ParseException("context already defined"); //$NON-NLS-1$
+                }
+
+                ICTFMetadataNode typeSpecifier = rightNode.getChild(0);
+
+                if (!(CTFParser.tokenNames[CTFParser.TYPE_SPECIFIER_LIST].equals(typeSpecifier.getType()))) {
+                    throw new ParseException("context expects a type specifier"); //$NON-NLS-1$
+                }
+
+                IDeclaration contextDecl = TypeSpecifierListParser.INSTANCE.parse(typeSpecifier, new TypeSpecifierListParser.Param(fTrace, null, null, scope));
+
+                verifyContext(contextDecl);
+
+                event.setContext((StructDeclaration) contextDecl);
+            } else if (left.equals(MetadataStrings.FIELDS_STRING)) {
+                if (event.fieldsIsSet()) {
+                    throw new ParseException("fields already defined"); //$NON-NLS-1$
+                }
+
+                ICTFMetadataNode typeSpecifier = rightNode.getChild(0);
+
+                if (!(CTFParser.tokenNames[CTFParser.TYPE_SPECIFIER_LIST].equals(typeSpecifier.getType()))) {
+                    throw new ParseException("fields expects a type specifier"); //$NON-NLS-1$
+                }
+
+                IDeclaration fieldsDecl;
+                fieldsDecl = TypeSpecifierListParser.INSTANCE.parse(typeSpecifier, new TypeSpecifierListParser.Param(fTrace, null, null, scope));
+
+                final StructDeclaration fields = verifyFieldsDeclaration(fieldsDecl);
+                event.setFields(fields);
+            } else if (left.equals(MetadataStrings.LOGLEVEL2)) {
+                long logLevel = UnaryIntegerParser.INSTANCE.parse(rightNode.getChild(0), null);
+                event.setLogLevel(logLevel);
+            } else {
+                /* Custom event attribute, we'll add it to the attributes map */
+                String right = UnaryStringParser.INSTANCE.parse(rightNode.getChild(0), null);
+                event.setCustomAttribute(left, right);
             }
-
-            ICTFMetadataNode typeSpecifier = rightNode.getChild(0);
-
-            if (!(CTFParser.tokenNames[CTFParser.TYPE_SPECIFIER_LIST].equals(typeSpecifier.getType()))) {
-                throw new ParseException("fields expects a type specifier"); //$NON-NLS-1$
-            }
-
-            IDeclaration fieldsDecl;
-            fieldsDecl = TypeSpecifierListParser.INSTANCE.parse(typeSpecifier, new TypeSpecifierListParser.Param(fTrace, null, null, scope));
-
-            if (!(fieldsDecl instanceof StructDeclaration)) {
-                throw new ParseException("fields expects a struct"); //$NON-NLS-1$
-            }
-            /*
-             * The underscores in the event names. These underscores were added
-             * by the LTTng tracer.
-             */
-            final StructDeclaration fields = (StructDeclaration) fieldsDecl;
-            event.setFields(fields);
-        } else if (left.equals(MetadataStrings.LOGLEVEL2)) {
-            long logLevel = UnaryIntegerParser.INSTANCE.parse(rightNode.getChild(0), null);
-            event.setLogLevel(logLevel);
-        } else {
-            /* Custom event attribute, we'll add it to the attributes map */
-            String right = UnaryStringParser.INSTANCE.parse(rightNode.getChild(0), null);
-            event.setCustomAttribute(left, right);
         }
         return event;
+    }
+
+    private static void verifyContext(IDeclaration contextDecl) throws ParseException {
+        if (!(contextDecl instanceof StructDeclaration)) {
+            throw new ParseException("context expects a struct"); //$NON-NLS-1$
+        }
+    }
+
+    private static StructDeclaration verifyFieldsDeclaration(IDeclaration fieldsDecl) throws ParseException {
+        if (!(fieldsDecl instanceof StructDeclaration)) {
+            throw new ParseException("fields expects a struct"); //$NON-NLS-1$
+        }
+        /*
+         * The underscores in the event names. These underscores were added by
+         * the LTTng tracer.
+         */
+        return (StructDeclaration) fieldsDecl;
+    }
+
+    /*
+     * If the event has a stream and it is defined, look up the stream, if it is
+     * available, assign it. If not, the event is malformed.
+     */
+    private static CTFStream verifyStream(CTFTrace fTrace, long streamId) throws ParseException {
+        ICTFStream iStream = fTrace.getStream(streamId);
+        if (!(iStream instanceof CTFStream)) {
+            throw new ParseException("Event specified stream with ID " + streamId + ". But no stream with that ID was defined"); //$NON-NLS-1$ //$NON-NLS-2$
+        }
+        return (CTFStream) iStream;
+    }
+
+    private static void verifyEventId(EventDeclaration event, long id) throws ParseException {
+        if (event.idIsSet()) {
+            throw new ParseException("id already defined"); //$NON-NLS-1$
+        }
+        if (id > Integer.MAX_VALUE) {
+            throw new ParseException("id is greater than int.maxvalue, unsupported. id : " + id); //$NON-NLS-1$
+        }
+        if (id < 0) {
+            throw new ParseException("negative id, unsupported. id : " + id); //$NON-NLS-1$
+        }
     }
 }

@@ -22,6 +22,7 @@ import org.eclipse.tracecompass.ctf.core.trace.ICTFStream;
 import org.eclipse.tracecompass.ctf.parser.CTFParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.EventDeclaration;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.AbstractScopedCommonTreeParser;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.CTFJsonMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.MetadataStrings;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.TypeAliasParser;
@@ -101,25 +102,29 @@ public final class EventParser extends AbstractScopedCommonTreeParser {
         }
         Param parameter = (Param) param;
         CTFTrace trace = ((Param) param).fTrace;
-        List<ICTFMetadataNode> children = eventNode.getChildren();
-        if (children == null) {
-            throw new ParseException("Empty event block"); //$NON-NLS-1$
-        }
-
         EventDeclaration event = new EventDeclaration();
-
         DeclarationScope scope = new DeclarationScope(parameter.fCurrentScope, MetadataStrings.EVENT);
 
-        for (ICTFMetadataNode child : children) {
-            String type = child.getType();
-            if (CTFParser.tokenNames[CTFParser.TYPEALIAS].equals(type)) {
-                TypeAliasParser.INSTANCE.parse(child, new TypeAliasParser.Param(trace, scope));
-            } else if (CTFParser.tokenNames[CTFParser.TYPEDEF].equals(type)) {
-                TypedefParser.INSTANCE.parse(child, new TypedefParser.Param(trace, scope));
-            } else if (CTFParser.tokenNames[CTFParser.CTF_EXPRESSION_TYPE].equals(type) || CTFParser.tokenNames[CTFParser.CTF_EXPRESSION_VAL].equals(type)) {
-                EventDeclarationParser.INSTANCE.parse(child, new EventDeclarationParser.Param(trace, event, scope));
-            } else {
-                throw childTypeError(child);
+        if (eventNode instanceof CTFJsonMetadataNode) {
+            EventDeclarationParser.INSTANCE.parse(eventNode, new EventDeclarationParser.Param(trace, event, scope));
+        } else {
+            List<ICTFMetadataNode> children = eventNode.getChildren();
+            if (children == null) {
+                throw new ParseException("Empty event block"); //$NON-NLS-1$
+            }
+
+            for (ICTFMetadataNode child : children) {
+                String type = child.getType();
+                if (CTFParser.tokenNames[CTFParser.TYPEALIAS].equals(type)) {
+                    TypeAliasParser.INSTANCE.parse(child, new TypeAliasParser.Param(trace, scope));
+                } else if (CTFParser.tokenNames[CTFParser.TYPEDEF].equals(type)) {
+                    TypedefParser.INSTANCE.parse(child, new TypedefParser.Param(trace, scope));
+                } else if (CTFParser.tokenNames[CTFParser.CTF_EXPRESSION_TYPE].equals(type)
+                        || CTFParser.tokenNames[CTFParser.CTF_EXPRESSION_VAL].equals(type)) {
+                    EventDeclarationParser.INSTANCE.parse(child, new EventDeclarationParser.Param(trace, event, scope));
+                } else {
+                    throw childTypeError(child);
+                }
             }
         }
 

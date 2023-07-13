@@ -24,6 +24,7 @@ import org.eclipse.tracecompass.internal.ctf.core.event.metadata.AbstractScopedC
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonStructureFieldMemberMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.integer.IntegerDeclarationParser;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.string.StringDeclarationParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.utils.JsonMetadataStrings;
 
@@ -101,6 +102,8 @@ public final class TypeAliasParser extends AbstractScopedCommonTreeParser {
                     targetDeclaration = IntegerDeclarationParser.INSTANCE.parse(typealias, new IntegerDeclarationParser.Param(trace));
                 } else if (JsonMetadataStrings.STATIC_LENGTH_BLOB.equals(type)) {
                     targetDeclaration = BlobDeclarationParser.INSTANCE.parse(typealias, null);
+                } else if (JsonMetadataStrings.NULL_TERMINATED_STRING.equals(type)) {
+                    targetDeclaration = StringDeclarationParser.INSTANCE.parse(typealias, null);
                 } else {
                     throw new ParseException("Invalid field class"); //$NON-NLS-1$
                 }

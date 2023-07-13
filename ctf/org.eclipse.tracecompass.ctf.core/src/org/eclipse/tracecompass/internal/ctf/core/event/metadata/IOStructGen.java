@@ -154,7 +154,7 @@ public class IOStructGen {
             } else if (CTFParser.tokenNames[CTFParser.STREAM].equals(type)) {
                 StreamParser.INSTANCE.parse(child, new StreamParser.Param(fTrace, fRoot));
                 hasStreams = true;
-            } else if (CTFParser.tokenNames[CTFParser.EVENT].equals(type)) {
+            } else if (CTFParser.tokenNames[CTFParser.EVENT].equals(type) || JsonMetadataStrings.FRAGMENT_EVENT_RECORD.equals(type)) {
                 events.add(child);
             } else if (CTFParser.tokenNames[CTFParser.CLOCK].equals(type)) {
                 CTFClock ctfClock = ClockParser.INSTANCE.parse(child, null);
@@ -165,7 +165,11 @@ public class IOStructGen {
             } else if (CTFParser.tokenNames[CTFParser.CALLSITE].equals(type)) {
                 callsites.add(CallSiteParser.INSTANCE.parse(child, null));
             } else if (JsonMetadataStrings.FRAGMENT_PREAMBLE.equals(type)) {
-                // Do nothing for now
+                // FIXME: support Preamble fragment (CTF2 spec 5.5)
+                // https://diamon.org/ctf/files/CTF2-SPECRC-7.0rA.html#preamble-frag
+            } else if (JsonMetadataStrings.FRAGMENT_DATA_STREAM.equals(type)) {
+                // FIXME: support Data Stream fragment (CTF2 spec 5.9)
+                // https://diamon.org/ctf/files/CTF2-SPECRC-7.0rA.html#dsc-frag
             } else {
                 throw childTypeError(child);
             }

@@ -82,4 +82,9 @@ public final class JsonMetadataStrings {
      * Type string for a static length blob field class
      */
     public static final String STATIC_LENGTH_BLOB = "static-length-blob"; //$NON-NLS-1$
+
+    /**
+     * Type string for a null terminated string field class
+     */
+    public static final String NULL_TERMINATED_STRING = "null-terminated-string"; //$NON-NLS-1$
 }
