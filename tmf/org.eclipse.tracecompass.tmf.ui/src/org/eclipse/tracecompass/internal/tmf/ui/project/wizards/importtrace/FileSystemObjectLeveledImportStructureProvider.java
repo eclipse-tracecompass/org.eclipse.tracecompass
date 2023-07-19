@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Ericsson
+ * Copyright (c) 2015, 2023 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -49,6 +49,16 @@ class FileSystemObjectLeveledImportStructureProvider extends FileSystemObjectImp
     @Override
     public boolean closeArchive() {
         return fLeveledImportProvider.closeArchive();
+    }
+
+    /**
+     * Closes this resource, relinquishing any underlying resources.
+     * This method is invoked automatically on objects managed by the
+     * {@code try}-with-resources statement.
+     */
+    // @Override annotation cannot be used with pre-e4.29 targets
+    public void close() {
+        closeArchive();
     }
 
     @Override

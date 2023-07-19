@@ -1,4 +1,5 @@
 eclipse.preferences.version=1
+org.eclipse.jdt.core.builder.annotationPath.allLocations=disabled
 org.eclipse.jdt.core.codeComplete.argumentPrefixes=
 org.eclipse.jdt.core.codeComplete.argumentSuffixes=
 org.eclipse.jdt.core.codeComplete.fieldPrefixes=f
@@ -34,7 +35,6 @@ org.eclipse.jdt.core.compiler.problem.assertIdentifier=error
 org.eclipse.jdt.core.compiler.problem.autoboxing=ignore
 org.eclipse.jdt.core.compiler.problem.comparingIdentical=error
 org.eclipse.jdt.core.compiler.problem.deadCode=warning
-# changed to warning due to FilteredTree, ITimeEventStyleStrings, Object.finalize()
 org.eclipse.jdt.core.compiler.problem.deprecation=warning
 org.eclipse.jdt.core.compiler.problem.deprecationInDeprecatedCode=disabled
 org.eclipse.jdt.core.compiler.problem.deprecationWhenOverridingDeprecatedMethod=enabled
@@ -73,7 +73,7 @@ org.eclipse.jdt.core.compiler.problem.missingJavadocTags=warning
 org.eclipse.jdt.core.compiler.problem.missingJavadocTagsMethodTypeParameters=disabled
 org.eclipse.jdt.core.compiler.problem.missingJavadocTagsOverriding=disabled
 org.eclipse.jdt.core.compiler.problem.missingJavadocTagsVisibility=protected
-org.eclipse.jdt.core.compiler.problem.missingOverrideAnnotation=error
+org.eclipse.jdt.core.compiler.problem.missingOverrideAnnotation=warning
 org.eclipse.jdt.core.compiler.problem.missingOverrideAnnotationForInterfaceMethodImplementation=enabled
 org.eclipse.jdt.core.compiler.problem.missingSerialVersion=error
 org.eclipse.jdt.core.compiler.problem.missingSynchronizedOnInheritedMethod=error
