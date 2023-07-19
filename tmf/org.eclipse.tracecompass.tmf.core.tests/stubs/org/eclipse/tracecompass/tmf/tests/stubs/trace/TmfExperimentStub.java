@@ -20,11 +20,15 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.tracecompass.internal.tmf.core.Activator;
 import org.eclipse.tracecompass.internal.tmf.core.request.TmfCoalescedEventRequest;
 import org.eclipse.tracecompass.tmf.core.analysis.IAnalysisModule;
 import org.eclipse.tracecompass.tmf.core.component.TmfEventProvider;
 import org.eclipse.tracecompass.tmf.core.event.ITmfEvent;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
+import org.eclipse.tracecompass.tmf.core.trace.TraceValidationStatus;
 import org.eclipse.tracecompass.tmf.core.trace.experiment.TmfExperiment;
 import org.eclipse.tracecompass.tmf.core.trace.indexer.ITmfTraceIndexer;
 
@@ -119,5 +123,25 @@ public class TmfExperimentStub extends TmfExperiment {
      */
     public void addAnalysisModule(IAnalysisModule module) {
         fAdditionalModules.add(module);
+    }
+
+    /**
+     * Make this specific stub meant to support traces with at least one
+     * prefixed with "A-".
+     */
+    @Override
+    public IStatus validateWithTraces(List<ITmfTrace> traces) {
+        if (getClass() == TmfExperimentStub.class) {
+            int confidence = 0;
+            for (ITmfTrace trace : traces) {
+                if (trace.getName().startsWith("A-")) {
+                    confidence = DEFAULT_GENERIC_EXPERIMENT_CONFIDENCE;
+                } else if (trace.getName().startsWith("E-")) {
+                    return new Status(IStatus.ERROR, Activator.PLUGIN_ID, "stubbed error case"); //$NON-NLS-1$
+                }
+            }
+            return new TraceValidationStatus(confidence, Activator.PLUGIN_ID);
+        }
+        return new Status(IStatus.ERROR, Activator.PLUGIN_ID, "class extends TmfExperimentStub"); //$NON-NLS-1$
     }
 }

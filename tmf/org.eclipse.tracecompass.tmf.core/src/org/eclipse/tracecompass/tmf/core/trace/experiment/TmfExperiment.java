@@ -123,8 +123,10 @@ public class TmfExperiment extends TmfTrace implements ITmfPersistentlyIndexable
 
     /**
      * The default confidence for the generic Tmf experiment
+     *
+     * @since 9.1
      */
-    private static final int DEFAULT_GENERIC_EXPERIMENT_CONFIDENCE = 1;
+    protected static final int DEFAULT_GENERIC_EXPERIMENT_CONFIDENCE = 1;
 
     // ------------------------------------------------------------------------
     // Attributes

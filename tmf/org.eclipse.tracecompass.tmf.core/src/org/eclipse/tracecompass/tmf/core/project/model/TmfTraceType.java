@@ -658,7 +658,10 @@ public final class TmfTraceType {
             }
         }
         List<TraceTypeHelper> returned = new ArrayList<>();
-        // If no valid candidates are found, then add generic experiment type
+
+        // If no valid candidates are found, then add generic experiment type.
+        // This case is not unit-testable, as TmfExperiment is always deemed as
+        // the valid minimum. This remains as a real-life fallback just in case.
         if (validCandidates.isEmpty()) {
             Activator.logInfo("No valid candidates were found, selecting generic TMF experiment type"); //$NON-NLS-1$
             returned.add(getTraceType(DEFAULT_EXPERIMENT_TYPE));
@@ -668,11 +671,13 @@ public final class TmfTraceType {
         if (validCandidates.size() != 1) {
             List<Pair<Integer, TraceTypeHelper>> reducedCandidates = reduce(validCandidates);
             if (reducedCandidates.isEmpty()) {
+                // This is barely unit-testable, only a real-life fallback.
                 Activator.logInfo("Error reducing experiment type candidates, selecting generic TMF experiment type"); //$NON-NLS-1$
                 returned.add(getTraceType(DEFAULT_EXPERIMENT_TYPE));
                 return returned;
             } else if (reducedCandidates.size() == 1) {
-                // Don't select the exp type if it has the lowest confidence
+                // Another barely unit-testable flow; real-life fallback.
+                // Don't select the exp type if it has the lowest confidence.
                 if (reducedCandidates.get(0).getFirst() > 0) {
                     returned.add(reducedCandidates.get(0).getSecond());
                 }
@@ -718,6 +723,8 @@ public final class TmfTraceType {
      * @param traceTypeId
      *            the trace type Id
      * @return an instance of {@link ITmfEvent} or null
+     * @throws CoreException
+     *             upon such a failing createExecutableExtension call
      *
      * @since 9.1
      */
@@ -742,7 +749,6 @@ public final class TmfTraceType {
         if (ce == null) {
             return null;
         }
-        ITmfEvent event = (ITmfEvent) ce.createExecutableExtension(TmfTraceType.EVENT_TYPE_ATTR);
-        return event;
+        return (ITmfEvent) ce.createExecutableExtension(TmfTraceType.EVENT_TYPE_ATTR);
     }
 }

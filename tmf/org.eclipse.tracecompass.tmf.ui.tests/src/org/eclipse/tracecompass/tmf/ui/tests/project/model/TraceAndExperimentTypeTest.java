@@ -20,10 +20,15 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.tracecompass.tmf.core.TmfCommonConstants;
 import org.eclipse.tracecompass.tmf.core.project.model.TmfTraceType;
+import org.eclipse.tracecompass.tmf.core.project.model.TraceTypeHelper;
+import org.eclipse.tracecompass.tmf.core.tests.shared.TmfTestTrace;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
 import org.eclipse.tracecompass.tmf.core.trace.experiment.TmfExperiment;
 import org.eclipse.tracecompass.tmf.tests.stubs.trace.TmfExperimentStub;
@@ -50,11 +55,12 @@ import org.junit.Test;
 public class TraceAndExperimentTypeTest {
 
     /** Test experiment type id */
-    public final static String TEST_EXPERIMENT_TYPE = "org.eclipse.linuxtools.tmf.core.tests.experimenttype";
+    public static final String TEST_EXPERIMENT_TYPE = "org.eclipse.linuxtools.tmf.core.tests.experimenttype";
 
+    private List<ITmfTrace> fTraces;
     private TmfProjectElement fixture;
     private TmfExperimentElement fExperiment;
-    private final String EXPERIMENT_NAME = "exp_test";
+    private static final String EXPERIMENT_NAME = "exp_test";
 
     /**
      * Perform pre-test initialization.
@@ -65,6 +71,7 @@ public class TraceAndExperimentTypeTest {
             fixture = ProjectModelTestData.getFilledProject();
             fExperiment = ProjectModelTestData.addExperiment(fixture, EXPERIMENT_NAME);
             assertNotNull(fExperiment);
+            fTraces = new ArrayList<>();
         } catch (CoreException e) {
             fail(e.getMessage());
         }
@@ -76,6 +83,9 @@ public class TraceAndExperimentTypeTest {
     @After
     public void cleanUp() {
         ProjectModelTestData.deleteProject(fixture);
+        for (ITmfTrace trace : fTraces) {
+            trace.dispose();
+        }
     }
 
     /**
@@ -90,6 +100,83 @@ public class TraceAndExperimentTypeTest {
         assertNotNull(experiment);
         assertEquals(TmfTraceType.DEFAULT_EXPERIMENT_TYPE, experimentElement.getTraceType());
         experiment.dispose();
+    }
+
+    /**
+     * Test selecting experiment type based on valid hint (default)
+     */
+    @Test
+    public void testSelectExperimentTypeWithHint() {
+        fTraces.add(TmfTestTrace.A_TEST_10K.getTrace());
+        fTraces.add(TmfTestTrace.A_TEST_10K2.getTrace());
+
+        String expected = TmfTraceType.DEFAULT_EXPERIMENT_TYPE;
+        List<TraceTypeHelper> types = TmfTraceType.selectExperimentType(fTraces, expected);
+        assertEquals(1, types.size());
+        assertEquals(expected, types.get(0).getTraceTypeId());
+    }
+
+    /**
+     * Test selecting experiment type based on no hint (null) => main stub
+     */
+    @Test
+    public void testSelectExperimentTypeWithoutHint() {
+        fTraces.add(TmfTestTrace.A_TEST_10K.getTrace());
+        fTraces.add(TmfTestTrace.A_TEST_10K2.getTrace());
+
+        List<TraceTypeHelper> types = TmfTraceType.selectExperimentType(fTraces, null);
+        assertEquals(1, types.size());
+        assertEquals(TEST_EXPERIMENT_TYPE, types.get(0).getTraceTypeId());
+    }
+
+    /**
+     * Test selecting experiment type based on no hint, SysLog traces
+     */
+    @Test
+    public void testSelectExperimentTypeSyslog() {
+        fTraces.add(TmfTestTrace.SYSLOG_1.getTrace());
+        fTraces.add(TmfTestTrace.SYSLOG_2.getTrace());
+
+        List<TraceTypeHelper> types = TmfTraceType.selectExperimentType(fTraces, null);
+        assertEquals(1, types.size());
+        assertEquals(TEST_EXPERIMENT_TYPE + ".syslog", types.get(0).getTraceTypeId());
+    }
+
+    /**
+     * Test selecting experiment type based on no hint, mixed traces
+     */
+    @Test
+    public void testSelectExperimentTypeMixed() {
+        fTraces.add(TmfTestTrace.A_TEST_10K.getTrace());
+        fTraces.add(TmfTestTrace.SYSLOG_1.getTrace());
+
+        List<TraceTypeHelper> types = TmfTraceType.selectExperimentType(fTraces, null);
+        assertEquals(2, types.size());
+    }
+
+    /**
+     * Test selecting experiment type based on no hint, unknown traces
+     */
+    @Test
+    public void testSelectExperimentTypeUnknown() {
+        fTraces.add(TmfTestTrace.O_TEST_10K.getTrace());
+        fTraces.add(TmfTestTrace.R_TEST_10K.getTrace());
+
+        List<TraceTypeHelper> types = TmfTraceType.selectExperimentType(fTraces, null);
+        assertTrue(types.isEmpty());
+    }
+
+    /**
+     * Test selecting experiment type based on no hint, error trace => default
+     */
+    @Test
+    public void testSelectExperimentTypeError() {
+        fTraces.add(TmfTestTrace.A_TEST_10K.getTrace());
+        fTraces.add(TmfTestTrace.E_TEST_10K.getTrace()); // stubbed error case
+
+        List<TraceTypeHelper> types = TmfTraceType.selectExperimentType(fTraces, null);
+        assertEquals(1, types.size());
+        assertEquals(TmfTraceType.DEFAULT_EXPERIMENT_TYPE, types.get(0).getTraceTypeId());
     }
 
     /**
@@ -129,7 +216,9 @@ public class TraceAndExperimentTypeTest {
         final IWorkbenchPage activePage = wb.getActiveWorkbenchWindow().getActivePage();
         IEditorPart editor = activePage.getActiveEditor();
 
-        /* Test the editor class. Cannot test table class since it is unexposed */
+        /*
+         * Test the editor class. Cannot test table class since it is unexposed
+         */
         assertNotNull(editor);
         assertTrue(editor.getClass().equals(TmfEventsEditor.class));
 
@@ -175,7 +264,8 @@ public class TraceAndExperimentTypeTest {
     }
 
     /**
-     * Test that the analysis get populated under an experiment of the proper type
+     * Test that the analysis get populated under an experiment of the proper
+     * type
      */
     @Test
     public void testExperimentTypeAnalysis() {

@@ -88,6 +88,15 @@
       </output>
    </extension>
    <extension
+         point="org.eclipse.linuxtools.tmf.core.tracetype">
+      <experiment
+            category="org.eclipse.linuxtools.tmf.core.tests.category"
+            id="org.eclipse.linuxtools.tmf.core.tests.experimenttype.syslog"
+            name="Test experiment syslog"
+            experiment_type="org.eclipse.tracecompass.tmf.tests.stubs.trace.TmfExperimentSyslog">
+      </experiment>
+   </extension>
+   <extension
          point="org.eclipse.ui.editors">
       <editor
             class="org.eclipse.tracecompass.tmf.ui.tests.experiment.type.TmfEventsEditorStub"
