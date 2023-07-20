@@ -258,6 +258,9 @@ public class Metadata {
                 fragment = Objects.requireNonNull(gson.fromJson(jsonBlocks[i], JsonEventRecordMetadataNode.class));
             } else if (type.equals(JsonMetadataStrings.FRAGMENT_DATA_STREAM)) {
                 fragment = Objects.requireNonNull(gson.fromJson(jsonBlocks[i], JsonDataStreamMetadataNode.class));
+                if (!jsonBlocks[i].contains("id:")) { //$NON-NLS-1$
+                    ((JsonDataStreamMetadataNode) fragment).setId(-1);
+                }
             } else if (type.equals(JsonMetadataStrings.FRAGMENT_FIELD_ALIAS)) {
                 fragment = Objects.requireNonNull(gson.fromJson(jsonBlocks[i], JsonFieldClassAliasMetadataNode.class));
             }
@@ -271,8 +274,8 @@ public class Metadata {
     }
 
     /**
-     * Checks the version of the CTF trace by reading the first JSON fragment
-     * if it is a CTF2 fragment it updates the major of the trace
+     * Checks the version of the CTF trace by reading the first JSON fragment if
+     * it is a CTF2 fragment it updates the major of the trace
      *
      * @throws CTFException
      *             throws exception if file is invalid

@@ -151,7 +151,7 @@ public class IOStructGen {
                 }
                 traceNode = child;
                 parseTrace(traceNode);
-            } else if (CTFParser.tokenNames[CTFParser.STREAM].equals(type)) {
+            } else if (CTFParser.tokenNames[CTFParser.STREAM].equals(type) || JsonMetadataStrings.FRAGMENT_DATA_STREAM.equals(type)) {
                 StreamParser.INSTANCE.parse(child, new StreamParser.Param(fTrace, fRoot));
                 hasStreams = true;
             } else if (CTFParser.tokenNames[CTFParser.EVENT].equals(type) || JsonMetadataStrings.FRAGMENT_EVENT_RECORD.equals(type)) {

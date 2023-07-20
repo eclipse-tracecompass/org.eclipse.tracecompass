@@ -17,6 +17,7 @@ package org.eclipse.tracecompass.ctf.core.trace;
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileChannel.MapMode;
 import java.nio.file.StandardOpenOption;
@@ -210,8 +211,9 @@ public class CTFStreamInput implements IDefinitionScope {
          * The BitBuffer to extract data from the StreamInput
          */
         BitBuffer bitBuffer = new BitBuffer();
-        bitBuffer.setByteOrder(getStream().getTrace().getByteOrder());
 
+        ByteOrder byteOrder = getStream().getTrace().getByteOrder();
+        bitBuffer.setByteOrder(byteOrder);
     }
 
     /**

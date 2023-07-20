@@ -118,6 +118,16 @@ public class JsonDataStreamMetadataNode extends CTFJsonMetadataNode {
         return fEventRecordCommonContextClass;
     }
 
+    /**
+     * Set the id of this data stream
+     *
+     * @param id
+     *            id of the data stream
+     */
+    public void setId(int id) {
+        fId = id;
+    }
+
     @Override
     public void initialize() throws CTFException {
         super.initialize();

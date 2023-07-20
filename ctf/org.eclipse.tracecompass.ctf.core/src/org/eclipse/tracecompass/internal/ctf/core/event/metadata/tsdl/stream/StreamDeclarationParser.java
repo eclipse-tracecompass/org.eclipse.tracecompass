@@ -26,6 +26,9 @@ import org.eclipse.tracecompass.ctf.core.trace.CTFTrace;
 import org.eclipse.tracecompass.ctf.parser.CTFParser;
 import org.eclipse.tracecompass.internal.ctf.core.Activator;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.AbstractScopedCommonTreeParser;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.CTFJsonMetadataNode;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonDataStreamMetadataNode;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonStructureFieldMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.Messages;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.MetadataStrings;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
@@ -138,95 +141,140 @@ public final class StreamDeclarationParser extends AbstractScopedCommonTreeParse
         CTFStream stream = ((Param) param).fStream;
         CTFTrace fTrace = ((Param) param).fTrace;
 
-        /* There should be a left and right */
+        if (streamDecl instanceof CTFJsonMetadataNode) {
+            JsonDataStreamMetadataNode decl = (JsonDataStreamMetadataNode) streamDecl;
 
-        ICTFMetadataNode leftNode = streamDecl.getChild(0);
-        ICTFMetadataNode rightNode = streamDecl.getChild(1);
-
-        List<ICTFMetadataNode> leftStrings = leftNode.getChildren();
-
-        if (!isAnyUnaryString(leftStrings.get(0))) {
-            throw new ParseException(IDENTIFIER_MUST_BE_A_STRING);
-        }
-
-        String left = concatenateUnaryStrings(leftStrings);
-
-        if (left.equals(MetadataStrings.ID)) {
-            if (stream.isIdSet()) {
-                throw new ParseException(STREAM_ID + ALREADY_DEFINED);
+            if (decl.getId() >= 0) {
+                long streamId = decl.getId();
+                stream.setId(streamId);
             }
 
-            long streamID = StreamIdParser.INSTANCE.parse(rightNode, null);
-
-            stream.setId(streamID);
-        } else if (left.equals(MetadataStrings.EVENT_HEADER)) {
-            if (stream.isEventHeaderSet()) {
-                throw new ParseException(EVENT_HEADER + ALREADY_DEFINED);
+            JsonStructureFieldMetadataNode eventHeader = decl.getEventRecordHeaderClass();
+            if (eventHeader != null) {
+                IDeclaration eventHeaderDecl = TypeSpecifierListParser.INSTANCE.parse(eventHeader, new TypeSpecifierListParser.Param(fTrace, null, null, scope));
+                DeclarationScope eventHeaderScope = lookupStructName(eventHeader, scope);
+                verifyEventHeaderScope(eventHeaderScope);
+                setEventHeader(stream, eventHeaderDecl);
             }
 
-            ICTFMetadataNode typeSpecifier = rightNode.getChild(0);
-
-            if (!(CTFParser.tokenNames[CTFParser.TYPE_SPECIFIER_LIST].equals(typeSpecifier.getType()))) {
-                throw new ParseException(EVENT_HEADER + EXPECTS_A_TYPE_SPECIFIER);
+            JsonStructureFieldMetadataNode eventContext = decl.getEventRecordCommonContextClass();
+            if (eventContext != null) {
+                IDeclaration eventContextDecl = TypeSpecifierListParser.INSTANCE.parse(eventContext, new TypeSpecifierListParser.Param(fTrace, null, null, scope));
+                verifyEventContext(eventContextDecl);
+                stream.setEventContext((StructDeclaration) eventContextDecl);
             }
 
-            IDeclaration eventHeaderDecl = TypeSpecifierListParser.INSTANCE.parse(typeSpecifier, new TypeSpecifierListParser.Param(fTrace, null, null, scope));
-            DeclarationScope eventHeaderScope = lookupStructName(typeSpecifier, scope);
-            if (eventHeaderScope == null) {
-                throw new ParseException(EVENT_HEADER + SCOPE_NOT_FOUND);
+            JsonStructureFieldMetadataNode packetContext = decl.getPacketContextFieldClass();
+            if (packetContext != null) {
+                IDeclaration packetContextDecl = TypeSpecifierListParser.INSTANCE.parse(packetContext, new TypeSpecifierListParser.Param(fTrace, null, null, scope));
+                verifyPacketContext(packetContextDecl);
+                stream.setPacketContext((StructDeclaration) packetContextDecl);
             }
-            DeclarationScope eventScope = new DeclarationScope(scope, MetadataStrings.EVENT);
-            eventHeaderScope.setName(CTFStrings.HEADER);
-            eventScope.addChild(eventHeaderScope);
-
-            if (eventHeaderDecl instanceof StructDeclaration) {
-                stream.setEventHeader((StructDeclaration) eventHeaderDecl);
-            } else if (eventHeaderDecl instanceof IEventHeaderDeclaration) {
-                stream.setEventHeader((IEventHeaderDeclaration) eventHeaderDecl);
-            } else {
-                throw new ParseException(EVENT_HEADER + EXPECTS_A_STRUCT);
-            }
-
-        } else if (left.equals(MetadataStrings.EVENT_CONTEXT)) {
-            if (stream.isEventContextSet()) {
-                throw new ParseException(EVENT_CONTEXT + ALREADY_DEFINED);
-            }
-
-            ICTFMetadataNode typeSpecifier = rightNode.getChild(0);
-
-            if (!(CTFParser.tokenNames[CTFParser.TYPE_SPECIFIER_LIST].equals(typeSpecifier.getType()))) {
-                throw new ParseException(EVENT_CONTEXT + EXPECTS_A_TYPE_SPECIFIER);
-            }
-
-            IDeclaration eventContextDecl = TypeSpecifierListParser.INSTANCE.parse(typeSpecifier, new TypeSpecifierListParser.Param(fTrace, null, null, scope));
-
-            if (!(eventContextDecl instanceof StructDeclaration)) {
-                throw new ParseException(EVENT_CONTEXT + EXPECTS_A_STRUCT);
-            }
-
-            stream.setEventContext((StructDeclaration) eventContextDecl);
-        } else if (left.equals(MetadataStrings.PACKET_CONTEXT)) {
-            if (stream.isPacketContextSet()) {
-                throw new ParseException(PACKET_CONTEXT + ALREADY_DEFINED);
-            }
-
-            ICTFMetadataNode typeSpecifier = rightNode.getChild(0);
-
-            if (!(CTFParser.tokenNames[CTFParser.TYPE_SPECIFIER_LIST].equals(typeSpecifier.getType()))) {
-                throw new ParseException(PACKET_CONTEXT + EXPECTS_A_TYPE_SPECIFIER);
-            }
-
-            IDeclaration packetContextDecl = TypeSpecifierListParser.INSTANCE.parse(typeSpecifier, new TypeSpecifierListParser.Param(fTrace, null, null, scope));
-
-            if (!(packetContextDecl instanceof StructDeclaration)) {
-                throw new ParseException(PACKET_CONTEXT + EXPECTS_A_STRUCT);
-            }
-
-            stream.setPacketContext((StructDeclaration) packetContextDecl);
         } else {
-            Activator.log(IStatus.WARNING, Messages.IOStructGen_UnknownStreamAttributeWarning + ' ' + left);
+            /* There should be a left and right */
+
+            ICTFMetadataNode leftNode = streamDecl.getChild(0);
+            ICTFMetadataNode rightNode = streamDecl.getChild(1);
+
+            List<ICTFMetadataNode> leftStrings = leftNode.getChildren();
+
+            if (!isAnyUnaryString(leftStrings.get(0))) {
+                throw new ParseException(IDENTIFIER_MUST_BE_A_STRING);
+            }
+
+            String left = concatenateUnaryStrings(leftStrings);
+
+            if (left.equals(MetadataStrings.ID)) {
+                if (stream.isIdSet()) {
+                    throw new ParseException(STREAM_ID + ALREADY_DEFINED);
+                }
+
+                long streamID = StreamIdParser.INSTANCE.parse(rightNode, null);
+
+                stream.setId(streamID);
+            } else if (left.equals(MetadataStrings.EVENT_HEADER)) {
+                if (stream.isEventHeaderSet()) {
+                    throw new ParseException(EVENT_HEADER + ALREADY_DEFINED);
+                }
+
+                ICTFMetadataNode typeSpecifier = rightNode.getChild(0);
+
+                if (!(CTFParser.tokenNames[CTFParser.TYPE_SPECIFIER_LIST].equals(typeSpecifier.getType()))) {
+                    throw new ParseException(EVENT_HEADER + EXPECTS_A_TYPE_SPECIFIER);
+                }
+
+                IDeclaration eventHeaderDecl = TypeSpecifierListParser.INSTANCE.parse(typeSpecifier, new TypeSpecifierListParser.Param(fTrace, null, null, scope));
+                DeclarationScope eventHeaderScope = lookupStructName(typeSpecifier, scope);
+                DeclarationScope eventScope = new DeclarationScope(scope, MetadataStrings.EVENT);
+                verifyEventHeaderScope(eventHeaderScope);
+                eventHeaderScope.setName(CTFStrings.HEADER);
+                eventScope.addChild(eventHeaderScope);
+                setEventHeader(stream, eventHeaderDecl);
+            } else if (left.equals(MetadataStrings.EVENT_CONTEXT)) {
+                if (stream.isEventContextSet()) {
+                    throw new ParseException(EVENT_CONTEXT + ALREADY_DEFINED);
+                }
+
+                ICTFMetadataNode typeSpecifier = rightNode.getChild(0);
+
+                if (!(CTFParser.tokenNames[CTFParser.TYPE_SPECIFIER_LIST].equals(typeSpecifier.getType()))) {
+                    throw new ParseException(EVENT_CONTEXT + EXPECTS_A_TYPE_SPECIFIER);
+                }
+
+                IDeclaration eventContextDecl = TypeSpecifierListParser.INSTANCE.parse(typeSpecifier, new TypeSpecifierListParser.Param(fTrace, null, null, scope));
+
+                verifyEventContext(eventContextDecl);
+
+                stream.setEventContext((StructDeclaration) eventContextDecl);
+            } else if (left.equals(MetadataStrings.PACKET_CONTEXT)) {
+                if (stream.isPacketContextSet()) {
+                    throw new ParseException(PACKET_CONTEXT + ALREADY_DEFINED);
+                }
+
+                ICTFMetadataNode typeSpecifier = rightNode.getChild(0);
+
+                if (!(CTFParser.tokenNames[CTFParser.TYPE_SPECIFIER_LIST].equals(typeSpecifier.getType()))) {
+                    throw new ParseException(PACKET_CONTEXT + EXPECTS_A_TYPE_SPECIFIER);
+                }
+
+                IDeclaration packetContextDecl = TypeSpecifierListParser.INSTANCE.parse(typeSpecifier, new TypeSpecifierListParser.Param(fTrace, null, null, scope));
+
+                verifyPacketContext(packetContextDecl);
+
+                stream.setPacketContext((StructDeclaration) packetContextDecl);
+            } else {
+                Activator.log(IStatus.WARNING, Messages.IOStructGen_UnknownStreamAttributeWarning + ' ' + left);
+            }
         }
         return stream;
+    }
+
+    private static void verifyPacketContext(IDeclaration packetContextDecl) throws ParseException {
+        if (!(packetContextDecl instanceof StructDeclaration)) {
+            throw new ParseException(PACKET_CONTEXT + EXPECTS_A_STRUCT);
+        }
+    }
+
+    private static void verifyEventContext(IDeclaration eventContextDecl) throws ParseException {
+        if (!(eventContextDecl instanceof StructDeclaration)) {
+            throw new ParseException(EVENT_CONTEXT + EXPECTS_A_STRUCT);
+        }
+    }
+
+    private static void verifyEventHeaderScope(DeclarationScope eventHeaderScope) throws ParseException {
+        if (eventHeaderScope == null) {
+            throw new ParseException(EVENT_HEADER + SCOPE_NOT_FOUND);
+        }
+    }
+
+    private static void setEventHeader(CTFStream stream, IDeclaration eventHeaderDecl) throws ParseException {
+        if (eventHeaderDecl instanceof StructDeclaration) {
+            stream.setEventHeader((StructDeclaration) eventHeaderDecl);
+        } else if (eventHeaderDecl instanceof IEventHeaderDeclaration) {
+            stream.setEventHeader((IEventHeaderDeclaration) eventHeaderDecl);
+        } else {
+            throw new ParseException(EVENT_HEADER + EXPECTS_A_STRUCT);
+        }
     }
 
     private static DeclarationScope lookupStructName(ICTFMetadataNode typeSpecifier, DeclarationScope scope) {
