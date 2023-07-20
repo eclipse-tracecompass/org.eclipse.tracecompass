@@ -35,6 +35,7 @@ import org.eclipse.tracecompass.ctf.core.event.types.IDefinition;
 import org.eclipse.tracecompass.ctf.core.event.types.StructDeclaration;
 import org.eclipse.tracecompass.ctf.core.event.types.StructDefinition;
 import org.eclipse.tracecompass.ctf.core.trace.ICTFPacketDescriptor;
+import org.eclipse.tracecompass.internal.ctf.core.utils.JsonMetadataStrings;
 
 /**
  * Representation of a particular instance of an event.
@@ -140,6 +141,11 @@ public final class EventDefinition implements IDefinitionScope, IEventDefinition
         fMaskedPacketContextFields.add(CTFStrings.PACKET_SIZE);
         fMaskedPacketContextFields.add(CTFStrings.CONTENT_SIZE);
         fMaskedPacketContextFields.add(CTFStrings.EVENTS_DISCARDED);
+        fMaskedPacketContextFields.add(JsonMetadataStrings.DEFAULT_CLOCK_TIMESTAMP);
+        fMaskedPacketContextFields.add(JsonMetadataStrings.PACKET_END_TIMESTAMP);
+        fMaskedPacketContextFields.add(JsonMetadataStrings.PACKET_TOTAL_LENGTH);
+        fMaskedPacketContextFields.add(JsonMetadataStrings.PACKET_CONTENT_LENGTH);
+        fMaskedPacketContextFields.add(JsonMetadataStrings.CURRENT_DISCARDED_EVENT_COUNT);
     }
 
     // ------------------------------------------------------------------------
@@ -208,8 +214,9 @@ public final class EventDefinition implements IDefinitionScope, IEventDefinition
         if (fPacketContext != null) {
             /* Add fields from the packet context */
             for (String fieldName : fPacketContext.getFieldNames()) {
-                if (fMaskedPacketContextFields.contains(fieldName))
+                if (fMaskedPacketContextFields.contains(fieldName)) {
                     continue;
+                }
 
                 Definition definition = fPacketContext.getDefinition(fieldName);
                 mergedDeclaration.addField(fieldName, definition.getDeclaration());

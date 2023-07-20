@@ -32,6 +32,7 @@ import org.eclipse.tracecompass.ctf.core.tests.CtfCoreTestPlugin;
 import org.eclipse.tracecompass.ctf.core.trace.CTFTrace;
 import org.eclipse.tracecompass.internal.ctf.core.event.EventDeclaration;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.IOStructGen;
+import org.eclipse.tracecompass.internal.ctf.core.utils.Utils;
 import org.junit.Test;
 
 /**
@@ -92,54 +93,52 @@ public class IOstructgenTest {
             + "    offset = 1350310657466295832;\n" + "};\n"
             + "\n";
 
-    private static final String ctfStart =
-            "typealias integer {\n"
-                    + "    size = 27; align = 1; signed = false;\n"
-                    + "    map = clock.monotonic.value;\n"
-                    + "} := uint27_clock_monotonic_t;\n"
-                    + "\n"
-                    + "typealias integer {\n"
-                    + "    size = 32; align = 8; signed = false;\n"
-                    + "    map = clock.monotonic.value;\n"
-                    + "} := uint32_clock_monotonic_t;\n"
-                    + "\n"
-                    + "typealias integer {\n"
-                    + "    size = 64; align = 8; signed = false;\n"
-                    + "    map = clock.monotonic.value;\n"
-                    + "} := uint64_clock_monotonic_t;\n"
-                    + "\n";
+    private static final String ctfStart = "typealias integer {\n"
+            + "    size = 27; align = 1; signed = false;\n"
+            + "    map = clock.monotonic.value;\n"
+            + "} := uint27_clock_monotonic_t;\n"
+            + "\n"
+            + "typealias integer {\n"
+            + "    size = 32; align = 8; signed = false;\n"
+            + "    map = clock.monotonic.value;\n"
+            + "} := uint32_clock_monotonic_t;\n"
+            + "\n"
+            + "typealias integer {\n"
+            + "    size = 64; align = 8; signed = false;\n"
+            + "    map = clock.monotonic.value;\n"
+            + "} := uint64_clock_monotonic_t;\n"
+            + "\n";
 
-    private static final String ctfHeaders =
-            "struct packet_context {\n"
-                    + "    uint64_clock_monotonic_t timestamp_begin;\n"
-                    + "    uint64_clock_monotonic_t timestamp_end;\n"
-                    + "    uint64_t content_size;\n"
-                    + "    uint64_t packet_size;\n"
-                    + "    unsigned long events_discarded;\n"
-                    + "    uint32_t cpu_id;\n"
-                    + "};\n"
-                    + "\n"
-                    + "struct event_header_compact {\n"
-                    + "    enum : uint5_t { compact = 0 ... 30, extended = 31 } id;\n"
-                    + "    variant <id> {\n"
-                    + "        struct {\n"
-                    + "            uint27_clock_monotonic_t timestamp;\n"
-                    + "        } compact;\n"
-                    + "        struct {\n"
-                    + "            uint32_t id;\n"
-                    + "            uint64_clock_monotonic_t timestamp;\n"
-                    + "        } extended;\n"
-                    + "    } v;\n"
-                    + "} align(8);\n"
-                    + "\n"
-                    + "struct event_header_large {\n"
-                    + "    enum : uint16_t { compact = 0 ... 65534, extended = 65535 } id;\n"
-                    + "    variant <id> {\n" + "        struct {\n"
-                    + "            uint32_clock_monotonic_t timestamp;\n"
-                    + "        } compact;\n" + "        struct {\n"
-                    + "            uint32_t id;\n"
-                    + "            uint64_clock_monotonic_t timestamp;\n"
-                    + "        } extended;\n" + "    } v;\n" + "} align(8);\n" + "\n";
+    private static final String ctfHeaders = "struct packet_context {\n"
+            + "    uint64_clock_monotonic_t timestamp_begin;\n"
+            + "    uint64_clock_monotonic_t timestamp_end;\n"
+            + "    uint64_t content_size;\n"
+            + "    uint64_t packet_size;\n"
+            + "    unsigned long events_discarded;\n"
+            + "    uint32_t cpu_id;\n"
+            + "};\n"
+            + "\n"
+            + "struct event_header_compact {\n"
+            + "    enum : uint5_t { compact = 0 ... 30, extended = 31 } id;\n"
+            + "    variant <id> {\n"
+            + "        struct {\n"
+            + "            uint27_clock_monotonic_t timestamp;\n"
+            + "        } compact;\n"
+            + "        struct {\n"
+            + "            uint32_t id;\n"
+            + "            uint64_clock_monotonic_t timestamp;\n"
+            + "        } extended;\n"
+            + "    } v;\n"
+            + "} align(8);\n"
+            + "\n"
+            + "struct event_header_large {\n"
+            + "    enum : uint16_t { compact = 0 ... 65534, extended = 65535 } id;\n"
+            + "    variant <id> {\n" + "        struct {\n"
+            + "            uint32_clock_monotonic_t timestamp;\n"
+            + "        } compact;\n" + "        struct {\n"
+            + "            uint32_t id;\n"
+            + "            uint64_clock_monotonic_t timestamp;\n"
+            + "        } extended;\n" + "    } v;\n" + "} align(8);\n" + "\n";
 
     private static final String ctfBody = "stream {\n"
             + "    id = 0;\n"
@@ -206,59 +205,168 @@ public class IOstructgenTest {
             + "};\n"
             + "\n";
 
-    private static final String enumMd =
-            "typealias integer { size = 32; align = 8; signed = false; } := int;\n"
-                    + "typealias enum { ONE = 0, a,b,c=10, d} := useless_enum;\n"
-                    + "struct useless{ \n"
-                    + "    enum : uint8_t { A=0, \"B\",} enum3;\n"
-                    + "    useless_enum enum2;"
-                    + "    enum { C, D, E } enum4;\n"
-                    + "    uint16_t val;\n"
-                    + "} ;\n"
-                    + "\n"
-                    + "event {\n"
-                    + "   name = \"enumEvent\";\n"
-                    + "   id = 6;\n"
-                    + "   stream_id = 0;\n"
-                    + "   loglevel = 5;\n"
-                    + "   fields := struct{\n"
-                    + "       uint16_t _some_field;\n"
-                    // + "       useless junk;\n"
-                    // + "       bad_enum a;\n"
-                    + "       enum {A, B, C = 3 , } _other_enum;\n"
-                    + "   };\n"
-                    + "};\n"
-                    + "\n";
+    private static final String enumMd = "typealias integer { size = 32; align = 8; signed = false; } := int;\n"
+            + "typealias enum { ONE = 0, a,b,c=10, d} := useless_enum;\n"
+            + "struct useless{ \n"
+            + "    enum : uint8_t { A=0, \"B\",} enum3;\n"
+            + "    useless_enum enum2;"
+            + "    enum { C, D, E } enum4;\n"
+            + "    uint16_t val;\n"
+            + "} ;\n"
+            + "\n"
+            + "event {\n"
+            + "   name = \"enumEvent\";\n"
+            + "   id = 6;\n"
+            + "   stream_id = 0;\n"
+            + "   loglevel = 5;\n"
+            + "   fields := struct{\n"
+            + "       uint16_t _some_field;\n"
+            // + " useless junk;\n"
+            // + " bad_enum a;\n"
+            + "       enum {A, B, C = 3 , } _other_enum;\n"
+            + "   };\n"
+            + "};\n"
+            + "\n";
 
-    private final static String contextMD =
-            "event {\n" +
-                    "   name = \"someOtherEvent\";\n" +
-                    "   id = 5;\n" +
-                    "   stream_id = 0;\n" +
-                    "   loglevel = 5;\n" +
-                    "   context := struct{\n" +
-                    "       uint16_t _someContext;\n" +
-                    "   };\n" +
-                    "   fields := struct{\n" +
-                    "       uint16_t _somefield;\n" +
-                    "   };\n" +
-                    "};\n " +
-                    "\n";
+    private static final String contextMD = "event {\n" +
+            "   name = \"someOtherEvent\";\n" +
+            "   id = 5;\n" +
+            "   stream_id = 0;\n" +
+            "   loglevel = 5;\n" +
+            "   context := struct{\n" +
+            "       uint16_t _someContext;\n" +
+            "   };\n" +
+            "   fields := struct{\n" +
+            "       uint16_t _somefield;\n" +
+            "   };\n" +
+            "};\n " +
+            "\n";
 
-    private static final String callsiteMD =
-            "callsite {\n"
-                    + "    name = \"ust_tests_demo2:loop\";\n"
-                    + "    func = \"main\";\n" + "    ip = 0x400a29;\n"
-                    + "    file = \"demo.c\";\n" + "    line = 59;\n" + "};\n" + "\n"
-                    + "callsite {\n" + "    name = \"ust_tests_demo3:done\";\n"
-                    + "    func = \"main\";\n" + "    ip = 0x400a6c;\n"
-                    + "    file = \"demo.c\";\n" + "    line = 62;\n" + "};\n" + "\n"
-                    + "callsite {\n" + "    name = \"ust_tests_demo:done\";\n"
-                    + "    func = \"main\";\n" + "    ip = 0x400aaf;\n"
-                    + "    file = \"demo.c\";\n" + "    line = 61;\n" + "};\n" + "\n"
-                    + "callsite {\n" + "    name = \"ust_tests_demo:starting\";\n"
-                    + "    func = \"main\";\n" + "    ip = 0x400af2;\n"
-                    + "    file = \"demo.c\";\n" + "    line = 55;\n" + "};\n";
+    private static final String callsiteMD = "callsite {\n"
+            + "    name = \"ust_tests_demo2:loop\";\n"
+            + "    func = \"main\";\n" + "    ip = 0x400a29;\n"
+            + "    file = \"demo.c\";\n" + "    line = 59;\n" + "};\n" + "\n"
+            + "callsite {\n" + "    name = \"ust_tests_demo3:done\";\n"
+            + "    func = \"main\";\n" + "    ip = 0x400a6c;\n"
+            + "    file = \"demo.c\";\n" + "    line = 62;\n" + "};\n" + "\n"
+            + "callsite {\n" + "    name = \"ust_tests_demo:done\";\n"
+            + "    func = \"main\";\n" + "    ip = 0x400aaf;\n"
+            + "    file = \"demo.c\";\n" + "    line = 61;\n" + "};\n" + "\n"
+            + "callsite {\n" + "    name = \"ust_tests_demo:starting\";\n"
+            + "    func = \"main\";\n" + "    ip = 0x400af2;\n"
+            + "    file = \"demo.c\";\n" + "    line = 55;\n" + "};\n";
+
+    private static final String jsonPreamble = Utils.RECORD_SEPARATOR
+            + "{\n"
+            + "  \"type\": \"preamble\",\n"
+            + "  \"uuid\": [\n"
+            + "    42,\n"
+            + "    100,\n"
+            + "    34,\n"
+            + "    208,\n"
+            + "    108,\n"
+            + "    238,\n"
+            + "    17,\n"
+            + "    224,\n"
+            + "    140,\n"
+            + "    8,\n"
+            + "    203,\n"
+            + "    7,\n"
+            + "    215,\n"
+            + "    179,\n"
+            + "    165,\n"
+            + "    100\n"
+            + "  ],\n"
+            + "  \"version\": 2\n"
+            + "}\n";
+
+    private static final String jsonPacketHeaderTrace = Utils.RECORD_SEPARATOR
+            + "{\n"
+            + "  \"packet-header-field-class\": {\n"
+            + "    \"member-classes\": [\n"
+            + "      {\n"
+            + "        \"field-class\": {\n"
+            + "          \"alignment\": 32,\n"
+            + "          \"byte-order\": \"little-endian\",\n"
+            + "          \"length\": 32,\n"
+            + "          \"roles\": [\n"
+            + "            \"packet-magic-number\"\n"
+            + "          ],\n"
+            + "          \"type\": \"fixed-length-unsigned-integer\"\n"
+            + "        },\n"
+            + "        \"name\": \"magic\"\n"
+            + "      },\n"
+            + "      {\n"
+            + "        \"field-class\": {\n"
+            + "          \"length\": 16,\n"
+            + "          \"roles\": [\n"
+            + "            \"metadata-stream-uuid\"\n"
+            + "          ],\n"
+            + "          \"type\": \"static-length-blob\"\n"
+            + "        },\n"
+            + "        \"name\": \"uuid\"\n"
+            + "      }\n"
+            + "    ],\n"
+            + "    \"type\": \"structure\"\n"
+            + "  },\n"
+            + "  \"type\": \"trace-class\"\n"
+            + "}\n";
+
+    private static final String jsonEmptyDataStream = Utils.RECORD_SEPARATOR
+            + "{\n"
+            + "  \"type\": \"data-stream-class\"\n"
+            + "}";
+
+    private static final String jsonPacketContextDataStream = Utils.RECORD_SEPARATOR
+            + "{\n"
+            + "  \"packet-context-field-class\": {\n"
+            + "    \"member-classes\": [\n"
+            + "      {\n"
+            + "        \"field-class\": {\n"
+            + "          \"alignment\": 32,\n"
+            + "          \"byte-order\": \"little-endian\",\n"
+            + "          \"length\": 32,\n"
+            + "          \"roles\": [\n"
+            + "            \"packet-content-length\"\n"
+            + "          ],\n"
+            + "          \"type\": \"fixed-length-unsigned-integer\"\n"
+            + "        },\n"
+            + "        \"name\": \"content_size\"\n"
+            + "      },\n"
+            + "      {\n"
+            + "        \"field-class\": {\n"
+            + "          \"alignment\": 32,\n"
+            + "          \"byte-order\": \"little-endian\",\n"
+            + "          \"length\": 32,\n"
+            + "          \"roles\": [\n"
+            + "            \"packet-total-length\"\n"
+            + "          ],\n"
+            + "          \"type\": \"fixed-length-unsigned-integer\"\n"
+            + "        },\n"
+            + "        \"name\": \"packet_size\"\n"
+            + "      }\n"
+            + "    ],\n"
+            + "    \"type\": \"structure\"\n"
+            + "  },\n"
+            + "  \"type\": \"data-stream-class\"\n"
+            + "}\n";
+
+    private static final String jsonEventRecord = Utils.RECORD_SEPARATOR
+            + "{\n"
+            + "  \"name\": \"string\",\n"
+            + "  \"payload-field-class\": {\n"
+            + "    \"member-classes\": [\n"
+            + "      {\n"
+            + "        \"field-class\": {\n"
+            + "          \"type\": \"null-terminated-string\"\n"
+            + "        },\n"
+            + "        \"name\": \"str\"\n"
+            + "      }\n"
+            + "    ],\n"
+            + "    \"type\": \"structure\"\n"
+            + "  },\n"
+            + "  \"type\": \"event-record-class\"\n"
+            + "}\n";
 
     private static final String simpleTSDL = metadataDecs + ctfStart + ctfHeaders
             + ctfBody;
@@ -274,6 +382,10 @@ public class IOstructgenTest {
             + ctfBody + callsiteMD;
     private static final String allDressedTSDL = metadataDecs + environmentMD + clockMD
             + ctfStart + ctfHeaders + ctfBody + enumMd + callsiteMD;
+    private static final String packetHeaderJson = jsonPreamble + jsonPacketHeaderTrace
+            + jsonEmptyDataStream + jsonEventRecord;
+    private static final String packetContextJson = jsonPreamble + jsonPacketHeaderTrace
+            + jsonPacketContextDataStream + jsonEventRecord;
 
     static final String tempTraceDir = CtfCoreTestPlugin.getTemporaryDirPath()
             + File.separator + "tempTrace";
@@ -510,4 +622,29 @@ public class IOstructgenTest {
                 eventDeclaration.getCustomAttribute("model.emf.uri"));
     }
 
+    /**
+     * Test with trace packet header
+     *
+     * @throws CTFException
+     *             something wrong happened
+     */
+    @Test
+    public void jsonPacketHeaderTest() throws CTFException {
+        createDummyTrace(packetHeaderJson);
+        trace = new CTFTrace(tempTraceDir);
+        assertNotNull(trace);
+    }
+
+    /**
+     * Test with data stream packet context
+     *
+     * @throws CTFException
+     *             something wrong happened
+     */
+    @Test
+    public void jsonPacketContextTest() throws CTFException {
+        createDummyTrace(packetContextJson);
+        trace = new CTFTrace(tempTraceDir);
+        assertNotNull(trace);
+    }
 }

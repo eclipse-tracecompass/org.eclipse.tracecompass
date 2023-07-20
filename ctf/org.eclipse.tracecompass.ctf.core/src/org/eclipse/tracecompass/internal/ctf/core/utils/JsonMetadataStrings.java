@@ -69,6 +69,44 @@ public final class JsonMetadataStrings {
     public static final String ROLES = "roles"; //$NON-NLS-1$
 
     /**
+     * String for the packet header magic role of a field class
+     */
+    public static final String MAGIC_NUMBER = "packet-magic-number"; //$NON-NLS-1$
+
+    /**
+     * String for the packet header uuid role of a field class
+     */
+    public static final String UUID = "metadata-stream-uuid"; //$NON-NLS-1$
+
+    /**
+     * String for the packet content length role of a data stream packet context
+     */
+    public static final String PACKET_CONTENT_LENGTH = "packet-content-length"; //$NON-NLS-1$
+
+    /**
+     * String for the packet total length role of a data stream packet context
+     */
+    public static final String PACKET_TOTAL_LENGTH = "packet-total-length"; //$NON-NLS-1$
+
+    /**
+     * String for the default clock timestamp role of a data stream packet
+     * context
+     */
+    public static final String DEFAULT_CLOCK_TIMESTAMP = "default-clock-timestamp"; //$NON-NLS-1$
+
+    /**
+     * String for the discarded event record counter snapshot role of a data
+     * stream packet context
+     */
+    public static final String CURRENT_DISCARDED_EVENT_COUNT = "discarded-event-record-counter-snapshot"; //$NON-NLS-1$
+
+    /**
+     * String for the packet end default clock timestamp role of a data stream
+     * packet context
+     */
+    public static final String PACKET_END_TIMESTAMP = "packet-end-default-clock-timestamp"; //$NON-NLS-1$
+
+    /**
      * Type string for a field class that points to an alias
      */
     public static final String ALIAS = "alias"; //$NON-NLS-1$

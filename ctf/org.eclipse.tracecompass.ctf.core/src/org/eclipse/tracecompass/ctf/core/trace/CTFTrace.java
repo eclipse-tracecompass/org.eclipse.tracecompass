@@ -48,6 +48,7 @@ import org.eclipse.tracecompass.ctf.core.event.metadata.DeclarationScope;
 import org.eclipse.tracecompass.ctf.core.event.scope.IDefinitionScope;
 import org.eclipse.tracecompass.ctf.core.event.scope.ILexicalScope;
 import org.eclipse.tracecompass.ctf.core.event.types.AbstractArrayDefinition;
+import org.eclipse.tracecompass.ctf.core.event.types.BlobDefinition;
 import org.eclipse.tracecompass.ctf.core.event.types.Definition;
 import org.eclipse.tracecompass.ctf.core.event.types.IDefinition;
 import org.eclipse.tracecompass.ctf.core.event.types.IntegerDefinition;
@@ -58,6 +59,7 @@ import org.eclipse.tracecompass.internal.ctf.core.SafeMappedByteBuffer;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.MetadataStrings;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
 import org.eclipse.tracecompass.internal.ctf.core.trace.CTFStream;
+import org.eclipse.tracecompass.internal.ctf.core.utils.JsonMetadataStrings;
 import org.eclipse.tracecompass.internal.ctf.core.utils.Utils;
 
 import com.google.common.collect.ImmutableMap;
@@ -487,7 +489,12 @@ public class CTFTrace implements IDefinitionScope {
             /* Map one memory page of 4 kiB */
             byteBuffer = SafeMappedByteBuffer.map(fc, MapMode.READ_ONLY, 0, (int) Math.min(fc.size(), 4096L));
             /* Create a BitBuffer with this mapping and the trace byte order */
-            streamBitBuffer = new BitBuffer(byteBuffer, this.getByteOrder());
+            ByteOrder byteOrder = getByteOrder();
+            if (byteOrder == null) {
+                byteOrder = ByteOrder.nativeOrder();
+                setByteOrder(byteOrder);
+            }
+            streamBitBuffer = new BitBuffer(byteBuffer, byteOrder);
             if (fPacketHeaderDecl != null) {
                 /* Read the packet header */
                 fPacketHeaderDef = fPacketHeaderDecl.createDefinition(this, ILexicalScope.PACKET_HEADER, streamBitBuffer);
@@ -538,19 +545,36 @@ public class CTFTrace implements IDefinitionScope {
     }
 
     private void validateUUID(StructDefinition packetHeaderDef) throws CTFException {
-        IDefinition lookupDefinition = packetHeaderDef.lookupDefinition("uuid"); //$NON-NLS-1$
-        AbstractArrayDefinition uuidDef = (AbstractArrayDefinition) lookupDefinition;
-        if (uuidDef != null) {
-            UUID otheruuid = Utils.getUUIDfromDefinition(uuidDef);
-            if (!fUuid.equals(otheruuid) && !fUUIDMismatchWarning) {
-                fUUIDMismatchWarning = true;
-                Activator.log(IStatus.WARNING, "Reading CTF trace: UUID mismatch for trace " + this); //$NON-NLS-1$
+        UUID otheruuid = null;
+
+        if (fMajor.equals(Long.valueOf(2))) {
+            IDefinition lookupDefinition = packetHeaderDef.lookupDefinition(JsonMetadataStrings.UUID);
+            BlobDefinition uuidDef = (BlobDefinition) lookupDefinition;
+            if (uuidDef != null) {
+                otheruuid = Utils.makeUUID(uuidDef.getBytes());
             }
+        } else {
+            IDefinition lookupDefinition = packetHeaderDef.lookupDefinition("uuid"); //$NON-NLS-1$
+            AbstractArrayDefinition uuidDef = (AbstractArrayDefinition) lookupDefinition;
+            if (uuidDef != null) {
+                otheruuid = Utils.getUUIDfromDefinition(uuidDef);
+            }
+        }
+
+        if (otheruuid != null && !fUuid.equals(otheruuid) && !fUUIDMismatchWarning) {
+            fUUIDMismatchWarning = true;
+            Activator.log(IStatus.WARNING, "Reading CTF trace: UUID mismatch for trace " + this); //$NON-NLS-1$
         }
     }
 
-    private static boolean validateMagicNumber(StructDefinition packetHeaderDef) {
-        IntegerDefinition magicDef = (IntegerDefinition) packetHeaderDef.lookupDefinition(CTFStrings.MAGIC);
+    private boolean validateMagicNumber(StructDefinition packetHeaderDef) {
+        String headerMagic;
+        if (fMajor.equals(Long.valueOf(2))) {
+            headerMagic = JsonMetadataStrings.MAGIC_NUMBER;
+        } else {
+            headerMagic = CTFStrings.MAGIC;
+        }
+        IntegerDefinition magicDef = (IntegerDefinition) packetHeaderDef.lookupDefinition(headerMagic);
         if (magicDef != null) {
             int magic = (int) magicDef.getValue();
             return (magic == Utils.CTF_MAGIC);

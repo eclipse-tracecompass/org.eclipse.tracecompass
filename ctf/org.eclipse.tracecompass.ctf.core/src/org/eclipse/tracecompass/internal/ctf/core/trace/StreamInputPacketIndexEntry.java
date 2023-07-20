@@ -32,6 +32,7 @@ import org.eclipse.tracecompass.ctf.core.event.types.StringDefinition;
 import org.eclipse.tracecompass.ctf.core.event.types.StructDefinition;
 import org.eclipse.tracecompass.ctf.core.trace.ICTFPacketDescriptor;
 import org.eclipse.tracecompass.ctf.core.trace.IPacketReader;
+import org.eclipse.tracecompass.internal.ctf.core.utils.JsonMetadataStrings;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
@@ -235,11 +236,23 @@ public class StreamInputPacketIndexEntry implements ICTFPacketDescriptor {
     }
 
     private Long getPacketSize() {
-        return (Long) fAttributes.get(CTFStrings.PACKET_SIZE);
+        Long size = (Long) fAttributes.get(CTFStrings.PACKET_SIZE);
+        if (size == null) {
+            size = (Long) fAttributes.get(JsonMetadataStrings.PACKET_TOTAL_LENGTH);
+        }
+        return size;
+    }
+
+    private Long getContentSize() {
+        Long size = (Long) fAttributes.get(CTFStrings.CONTENT_SIZE);
+        if (size == null) {
+            size = (Long) fAttributes.get(JsonMetadataStrings.PACKET_CONTENT_LENGTH);
+        }
+        return size;
     }
 
     private long computeContentSize(long fileSizeBytes) {
-        Long contentSize = (Long) fAttributes.get(CTFStrings.CONTENT_SIZE);
+        Long contentSize = getContentSize();
         /* Read the content size in bits */
         if (contentSize != null) {
             return contentSize.longValue();
@@ -265,7 +278,7 @@ public class StreamInputPacketIndexEntry implements ICTFPacketDescriptor {
     }
 
     private long computeTsBegin() {
-        Long tsBegin = (Long) fAttributes.get(CTFStrings.TIMESTAMP_BEGIN);
+        Long tsBegin = readTimestampBeginAttribute();
         /* Read the begin timestamp */
         if (tsBegin != null) {
             return tsBegin.longValue();
@@ -273,8 +286,16 @@ public class StreamInputPacketIndexEntry implements ICTFPacketDescriptor {
         return 0;
     }
 
+    private Long readTimestampBeginAttribute() {
+        Long begin = (Long) fAttributes.get(CTFStrings.TIMESTAMP_BEGIN);
+        if (begin == null) {
+            begin = (Long) fAttributes.get(JsonMetadataStrings.DEFAULT_CLOCK_TIMESTAMP);
+        }
+        return begin;
+    }
+
     private long computeTsEnd() {
-        Long tsEnd = (Long) fAttributes.get(CTFStrings.TIMESTAMP_END);
+        Long tsEnd = readTimestampEndAttribute();
         /* Read the end timestamp */
         if (tsEnd != null) {
             // check if tsEnd == unsigned long max value
@@ -286,12 +307,28 @@ public class StreamInputPacketIndexEntry implements ICTFPacketDescriptor {
         return Long.MAX_VALUE;
     }
 
+    private Long readTimestampEndAttribute() {
+        Long end = (Long) fAttributes.get(CTFStrings.TIMESTAMP_END);
+        if (end == null) {
+            end = (Long) fAttributes.get(JsonMetadataStrings.PACKET_END_TIMESTAMP);
+        }
+        return end;
+    }
+
     private long computeLostEvents(long lostSoFar) {
-        Long lostEvents = (Long) fAttributes.get(CTFStrings.EVENTS_DISCARDED);
+        Long lostEvents = readLostAttribute();
         if (lostEvents != null) {
             return lostEvents - lostSoFar;
         }
         return 0;
+    }
+
+    private Long readLostAttribute() {
+        Long lost = (Long) fAttributes.get(CTFStrings.EVENTS_DISCARDED);
+        if (lost == null) {
+            lost = (Long) fAttributes.get(JsonMetadataStrings.CURRENT_DISCARDED_EVENT_COUNT);
+        }
+        return lost;
     }
 
     private static class Target {
