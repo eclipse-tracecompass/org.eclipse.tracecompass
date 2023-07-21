@@ -103,7 +103,7 @@ public class TraceReadAllTracesTest {
                     }
                 }
                 assertEquals("Event count", fTraceEnum.getNbEvents(), count);
-                assertEquals("Trace duration", fTraceEnum.getDuration(), (end - start) / 1000000000.0, 1.0);
+                assertEquals("Trace duration", fTraceEnum.getDuration(), ((end - start) * reader.getTrace().getClock().getClockScale()) / 1000000000.0, 1.0);
             } catch (CTFException e) {
                 fail(fTraceEnum.name() + " " + e.getMessage());
             }
