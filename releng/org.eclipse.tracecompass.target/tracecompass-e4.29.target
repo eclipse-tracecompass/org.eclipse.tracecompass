@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><?pde version="3.8"?><target name="tracecompass-e4.29" sequenceNumber="1">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><?pde version="3.8"?><target name="tracecompass-e4.29" sequenceNumber="2">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.cdt.gnu.dsf.feature.group" version="0.0.0"/>
@@ -21,21 +21,24 @@
 <unit id="org.antlr.runtime" version="3.2.0.v20220404-1927"/>
 <unit id="org.antlr.runtime.source" version="3.2.0.v20220404-1927"/>
 <unit id="org.apache.commons.cli" version="0.0.0"/>
-<unit id="org.apache.commons.compress" version="0.0.0"/>
-<unit id="org.apache.commons.io" version="0.0.0"/>
 <unit id="org.apache.commons.lang" version="0.0.0"/>
 <unit id="org.apache.commons.lang3" version="0.0.0"/>
 <unit id="org.apache.xml.serializer" version="0.0.0"/>
-<unit id="org.bouncycastle.bcpg" version="0.0.0"/>
-<unit id="org.bouncycastle.bcprov" version="0.0.0"/>
 <unit id="org.hamcrest" version="0.0.0"/>
 <unit id="org.mozilla.javascript" version="1.7.10.v20221112-0806"/>
 <unit id="org.slf4j.api" version="0.0.0"/>
 <unit id="org.slf4j.binding.simple" version="0.0.0"/>
 <unit id="javax.activation" version="1.2.2.v20221203-1659"/>
-<repository location="https://download.eclipse.org/tools/orbit/downloads/drops/R20230531010532/repository/"/>
+<repository location="https://download.eclipse.org/tools/orbit/simrel/orbit-aggregation/milestone/S202307260741/"/>
 </location>
 <!-- Add dependencies that only exists with older orbit version -->
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.apache.commons.compress" version="0.0.0"/>
+<unit id="org.apache.commons.io" version="0.0.0"/>
+<unit id="org.bouncycastle.bcpg" version="0.0.0"/>
+<unit id="org.bouncycastle.bcprov" version="0.0.0"/>
+<repository location="https://download.eclipse.org/tools/orbit/downloads/drops/R20230531010532/repository/"/>
+</location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.json" version="0.0.0"/>
 <repository location="https://download.eclipse.org/tools/orbit/downloads/drops/R20220302172233/repository/"/>
@@ -61,7 +64,7 @@
 <unit id="org.eclipse.ui.views.log" version="0.0.0"/>
 <unit id="org.eclipse.jdt.junit4.runtime" version="0.0.0"/>
 <unit id="org.eclipse.e4.ui.progress" version="0.0.0"/>
-<repository location="https://download.eclipse.org/eclipse/updates/4.29-I-builds/I20230705-1800/"/>
+<repository location="https://download.eclipse.org/eclipse/updates/4.29-I-builds/I20230726-1800/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.tracecompass.testtraces.tracecompass-test-traces-ctf" version="1.7.2"/>
