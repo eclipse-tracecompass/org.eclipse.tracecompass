@@ -64,7 +64,7 @@ public class SimpleTooltipProvider extends BaseMouseProvider {
                     double coords = xAxis.getDataCoordinate(event.x);
                     int index = Arrays.binarySearch(xValues, coords);
                     if (index < 0) {
-                        index = -index - 2;
+                        return;
                     }
                     double[] ySeries = ySeriesProvider.getYSeries();
                     long y = Math.round(ySeries[index]);
