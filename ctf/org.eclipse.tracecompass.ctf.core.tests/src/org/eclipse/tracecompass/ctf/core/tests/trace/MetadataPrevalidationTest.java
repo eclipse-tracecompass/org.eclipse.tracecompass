@@ -27,6 +27,7 @@ import java.util.UUID;
 
 import org.eclipse.tracecompass.ctf.core.CTFException;
 import org.eclipse.tracecompass.ctf.core.trace.Metadata;
+import org.eclipse.tracecompass.internal.ctf.core.utils.Utils;
 import org.junit.Test;
 
 /**
@@ -35,6 +36,8 @@ import org.junit.Test;
 public class MetadataPrevalidationTest {
 
     private static final String GOOD_TSDL = "/* CTF 1.8 */\ntrace {\n major = 1 ;\n minor = 8 ;\n byte_order = le ; \n};";
+    private static final String GOOD_JSON = Utils.RECORD_SEPARATOR + "{\n  \"type\": \"preamble\",\n  \"version\": 2\n }";
+    private static final String INVALID_JSON = "{\n  \"type\": \"preamble\",\n  \"version\": 3\n }";
 
     /**
      * Test a null should return false
@@ -159,6 +162,24 @@ public class MetadataPrevalidationTest {
     }
 
     /**
+     * Test a valid CTF2 trace starting with a record separator should return true
+     *
+     * @throws IOException
+     *             A file error occurs, shouldn't happen
+     * @throws CTFException
+     *             if an exception occurs, shouldn't happen
+     */
+    @Test
+    public void testTraceDirectoryWithJsonMetadata() throws IOException, CTFException {
+        Path dir = Files.createTempDirectory("trace");
+        Path f = Files.createFile(dir.resolve("metadata"));
+        try (PrintWriter pw = new PrintWriter(f.toFile())) {
+            pw.println(GOOD_JSON);
+        }
+        assertTrue(Metadata.preValidate(dir.toAbsolutePath().toString()));
+    }
+
+    /**
      * Test a valid trace with text invalid metadata should return false
      *
      * @throws IOException
@@ -173,6 +194,25 @@ public class MetadataPrevalidationTest {
         try (PrintWriter pw = new PrintWriter(f.toFile())) {
             // no header
             pw.println("trace { major =1 ; minor = 8 ; byte_order = le;};");
+        }
+        assertFalse(Metadata.preValidate(dir.toAbsolutePath().toString()));
+    }
+
+    /**
+     * Test a valid trace with invalid json metadata should return false
+     *
+     * @throws IOException
+     *             A file error occurs, shouldn't happen
+     * @throws CTFException
+     *             if an exception occurs, shouldn't happen
+     */
+    @Test
+    public void testTraceDirectoryWithInvalidJson() throws IOException, CTFException {
+        Path dir = Files.createTempDirectory("trace");
+        Path f = Files.createFile(dir.resolve("metadata"));
+        try (PrintWriter pw = new PrintWriter(f.toFile())) {
+            // no header
+            pw.println(INVALID_JSON);
         }
         assertFalse(Metadata.preValidate(dir.toAbsolutePath().toString()));
     }
