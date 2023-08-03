@@ -169,6 +169,21 @@ public class DataProviderManagerTest {
                 .setProviderType(ProviderType.TIME_GRAPH)
                 .setId("org.eclipse.tracecompass.internal.analysis.os.linux.core.threadstatus.ThreadStatusDataProvider");
         EXPECTED_KERNEL_DP_DESCRIPTORS.add(builder.build());
+        builder.setName("Scheduler Wakeup to Scheduler Switch Latency - Latency Statistics")
+                .setDescription("Show latency statistics provided by Analysis module: Scheduler Wakeup to Scheduler Switch Latency")
+                .setProviderType(ProviderType.DATA_TREE)
+                .setId("org.eclipse.tracecompass.analysis.timing.core.segmentstore.SegmentStoreStatisticsDataProvider:org.eclipse.tracecompass.analysis.os.linux.core.swslatency.sws");
+        EXPECTED_KERNEL_DP_DESCRIPTORS.add(builder.build());
+        builder.setName("Scheduler Wakeup to Scheduler Switch Latency - Latency Table")
+                .setDescription("Show latency table provided by Analysis module: Scheduler Wakeup to Scheduler Switch Latency")
+                .setProviderType(ProviderType.TABLE)
+                .setId("org.eclipse.tracecompass.analysis.timing.core.segmentstore.SegmentStoreTableDataProvider:org.eclipse.tracecompass.analysis.os.linux.core.swslatency.sws");
+        EXPECTED_KERNEL_DP_DESCRIPTORS.add(builder.build());
+        builder.setName("Scheduler Wakeup to Scheduler Switch Latency - Latency vs Time")
+                .setDescription("Show latencies provided by Analysis module: Scheduler Wakeup to Scheduler Switch Latency")
+                .setProviderType(ProviderType.TREE_TIME_XY)
+                .setId("org.eclipse.tracecompass.internal.analysis.timing.core.segmentstore.scatter.dataprovider:org.eclipse.tracecompass.analysis.os.linux.core.swslatency.sws");
+        EXPECTED_KERNEL_DP_DESCRIPTORS.add(builder.build());
 
         // UST Trace
         builder = new DataProviderDescriptor.Builder();
