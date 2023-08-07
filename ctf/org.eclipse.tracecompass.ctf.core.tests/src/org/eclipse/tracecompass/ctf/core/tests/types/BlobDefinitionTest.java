@@ -16,7 +16,6 @@ package org.eclipse.tracecompass.ctf.core.tests.types;
 import static org.junit.Assert.assertNotNull;
 
 import java.nio.ByteBuffer;
-import java.util.HexFormat;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.tracecompass.ctf.core.CTFException;
@@ -38,7 +37,7 @@ public class BlobDefinitionTest {
     private BlobDefinition fixture;
     private static final int LENGTH = 16;
     @NonNull private static final String MEDIA_TYPE = "\"application/octet-stream\"";
-    private static final byte[] UUID_ARRAY = HexFormat.of().parseHex("2a6422d06cee11e08c08cb07d7b3a564");
+    private static final byte[] UUID_ARRAY = new byte[] { 0x2a, 0x64, 0x22, (byte) 0xd0, 0x6c, (byte) 0xee, 0x11, (byte) 0xe0, (byte) 0x8c, 0x08, (byte) 0xcb, 0x07, (byte) 0xd7, (byte) 0xb3, (byte) 0xa5, 0x64 };
 
     /**
      * Perform pre-test initialization.
