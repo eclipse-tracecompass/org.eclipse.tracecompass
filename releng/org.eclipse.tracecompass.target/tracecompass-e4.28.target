@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><?pde version="3.8"?><target name="tracecompass-e4.28" sequenceNumber="9">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><?pde version="3.8"?><target name="tracecompass-e4.28" sequenceNumber="10">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.cdt.gnu.dsf.feature.group" version="0.0.0"/>
@@ -33,6 +33,7 @@
 <unit id="org.slf4j.api" version="0.0.0"/>
 <unit id="org.slf4j.binding.simple" version="0.0.0"/>
 <unit id="javax.activation" version="1.2.2.v20221203-1659"/>
+<unit id="com.google.gson" version="0.0.0"/>
 <repository location="https://download.eclipse.org/tools/orbit/downloads/drops/R20230531010532/repository/"/>
 </location>
 <!-- Add dependencies that only exists with older orbit version -->
