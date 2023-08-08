@@ -26,7 +26,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Matthew Khouzam
  * @since 5.2
  */
-public interface IStatisticsAnalysis<E> {
+public interface IStatisticsAnalysis<@NonNull E> {
 
     /**
      * Get the total statistics for a specific range. If the range start is
@@ -61,7 +61,7 @@ public interface IStatisticsAnalysis<E> {
      * @return The per type statistics, or <code>null</code> if data source is
      *         invalid or if the request is canceled
      */
-    Map<@NonNull String, IStatistics<@NonNull E>> getStatsPerTypeForRange(long start, long end, IProgressMonitor monitor);
+    Map<String, IStatistics<@NonNull E>> getStatsPerTypeForRange(long start, long end, IProgressMonitor monitor);
 
     /**
      * Get the statistics for the time range, all categories aggregated
