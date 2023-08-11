@@ -156,7 +156,7 @@ public class IOStructGen {
                 hasStreams = true;
             } else if (CTFParser.tokenNames[CTFParser.EVENT].equals(type) || JsonMetadataStrings.FRAGMENT_EVENT_RECORD.equals(type)) {
                 events.add(child);
-            } else if (CTFParser.tokenNames[CTFParser.CLOCK].equals(type)) {
+            } else if (CTFParser.tokenNames[CTFParser.CLOCK].equals(type) || JsonMetadataStrings.FRAGMENT_CLOCK.equals(type)) {
                 CTFClock ctfClock = ClockParser.INSTANCE.parse(child, null);
                 String nameValue = ctfClock.getName();
                 fTrace.addClock(nameValue, ctfClock);
@@ -167,9 +167,6 @@ public class IOStructGen {
             } else if (JsonMetadataStrings.FRAGMENT_PREAMBLE.equals(type)) {
                 // FIXME: support Preamble fragment (CTF2 spec 5.5)
                 // https://diamon.org/ctf/files/CTF2-SPECRC-7.0rA.html#preamble-frag
-            } else if (JsonMetadataStrings.FRAGMENT_DATA_STREAM.equals(type)) {
-                // FIXME: support Data Stream fragment (CTF2 spec 5.9)
-                // https://diamon.org/ctf/files/CTF2-SPECRC-7.0rA.html#dsc-frag
             } else {
                 throw childTypeError(child);
             }

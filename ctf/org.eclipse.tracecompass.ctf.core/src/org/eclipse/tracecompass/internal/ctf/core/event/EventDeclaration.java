@@ -42,6 +42,7 @@ import org.eclipse.tracecompass.ctf.core.trace.CTFTrace;
 import org.eclipse.tracecompass.ctf.core.trace.ICTFPacketDescriptor;
 import org.eclipse.tracecompass.internal.ctf.core.event.types.composite.EventHeaderDefinition;
 import org.eclipse.tracecompass.internal.ctf.core.trace.CTFStream;
+import org.eclipse.tracecompass.internal.ctf.core.utils.JsonMetadataStrings;
 
 import com.google.common.collect.ImmutableList;
 
@@ -128,7 +129,17 @@ public class EventDeclaration implements IEventDeclaration {
         StructDefinition streamEventContext = streamEventContextDecl != null ? streamEventContextDecl.createDefinition(trace, ILexicalScope.STREAM_EVENT_CONTEXT, input) : null;
         StructDefinition eventContext = fContext != null ? fContext.createFieldDefinition(eventHeaderDef, trace, ILexicalScope.CONTEXT, input) : null;
         StructDefinition eventPayload = fFields != null ? fFields.createFieldDefinition(eventHeaderDef, trace, ILexicalScope.FIELDS, input) : null;
-        long timestamp = calculateTimestamp(eventHeaderDef, prevTimestamp, eventPayload, eventContext);
+        String timestampVariable = null;
+        long timestamp;
+        if (trace != null) {
+            timestampVariable = Long.valueOf(2).equals(trace.getMajor()) ? JsonMetadataStrings.DEFAULT_CLOCK_TIMESTAMP : CTFStrings.TIMESTAMP;
+            timestamp = calculateTimestamp(eventHeaderDef, prevTimestamp, eventPayload, eventContext, timestampVariable);
+        } else {
+            timestamp = calculateTimestamp(eventHeaderDef, prevTimestamp, eventPayload, eventContext, CTFStrings.TIMESTAMP);
+            if (timestamp == 0) {
+                calculateTimestamp(eventHeaderDef, prevTimestamp, eventPayload, eventContext, JsonMetadataStrings.DEFAULT_CLOCK_TIMESTAMP);
+            }
+        }
 
         int cpu = (int) packetDescriptor.getTargetId();
         return new EventDefinition(
@@ -143,7 +154,7 @@ public class EventDeclaration implements IEventDeclaration {
                 packetDescriptor);
     }
 
-    private static long calculateTimestamp(@Nullable ICompositeDefinition eventHeaderDef, long prevTimestamp, StructDefinition eventPayload, StructDefinition eventContext) throws CTFIOException {
+    private static long calculateTimestamp(@Nullable ICompositeDefinition eventHeaderDef, long prevTimestamp, StructDefinition eventPayload, StructDefinition eventContext, String timestampVariable) throws CTFIOException {
         long timestamp = 0;
         Definition def = null;
         if (eventHeaderDef instanceof EventHeaderDefinition) {
@@ -152,15 +163,16 @@ public class EventDeclaration implements IEventDeclaration {
             def = eventHeaderDefinition;
         } else if (eventHeaderDef instanceof StructDefinition) {
             StructDefinition structDefinition = (StructDefinition) eventHeaderDef;
-            def = structDefinition.lookupDefinition(CTFStrings.TIMESTAMP);
+            def = structDefinition.lookupDefinition(timestampVariable);
         } else if (eventHeaderDef != null) {
             throw new CTFIOException("Event header def is not a Struct or an Event Header"); //$NON-NLS-1$
         }
-        if (def == null && eventPayload != null) {
-            def = eventPayload.lookupDefinition(CTFStrings.TIMESTAMP);
+
+        if (def == null && eventPayload != null && eventPayload.getDefinition(timestampVariable) != null) {
+            def = eventPayload.lookupDefinition(timestampVariable);
         }
-        if (def == null && eventContext != null) {
-            def = eventContext.lookupDefinition(CTFStrings.TIMESTAMP);
+        if (def == null && eventContext != null && eventContext.getDefinition(timestampVariable) != null) {
+            def = eventContext.lookupDefinition(timestampVariable);
         }
         if (def instanceof IntegerDefinition) {
             IntegerDefinition timestampDef = (IntegerDefinition) def;

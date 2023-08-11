@@ -312,10 +312,121 @@ public class IOstructgenTest {
             + "  \"type\": \"trace-class\"\n"
             + "}\n";
 
+    private static final String jsonClockFragment = Utils.RECORD_SEPARATOR + "{\n"
+            + "  \"frequency\": 1000000000,\n"
+            + "  \"name\": \"default\",\n"
+            + "  \"offset-from-origin\": {\n"
+            + "    \"cycles\": 0,\n"
+            + "    \"seconds\": 1434072888\n"
+            + "  },\n"
+            + "  \"origin\": \"unix-epoch\", \n"
+            + "  \"type\": \"clock-class\"\n"
+            + "}\n";
+
     private static final String jsonEmptyDataStream = Utils.RECORD_SEPARATOR
             + "{\n"
             + "  \"type\": \"data-stream-class\"\n"
             + "}";
+
+    private static final String jsonClockedDataStream = Utils.RECORD_SEPARATOR
+            + "{\n"
+            + "  \"default-clock-class-name\": \"default\",\n"
+            + "  \"event-record-header-field-class\": {\n"
+            + "    \"member-classes\": [\n"
+            + "      {\n"
+            + "        \"field-class\": {\n"
+            + "          \"alignment\": 64,\n"
+            + "          \"byte-order\": \"little-endian\",\n"
+            + "          \"length\": 64,\n"
+            + "          \"roles\": [\n"
+            + "            \"default-clock-timestamp\"\n"
+            + "          ],\n"
+            + "          \"type\": \"fixed-length-unsigned-integer\"\n"
+            + "        },\n"
+            + "        \"name\": \"timestamp\"\n"
+            + "      },\n"
+            + "      {\n"
+            + "        \"field-class\": {\n"
+            + "          \"alignment\": 16,\n"
+            + "          \"byte-order\": \"little-endian\",\n"
+            + "          \"length\": 16,\n"
+            + "          \"roles\": [\n"
+            + "            \"event-record-class-id\"\n"
+            + "          ],\n"
+            + "          \"type\": \"fixed-length-unsigned-integer\"\n"
+            + "        },\n"
+            + "        \"name\": \"id\"\n"
+            + "      }\n"
+            + "    ],\n"
+            + "    \"type\": \"structure\"\n"
+            + "  },\n"
+            + "  \"packet-context-field-class\": {\n"
+            + "    \"member-classes\": [\n"
+            + "      {\n"
+            + "        \"field-class\": {\n"
+            + "          \"alignment\": 64,\n"
+            + "          \"byte-order\": \"little-endian\",\n"
+            + "          \"length\": 64,\n"
+            + "          \"roles\": [\n"
+            + "            \"default-clock-timestamp\"\n"
+            + "          ],\n"
+            + "          \"type\": \"fixed-length-unsigned-integer\"\n"
+            + "        },\n"
+            + "        \"name\": \"timestamp_begin\"\n"
+            + "      },\n"
+            + "      {\n"
+            + "        \"field-class\": {\n"
+            + "          \"alignment\": 64,\n"
+            + "          \"byte-order\": \"little-endian\",\n"
+            + "          \"length\": 64,\n"
+            + "          \"roles\": [\n"
+            + "            \"packet-end-default-clock-timestamp\"\n"
+            + "          ],\n"
+            + "          \"type\": \"fixed-length-unsigned-integer\"\n"
+            + "        },\n"
+            + "        \"name\": \"timestamp_end\"\n"
+            + "      },\n"
+            + "      {\n"
+            + "        \"field-class\": {\n"
+            + "          \"alignment\": 32,\n"
+            + "          \"byte-order\": \"little-endian\",\n"
+            + "          \"length\": 32,\n"
+            + "          \"roles\": [\n"
+            + "            \"packet-total-length\"\n"
+            + "          ],\n"
+            + "          \"type\": \"fixed-length-unsigned-integer\"\n"
+            + "        },\n"
+            + "        \"name\": \"packet_size\"\n"
+            + "      },\n"
+            + "      {\n"
+            + "        \"field-class\": {\n"
+            + "          \"alignment\": 32,\n"
+            + "          \"byte-order\": \"little-endian\",\n"
+            + "          \"length\": 32,\n"
+            + "          \"roles\": [\n"
+            + "            \"packet-content-length\"\n"
+            + "          ],\n"
+            + "          \"type\": \"fixed-length-unsigned-integer\"\n"
+            + "        },\n"
+            + "        \"name\": \"content_size\"\n"
+            + "      },\n"
+            + "      {\n"
+            + "        \"field-class\": {\n"
+            + "          \"alignment\": 32,\n"
+            + "          \"byte-order\": \"little-endian\",\n"
+            + "          \"length\": 32,\n"
+            + "          \"roles\": [\n"
+            + "            \"discarded-event-record-counter-snapshot\"\n"
+            + "          ],\n"
+            + "          \"type\": \"fixed-length-unsigned-integer\"\n"
+            + "        },\n"
+            + "        \"name\": \"events_discarded\"\n"
+            + "      }\n"
+            + "    ],\n"
+            + "    \"type\": \"structure\"\n"
+            + "  },\n"
+            + "  \"type\": \"data-stream-class\"\n"
+            + "}\n";
 
     private static final String jsonPacketContextDataStream = Utils.RECORD_SEPARATOR
             + "{\n"
@@ -350,6 +461,26 @@ public class IOstructgenTest {
             + "  },\n"
             + "  \"type\": \"data-stream-class\"\n"
             + "}\n";
+
+    private static final String jsonClockedEventRecord = Utils.RECORD_SEPARATOR
+            + "{\n"
+            + "  \"name\": \"simple_uint32\",\n"
+            + "  \"payload-field-class\": {\n"
+            + "    \"member-classes\": [\n"
+            + "      {\n"
+            + "        \"field-class\": {\n"
+            + "          \"alignment\": 32,\n"
+            + "          \"byte-order\": \"little-endian\",\n"
+            + "          \"length\": 32,\n"
+            + "          \"type\": \"fixed-length-unsigned-integer\"\n"
+            + "        },\n"
+            + "        \"name\": \"value\"\n"
+            + "      }\n"
+            + "    ],\n"
+            + "    \"type\": \"structure\"\n"
+            + "  },\n"
+            + "  \"type\": \"event-record-class\""
+            + "}";
 
     private static final String jsonEventRecord = Utils.RECORD_SEPARATOR
             + "{\n"
@@ -386,6 +517,8 @@ public class IOstructgenTest {
             + jsonEmptyDataStream + jsonEventRecord;
     private static final String packetContextJson = jsonPreamble + jsonPacketHeaderTrace
             + jsonPacketContextDataStream + jsonEventRecord;
+    private static final String clockedJson = jsonPreamble + jsonPacketHeaderTrace + jsonClockFragment
+            + jsonClockedDataStream + jsonClockedEventRecord;
 
     static final String tempTraceDir = CtfCoreTestPlugin.getTemporaryDirPath()
             + File.separator + "tempTrace";
@@ -644,6 +777,19 @@ public class IOstructgenTest {
     @Test
     public void jsonPacketContextTest() throws CTFException {
         createDummyTrace(packetContextJson);
+        trace = new CTFTrace(tempTraceDir);
+        assertNotNull(trace);
+    }
+
+    /**
+     * Test with clocked trace
+     *
+     * @throws CTFException
+     *             something wrong happened
+     */
+    @Test
+    public void jsonClockedTest() throws CTFException {
+        createDummyTrace(clockedJson);
         trace = new CTFTrace(tempTraceDir);
         assertNotNull(trace);
     }

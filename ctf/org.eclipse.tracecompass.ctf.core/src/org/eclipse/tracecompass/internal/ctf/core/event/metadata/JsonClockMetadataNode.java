@@ -15,6 +15,7 @@ package org.eclipse.tracecompass.internal.ctf.core.event.metadata;
 
 import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
 
@@ -30,9 +31,9 @@ public class JsonClockMetadataNode extends CTFJsonMetadataNode {
     @SerializedName("name")
     private final String fName;
     @SerializedName("frequency")
-    private final int fFrequency;
+    private final Long fFrequency;
     @SerializedName("origin")
-    private JsonObject fOrigin;
+    private JsonElement fOrigin;
     @SerializedName("offset-from-origin")
     private JsonObject fOffset;
     @SerializedName("precision")
@@ -54,7 +55,7 @@ public class JsonClockMetadataNode extends CTFJsonMetadataNode {
      * @param frequency
      *            the frequency of the clock described in this node
      */
-    public JsonClockMetadataNode(ICTFMetadataNode parent, String type, String value, String name, int frequency) {
+    public JsonClockMetadataNode(ICTFMetadataNode parent, String type, String value, String name, Long frequency) {
         super(parent, type, value);
         this.fName = name;
         this.fFrequency = frequency;
@@ -65,7 +66,7 @@ public class JsonClockMetadataNode extends CTFJsonMetadataNode {
      *
      * @return the frequency
      */
-    public int getFrequency() {
+    public Long getFrequency() {
         return fFrequency;
     }
 
@@ -74,7 +75,7 @@ public class JsonClockMetadataNode extends CTFJsonMetadataNode {
      *
      * @return the origin
      */
-    public Object getOrigin() {
+    public JsonElement getOrigin() {
         return fOrigin;
     }
 
