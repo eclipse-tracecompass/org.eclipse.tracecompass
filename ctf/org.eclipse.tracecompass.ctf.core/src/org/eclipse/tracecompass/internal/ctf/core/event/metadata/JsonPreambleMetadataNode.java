@@ -68,7 +68,10 @@ public class JsonPreambleMetadataNode extends CTFJsonMetadataNode {
      * @return the uuid
      */
     public UUID getUuid() {
-        ByteBuffer bb = ByteBuffer.wrap(this.fUuid);
+        if (fUuid == null) {
+            return null;
+        }
+        ByteBuffer bb = ByteBuffer.wrap(fUuid);
         long high = bb.getLong();
         long low = bb.getLong();
         return new UUID(high, low);

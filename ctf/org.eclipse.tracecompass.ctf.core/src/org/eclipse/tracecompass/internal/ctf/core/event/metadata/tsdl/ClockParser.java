@@ -145,7 +145,7 @@ public final class ClockParser implements ICommonTreeParser {
                 ctfClock.addAttribute(DESCRIPTION, jsonClock.getPrecision());
             }
             JsonObject offset = jsonClock.getOffset();
-            if (offset.has(SECONDS) && offset.has(CYCLES)) {
+            if (offset != null && offset.has(SECONDS) && offset.has(CYCLES)) {
                 Long seconds = offset.get(SECONDS).getAsLong();
                 Long cycles = offset.get(CYCLES).getAsLong();
                 ctfClock.addAttribute(OFFSET, cycles);

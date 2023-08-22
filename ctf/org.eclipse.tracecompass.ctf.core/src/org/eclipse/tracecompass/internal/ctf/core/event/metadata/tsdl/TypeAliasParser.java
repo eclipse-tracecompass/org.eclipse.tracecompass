@@ -104,6 +104,9 @@ public final class TypeAliasParser extends AbstractScopedCommonTreeParser {
                 if (JsonMetadataStrings.FIXED_UNSIGNED_INTEGER_FIELD.equals(type)) {
                     fieldClass.addProperty(SIGNED, false);
                     targetDeclaration = IntegerDeclarationParser.INSTANCE.parse(typealias, new IntegerDeclarationParser.Param(trace));
+                } else if (JsonMetadataStrings.FIXED_SIGNED_INTEGER_FIELD.equals(type)) {
+                    fieldClass.addProperty(SIGNED, true);
+                    targetDeclaration = IntegerDeclarationParser.INSTANCE.parse(typealias, new IntegerDeclarationParser.Param(trace));
                 } else if (JsonMetadataStrings.STATIC_LENGTH_BLOB.equals(type)) {
                     targetDeclaration = BlobDeclarationParser.INSTANCE.parse(typealias, null);
                 } else if (JsonMetadataStrings.NULL_TERMINATED_STRING.equals(type)) {
