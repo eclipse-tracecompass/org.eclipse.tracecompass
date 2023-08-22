@@ -136,4 +136,9 @@ public final class JsonMetadataStrings {
      * Type string for a null terminated string field class
      */
     public static final String NULL_TERMINATED_STRING = "null-terminated-string"; //$NON-NLS-1$
+
+    /**
+     * Type string for a fixed length unsigned enumeration field class
+     */
+    public static final String FIXED_UNSIGNED_ENUMERATION = "fixed-length-unsigned-enumeration"; //$NON-NLS-1$
 }

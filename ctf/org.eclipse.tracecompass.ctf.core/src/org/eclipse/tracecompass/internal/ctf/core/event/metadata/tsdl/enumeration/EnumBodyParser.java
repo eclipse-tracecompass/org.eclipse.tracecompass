@@ -16,6 +16,7 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.tracecompass.ctf.core.event.types.EnumDeclaration;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ICommonTreeParser;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonStructureFieldMemberMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
 import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
 
@@ -65,13 +66,18 @@ public final class EnumBodyParser implements ICommonTreeParser {
         }
         Param parameter = (Param) param;
         EnumDeclaration enumDeclaration = parameter.fEnumDeclaration;
-        List<ICTFMetadataNode> enumerators = tree.getChildren();
-        /*
-         * Start at -1, so that if the first enumrator has no explicit value, it
-         * will choose 0
-         */
-        for (ICTFMetadataNode enumerator : enumerators) {
-            EnumeratorParser.INSTANCE.parse(enumerator, new EnumeratorParser.Param(enumDeclaration));
+
+        if (tree instanceof JsonStructureFieldMemberMetadataNode) {
+            EnumeratorParser.INSTANCE.parse(tree, new EnumeratorParser.Param(enumDeclaration));
+        } else {
+            List<ICTFMetadataNode> enumerators = tree.getChildren();
+            /*
+             * Start at -1, so that if the first enumerator has no explicit
+             * value, it will choose 0
+             */
+            for (ICTFMetadataNode enumerator : enumerators) {
+                EnumeratorParser.INSTANCE.parse(enumerator, new EnumeratorParser.Param(enumDeclaration));
+            }
         }
         return enumDeclaration;
     }

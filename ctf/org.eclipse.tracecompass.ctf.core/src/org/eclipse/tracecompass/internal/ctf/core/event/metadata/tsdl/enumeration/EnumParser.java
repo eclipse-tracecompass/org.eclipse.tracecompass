@@ -24,7 +24,9 @@ import org.eclipse.tracecompass.ctf.core.event.types.IntegerDeclaration;
 import org.eclipse.tracecompass.ctf.core.trace.CTFTrace;
 import org.eclipse.tracecompass.ctf.parser.CTFParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.AbstractScopedCommonTreeParser;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonStructureFieldMemberMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.integer.IntegerDeclarationParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
 
 /**
@@ -118,7 +120,6 @@ public final class EnumParser extends AbstractScopedCommonTreeParser {
             fTrace = trace;
             fCurrentScope = currentScope;
         }
-
     }
 
     /**
@@ -147,8 +148,7 @@ public final class EnumParser extends AbstractScopedCommonTreeParser {
         }
         Param parameter = (Param) param;
         DeclarationScope scope = parameter.fCurrentScope;
-
-        List<ICTFMetadataNode> children = theEnum.getChildren();
+        CTFTrace trace = parameter.fTrace;
 
         /* The return value */
         EnumDeclaration enumDeclaration = null;
@@ -162,19 +162,26 @@ public final class EnumParser extends AbstractScopedCommonTreeParser {
         /* Container type */
         IntegerDeclaration containerTypeDeclaration = null;
 
-        /* Loop on all children and identify what we have to work with. */
-        for (ICTFMetadataNode child : children) {
-            String type = child.getType();
-            if (CTFParser.tokenNames[CTFParser.ENUM_NAME].equals(type)) {
-                ICTFMetadataNode enumNameIdentifier = child.getChild(0);
-                enumName = enumNameIdentifier.getText();
-            } else if (CTFParser.tokenNames[CTFParser.ENUM_BODY].equals(type)) {
-                enumBody = child;
-            } else if (CTFParser.tokenNames[CTFParser.ENUM_CONTAINER_TYPE].equals(type)) {
-                CTFTrace trace = ((Param) param).fTrace;
-                containerTypeDeclaration = EnumContainerParser.INSTANCE.parse(child, new EnumContainerParser.Param(trace, scope));
-            } else {
-                throw childTypeError(child);
+        if (theEnum instanceof JsonStructureFieldMemberMetadataNode) {
+            JsonStructureFieldMemberMetadataNode jsonEnum = (JsonStructureFieldMemberMetadataNode) theEnum;
+            enumName = jsonEnum.getName();
+            enumBody = jsonEnum;
+            containerTypeDeclaration = IntegerDeclarationParser.INSTANCE.parse(jsonEnum, new IntegerDeclarationParser.Param(trace));
+        } else {
+            List<ICTFMetadataNode> children = theEnum.getChildren();
+            /* Loop on all children and identify what we have to work with. */
+            for (ICTFMetadataNode child : children) {
+                String type = child.getType();
+                if (CTFParser.tokenNames[CTFParser.ENUM_NAME].equals(type)) {
+                    ICTFMetadataNode enumNameIdentifier = child.getChild(0);
+                    enumName = enumNameIdentifier.getText();
+                } else if (CTFParser.tokenNames[CTFParser.ENUM_BODY].equals(type)) {
+                    enumBody = child;
+                } else if (CTFParser.tokenNames[CTFParser.ENUM_CONTAINER_TYPE].equals(type)) {
+                    containerTypeDeclaration = EnumContainerParser.INSTANCE.parse(child, new EnumContainerParser.Param(trace, scope));
+                } else {
+                    throw childTypeError(child);
+                }
             }
         }
 
