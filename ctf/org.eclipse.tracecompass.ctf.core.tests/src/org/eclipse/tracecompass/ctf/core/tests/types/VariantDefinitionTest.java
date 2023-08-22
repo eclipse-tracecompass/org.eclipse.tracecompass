@@ -82,8 +82,8 @@ public class VariantDefinitionTest {
     public void setUp() throws CTFException {
         StructDeclaration sDec = new StructDeclaration(12);
         StructDeclaration smallStruct = new StructDeclaration(8);
-        IntegerDeclaration iDec = IntegerDeclaration.createDeclaration(32, false, 32, ByteOrder.BIG_ENDIAN, Encoding.NONE, "", 8);
-        IntegerDeclaration lenDec = IntegerDeclaration.createDeclaration(8, false, 8, ByteOrder.BIG_ENDIAN, Encoding.NONE, "", 8);
+        IntegerDeclaration iDec = IntegerDeclaration.createDeclaration(32, false, 32, ByteOrder.BIG_ENDIAN, Encoding.NONE, "", 8, null);
+        IntegerDeclaration lenDec = IntegerDeclaration.createDeclaration(8, false, 8, ByteOrder.BIG_ENDIAN, Encoding.NONE, "", 8, null);
         StringDeclaration strDec = StringDeclaration.getStringDeclaration(Encoding.UTF8);
         EnumDeclaration enDec = new EnumDeclaration(iDec);
         VariantDeclaration varDec = new VariantDeclaration();

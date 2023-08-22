@@ -78,13 +78,13 @@ public class EventHeaderDeclarationTest {
          */
 
         StructDeclaration base = new StructDeclaration(8);
-        EnumDeclaration enumDec = new EnumDeclaration(IntegerDeclaration.createDeclaration(5, false, 10, ByteOrder.BIG_ENDIAN, Encoding.NONE, "", 1));
+        EnumDeclaration enumDec = new EnumDeclaration(IntegerDeclaration.createDeclaration(5, false, 10, ByteOrder.BIG_ENDIAN, Encoding.NONE, "", 1, null));
         enumDec.add(0, 30, "compact");
         enumDec.add(31, 31, "extended");
         base.addField("id", enumDec);
         VariantDeclaration variantV = new VariantDeclaration();
         StructDeclaration compact = new StructDeclaration(1);
-        compact.addField("timestamp", IntegerDeclaration.createDeclaration(27, false, 10, ByteOrder.BIG_ENDIAN, Encoding.NONE, "", 1));
+        compact.addField("timestamp", IntegerDeclaration.createDeclaration(27, false, 10, ByteOrder.BIG_ENDIAN, Encoding.NONE, "", 1, null));
         variantV.addField("compact", compact);
         StructDeclaration large = new StructDeclaration(1);
         large.addField("id", IntegerDeclaration.UINT_32B_DECL);
@@ -113,7 +113,7 @@ public class EventHeaderDeclarationTest {
          */
 
         base = new StructDeclaration(8);
-        enumDec = new EnumDeclaration(IntegerDeclaration.createDeclaration(16, false, 10, ByteOrder.BIG_ENDIAN, Encoding.NONE, "", 1));
+        enumDec = new EnumDeclaration(IntegerDeclaration.createDeclaration(16, false, 10, ByteOrder.BIG_ENDIAN, Encoding.NONE, "", 1, null));
         enumDec.add(0, 65534, "compact");
         enumDec.add(65535, 65535, "extended");
         base.addField("id", enumDec);
@@ -130,13 +130,13 @@ public class EventHeaderDeclarationTest {
 
         // bad - misnamed enum
         base = new StructDeclaration(8);
-        enumDec = new EnumDeclaration(IntegerDeclaration.createDeclaration(5, false, 10, ByteOrder.BIG_ENDIAN, Encoding.NONE, "", 1));
+        enumDec = new EnumDeclaration(IntegerDeclaration.createDeclaration(5, false, 10, ByteOrder.BIG_ENDIAN, Encoding.NONE, "", 1, null));
         enumDec.add(0, 30, "compact");
         enumDec.add(31, 31, "large");
         base.addField("id", enumDec);
         variantV = new VariantDeclaration();
         compact = new StructDeclaration(1);
-        compact.addField("timestamp", IntegerDeclaration.createDeclaration(27, false, 10, ByteOrder.BIG_ENDIAN, Encoding.NONE, "", 1));
+        compact.addField("timestamp", IntegerDeclaration.createDeclaration(27, false, 10, ByteOrder.BIG_ENDIAN, Encoding.NONE, "", 1, null));
         variantV.addField("compact", compact);
         large = new StructDeclaration(1);
         large.addField("id", IntegerDeclaration.UINT_32B_DECL);
@@ -147,12 +147,12 @@ public class EventHeaderDeclarationTest {
 
         // bad - missing enum
         base = new StructDeclaration(8);
-        enumDec = new EnumDeclaration(IntegerDeclaration.createDeclaration(5, false, 10, ByteOrder.BIG_ENDIAN, Encoding.NONE, "", 1));
+        enumDec = new EnumDeclaration(IntegerDeclaration.createDeclaration(5, false, 10, ByteOrder.BIG_ENDIAN, Encoding.NONE, "", 1, null));
         enumDec.add(0, 30, "compact");
         base.addField("id", enumDec);
         variantV = new VariantDeclaration();
         compact = new StructDeclaration(1);
-        compact.addField("timestamp", IntegerDeclaration.createDeclaration(27, false, 10, ByteOrder.BIG_ENDIAN, Encoding.NONE, "", 1));
+        compact.addField("timestamp", IntegerDeclaration.createDeclaration(27, false, 10, ByteOrder.BIG_ENDIAN, Encoding.NONE, "", 1, null));
         variantV.addField("compact", compact);
         large = new StructDeclaration(1);
         large.addField("id", IntegerDeclaration.UINT_32B_DECL);
@@ -163,13 +163,13 @@ public class EventHeaderDeclarationTest {
 
         // bad - int 5 alignment 8 bit
         base = new StructDeclaration(8);
-        enumDec = new EnumDeclaration(IntegerDeclaration.createDeclaration(5, false, 10, ByteOrder.BIG_ENDIAN, Encoding.NONE, "", 8));
+        enumDec = new EnumDeclaration(IntegerDeclaration.createDeclaration(5, false, 10, ByteOrder.BIG_ENDIAN, Encoding.NONE, "", 8, null));
         enumDec.add(0, 30, "compact");
         enumDec.add(31, 31, "extended");
         base.addField("id", enumDec);
         variantV = new VariantDeclaration();
         compact = new StructDeclaration(1);
-        compact.addField("timestamp", IntegerDeclaration.createDeclaration(27, false, 10, ByteOrder.BIG_ENDIAN, Encoding.NONE, "", 1));
+        compact.addField("timestamp", IntegerDeclaration.createDeclaration(27, false, 10, ByteOrder.BIG_ENDIAN, Encoding.NONE, "", 1, null));
         variantV.addField("compact", compact);
         large = new StructDeclaration(1);
         large.addField("id", IntegerDeclaration.UINT_32B_DECL);

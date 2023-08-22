@@ -52,7 +52,7 @@ public class EnumDeclarationTest {
     @Before
     public void setUp() {
         fixture = new EnumDeclaration(IntegerDeclaration.createDeclaration(1, false, 1,
-                ByteOrder.BIG_ENDIAN, Encoding.ASCII, "", 8));
+                ByteOrder.BIG_ENDIAN, Encoding.ASCII, "", 8, null));
     }
 
     /**
@@ -61,7 +61,7 @@ public class EnumDeclarationTest {
     @Test
     public void testEnumDeclaration() {
         IntegerDeclaration containerType = IntegerDeclaration.createDeclaration(1, false, 1,
-                ByteOrder.BIG_ENDIAN, Encoding.ASCII, "", 8);
+                ByteOrder.BIG_ENDIAN, Encoding.ASCII, "", 8, null);
 
         EnumDeclaration result = new EnumDeclaration(containerType);
 
@@ -246,7 +246,7 @@ public class EnumDeclarationTest {
     @Test
     public void hashcodeTest() {
         EnumDeclaration b = new EnumDeclaration(IntegerDeclaration.createDeclaration(1, false, 1,
-                ByteOrder.BIG_ENDIAN, Encoding.ASCII, "", 8));
+                ByteOrder.BIG_ENDIAN, Encoding.ASCII, "", 8, null));
         assertEquals(b.hashCode(), fixture.hashCode());
         fixture.add(0, 1, "hello");
         fixture.add(2, 3, "kitty");

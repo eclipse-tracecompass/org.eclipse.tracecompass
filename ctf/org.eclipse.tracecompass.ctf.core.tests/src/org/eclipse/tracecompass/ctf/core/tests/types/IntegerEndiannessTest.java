@@ -71,7 +71,7 @@ public class IntegerEndiannessTest {
      */
     @Test
     public void test32BE() throws CTFException {
-        IntegerDeclaration be = IntegerDeclaration.createDeclaration(32, true, 1, ByteOrder.BIG_ENDIAN, Encoding.NONE, clockName, 8);
+        IntegerDeclaration be = IntegerDeclaration.createDeclaration(32, true, 1, ByteOrder.BIG_ENDIAN, Encoding.NONE, clockName, 8, null);
         IntegerDefinition fixture_be = be.createDefinition(null, name, input);
         assertEquals(0xabcdef12, fixture_be.getValue());
     }
@@ -84,7 +84,7 @@ public class IntegerEndiannessTest {
      */
     @Test
     public void test64BE() throws CTFException {
-        IntegerDeclaration be = IntegerDeclaration.createDeclaration(64, true, 1, ByteOrder.BIG_ENDIAN, Encoding.NONE, clockName, 8);
+        IntegerDeclaration be = IntegerDeclaration.createDeclaration(64, true, 1, ByteOrder.BIG_ENDIAN, Encoding.NONE, clockName, 8, null);
         IntegerDefinition fixture_be = be.createDefinition(null, name, input);
         assertEquals(0xabcdef123456789aL, fixture_be.getValue());
     }
@@ -97,7 +97,7 @@ public class IntegerEndiannessTest {
      */
     @Test
     public void test32LE() throws CTFException {
-        IntegerDeclaration le = IntegerDeclaration.createDeclaration(32, true, 1, ByteOrder.LITTLE_ENDIAN, Encoding.NONE, clockName, 8);
+        IntegerDeclaration le = IntegerDeclaration.createDeclaration(32, true, 1, ByteOrder.LITTLE_ENDIAN, Encoding.NONE, clockName, 8, null);
         IntegerDefinition fixture_le = le.createDefinition(null, name, input);
         assertEquals(0x12efcdab, fixture_le.getValue());
     }
@@ -110,7 +110,7 @@ public class IntegerEndiannessTest {
      */
     @Test
     public void test64LE() throws CTFException {
-        IntegerDeclaration le = IntegerDeclaration.createDeclaration(64, true, 1, ByteOrder.LITTLE_ENDIAN, Encoding.NONE, clockName, 8);
+        IntegerDeclaration le = IntegerDeclaration.createDeclaration(64, true, 1, ByteOrder.LITTLE_ENDIAN, Encoding.NONE, clockName, 8, null);
         IntegerDefinition fixture_le = le.createDefinition(null, name, input);
         assertEquals(0x9a78563412efcdabL, fixture_le.getValue());
     }

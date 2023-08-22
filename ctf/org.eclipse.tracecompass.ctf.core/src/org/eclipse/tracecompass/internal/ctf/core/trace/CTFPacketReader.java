@@ -41,6 +41,7 @@ import org.eclipse.tracecompass.internal.ctf.core.event.EventDeclaration;
 import org.eclipse.tracecompass.internal.ctf.core.event.EventDefinition;
 import org.eclipse.tracecompass.internal.ctf.core.event.LostEventDeclaration;
 import org.eclipse.tracecompass.internal.ctf.core.event.types.composite.EventHeaderDefinition;
+import org.eclipse.tracecompass.internal.ctf.core.utils.JsonMetadataStrings;
 
 /**
  * Packet reader with a fixed bit buffer, should be the fast and easily
@@ -89,8 +90,8 @@ public final class CTFPacketReader implements IPacketReader, IDefinitionScope {
      * @param declarations
      *            event declarations for this packet reader
      * @param eventHeaderDeclaration
-     *            event header declaration, what to read before any given event, to
-     *            find it's id
+     *            event header declaration, what to read before any given event,
+     *            to find it's id
      * @param streamContext
      *            the context declaration
      * @param packetHeader
@@ -128,8 +129,8 @@ public final class CTFPacketReader implements IPacketReader, IDefinitionScope {
         int eventID = (int) IEventDeclaration.UNSET_EVENT_ID;
         final long posStart = fInput.position();
         /*
-         * Return the Lost Event after all other events in this packet. We need to check
-         * if the bytebuffer is at the beginning too.
+         * Return the Lost Event after all other events in this packet. We need
+         * to check if the bytebuffer is at the beginning too.
          */
         if (fHasLost && (posStart >= fPacketContext.getContentSizeBits())) {
             fHasLost = false;
@@ -149,6 +150,9 @@ public final class CTFPacketReader implements IPacketReader, IDefinitionScope {
             fEventHeader = structEventHeaderDef;
             /* Check for the event id. */
             IDefinition idDef = structEventHeaderDef.lookupDefinition("id"); //$NON-NLS-1$
+            if (idDef == null) {
+                idDef = structEventHeaderDef.lookupRole(JsonMetadataStrings.EVENT_RECORD_CLASS_ID);
+            }
             SimpleDatatypeDefinition simpleIdDef = null;
             if (idDef instanceof SimpleDatatypeDefinition) {
                 simpleIdDef = ((SimpleDatatypeDefinition) idDef);
@@ -163,8 +167,8 @@ public final class CTFPacketReader implements IPacketReader, IDefinitionScope {
                 StructDefinition variantCurrentField = (StructDefinition) ((VariantDefinition) variantDef).getCurrentField();
 
                 /*
-                 * Try to get the id field in the current field of the variant. If it is
-                 * present, it overrides the previously read event id.
+                 * Try to get the id field in the current field of the variant.
+                 * If it is present, it overrides the previously read event id.
                  */
                 IDefinition vIdDef = variantCurrentField.lookupDefinition("id"); //$NON-NLS-1$
                 if (vIdDef instanceof IntegerDefinition) {
@@ -192,7 +196,8 @@ public final class CTFPacketReader implements IPacketReader, IDefinitionScope {
         EventDefinition eventDef = declaration.createDefinition(fStreamContext, fPacketContext, fTracePacketHeader, fEventHeader, fInput, fLastTimestamp);
         fLastTimestamp = eventDef.getTimestamp();
         /*
-         * Set the event timestamp using the timestamp calculated by updateTimestamp.
+         * Set the event timestamp using the timestamp calculated by
+         * updateTimestamp.
          */
 
         if (posStart == fInput.position()) {

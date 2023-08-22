@@ -50,7 +50,7 @@ public class IntegerDefinitionTest {
      */
     @Before
     public void setUp() throws CTFException {
-        IntegerDeclaration id = IntegerDeclaration.createDeclaration(1, false, 1, ByteOrder.BIG_ENDIAN, Encoding.NONE, clockName, 8);
+        IntegerDeclaration id = IntegerDeclaration.createDeclaration(1, false, 1, ByteOrder.BIG_ENDIAN, Encoding.NONE, clockName, 8, null);
         ByteBuffer byb = ByteBuffer.allocate(128);
         byb.mark();
         byb.putInt(1);
@@ -66,7 +66,7 @@ public class IntegerDefinitionTest {
     @Test
     public void testIntegerDefinition() {
         IntegerDeclaration declaration = IntegerDeclaration.createDeclaration(1, false, 1,
-                ByteOrder.BIG_ENDIAN, Encoding.ASCII, "", 8);
+                ByteOrder.BIG_ENDIAN, Encoding.ASCII, "", 8, null);
         IDefinitionScope definitionScope = null;
         String fieldName = "";
 

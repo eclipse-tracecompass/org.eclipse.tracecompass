@@ -45,7 +45,7 @@ public class EnumDefinitionTest {
     @Before
     public void setUp() {
         IntegerDeclaration integerDeclaration = IntegerDeclaration.createDeclaration(1, false, 1, ByteOrder.BIG_ENDIAN,
-                Encoding.ASCII, "", 8);
+                Encoding.ASCII, "", 8, null);
         EnumDeclaration declaration = new EnumDeclaration(
                 integerDeclaration);
         declaration.add(0, 10, "a");
@@ -102,7 +102,7 @@ public class EnumDefinitionTest {
     @Test
     public void testUnknownEnum() {
         IntegerDeclaration integerDeclaration = IntegerDeclaration.createDeclaration(1, false, 1, ByteOrder.BIG_ENDIAN,
-                Encoding.ASCII, "", 8);
+                Encoding.ASCII, "", 8, null);
         EnumDeclaration declaration = new EnumDeclaration(
                 integerDeclaration);
         declaration.add(0, 10, "a");

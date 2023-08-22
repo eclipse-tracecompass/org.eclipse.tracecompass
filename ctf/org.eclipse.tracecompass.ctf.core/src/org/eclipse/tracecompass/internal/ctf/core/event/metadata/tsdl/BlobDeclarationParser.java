@@ -44,6 +44,7 @@ public final class BlobDeclarationParser implements ICommonTreeParser {
 
     private static final @NonNull String LENGTH = "length"; //$NON-NLS-1$
     private static final @NonNull String MEDIA_TYPE = "media-type"; //$NON-NLS-1$
+    private static final String DEFAULT_MEDIA_TYPE = "application/octet-stream"; //$NON-NLS-1$
 
     private BlobDeclarationParser() {
     }
@@ -63,18 +64,21 @@ public final class BlobDeclarationParser implements ICommonTreeParser {
     public BlobDeclaration parse(ICTFMetadataNode blob, ICommonTreeParserParameter unused) throws ParseException {
 
         long length = 0;
-        String mediaType = null;
+        String mediaType = DEFAULT_MEDIA_TYPE;
+        String role = null;
 
-        JsonObject fieldclass = ((JsonStructureFieldMemberMetadataNode) blob).getFieldClass().getAsJsonObject();
-        length = fieldclass.get(LENGTH).getAsInt();
+        JsonStructureFieldMemberMetadataNode member = (JsonStructureFieldMemberMetadataNode) blob;
+        JsonObject fieldClass = member.getFieldClass().getAsJsonObject();
+        length = fieldClass.get(LENGTH).getAsInt();
         if (length <= 0) {
             throw new ParseException("Invalid length attribute in Blob: " + length); //$NON-NLS-1$
         }
 
-        if (fieldclass.has(mediaType)) {
-            mediaType = fieldclass.get(MEDIA_TYPE).getAsString();
+        if (fieldClass.has(mediaType)) {
+            mediaType = fieldClass.get(MEDIA_TYPE).getAsString();
         }
+        role = member.getRole();
 
-        return new BlobDeclaration((int) length, mediaType);
+        return new BlobDeclaration((int) length, mediaType, role);
     }
 }

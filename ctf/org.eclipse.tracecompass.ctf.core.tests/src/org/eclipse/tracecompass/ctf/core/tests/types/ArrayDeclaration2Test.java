@@ -123,7 +123,7 @@ public class ArrayDeclaration2Test {
     @Test
     public void testIsString_complex() {
         final IntegerDeclaration id = IntegerDeclaration.createDeclaration(8, false, 16,
-                ByteOrder.LITTLE_ENDIAN, Encoding.UTF8, "", 8);
+                ByteOrder.LITTLE_ENDIAN, Encoding.UTF8, "", 8, null);
         CompoundDeclaration ad = new ArrayDeclaration(0, id);
 
         boolean result = ad.isString();

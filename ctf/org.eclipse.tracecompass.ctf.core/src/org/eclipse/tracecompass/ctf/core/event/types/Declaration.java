@@ -14,6 +14,7 @@
 package org.eclipse.tracecompass.ctf.core.event.types;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.ctf.core.CTFException;
 import org.eclipse.tracecompass.ctf.core.event.io.BitBuffer;
 import org.eclipse.tracecompass.ctf.core.event.scope.IDefinitionScope;
@@ -27,6 +28,12 @@ import org.eclipse.tracecompass.ctf.core.event.scope.LexicalScope;
  * @author Matthew Khouzam
  */
 public abstract class Declaration implements IDeclaration {
+
+    /**
+     * Public field to store the role of a declaration. This is meant to
+     * accomodate the CTF2 spec.
+     */
+    private @Nullable String fRole;
 
     /**
      * @since 1.0
@@ -69,5 +76,15 @@ public abstract class Declaration implements IDeclaration {
         }
         pos = (pos + mask) & ~mask;
         input.position(pos);
+    }
+
+    @Override
+    public String getRole() {
+        return fRole;
+    }
+
+    @Override
+    public void setRole(String role) {
+        fRole = role;
     }
 }

@@ -21,6 +21,7 @@ import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileChannel.MapMode;
 import java.nio.file.StandardOpenOption;
+import java.util.Objects;
 import java.util.UUID;
 
 import org.eclipse.core.runtime.IStatus;
@@ -32,6 +33,7 @@ import org.eclipse.tracecompass.ctf.core.event.scope.IDefinitionScope;
 import org.eclipse.tracecompass.ctf.core.event.scope.ILexicalScope;
 import org.eclipse.tracecompass.ctf.core.event.scope.LexicalScope;
 import org.eclipse.tracecompass.ctf.core.event.types.AbstractArrayDefinition;
+import org.eclipse.tracecompass.ctf.core.event.types.BlobDefinition;
 import org.eclipse.tracecompass.ctf.core.event.types.Definition;
 import org.eclipse.tracecompass.ctf.core.event.types.IntegerDefinition;
 import org.eclipse.tracecompass.ctf.core.event.types.StructDeclaration;
@@ -40,6 +42,7 @@ import org.eclipse.tracecompass.internal.ctf.core.Activator;
 import org.eclipse.tracecompass.internal.ctf.core.SafeMappedByteBuffer;
 import org.eclipse.tracecompass.internal.ctf.core.trace.StreamInputPacketIndex;
 import org.eclipse.tracecompass.internal.ctf.core.trace.StreamInputPacketIndexEntry;
+import org.eclipse.tracecompass.internal.ctf.core.utils.JsonMetadataStrings;
 import org.eclipse.tracecompass.internal.ctf.core.utils.Utils;
 
 /**
@@ -326,10 +329,29 @@ public class CTFStreamInput implements IDefinitionScope {
         StructDefinition tracePacketHeaderDef = fTracePacketHeaderDecl.createDefinition(fStream.getTrace(), ILexicalScope.TRACE_PACKET_HEADER, bitBuffer);
 
         /*
-         * Check the CTF magic number
+         * Check the CTF magic number, UUID, and stream id
          */
-        IntegerDefinition magicDef = (IntegerDefinition) tracePacketHeaderDef
-                .lookupDefinition("magic"); //$NON-NLS-1$
+        IntegerDefinition magicDef;
+        UUID uuid = null;
+        IntegerDefinition streamIDDef;
+        if (fStream.getTrace().isCTF2()) {
+            magicDef = (IntegerDefinition) tracePacketHeaderDef.lookupRole(JsonMetadataStrings.MAGIC_NUMBER);
+            BlobDefinition uuidDef = (BlobDefinition) tracePacketHeaderDef.lookupRole(JsonMetadataStrings.UUID);
+            if (uuidDef != null) {
+                uuid = Utils.makeUUID(uuidDef.getBytes());
+            }
+            streamIDDef = (IntegerDefinition) tracePacketHeaderDef
+                    .lookupRole(JsonMetadataStrings.DATA_STREAM_ID);
+        } else {
+            magicDef = (IntegerDefinition) tracePacketHeaderDef
+                    .lookupDefinition("magic"); //$NON-NLS-1$
+            AbstractArrayDefinition uuidDef = (AbstractArrayDefinition) tracePacketHeaderDef.lookupDefinition("uuid"); //$NON-NLS-1$
+            if (uuidDef != null) {
+                uuid = Utils.getUUIDfromDefinition(uuidDef);
+            }
+            streamIDDef = (IntegerDefinition) tracePacketHeaderDef
+                    .lookupDefinition("stream_id"); //$NON-NLS-1$
+        }
         if (magicDef != null) {
             int magic = (int) magicDef.getValue();
             if (magic != Utils.CTF_MAGIC) {
@@ -337,26 +359,10 @@ public class CTFStreamInput implements IDefinitionScope {
                         "CTF magic mismatch " + Integer.toHexString(magic) + " vs " + Integer.toHexString(Utils.CTF_MAGIC)); //$NON-NLS-1$//$NON-NLS-2$
             }
         }
-
-        /*
-         * Check the trace UUID
-         */
-        AbstractArrayDefinition uuidDef =
-                (AbstractArrayDefinition) tracePacketHeaderDef.lookupDefinition("uuid"); //$NON-NLS-1$
-        if (uuidDef != null) {
-            UUID uuid = Utils.getUUIDfromDefinition(uuidDef);
-
-            if (!getStream().getTrace().getUUID().equals(uuid) && !fUUIDMismatchWarning ) {
-                fUUIDMismatchWarning = true;
-                Activator.log(IStatus.WARNING, "Reading CTF trace: UUID mismatch for trace " + getStream().getTrace()); //$NON-NLS-1$
-            }
+        if (!Objects.equals(getStream().getTrace().getUUID(), uuid) && !fUUIDMismatchWarning) {
+            fUUIDMismatchWarning = true;
+            Activator.log(IStatus.WARNING, "Reading CTF trace: UUID mismatch for trace " + getStream().getTrace()); //$NON-NLS-1$
         }
-
-        /*
-         * Check that the stream id did not change
-         */
-        IntegerDefinition streamIDDef = (IntegerDefinition) tracePacketHeaderDef
-                .lookupDefinition("stream_id"); //$NON-NLS-1$
         if (streamIDDef != null) {
             long streamID = streamIDDef.getValue();
 

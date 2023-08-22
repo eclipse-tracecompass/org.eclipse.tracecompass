@@ -39,10 +39,13 @@ public class BlobDeclaration extends Declaration {
      *            The length in bits
      * @param mediaType
      *            The media type of the data
+     * @param role
+     *            The role of the blob
      */
-    public BlobDeclaration(int len, String mediaType) {
+    public BlobDeclaration(int len, String mediaType, String role) {
         fLength = len;
         fMediaType = mediaType;
+        setRole(role);
     }
 
     @Override

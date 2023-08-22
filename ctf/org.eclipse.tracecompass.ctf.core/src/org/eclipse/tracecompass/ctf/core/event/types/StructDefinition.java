@@ -221,4 +221,23 @@ public final class StructDefinition extends ScopedDefinition implements IComposi
         return (Definition) getDefinitionScope().lookupDefinition(lookupPath);
     }
 
+    /**
+     * This method searches all the definitions in a structure to find the one
+     * with the wanted role
+     *
+     * @param role
+     *            the role we are searching for
+     * @return the definition with the wanted role
+     * @since 4.3
+     */
+    public IDefinition lookupRole(String role) {
+        for (IDefinition def : fDefinitions) {
+            IDeclaration decl = def.getDeclaration();
+            if (role != null && role.equals(decl.getRole())) {
+                return def;
+            }
+        }
+        return null;
+    }
+
 }

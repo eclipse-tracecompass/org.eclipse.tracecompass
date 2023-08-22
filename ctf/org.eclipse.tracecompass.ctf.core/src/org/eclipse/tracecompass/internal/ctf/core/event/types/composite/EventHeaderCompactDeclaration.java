@@ -31,6 +31,7 @@ import org.eclipse.tracecompass.ctf.core.event.types.IEventHeaderDeclaration;
 import org.eclipse.tracecompass.ctf.core.event.types.IntegerDeclaration;
 import org.eclipse.tracecompass.ctf.core.event.types.StructDeclaration;
 import org.eclipse.tracecompass.ctf.core.event.types.VariantDeclaration;
+import org.eclipse.tracecompass.internal.ctf.core.utils.JsonMetadataStrings;
 
 /**
  * An event header declaration is a declaration of a structure defined in the
@@ -120,16 +121,16 @@ public final class EventHeaderCompactDeclaration extends Declaration implements 
             return;
         }
         StructDeclaration ref = new StructDeclaration(ALIGN_ON_8);
-        EnumDeclaration id = new EnumDeclaration(IntegerDeclaration.createDeclaration(COMPACT_ID, false, BASE_10, fByteOrder, Encoding.NONE, CLOCK, ALIGN_ON_1));
+        EnumDeclaration id = new EnumDeclaration(IntegerDeclaration.createDeclaration(COMPACT_ID, false, BASE_10, fByteOrder, Encoding.NONE, CLOCK, ALIGN_ON_1, JsonMetadataStrings.EVENT_RECORD_CLASS_ID));
         id.add(0, EXTENDED_VALUE - 1, COMPACT);
         id.add(EXTENDED_VALUE, EXTENDED_VALUE, EXTENDED);
         ref.addField(ID, id);
         VariantDeclaration v = new VariantDeclaration();
         StructDeclaration compact = new StructDeclaration(ALIGN_ON_1);
-        compact.addField(TIMESTAMP, IntegerDeclaration.createDeclaration(COMPACT_TS, false, BASE_10, fByteOrder, Encoding.NONE, CLOCK, ALIGN_ON_1));
+        compact.addField(TIMESTAMP, IntegerDeclaration.createDeclaration(COMPACT_TS, false, BASE_10, fByteOrder, Encoding.NONE, CLOCK, ALIGN_ON_1, JsonMetadataStrings.DEFAULT_CLOCK_TIMESTAMP));
         StructDeclaration extended = new StructDeclaration(ALIGN_ON_8);
-        extended.addField(ID, IntegerDeclaration.createDeclaration(ID_SIZE, false, BASE_10, fByteOrder, Encoding.NONE, CLOCK, ALIGN_ON_8));
-        extended.addField(TIMESTAMP, IntegerDeclaration.createDeclaration(FULL_TS, false, BASE_10, fByteOrder, Encoding.NONE, CLOCK, ALIGN_ON_8));
+        extended.addField(ID, IntegerDeclaration.createDeclaration(ID_SIZE, false, BASE_10, fByteOrder, Encoding.NONE, CLOCK, ALIGN_ON_8, JsonMetadataStrings.EVENT_RECORD_CLASS_ID));
+        extended.addField(TIMESTAMP, IntegerDeclaration.createDeclaration(FULL_TS, false, BASE_10, fByteOrder, Encoding.NONE, CLOCK, ALIGN_ON_8, JsonMetadataStrings.DEFAULT_CLOCK_TIMESTAMP));
         v.addField(COMPACT, compact);
         v.addField(EXTENDED, extended);
         ref.addField(VARIANT_NAME, v);

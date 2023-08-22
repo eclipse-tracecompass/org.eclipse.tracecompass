@@ -61,7 +61,7 @@ public class SequenceDefinition2Test {
 
         int len = 8;
         IntegerDeclaration id = IntegerDeclaration.createDeclaration(len, false, len,
-                ByteOrder.LITTLE_ENDIAN, Encoding.UTF8, "", 8);
+                ByteOrder.LITTLE_ENDIAN, Encoding.UTF8, "", 8, null);
         String lengthName = "LengthName";
         structDec = new StructDeclaration(0);
         structDec.addField(lengthName, id);

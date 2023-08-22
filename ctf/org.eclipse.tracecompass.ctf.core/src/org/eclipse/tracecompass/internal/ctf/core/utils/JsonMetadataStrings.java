@@ -79,6 +79,11 @@ public final class JsonMetadataStrings {
     public static final String UUID = "metadata-stream-uuid"; //$NON-NLS-1$
 
     /**
+     * String for the packet header data stream class id role of a field class
+     */
+    public static final String DATA_STREAM_ID = "data-stream-class-id"; //$NON-NLS-1$
+
+    /**
      * String for the packet content length role of a data stream packet context
      */
     public static final String PACKET_CONTENT_LENGTH = "packet-content-length"; //$NON-NLS-1$
@@ -90,7 +95,7 @@ public final class JsonMetadataStrings {
 
     /**
      * String for the default clock timestamp role of a data stream packet
-     * context
+     * context or data stream event record header
      */
     public static final String DEFAULT_CLOCK_TIMESTAMP = "default-clock-timestamp"; //$NON-NLS-1$
 
@@ -105,6 +110,12 @@ public final class JsonMetadataStrings {
      * packet context
      */
     public static final String PACKET_END_TIMESTAMP = "packet-end-default-clock-timestamp"; //$NON-NLS-1$
+
+    /**
+     * String for the event record class id role of a data stream event record
+     * header
+     */
+    public static final String EVENT_RECORD_CLASS_ID = "event-record-class-id"; //$NON-NLS-1$
 
     /**
      * Type string for a field class that points to an alias

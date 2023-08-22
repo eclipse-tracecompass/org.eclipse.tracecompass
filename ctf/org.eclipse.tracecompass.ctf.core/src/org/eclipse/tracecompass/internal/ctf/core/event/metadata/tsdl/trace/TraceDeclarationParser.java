@@ -253,7 +253,7 @@ public final class TraceDeclarationParser extends AbstractScopedCommonTreeParser
             IntegerDeclaration newI;
             newI = IntegerDeclaration.createDeclaration(decl.getLength(), decl.isSigned(),
                     decl.getBase(), byteOrder, decl.getEncoding(),
-                    decl.getClock(), decl.getAlignment());
+                    decl.getClock(), decl.getAlignment(), null);
             parentScope.replaceType(name, newI);
         }
     }
@@ -263,7 +263,7 @@ public final class TraceDeclarationParser extends AbstractScopedCommonTreeParser
             final IntegerDeclaration containerType = decl.getContainerType();
             EnumDeclaration newEnum = new EnumDeclaration(IntegerDeclaration.createDeclaration(containerType.getLength(), containerType.isSigned(),
                     containerType.getBase(), byteOrder, containerType.getEncoding(),
-                    containerType.getClock(), containerType.getAlignment()),
+                    containerType.getClock(), containerType.getAlignment(), null),
                     decl.getLookupTable());
 
             parentScope.replaceType(name, newEnum);
@@ -295,7 +295,7 @@ public final class TraceDeclarationParser extends AbstractScopedCommonTreeParser
                     newI = IntegerDeclaration.createDeclaration(decl.getLength(),
                             decl.isSigned(), decl.getBase(), byteOrder,
                             decl.getEncoding(), decl.getClock(),
-                            decl.getAlignment());
+                            decl.getAlignment(), null);
                     sd.addField(s, newI);
                 }
             }
@@ -317,7 +317,7 @@ public final class TraceDeclarationParser extends AbstractScopedCommonTreeParser
                 newI = IntegerDeclaration.createDeclaration(decl.getLength(),
                         decl.isSigned(), decl.getBase(), byteOrder,
                         decl.getEncoding(), decl.getClock(),
-                        decl.getAlignment());
+                        decl.getAlignment(), null);
                 vd.getFields().put(s, newI);
             }
         }

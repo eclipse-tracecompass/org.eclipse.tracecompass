@@ -62,7 +62,8 @@ public class CTFEventFieldTest {
                 ByteOrder.LITTLE_ENDIAN,
                 Encoding.ASCII,
                 "",
-                len);
+                len,
+                null);
         String lengthName = "LengthName";
         StructDeclaration structDec = new StructDeclaration(0);
         structDec.addField(lengthName, id);
@@ -119,7 +120,7 @@ public class CTFEventFieldTest {
     public void testParseField_simple2() {
         IntegerDefinition fieldDef = new IntegerDefinition(
                 IntegerDeclaration.createDeclaration(1, false, 1, ByteOrder.BIG_ENDIAN,
-                        Encoding.ASCII, "", 8), null, fieldName, 1L);
+                        Encoding.ASCII, "", 8, null), null, fieldName, 1L);
 
         assertNotNull(fieldDef);
     }

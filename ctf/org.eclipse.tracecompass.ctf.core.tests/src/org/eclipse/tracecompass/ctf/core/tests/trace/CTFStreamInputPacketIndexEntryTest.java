@@ -262,7 +262,7 @@ public class CTFStreamInputPacketIndexEntryTest {
         StructDeclaration sd = new StructDeclaration(8);
         sd.addField("timestamp_end", IntegerDeclaration.INT_32B_DECL);
         sd.addField("content_size", IntegerDeclaration.INT_32B_DECL);
-        final EnumDeclaration declaration = new EnumDeclaration(IntegerDeclaration.createDeclaration(16, false, 10, ByteOrder.BIG_ENDIAN, Encoding.NONE, "", 8));
+        final EnumDeclaration declaration = new EnumDeclaration(IntegerDeclaration.createDeclaration(16, false, 10, ByteOrder.BIG_ENDIAN, Encoding.NONE, "", 8, null));
         declaration.add(313, 315, "CPU-PI");
         sd.addField("device", declaration);
         BitBuffer bb = new BitBuffer(ByteBuffer.allocate(128));
@@ -288,7 +288,7 @@ public class CTFStreamInputPacketIndexEntryTest {
         StructDeclaration sd = new StructDeclaration(8);
         sd.addField("timestamp_end", IntegerDeclaration.INT_32B_DECL);
         sd.addField("content_size", IntegerDeclaration.INT_32B_DECL);
-        final IDeclaration declaration = IntegerDeclaration.createDeclaration(16, false, 10, ByteOrder.BIG_ENDIAN, Encoding.NONE, "", 8);
+        final IDeclaration declaration = IntegerDeclaration.createDeclaration(16, false, 10, ByteOrder.BIG_ENDIAN, Encoding.NONE, "", 8, null);
         sd.addField("device", declaration);
         BitBuffer bb = new BitBuffer(ByteBuffer.allocate(128));
         bb.getByteBuffer().putInt(-1);

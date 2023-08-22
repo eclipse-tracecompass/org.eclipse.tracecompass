@@ -23,12 +23,14 @@ import java.util.regex.Pattern;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.tracecompass.common.core.NonNullUtils;
 import org.eclipse.tracecompass.ctf.core.CTFStrings;
+import org.eclipse.tracecompass.ctf.core.event.types.Declaration;
 import org.eclipse.tracecompass.ctf.core.event.types.EnumDefinition;
 import org.eclipse.tracecompass.ctf.core.event.types.FloatDefinition;
 import org.eclipse.tracecompass.ctf.core.event.types.IDefinition;
 import org.eclipse.tracecompass.ctf.core.event.types.IntegerDefinition;
 import org.eclipse.tracecompass.ctf.core.event.types.SimpleDatatypeDefinition;
 import org.eclipse.tracecompass.ctf.core.event.types.StringDefinition;
+import org.eclipse.tracecompass.ctf.core.event.types.StructDeclaration;
 import org.eclipse.tracecompass.ctf.core.event.types.StructDefinition;
 import org.eclipse.tracecompass.ctf.core.trace.ICTFPacketDescriptor;
 import org.eclipse.tracecompass.ctf.core.trace.IPacketReader;
@@ -216,9 +218,15 @@ public class StreamInputPacketIndexEntry implements ICTFPacketDescriptor {
 
     private static @NonNull Map<String, Object> computeAttributeMap(StructDefinition streamPacketContextDef) {
         Builder<String, Object> attributeBuilder = ImmutableMap.<String, Object> builder();
-        for (String field : streamPacketContextDef.getDeclaration().getFieldsList()) {
+        StructDeclaration decl = streamPacketContextDef.getDeclaration();
+        for (String field : decl.getFieldsList()) {
             IDefinition id = streamPacketContextDef.lookupDefinition(field);
-            String fieldName = field.startsWith("_") ? field.substring(1) : field; //$NON-NLS-1$
+            String fieldName;
+            if (id.getDeclaration() instanceof Declaration && ((Declaration) id.getDeclaration()).getRole() != null) {
+                fieldName = ((Declaration) id.getDeclaration()).getRole();
+            } else {
+                fieldName = field.startsWith("_") ? field.substring(1) : field; //$NON-NLS-1$
+            }
             if (id instanceof IntegerDefinition) {
                 attributeBuilder.put(fieldName, ((IntegerDefinition) id).getValue());
             } else if (id instanceof FloatDefinition) {

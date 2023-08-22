@@ -121,9 +121,9 @@ public final class StructDeclarationParser extends AbstractScopedCommonTreeParse
             fieldName = identifierSB.toString();
         } else {
             decl = TypeAliasParser.INSTANCE.parse(declaration, new TypeAliasParser.Param(trace, scope));
-            fieldName = ((JsonStructureFieldMemberMetadataNode) declaration).getRole();
+            fieldName = ((JsonStructureFieldMemberMetadataNode) declaration).getName();
             if (fieldName == null) {
-                fieldName = ((JsonStructureFieldMemberMetadataNode) declaration).getName();
+                fieldName = ((JsonStructureFieldMemberMetadataNode) declaration).getRole();
             }
         }
 

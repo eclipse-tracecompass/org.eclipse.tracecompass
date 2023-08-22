@@ -15,6 +15,7 @@
 package org.eclipse.tracecompass.ctf.core.event.types;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.ctf.core.CTFException;
 import org.eclipse.tracecompass.ctf.core.event.io.BitBuffer;
 import org.eclipse.tracecompass.ctf.core.event.scope.IDefinitionScope;
@@ -95,4 +96,20 @@ public interface IDeclaration {
      */
     boolean isBinaryEquivalent(IDeclaration other);
 
+    /**
+     * This method returns the role of a declaration
+     * @return the role of the declaration
+     * @since 4.3
+     */
+    public default @Nullable String getRole() {
+        return null;
+    }
+
+    /**
+     * This method sets the role for a declaration
+     * @param role
+     *            the new role for the declaration
+     * @since 4.3
+     */
+    public default void setRole(String role) {}
 }

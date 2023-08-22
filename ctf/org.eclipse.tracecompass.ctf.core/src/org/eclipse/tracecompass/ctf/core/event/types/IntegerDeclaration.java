@@ -135,6 +135,10 @@ public final class IntegerDeclaration extends Declaration implements ISimpleData
     /**
      * Factory, some common types cached
      *
+     * @deprecated use
+     *             {@link #createDeclaration(int, boolean, int, ByteOrder, Encoding, String, long, String)}
+     *             instead
+     *
      * @param len
      *            The length in bits
      * @param signed
@@ -151,6 +155,7 @@ public final class IntegerDeclaration extends Declaration implements ISimpleData
      *            The minimum alignment. Should be >= 1
      * @return the integer declaration
      */
+    @Deprecated
     public static IntegerDeclaration createDeclaration(int len, boolean signed, int base,
             @Nullable ByteOrder byteOrder, Encoding encoding, String clock, long alignment) {
         if (encoding.equals(Encoding.NONE) && (clock.equals("")) && base == BASE_10 && byteOrder != null) { //$NON-NLS-1$
@@ -219,6 +224,96 @@ public final class IntegerDeclaration extends Declaration implements ISimpleData
         return new IntegerDeclaration(len, signed, base, byteOrder, encoding, clock, alignment);
     }
 
+    /**
+     * Alternate create method for CTF2 integers which have roles
+     *
+     * @param len
+     *            The length in bits
+     * @param signed
+     *            Is the integer signed? false == unsigned
+     * @param base
+     *            The base (10-16 are most common)
+     * @param byteOrder
+     *            Big-endian little-endian or other
+     * @param encoding
+     *            ascii, utf8 or none.
+     * @param clock
+     *            The clock path, can be null
+     * @param alignment
+     *            The minimum alignment. Should be >= 1
+     * @param role
+     *            The role of the declaration
+     * @return The integer declaration
+     * @since 4.3
+     */
+    public static IntegerDeclaration createDeclaration(int len, boolean signed, int base,
+            @Nullable ByteOrder byteOrder, Encoding encoding, String clock, long alignment, @Nullable String role) {
+        if (encoding.equals(Encoding.NONE) && (clock.equals("")) && base == BASE_10 && byteOrder != null) { //$NON-NLS-1$
+            if (alignment == BYTE_ALIGN) {
+                switch (len) {
+                case SIZE_8:
+                    return signed ? INT_8_DECL : UINT_8_DECL;
+                case SIZE_16:
+                    if (!signed) {
+                        if (isBigEndian(byteOrder)) {
+                            return UINT_16B_DECL;
+                        }
+                        return UINT_16L_DECL;
+                    }
+                    break;
+                case SIZE_32:
+                    if (signed) {
+                        if (isBigEndian(byteOrder)) {
+                            return INT_32B_DECL;
+                        }
+                        return INT_32L_DECL;
+                    }
+                    if (isBigEndian(byteOrder)) {
+                        return UINT_32B_DECL;
+                    }
+                    return UINT_32L_DECL;
+                case SIZE_64:
+                    if (signed) {
+                        if (isBigEndian(byteOrder)) {
+                            return INT_64B_DECL;
+                        }
+                        return INT_64L_DECL;
+                    }
+                    if (isBigEndian(byteOrder)) {
+                        return UINT_64B_DECL;
+                    }
+                    return UINT_64L_DECL;
+
+                default:
+
+                }
+
+            } else if (alignment == 1) {
+                switch (len) {
+                case SIZE_5:
+                    if (!signed) {
+                        if (isBigEndian(byteOrder)) {
+                            return UINT_5B_DECL;
+                        }
+                        return UINT_5L_DECL;
+                    }
+                    break;
+                case SIZE_27:
+                    if (!signed) {
+                        if (isBigEndian(byteOrder)) {
+                            return UINT_27B_DECL;
+                        }
+                        return UINT_27L_DECL;
+                    }
+                    break;
+                default:
+                    break;
+                }
+            }
+        }
+        return new IntegerDeclaration(len, signed, base, byteOrder, encoding, clock, alignment, role);
+    }
+
     private static boolean isBigEndian(@Nullable ByteOrder byteOrder) {
         return (byteOrder != null) && byteOrder.equals(ByteOrder.BIG_ENDIAN);
     }
@@ -253,8 +348,34 @@ public final class IntegerDeclaration extends Declaration implements ISimpleData
         fAlignment = Math.max(alignment, 1);
     }
 
+    /**
+     * Constructor
+     *
+     * @param len
+     *            The length in bits
+     * @param signed
+     *            Is the integer signed? false == unsigned
+     * @param base
+     *            The base (10-16 are most common)
+     * @param byteOrder
+     *            Big-endian little-endian or other
+     * @param encoding
+     *            ascii, utf8 or none.
+     * @param clock
+     *            The clock path, can be null
+     * @param alignment
+     *            The minimum alignment. Should be &ge; 1
+     * @param role
+     *            The role of the integer declaration
+     */
+    private IntegerDeclaration(int len, boolean signed, int base,
+            @Nullable ByteOrder byteOrder, Encoding encoding, String clock, long alignment, @Nullable String role) {
+        this(len, signed, base, byteOrder, encoding, clock, alignment);
+        setRole(role);
+    }
+
     private IntegerDeclaration(int len, boolean signed, @Nullable ByteOrder byteOrder) {
-        this(len, signed, BASE_10, byteOrder, Encoding.NONE, "", BYTE_ALIGN); //$NON-NLS-1$
+        this(len, signed, BASE_10, byteOrder, Encoding.NONE, "", BYTE_ALIGN, null); //$NON-NLS-1$
     }
 
     // ------------------------------------------------------------------------

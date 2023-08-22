@@ -132,7 +132,7 @@ public class EventDeclaration implements IEventDeclaration {
         String timestampVariable = null;
         long timestamp;
         if (trace != null) {
-            timestampVariable = Long.valueOf(2).equals(trace.getMajor()) ? JsonMetadataStrings.DEFAULT_CLOCK_TIMESTAMP : CTFStrings.TIMESTAMP;
+            timestampVariable = trace.isCTF2() ? JsonMetadataStrings.DEFAULT_CLOCK_TIMESTAMP : CTFStrings.TIMESTAMP;
             timestamp = calculateTimestamp(eventHeaderDef, prevTimestamp, eventPayload, eventContext, timestampVariable);
         } else {
             timestamp = calculateTimestamp(eventHeaderDef, prevTimestamp, eventPayload, eventContext, CTFStrings.TIMESTAMP);
@@ -164,16 +164,35 @@ public class EventDeclaration implements IEventDeclaration {
         } else if (eventHeaderDef instanceof StructDefinition) {
             StructDefinition structDefinition = (StructDefinition) eventHeaderDef;
             def = structDefinition.lookupDefinition(timestampVariable);
+            if (def == null) {
+                def = (Definition) structDefinition.lookupRole(timestampVariable);
+            }
         } else if (eventHeaderDef != null) {
             throw new CTFIOException("Event header def is not a Struct or an Event Header"); //$NON-NLS-1$
         }
 
-        if (def == null && eventPayload != null && eventPayload.getDefinition(timestampVariable) != null) {
-            def = eventPayload.lookupDefinition(timestampVariable);
+        if (def == null && eventPayload != null) {
+            if (eventPayload.getDefinition(timestampVariable) != null) {
+                def = eventPayload.lookupDefinition(timestampVariable);
+            } else {
+               Definition value = (Definition) eventPayload.lookupRole(timestampVariable);
+               if (value != null) {
+                   def = value;
+               }
+            }
         }
-        if (def == null && eventContext != null && eventContext.getDefinition(timestampVariable) != null) {
-            def = eventContext.lookupDefinition(timestampVariable);
+
+        if (def == null && eventContext != null) {
+            if (eventContext.getDefinition(timestampVariable) != null) {
+                def = eventContext.lookupDefinition(timestampVariable);
+            } else {
+                Definition value = (Definition) eventContext.lookupRole(timestampVariable);
+                if (value != null) {
+                    def = value;
+                }
+            }
         }
+
         if (def instanceof IntegerDefinition) {
             IntegerDefinition timestampDef = (IntegerDefinition) def;
             timestamp = calculateTimestamp(timestampDef, prevTimestamp);

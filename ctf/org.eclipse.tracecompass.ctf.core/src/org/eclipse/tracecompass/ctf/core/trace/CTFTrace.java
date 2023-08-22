@@ -191,7 +191,7 @@ public class CTFTrace implements IDefinitionScope {
         }
 
         /* Open and parse the metadata file */
-        if (Long.valueOf(2).equals(this.fMajor)) {
+        if (isCTF2()) {
             metadata.parseJsonFile();
         } else {
             metadata.parseFile();
@@ -547,8 +547,8 @@ public class CTFTrace implements IDefinitionScope {
     private void validateUUID(StructDefinition packetHeaderDef) throws CTFException {
         UUID otheruuid = null;
 
-        if (fMajor.equals(Long.valueOf(2))) {
-            IDefinition lookupDefinition = packetHeaderDef.lookupDefinition(JsonMetadataStrings.UUID);
+        if (isCTF2()) {
+            IDefinition lookupDefinition = packetHeaderDef.lookupRole(JsonMetadataStrings.UUID);
             BlobDefinition uuidDef = (BlobDefinition) lookupDefinition;
             if (uuidDef != null) {
                 otheruuid = Utils.makeUUID(uuidDef.getBytes());
@@ -567,14 +567,23 @@ public class CTFTrace implements IDefinitionScope {
         }
     }
 
+    /**
+     * Checks whether the trace is CTF2 or not
+     *
+     * @return boolean true if trace is CTF2
+     * @since 4.3
+     */
+    public boolean isCTF2() {
+        return Long.valueOf(2).equals(fMajor);
+    }
+
     private boolean validateMagicNumber(StructDefinition packetHeaderDef) {
-        String headerMagic;
-        if (fMajor.equals(Long.valueOf(2))) {
-            headerMagic = JsonMetadataStrings.MAGIC_NUMBER;
+        IntegerDefinition magicDef;
+        if (isCTF2()) {
+            magicDef = (IntegerDefinition) packetHeaderDef.lookupRole(JsonMetadataStrings.MAGIC_NUMBER);
         } else {
-            headerMagic = CTFStrings.MAGIC;
+            magicDef = (IntegerDefinition) packetHeaderDef.lookupDefinition(CTFStrings.MAGIC);
         }
-        IntegerDefinition magicDef = (IntegerDefinition) packetHeaderDef.lookupDefinition(headerMagic);
         if (magicDef != null) {
             int magic = (int) magicDef.getValue();
             return (magic == Utils.CTF_MAGIC);

@@ -36,6 +36,7 @@ public class BlobDefinitionTest {
 
     private BlobDefinition fixture;
     private static final int LENGTH = 16;
+    private static final String ROLE = "metadata-uuid";
     @NonNull private static final String MEDIA_TYPE = "\"application/octet-stream\"";
     private static final byte[] UUID_ARRAY = new byte[] { 0x2a, 0x64, 0x22, (byte) 0xd0, 0x6c, (byte) 0xee, 0x11, (byte) 0xe0, (byte) 0x8c, 0x08, (byte) 0xcb, 0x07, (byte) 0xd7, (byte) 0xb3, (byte) 0xa5, 0x64 };
 
@@ -48,7 +49,7 @@ public class BlobDefinitionTest {
     @Before
     public void setUp() throws CTFException {
         String name = "testBlob";
-        BlobDeclaration blobDec = new BlobDeclaration(LENGTH, MEDIA_TYPE);
+        BlobDeclaration blobDec = new BlobDeclaration(LENGTH, MEDIA_TYPE, ROLE);
         ByteBuffer byteBuffer = ByteBuffer.allocate(16);
         BitBuffer bb = new BitBuffer(byteBuffer);
         byteBuffer.mark();
@@ -62,7 +63,7 @@ public class BlobDefinitionTest {
      */
     @Test
     public void testBlobDefinition() {
-        BlobDeclaration declaration = new BlobDeclaration(LENGTH, MEDIA_TYPE);
+        BlobDeclaration declaration = new BlobDeclaration(LENGTH, MEDIA_TYPE, ROLE);
         IDefinitionScope definitionScope = null;
         String fieldName = "";
 

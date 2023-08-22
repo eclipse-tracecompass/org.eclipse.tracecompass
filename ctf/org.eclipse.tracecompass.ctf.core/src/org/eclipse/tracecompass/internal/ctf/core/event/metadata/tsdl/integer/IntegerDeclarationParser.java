@@ -132,22 +132,26 @@ public final class IntegerDeclarationParser implements ICommonTreeParser {
         CTFTrace trace = ((Param) parameter).fTrace;
 
         /* The return value */
-        IntegerDeclaration integerDeclaration = null;
         boolean signed = false;
         ByteOrder byteOrder = trace.getByteOrder();
         long size = 0;
         long alignment = 0;
         int base = DEFAULT_INT_BASE;
+        String role = null;
         @NonNull
         String clock = EMPTY_STRING;
 
         Encoding encoding = Encoding.NONE;
 
         if (integer instanceof JsonStructureFieldMemberMetadataNode) {
-            JsonObject fieldclass = ((JsonStructureFieldMemberMetadataNode) integer).getFieldClass().getAsJsonObject();
+            JsonStructureFieldMemberMetadataNode member = (JsonStructureFieldMemberMetadataNode) integer;
+            JsonObject fieldclass = member.getFieldClass().getAsJsonObject();
 
             size = fieldclass.get(LENGTH).getAsInt();
-            signed = fieldclass.get(SIGNED).getAsBoolean();
+            // by default fieldclass is unsigned
+            if (fieldclass.has(SIGNED)) {
+                signed = fieldclass.get(SIGNED).getAsBoolean();
+            }
             CTFJsonMetadataNode bo = new CTFJsonMetadataNode(integer, CTFParser.tokenNames[CTFParser.UNARY_EXPRESSION_STRING], fieldclass.get(BYTE_ORDER).getAsString());
             byteOrder = ByteOrderParser.INSTANCE.parse(bo, new ByteOrderParser.Param(trace));
             if (fieldclass.has(ALIGNMENT)) {
@@ -156,6 +160,7 @@ public final class IntegerDeclarationParser implements ICommonTreeParser {
             if (fieldclass.has(PREFERRED_BASE)) {
                 base = fieldclass.get(PREFERRED_BASE).getAsInt();
             }
+            role = member.getRole();
         } else if (integer instanceof CTFAntlrMetadataNode) {
             List<ICTFMetadataNode> children = integer.getChildren();
             /*
@@ -217,9 +222,7 @@ public final class IntegerDeclarationParser implements ICommonTreeParser {
             alignment = 1;
         }
 
-        integerDeclaration = IntegerDeclaration.createDeclaration((int) size, signed, base,
-                byteOrder, encoding, clock, alignment);
-
-        return integerDeclaration;
+        return IntegerDeclaration.createDeclaration((int) size, signed, base,
+                byteOrder, encoding, clock, alignment, role);
     }
 }

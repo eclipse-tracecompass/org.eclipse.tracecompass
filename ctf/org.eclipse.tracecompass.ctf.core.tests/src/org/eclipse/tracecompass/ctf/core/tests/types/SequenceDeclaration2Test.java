@@ -88,7 +88,7 @@ public class SequenceDeclaration2Test {
     public void testCreateDefinition() throws CTFException {
         long seqLen = 2;
         IntegerDeclaration id = IntegerDeclaration.createDeclaration(8, false, 8,
-                ByteOrder.LITTLE_ENDIAN, Encoding.UTF8, "", 32);
+                ByteOrder.LITTLE_ENDIAN, Encoding.UTF8, "", 32, null);
         StructDeclaration structDec = new StructDeclaration(0);
         structDec.addField(FIELD_NAME, id);
         StructDefinition structDef = new StructDefinition(

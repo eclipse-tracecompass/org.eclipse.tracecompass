@@ -36,6 +36,7 @@ public class BlobDeclarationTest {
 
     private BlobDeclaration fixture;
     private static final int LENGTH = 16;
+    private static final String ROLE = "metadata-uuid";
     @NonNull private static final String MEDIA_TYPE = "\"application/octet-stream\"";
     private static final byte[] UUID_ARRAY = new byte[] { 0x2a, 0x64, 0x22, (byte) 0xd0, 0x6c, (byte) 0xee, 0x11, (byte) 0xe0, (byte) 0x8c, 0x08, (byte) 0xcb, 0x07, (byte) 0xd7, (byte) 0xb3, (byte) 0xa5, 0x64 };
 
@@ -44,7 +45,7 @@ public class BlobDeclarationTest {
      */
     @Before
     public void setUp() {
-        fixture = new BlobDeclaration(LENGTH, MEDIA_TYPE);
+        fixture = new BlobDeclaration(LENGTH, MEDIA_TYPE, ROLE);
     }
 
     /**
@@ -52,7 +53,7 @@ public class BlobDeclarationTest {
      */
     @Test
     public void testBlobDeclaration() {
-        BlobDeclaration result = new BlobDeclaration(LENGTH, MEDIA_TYPE);
+        BlobDeclaration result = new BlobDeclaration(LENGTH, MEDIA_TYPE, ROLE);
 
         assertNotNull(result);
     }

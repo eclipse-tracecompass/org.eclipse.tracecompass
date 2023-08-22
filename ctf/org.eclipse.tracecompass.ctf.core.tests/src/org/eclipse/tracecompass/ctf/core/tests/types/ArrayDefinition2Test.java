@@ -68,14 +68,14 @@ public class ArrayDefinition2Test {
     }
 
     private ArrayDefinition createLongArray() {
-        IntegerDeclaration decl = IntegerDeclaration.createDeclaration(32, false, 10, ByteOrder.BIG_ENDIAN, Encoding.NONE, "none", 8);
+        IntegerDeclaration decl = IntegerDeclaration.createDeclaration(32, false, 10, ByteOrder.BIG_ENDIAN, Encoding.NONE, "none", 8, null);
         List<@NonNull Definition> defs = createIntDefs(10, 32);
         ArrayDefinition temp = setUpDeclaration(decl, defs);
         return temp;
     }
 
     private ArrayDefinition createCharArray() {
-        IntegerDeclaration decl = IntegerDeclaration.createDeclaration(8, false, 10, ByteOrder.BIG_ENDIAN, Encoding.UTF8, "none", 8);
+        IntegerDeclaration decl = IntegerDeclaration.createDeclaration(8, false, 10, ByteOrder.BIG_ENDIAN, Encoding.UTF8, "none", 8, null);
         List<@NonNull Definition> defs = createIntDefs(4, 8);
         ArrayDefinition temp = setUpDeclaration(decl, defs);
         return temp;
@@ -100,7 +100,7 @@ public class ArrayDefinition2Test {
         for (int i = 0; i < size; i++) {
             String content = "test" + i;
             defs.add(new IntegerDefinition(IntegerDeclaration.createDeclaration(bits, false,
-                    16, ByteOrder.LITTLE_ENDIAN, Encoding.UTF8, content, 24), null, content, i));
+                    16, ByteOrder.LITTLE_ENDIAN, Encoding.UTF8, content, 24, null), null, content, i));
         }
         return defs;
     }

@@ -51,8 +51,8 @@ public class CTFEventDefinitionTest {
     @Before
     public void init() {
         fixture = new ArrayList<>();
-        IntegerDeclaration pidDec = IntegerDeclaration.createDeclaration(5, false, 10, ByteOrder.LITTLE_ENDIAN, Encoding.NONE, "", 8);
-        IntegerDeclaration ctxDec = IntegerDeclaration.createDeclaration(16, false, 10, ByteOrder.LITTLE_ENDIAN, Encoding.NONE, "", 8);
+        IntegerDeclaration pidDec = IntegerDeclaration.createDeclaration(5, false, 10, ByteOrder.LITTLE_ENDIAN, Encoding.NONE, "", 8, null);
+        IntegerDeclaration ctxDec = IntegerDeclaration.createDeclaration(16, false, 10, ByteOrder.LITTLE_ENDIAN, Encoding.NONE, "", 8, null);
         IntegerDefinition pid = new IntegerDefinition(pidDec, null, "pid", 3);
         IntegerDefinition pod = new IntegerDefinition(pidDec, null, "pod", 3);
         IntegerDefinition ctx = new IntegerDefinition(pidDec, null, "ctx", 3);
