@@ -34,6 +34,8 @@ public class JsonStructureFieldMemberMetadataNode extends CTFJsonMetadataNode {
     private final String fName;
     @SerializedName("field-class")
     private final JsonElement fFieldClass;
+    @SerializedName("selector-field-ranges")
+    private JsonElement fFieldRanges;
 
     /**
      * Constructor for a JsonStructureFieldMemberMetadataNode
@@ -89,6 +91,16 @@ public class JsonStructureFieldMemberMetadataNode extends CTFJsonMetadataNode {
             }
         }
         return role;
+    }
+
+    /**
+     * Get the field ranges of this member class- this is only applicable to
+     * variant field classes
+     *
+     * @return JsonElement of the field ranges for this variant field class
+     */
+    public JsonElement getFieldRanges() {
+        return fFieldRanges;
     }
 
     @Override

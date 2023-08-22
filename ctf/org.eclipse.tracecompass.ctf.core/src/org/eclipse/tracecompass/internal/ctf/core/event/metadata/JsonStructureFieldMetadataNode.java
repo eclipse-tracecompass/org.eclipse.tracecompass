@@ -65,6 +65,16 @@ public class JsonStructureFieldMetadataNode extends CTFJsonMetadataNode {
         return fMinimumAlignment;
     }
 
+    /**
+     * Set the member classes of the structure field class
+     *
+     * @param memberClasses
+     *            the Member Classes
+     */
+    public void setMemberClasses(List<JsonStructureFieldMemberMetadataNode> memberClasses) {
+        fMemberClasses = memberClasses;
+    }
+
     @Override
     public void initialize() throws CTFException {
         super.initialize();

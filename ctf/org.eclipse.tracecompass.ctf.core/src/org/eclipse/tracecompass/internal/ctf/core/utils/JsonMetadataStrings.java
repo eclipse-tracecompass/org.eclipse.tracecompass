@@ -141,4 +141,14 @@ public final class JsonMetadataStrings {
      * Type string for a fixed length unsigned enumeration field class
      */
     public static final String FIXED_UNSIGNED_ENUMERATION = "fixed-length-unsigned-enumeration"; //$NON-NLS-1$
+
+    /**
+     * Type string for a variant field class
+     */
+    public static final String VARIANT = "variant"; //$NON-NLS-1$
+
+    /**
+     * Type string for a structure field class
+     */
+    public static final String STRUCTURE = "structure"; //$NON-NLS-1$
 }

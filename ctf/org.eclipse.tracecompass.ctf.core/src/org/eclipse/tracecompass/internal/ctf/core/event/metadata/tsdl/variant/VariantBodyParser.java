@@ -24,6 +24,7 @@ import org.eclipse.tracecompass.ctf.core.event.types.VariantDeclaration;
 import org.eclipse.tracecompass.ctf.core.trace.CTFTrace;
 import org.eclipse.tracecompass.ctf.parser.CTFParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.AbstractScopedCommonTreeParser;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonStructureFieldMemberMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.MetadataStrings;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.TypeAliasParser;
@@ -112,14 +113,12 @@ public final class VariantBodyParser extends AbstractScopedCommonTreeParser {
                 for (Entry<String, IDeclaration> declarationEntry : decs.entrySet()) {
                     variantDeclaration.addField(declarationEntry.getKey(), declarationEntry.getValue());
                 }
-            } else if (CTFParser.tokenNames[CTFParser.SV_DECLARATION].equals(type)) {
+            } else if (CTFParser.tokenNames[CTFParser.SV_DECLARATION].equals(type) || variantBody instanceof JsonStructureFieldMemberMetadataNode) {
                 VariantDeclarationParser.INSTANCE.parse(declarationNode, new VariantDeclarationParser.Param(variantDeclaration, trace, scope));
             } else {
                 throw childTypeError(declarationNode);
             }
         }
-
         return variantDeclaration;
     }
-
 }

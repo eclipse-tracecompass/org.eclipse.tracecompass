@@ -12,10 +12,13 @@ package org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.variant;
 
 import static org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.TsdlUtils.childTypeError;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.tracecompass.ctf.core.CTFException;
 import org.eclipse.tracecompass.ctf.core.event.metadata.DeclarationScope;
 import org.eclipse.tracecompass.ctf.core.event.types.EnumDeclaration;
 import org.eclipse.tracecompass.ctf.core.event.types.IDeclaration;
@@ -23,8 +26,16 @@ import org.eclipse.tracecompass.ctf.core.event.types.VariantDeclaration;
 import org.eclipse.tracecompass.ctf.core.trace.CTFTrace;
 import org.eclipse.tracecompass.ctf.parser.CTFParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.AbstractScopedCommonTreeParser;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonStructureFieldMemberMetadataNode;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonStructureFieldMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
 import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
+import org.eclipse.tracecompass.internal.ctf.core.utils.JsonMetadataStrings;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 /**
  *
@@ -187,6 +198,9 @@ struct {
  */
 public final class VariantParser extends AbstractScopedCommonTreeParser {
 
+    private static final String OPTIONS = "options"; //$NON-NLS-1$
+    private static final String SELECTOR_FIELD_LOCATION = "selector-field-location"; //$NON-NLS-1$
+
     /**
      * Parameter object with a trace and current scope
      *
@@ -238,7 +252,6 @@ public final class VariantParser extends AbstractScopedCommonTreeParser {
         }
         final DeclarationScope scope = ((Param) param).fDeclarationScope;
 
-        List<ICTFMetadataNode> children = variant.getChildren();
         VariantDeclaration variantDeclaration = null;
 
         boolean hasName = false;
@@ -250,21 +263,49 @@ public final class VariantParser extends AbstractScopedCommonTreeParser {
         boolean hasTag = false;
         String variantTag = null;
 
-        for (ICTFMetadataNode child : children) {
-            String type = child.getType();
-            if (CTFParser.tokenNames[CTFParser.VARIANT_NAME].equals(type)) {
-                hasName = true;
-                ICTFMetadataNode variantNameIdentifier = child.getChild(0);
-                variantName = variantNameIdentifier.getText();
-            } else if (CTFParser.tokenNames[CTFParser.VARIANT_TAG].equals(type)) {
+        if (variant instanceof JsonStructureFieldMemberMetadataNode) {
+            JsonObject fieldClass = ((JsonStructureFieldMemberMetadataNode) variant).getFieldClass().getAsJsonObject();
+            if (fieldClass.has(SELECTOR_FIELD_LOCATION)) {
+                JsonArray location = fieldClass.get(SELECTOR_FIELD_LOCATION).getAsJsonArray();
+                variantTag = location.get(location.size() - 1).getAsString();
                 hasTag = true;
-                ICTFMetadataNode variantTagIdentifier = child.getChild(0);
-                variantTag = variantTagIdentifier.getText();
-            } else if (CTFParser.tokenNames[CTFParser.VARIANT_BODY].equals(type)) {
+            }
+            if (fieldClass.has(OPTIONS)) {
+                JsonArray options = fieldClass.get(OPTIONS).getAsJsonArray();
+                List<JsonStructureFieldMemberMetadataNode> memberClasses = new ArrayList<>();
+                for (JsonElement opt : options) {
+                    JsonStructureFieldMemberMetadataNode memberClass = Objects.requireNonNull(new Gson().fromJson(opt, JsonStructureFieldMemberMetadataNode.class));
+                    memberClasses.add(memberClass);
+                }
+                JsonStructureFieldMetadataNode body = new JsonStructureFieldMetadataNode(variant, JsonMetadataStrings.STRUCTURE, null);
+                body.setMemberClasses(memberClasses);
+                try {
+                    body.initialize();
+                } catch (CTFException e) {
+                    throw new ParseException("initialization issue ", e); //$NON-NLS-1$
+                }
+                variantBody = variant;
                 hasBody = true;
-                variantBody = child;
-            } else {
-                throw childTypeError(child);
+            }
+        } else {
+            List<ICTFMetadataNode> children = variant.getChildren();
+            for (ICTFMetadataNode child : children) {
+                String type = child.getType();
+                if (CTFParser.tokenNames[CTFParser.VARIANT_NAME].equals(type)) {
+                    hasName = true;
+                    ICTFMetadataNode variantNameIdentifier = child.getChild(0);
+                    variantName = variantNameIdentifier.getText();
+                } else if (CTFParser.tokenNames[CTFParser.VARIANT_TAG].equals(type)) {
+                    hasTag = true;
+                    // id
+                    ICTFMetadataNode variantTagIdentifier = child.getChild(0);
+                    variantTag = variantTagIdentifier.getText();
+                } else if (CTFParser.tokenNames[CTFParser.VARIANT_BODY].equals(type)) {
+                    hasBody = true;
+                    variantBody = child;
+                } else {
+                    throw childTypeError(child);
+                }
             }
         }
 

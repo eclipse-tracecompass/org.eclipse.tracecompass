@@ -22,6 +22,7 @@ import java.util.Objects;
 import org.eclipse.tracecompass.ctf.core.CTFException;
 import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
 
+import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -34,7 +35,7 @@ public class CTFJsonMetadataNode implements ICTFMetadataNode {
     @SerializedName("type")
     private String fType;
     @SerializedName("user-attributes")
-    private Map<String, String> fUserAttributes;
+    private Map<String, JsonObject> fUserAttributes;
 
     //other attributes added for convenience
     private ICTFMetadataNode fParent;
@@ -125,7 +126,7 @@ public class CTFJsonMetadataNode implements ICTFMetadataNode {
      *
      * @return the userAttributes
      */
-    public Map<String, String> getUserAttributes() {
+    public Map<String, JsonObject> getUserAttributes() {
         return fUserAttributes;
     }
 

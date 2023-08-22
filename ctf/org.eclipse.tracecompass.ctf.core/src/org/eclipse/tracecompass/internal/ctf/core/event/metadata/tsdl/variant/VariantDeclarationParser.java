@@ -11,17 +11,27 @@
 package org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.variant;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.tracecompass.ctf.core.CTFException;
 import org.eclipse.tracecompass.ctf.core.event.metadata.DeclarationScope;
 import org.eclipse.tracecompass.ctf.core.event.types.IDeclaration;
 import org.eclipse.tracecompass.ctf.core.event.types.VariantDeclaration;
 import org.eclipse.tracecompass.ctf.core.trace.CTFTrace;
 import org.eclipse.tracecompass.ctf.parser.CTFParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.AbstractScopedCommonTreeParser;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonStructureFieldMemberMetadataNode;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonStructureFieldMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.TypeAliasParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.TypeDeclaratorParser;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.TypeSpecifierListParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
+import org.eclipse.tracecompass.internal.ctf.core.utils.JsonMetadataStrings;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 
 /**
  * This parses the (sub)declarations located IN a variant declaration.
@@ -86,43 +96,76 @@ public final class VariantDeclarationParser extends AbstractScopedCommonTreePars
         }
         VariantDeclaration variant = ((Param) param).fVariant;
         final DeclarationScope scope = ((Param) param).fDeclarationScope;
-        /* Get the type specifier list node */
-        ICTFMetadataNode typeSpecifierListNode = declaration.getFirstChildWithType(CTFParser.tokenNames[CTFParser.TYPE_SPECIFIER_LIST]);
-        if (typeSpecifierListNode == null) {
-            throw new ParseException("Variant need type specifiers"); //$NON-NLS-1$
-        }
+        CTFTrace trace = ((Param) param).fTrace;
 
-        /* Get the type declarator list node */
-        ICTFMetadataNode typeDeclaratorListNode = declaration.getFirstChildWithType(CTFParser.tokenNames[CTFParser.TYPE_DECLARATOR_LIST]);
-        if (typeDeclaratorListNode == null) {
-            throw new ParseException("Cannot have empty variant"); //$NON-NLS-1$
-        }
-        /* Get the type declarator list */
-        List<ICTFMetadataNode> typeDeclaratorList = typeDeclaratorListNode.getChildren();
-
-        /*
-         * For each type declarator, parse the declaration and add a field to
-         * the variant
-         */
-        for (ICTFMetadataNode typeDeclaratorNode : typeDeclaratorList) {
-
-            StringBuilder identifierSB = new StringBuilder();
-            CTFTrace trace = ((Param) param).fTrace;
-            IDeclaration decl = TypeDeclaratorParser.INSTANCE.parse(typeDeclaratorNode,
-                    new TypeDeclaratorParser.Param(trace, typeSpecifierListNode, scope, identifierSB));
-
-            String name = identifierSB.toString();
-
-            if (variant.hasField(name)) {
-                throw new ParseException("variant: duplicate field " //$NON-NLS-1$
-                        + name);
+        if (declaration instanceof JsonStructureFieldMetadataNode) {
+            List<ICTFMetadataNode> children = declaration.getChildren();
+            if (children.isEmpty()) {
+                throw new ParseException("Cannot have a variant with no fields"); //$NON-NLS-1$
+            }
+            for (ICTFMetadataNode child : children) {
+                JsonStructureFieldMemberMetadataNode member = (JsonStructureFieldMemberMetadataNode) child;
+                JsonElement fieldClass = member.getFieldClass();
+                String name = member.getName();
+                IDeclaration decl;
+                if (fieldClass.isJsonObject()) {
+                    String type = fieldClass.getAsJsonObject().get(JsonMetadataStrings.TYPE).getAsString();
+                    if (JsonMetadataStrings.STRUCTURE.equals(type)) {
+                        JsonStructureFieldMetadataNode structureFieldClass = Objects.requireNonNull(new Gson().fromJson(fieldClass.getAsJsonObject(), JsonStructureFieldMetadataNode.class));
+                        try {
+                            structureFieldClass.initialize();
+                        } catch (CTFException e) {
+                            throw new ParseException("Variant declaration does not match CTF2 Json format"); //$NON-NLS-1$
+                        }
+                        decl = TypeSpecifierListParser.INSTANCE.parse(structureFieldClass, new TypeSpecifierListParser.Param(trace, null, null, scope));
+                    } else {
+                        decl = TypeAliasParser.INSTANCE.parse(member, new TypeAliasParser.Param(trace, scope));
+                    }
+                } else {
+                    // TODO: Cover else-case where field class is JsonString for
+                    // field class alias
+                    throw new ParseException("Field class aliases are not yet supported by trace compass"); //$NON-NLS-1$
+                }
+                addVariantField(variant, scope, decl, name);
+            }
+        } else {
+            /* Get the type specifier list node */
+            ICTFMetadataNode typeSpecifierListNode = declaration.getFirstChildWithType(CTFParser.tokenNames[CTFParser.TYPE_SPECIFIER_LIST]);
+            if (typeSpecifierListNode == null) {
+                throw new ParseException("Variant need type specifiers"); //$NON-NLS-1$
             }
 
-            scope.registerIdentifier(name, decl);
+            /* Get the type declarator list node */
+            ICTFMetadataNode typeDeclaratorListNode = declaration.getFirstChildWithType(CTFParser.tokenNames[CTFParser.TYPE_DECLARATOR_LIST]);
+            if (typeDeclaratorListNode == null) {
+                throw new ParseException("Cannot have empty variant"); //$NON-NLS-1$
+            }
+            /* Get the type declarator list */
+            List<ICTFMetadataNode> typeDeclaratorList = typeDeclaratorListNode.getChildren();
 
-            variant.addField(name, decl);
+            /*
+             * For each type declarator, parse the declaration and add a field
+             * to the variant
+             */
+            for (ICTFMetadataNode typeDeclaratorNode : typeDeclaratorList) {
+
+                StringBuilder identifierSB = new StringBuilder();
+                IDeclaration decl = TypeDeclaratorParser.INSTANCE.parse(typeDeclaratorNode,
+                        new TypeDeclaratorParser.Param(trace, typeSpecifierListNode, scope, identifierSB));
+                String name = identifierSB.toString();
+
+                addVariantField(variant, scope, decl, name);
+            }
         }
         return variant;
     }
 
+    private static void addVariantField(VariantDeclaration variant, DeclarationScope scope, IDeclaration decl, String name) throws ParseException {
+        if (variant.hasField(name)) {
+            throw new ParseException("variant: duplicate field " //$NON-NLS-1$
+                    + name);
+        }
+        scope.registerIdentifier(name, decl);
+        variant.addField(name, decl);
+    }
 }
