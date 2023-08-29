@@ -73,6 +73,7 @@ import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
 import org.eclipse.tracecompass.tmf.ui.editors.ITmfTraceEditor;
 import org.eclipse.tracecompass.tmf.ui.symbols.ISymbolProviderPreferencePage;
 import org.eclipse.tracecompass.tmf.ui.symbols.SymbolProviderConfigDialog;
+import org.eclipse.tracecompass.tmf.ui.symbols.TmfSymbolProviderUpdatedSignal;
 import org.eclipse.tracecompass.tmf.ui.views.timegraph.BaseDataProviderTimeGraphView;
 import org.eclipse.tracecompass.tmf.ui.widgets.timegraph.TimeGraphPresentationProvider;
 import org.eclipse.tracecompass.tmf.ui.widgets.timegraph.TimeGraphViewer;
@@ -688,28 +689,10 @@ public class FlameChartView extends BaseDataProviderTimeGraphView {
             public void run() {
                 SymbolProviderConfigDialog dialog = new SymbolProviderConfigDialog(getSite().getShell(), getProviderPages());
                 if (dialog.open() == IDialogConstants.OK_ID) {
-                    List<TimeGraphEntry> traceEntries = getEntryList(getTrace());
-                    if (traceEntries != null) {
-                        for (TraceEntry traceEntry : Iterables.filter(traceEntries, TraceEntry.class)) {
-                            ITimeGraphDataProvider<? extends TimeGraphEntryModel> provider = traceEntry.getProvider();
-                            if (provider instanceof CallStackDataProvider) {
-                                ((CallStackDataProvider) provider).resetFunctionNames(new NullProgressMonitor());
-                            }
-
-                            // reset full and zoomed events here
-                            Iterable<TimeGraphEntry> flatten = Utils.flatten(traceEntry);
-                            flatten.forEach(e -> e.setSampling(null));
-
-                            // recompute full events
-                            long start = traceEntry.getStartTime();
-                            long end = traceEntry.getEndTime();
-                            final long resolution = Long.max(1, (end - start) / getDisplayWidth());
-                            zoomEntries(flatten, start, end, resolution, new NullProgressMonitor());
-                        }
-                        // zoomed events will be retriggered by refreshing
-                        refresh();
-                    }
-                    synchingToTime(getTimeGraphViewer().getSelectionBegin());
+                    /*
+                     * Nothing to do. SymbolProviderConfigDialog will send a
+                     * TmfSymbolProviderUpdatedSignal to notify registered components.
+                     */
                 }
             }
         };
@@ -757,6 +740,30 @@ public class FlameChartView extends BaseDataProviderTimeGraphView {
         getConfigureSymbolsAction().setEnabled(providerPages.length > 0);
     }
 
+    private void resetSymbols() {
+        List<TimeGraphEntry> traceEntries = getEntryList(getTrace());
+        if (traceEntries != null) {
+            for (TraceEntry traceEntry : Iterables.filter(traceEntries, TraceEntry.class)) {
+                ITimeGraphDataProvider<? extends TimeGraphEntryModel> provider = traceEntry.getProvider();
+                if (provider instanceof CallStackDataProvider) {
+                    ((CallStackDataProvider) provider).resetFunctionNames(new NullProgressMonitor());
+                }
+
+                // reset full and zoomed events here
+                Iterable<TimeGraphEntry> flatten = Utils.flatten(traceEntry);
+                flatten.forEach(e -> e.setSampling(null));
+
+                // recompute full events
+                long start = traceEntry.getStartTime();
+                long end = traceEntry.getEndTime();
+                final long resolution = Long.max(1, (end - start) / getDisplayWidth());
+                zoomEntries(flatten, start, end, resolution, new NullProgressMonitor());
+            }
+            // zoomed events will be retriggered by refreshing
+            refresh();
+        }
+        synchingToTime(getTimeGraphViewer().getSelectionBegin());
+    }
     @TmfSignalHandler
     @Override
     public void traceClosed(@Nullable TmfTraceClosedSignal signal) {
@@ -771,4 +778,17 @@ public class FlameChartView extends BaseDataProviderTimeGraphView {
         super.traceClosed(signal);
     }
 
+    /**
+     * Symbol map provider updated
+     *
+     * @param signal
+     *            the signal
+     * @since 4.1
+     */
+    @TmfSignalHandler
+    public void symbolMapUpdated(TmfSymbolProviderUpdatedSignal signal) {
+        if (signal.getSource() != this) {
+            resetSymbols();
+        }
+    }
 }
