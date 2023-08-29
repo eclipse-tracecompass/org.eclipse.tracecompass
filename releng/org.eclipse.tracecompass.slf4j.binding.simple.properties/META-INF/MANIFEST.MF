@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Trace Compass SLF4J Simple Binding Properties Fragment Plug-in
 Bundle-SymbolicName: org.eclipse.tracecompass.slf4j.binding.simple.properties
-Bundle-Version: 1.0.0.qualifier
+Bundle-Version: 1.0.1.qualifier
 Bundle-Vendor: Eclipse Trace Compass
 Fragment-Host: org.slf4j.api
 Automatic-Module-Name: org.eclipse.tracecompass.slf4j.binding.simple.properties
