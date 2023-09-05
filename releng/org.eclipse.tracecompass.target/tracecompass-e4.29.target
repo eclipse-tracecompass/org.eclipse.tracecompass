@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><?pde version="3.8"?><target name="tracecompass-e4.29" sequenceNumber="5">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><?pde version="3.8"?><target name="tracecompass-e4.29" sequenceNumber="6">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.cdt.gnu.dsf.feature.group" version="0.0.0"/>
@@ -25,7 +25,7 @@
 <unit id="org.apache.xml.serializer" version="0.0.0"/>
 <unit id="org.hamcrest" version="0.0.0"/>
 <unit id="org.mozilla.javascript" version="1.7.10.v20221112-0806"/>
-<repository location="https://download.eclipse.org/tools/orbit/simrel/orbit-aggregation/milestone/S202308291334/"/>
+<repository location="https://download.eclipse.org/tools/orbit/simrel/orbit-aggregation/release/4.29.0/"/>
 </location>
 <!-- Add dependencies that only exists with older orbit version -->
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
@@ -65,7 +65,7 @@
 <unit id="org.eclipse.ui.views.log" version="0.0.0"/>
 <unit id="org.eclipse.jdt.junit4.runtime" version="0.0.0"/>
 <unit id="org.eclipse.e4.ui.progress" version="0.0.0"/>
-<repository location="https://download.eclipse.org/eclipse/updates/4.29-I-builds/I20230824-0400/"/>
+<repository location="https://download.eclipse.org/eclipse/updates/4.29-I-builds/I20230830-2200/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.tracecompass.testtraces.tracecompass-test-traces-ctf" version="1.7.2"/>
@@ -75,7 +75,7 @@
 <unit id="org.eclipse.wst.xml.core" version="0.0.0"/>
 <unit id="org.eclipse.wst.xml.ui" version="0.0.0"/>
 <unit id="org.eclipse.wst.xsd.core" version="0.0.0"/>
-<repository location="https://download.eclipse.org/webtools/downloads/drops/R3.31.0/S-3.31M3-20230821084807/repository/"/>
+<repository location="https://download.eclipse.org/webtools/downloads/drops/R3.31.0/S-3.31RC2-20230903090456/repository/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.xsd" version="0.0.0"/>
