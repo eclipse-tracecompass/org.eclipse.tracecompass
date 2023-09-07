@@ -55,6 +55,7 @@ public class HistogramDataProviderFactory implements IDataProviderFactory {
                 statsMod.schedule();
                 return new HistogramDataProvider(trace, statsMod);
             }
+            return null;
         }
         return TmfTreeXYCompositeDataProvider.create(traces, HistogramDataProvider.TITLE, HistogramDataProvider.ID);
     }
