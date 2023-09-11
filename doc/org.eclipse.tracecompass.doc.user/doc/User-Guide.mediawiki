@@ -2926,6 +2926,14 @@ The LTTng Kernel Events editor '''is''' the plain TMF [[#Events_Editor | Events 
 
 [[Image:images/LTTng2EventsEditor.png]]
 
+== Scheduler wake up/Scheduler switch Latency Analysis ==
+
+The '''Scheduler wake up/Scheduler switch Latency Analysis''' measures the latency between the sched_wakeup (scheduler wake up) and sched_switch (scheduler switch) event. In layman's terms, the analysis measures the time from the moment a process/thread wakes up until it is switched onto the CPU. The durations are visualized using the '''Latency''' views. For more information about the '''Latency''' views see chapter [[#Latency_Analyses | Latency Analyses]].
+
+Besides the typical latency views, the analysis also provides a Priority/Thread name Statistics view. The view groups latencies using thread names and priorities, and provides statistics for these groups.
+
+[[Image:images/swslatency/PriorityThreadnameView.png| Priority/Thread name Statistics view]]
+
 = LTTng-UST Analyses =
 
 The Userspace traces are taken on an application level. With kernel traces, you know what events you will have as the domain is known and cloistered. Userspace traces can contain pretty much anything. Some analyses are offered if certain events are enabled.
