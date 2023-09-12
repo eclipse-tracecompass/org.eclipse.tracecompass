@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2020 Ericsson, École Polytechnique de Montréal
+ * Copyright (c) 2013, 2023 Ericsson, École Polytechnique de Montréal
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -110,6 +110,27 @@ public class EnumDeclarationTest {
     }
 
     /**
+     * Tests adding values without specifying range
+     */
+    @Test
+    public void testAddNext() {
+        assertTrue(fixture.add("fork"));
+        assertTrue(fixture.add(01, 01, "tork"));
+        assertTrue(fixture.add("mork"));
+        assertTrue(fixture.add("zork"));
+        assertTrue(fixture.add(05, 06, "bork"));
+        assertTrue(fixture.add("york"));
+        assertEquals("fork", fixture.query(0));
+        assertEquals("tork", fixture.query(1));
+        assertEquals("mork", fixture.query(2));
+        assertEquals("zork", fixture.query(3));
+        assertNull(fixture.query(4));
+        assertEquals("bork", fixture.query(5));
+        assertEquals("bork", fixture.query(6));
+        assertEquals("york", fixture.query(7));
+    }
+
+    /**
      * Tests adding two of the same elements, this is allowed in the ctf spec
      */
     @Test
@@ -125,39 +146,71 @@ public class EnumDeclarationTest {
     }
 
     /**
-     * Tests adding two of the same elements
+     * Tests adding overlapping labels
      */
     @Test
-    public void testOverlap1() {
+    public void testOverlap() {
+        assertTrue(fixture.add(00, 00, "fork"));
+        assertTrue(fixture.add(00, 00, "tork"));
+        assertTrue(fixture.add(01, 01, "mork"));
+        assertTrue(fixture.add(02, 03, "zork"));
+        assertTrue(fixture.add(02, 02, "bork"));
+        assertEquals("[fork, tork]", fixture.query(0));
+        assertEquals("mork", fixture.query(1));
+        assertEquals("[zork, bork]", fixture.query(2));
+        assertEquals("zork", fixture.query(3));
+    }
+
+    /**
+     * Tests adding overlapping range labels
+     */
+    @Test
+    public void testOverlapRange1() {
         assertTrue(fixture.add(00, 01, "fork"));
-        assertFalse(fixture.add(01, 03, "zork"));
+        assertTrue(fixture.add(01, 03, "zork"));
+        assertEquals("fork", fixture.query(0));
+        assertEquals("[fork, zork]", fixture.query(1));
+        assertEquals("zork", fixture.query(2));
+        assertEquals("zork", fixture.query(3));
     }
 
     /**
-     * Tests adding two of the same elements
+     * Tests adding overlapping range labels
      */
     @Test
-    public void testOverlap2() {
+    public void testOverlapRange2() {
         assertTrue(fixture.add(00, 02, "fork"));
-        assertFalse(fixture.add(01, 03, "zork"));
+        assertTrue(fixture.add(01, 03, "zork"));
+        assertEquals("fork", fixture.query(0));
+        assertEquals("[fork, zork]", fixture.query(1));
+        assertEquals("[fork, zork]", fixture.query(2));
+        assertEquals("zork", fixture.query(3));
     }
 
     /**
-     * Tests adding two of the same elements
+     * Tests adding overlapping range labels
      */
     @Test
-    public void testOverlap3() {
+    public void testOverlapRange3() {
         assertTrue(fixture.add(00, 03, "fork"));
-        assertFalse(fixture.add(01, 02, "zork"));
+        assertTrue(fixture.add(01, 02, "zork"));
+        assertEquals("fork", fixture.query(0));
+        assertEquals("[fork, zork]", fixture.query(1));
+        assertEquals("[fork, zork]", fixture.query(2));
+        assertEquals("fork", fixture.query(3));
     }
 
     /**
-     * Tests adding two of the same elements
+     * Tests adding overlapping range labels
      */
     @Test
-    public void testOverlap4() {
+    public void testOverlapRange4() {
         assertTrue(fixture.add(01, 03, "fork"));
-        assertFalse(fixture.add(00, 02, "zork"));
+        assertTrue(fixture.add(00, 02, "zork"));
+        assertEquals("zork", fixture.query(0));
+        assertEquals("[fork, zork]", fixture.query(1));
+        assertEquals("[fork, zork]", fixture.query(2));
+        assertEquals("fork", fixture.query(3));
     }
 
     /**
@@ -201,11 +254,14 @@ public class EnumDeclarationTest {
         assertTrue(fixture.add(1 << 1, 1 << 1, "flag2"));
         assertTrue(fixture.add(1 << 2, 1 << 2, "flag3"));
         assertTrue(fixture.add(1 << 3, 1 << 3, "flag4"));
-        assertTrue(fixture.add(1 << 4, 1 << 4, "flag5"));
+        assertTrue(fixture.add(1 << 4, 1 << 4, "flag5a"));
+        assertTrue(fixture.add(1 << 4, 1 << 4, "flag5b"));
         assertTrue(fixture.add(1 << 5, 1 << 5, "flag6"));
         assertTrue(fixture.add(1 << 6, (1 << 6) + 3, "range"));
         // Test a value with bit flag set
         assertEquals("flag1 | flag2 | flag3", fixture.query((1 << 0) + (1 << 1) + (1 << 2)));
+        // Test a value with duplicate bit flag set
+        assertEquals("flag4 | [flag5a, flag5b]", fixture.query((1 << 3) + (1 << 4)));
         // Test a value where one bit is a range
         assertNull(fixture.query((1 << 1) + (1 << 4) + (1 << 6)));
         // Test a normal value that is included in the range

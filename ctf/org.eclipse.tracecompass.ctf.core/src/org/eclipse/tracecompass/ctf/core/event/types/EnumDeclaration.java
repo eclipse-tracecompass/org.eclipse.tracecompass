@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Ericsson, Ecole Polytechnique de Montreal and others
+ * Copyright (c) 2011, 2023 Ericsson, Ecole Polytechnique de Montreal and others
  *
  * All rights reserved. This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0 which
@@ -16,22 +16,23 @@ package org.eclipse.tracecompass.ctf.core.event.types;
 
 import java.nio.ByteOrder;
 import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.TreeMap;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.ctf.core.CTFException;
 import org.eclipse.tracecompass.ctf.core.event.io.BitBuffer;
 import org.eclipse.tracecompass.ctf.core.event.scope.IDefinitionScope;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.LinkedHashMultimap;
+import com.google.common.collect.Multimap;
 
 /**
  * A CTF enum declaration.
@@ -92,33 +93,22 @@ public final class EnumDeclaration extends Declaration implements ISimpleDatatyp
         public int hashCode() {
             return Objects.hash(fFirst, fSecond);
         }
-    }
 
-    /**
-     * Out of specification {@link Comparator} which returns 0 if the
-     * {@link Pair}s overlap even if they are not equal.
-     */
-    private static final Comparator<Pair> OVERLAP_COMPARATOR = (interval1, interval2) -> {
-        if (interval1.fSecond < interval2.fFirst) {
-            return -1;
+        @Override
+        public String toString() {
+            return Arrays.toString(new long[] { fFirst, fSecond });
         }
-        if (interval1.fFirst > interval2.fSecond) {
-            return 1;
-        }
-        return 0;
-    };
+    }
 
     // ------------------------------------------------------------------------
     // Attributes
     // ------------------------------------------------------------------------
 
     /**
-     * fEnumTree's key is the Pair of low and high, value is the label. This tree
-     * uses an out of specification comparator to make its behavior mimic that of a
-     * non overlapping interval tree. The get method will return any value who's key
-     * overlaps the queried interval.
+     * fEnumMap key is the Pair of low and high, value is the label. Overlap of
+     * keys in the map is allowed.
      */
-    private final @NonNull TreeMap<Pair, String> fEnumTree = new TreeMap<>(OVERLAP_COMPARATOR);
+    private final Multimap<Pair, String> fEnumMap = LinkedHashMultimap.create();
     private final IntegerDeclaration fContainerType;
     private Pair fLastAdded = new Pair(-1, -1);
 
@@ -153,7 +143,7 @@ public final class EnumDeclaration extends Declaration implements ISimpleDatatyp
      */
     public EnumDeclaration(IntegerDeclaration containerType, Map<Pair, String> enumTree){
         fContainerType = containerType;
-        fEnumTree.putAll(enumTree);
+        enumTree.entrySet().forEach(entry -> fEnumMap.put(entry.getKey(), entry.getValue()));
     }
 
     // ------------------------------------------------------------------------
@@ -206,8 +196,7 @@ public final class EnumDeclaration extends Declaration implements ISimpleDatatyp
     }
 
     /**
-     * Add a value. Do not overlap, this is <em><strong>not</strong></em> an
-     * interval tree.
+     * Add a value.
      *
      * @param low
      *            lowest value that this int can be to have label as a return
@@ -224,17 +213,13 @@ public final class EnumDeclaration extends Declaration implements ISimpleDatatyp
             return false;
         }
         Pair key = new Pair(low, high);
-        if (!fEnumTree.containsKey(key)) {
-            fEnumTree.put(key, label);
-            fLastAdded = key;
-            return true;
-        }
-        return false;
+        fEnumMap.put(key, label);
+        fLastAdded = key;
+        return true;
     }
 
     /**
-     * Add a value. Do not overlap, this is <em><strong>not</strong></em> an
-     * interval tree. This could be seen more as a collection of segments.
+     * Add a value following the last previously added value.
      *
      * @param label
      *            the name of the value.
@@ -242,22 +227,28 @@ public final class EnumDeclaration extends Declaration implements ISimpleDatatyp
      * @since 2.0
      */
     public boolean add(@Nullable String label) {
-        // add the item with a value of max(range)+1 for low and high to ensure no overlap
+        // add the item at last range end + 1, according to specification
         return add(fLastAdded.fSecond + 1, fLastAdded.fSecond + 1, label);
     }
 
     /**
-     * Check if the label for a value (enum a{day=0,night=1} would return "day"
-     * for query(0)
+     * Query the label for a value. If overlapping labels are found, they are
+     * returned in the format "[l1, l2, ...]". If the enum is a bit flag, the
+     * matching flags are returned in the format "flag1 | flag2 | ...".
      *
      * @param value
      *            the value to lookup
      * @return the label of that value, can be null
      */
     public @Nullable String query(long value) {
-        String strValue = fEnumTree.get(new Pair(value, value));
-        if (strValue != null || value <= 0) {
-            return strValue;
+        List<String> strValues = new ArrayList<>();
+        fEnumMap.forEach((k, v) -> {
+            if (value >= k.getFirst() && value <= k.getSecond()) {
+                strValues.add(v);
+            }
+        });
+        if (!strValues.isEmpty()) {
+            return strValues.size() == 1 ? strValues.get(0) : strValues.toString();
         }
         /*
          * Divide the positive value in bits and see if there is a value for all
@@ -272,17 +263,12 @@ public final class EnumDeclaration extends Declaration implements ISimpleDatatyp
                  * range accepted here
                  */
                 Pair bitPair = new Pair(bitValue, bitValue);
-                strValue = fEnumTree.get(bitPair);
-                if (strValue == null) {
+                Collection<String> flagValues = fEnumMap.get(bitPair);
+                if (flagValues.isEmpty()) {
                     // No value for this bit, not an enum flag
                     return null;
                 }
-                Pair floorKey = fEnumTree.floorKey(bitPair);
-                if (!bitPair.equals(floorKey)) {
-                    // This is a range, not an enum flag
-                    return null;
-                }
-                flagsSet.add(strValue);
+                flagsSet.add(flagValues.size() == 1 ? flagValues.iterator().next() : flagValues.toString());
             }
         }
         return flagsSet.isEmpty() ? null : String.join(" | ", flagsSet); //$NON-NLS-1$
@@ -296,7 +282,11 @@ public final class EnumDeclaration extends Declaration implements ISimpleDatatyp
      * @since 2.3
      */
     public Map<Pair, String> getLookupTable() {
-        return ImmutableMap.copyOf(fEnumTree);
+        Map<Pair, String> table = new LinkedHashMap<>();
+        fEnumMap.asMap().forEach((k, v) -> {
+            table.put(k, v.size() == 1 ? v.iterator().next() : v.toString());
+        });
+        return table;
     }
 
     /**
@@ -305,7 +295,7 @@ public final class EnumDeclaration extends Declaration implements ISimpleDatatyp
      * @return A set of labels of the enum, can be empty but not null
      */
     public Set<String> getLabels() {
-        return ImmutableSet.copyOf(fEnumTree.values());
+        return ImmutableSet.copyOf(fEnumMap.values());
     }
 
     @Override
@@ -313,7 +303,7 @@ public final class EnumDeclaration extends Declaration implements ISimpleDatatyp
         /* Only used for debugging */
         StringBuilder sb = new StringBuilder();
         sb.append("[declaration] enum["); //$NON-NLS-1$
-        for (String label : fEnumTree.values()) {
+        for (String label : getLabels()) {
             sb.append("label:").append(label).append(' '); //$NON-NLS-1$
         }
         sb.append("type:").append(fContainerType.toString()); //$NON-NLS-1$
@@ -323,7 +313,7 @@ public final class EnumDeclaration extends Declaration implements ISimpleDatatyp
 
     @Override
     public int hashCode() {
-        return Objects.hash(fContainerType, fEnumTree);
+        return Objects.hash(fContainerType, fEnumMap);
     }
 
     @Override
@@ -345,7 +335,7 @@ public final class EnumDeclaration extends Declaration implements ISimpleDatatyp
          * Must iterate through the entry sets as the comparator used in the enum tree
          * does not respect the contract
          */
-        return Iterables.elementsEqual(fEnumTree.entrySet(), other.fEnumTree.entrySet());
+        return Iterables.elementsEqual(fEnumMap.entries(), other.fEnumMap.entries());
     }
 
     @Override
@@ -367,7 +357,7 @@ public final class EnumDeclaration extends Declaration implements ISimpleDatatyp
          * Must iterate through the entry sets as the comparator used in the enum tree
          * does not respect the contract
          */
-        return Iterables.elementsEqual(fEnumTree.entrySet(), other.fEnumTree.entrySet());
+        return Iterables.elementsEqual(fEnumMap.entries(), other.fEnumMap.entries());
     }
 
 }
