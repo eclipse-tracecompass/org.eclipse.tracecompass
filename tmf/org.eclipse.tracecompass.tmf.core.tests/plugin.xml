@@ -207,5 +207,12 @@
             file="testfiles/markers.xml">
       </customMarker>
    </extension>
+   <extension
+         point="org.eclipse.tracecompass.tmf.core.config">
+      <source
+            id="org.eclipse.tracecompass.tmf.tests.stubs.model.config.testsourcetype"
+            class="org.eclipse.tracecompass.tmf.tests.stubs.model.config.TestConfigurationSource">
+      </source>
+   </extension>
 
 </plugin>

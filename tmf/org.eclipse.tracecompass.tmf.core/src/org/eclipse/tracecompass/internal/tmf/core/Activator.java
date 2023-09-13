@@ -22,6 +22,7 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.tracecompass.internal.tmf.core.annotations.CustomOutputAnnotationProviderFactory;
 import org.eclipse.tracecompass.internal.tmf.core.annotations.LostEventsOutputAnnotationProviderFactory;
 import org.eclipse.tracecompass.tmf.core.analysis.TmfAnalysisManager;
+import org.eclipse.tracecompass.tmf.core.config.TmfConfigurationSourceManager;
 import org.eclipse.tracecompass.tmf.core.dataprovider.DataProviderManager;
 import org.eclipse.tracecompass.tmf.core.signal.TmfSignalManager;
 import org.eclipse.tracecompass.tmf.core.symbols.SymbolProviderManager;
@@ -104,6 +105,8 @@ public class Activator extends Plugin {
         SymbolProviderManager.getInstance();
         /* Initialize the data provider manager */
         DataProviderManager.getInstance();
+        /* Initialize the configuration source manager */
+        TmfConfigurationSourceManager.getInstance();
         TmfTraceAdapterManager.registerFactory(LOST_EVENTS_ANNOTATION_PROVIDER_FACTORY, ITmfTrace.class);
         TmfTraceAdapterManager.registerFactory(CUSTOM_DEFINED_OUTPUT_ANNOTATION_PROVIDER_FACTORY, ITmfTrace.class);
     }
@@ -114,6 +117,7 @@ public class Activator extends Plugin {
         TmfTraceAdapterManager.unregisterFactory(CUSTOM_DEFINED_OUTPUT_ANNOTATION_PROVIDER_FACTORY);
         LOST_EVENTS_ANNOTATION_PROVIDER_FACTORY.dispose();
         CUSTOM_DEFINED_OUTPUT_ANNOTATION_PROVIDER_FACTORY.dispose();
+        TmfConfigurationSourceManager.getInstance().dispose();
         TmfCoreTracer.stop();
         TmfTraceManager.getInstance().dispose();
         TmfAnalysisManager.dispose();

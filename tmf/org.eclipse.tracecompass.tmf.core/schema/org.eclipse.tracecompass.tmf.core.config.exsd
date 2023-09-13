@@ -1,0 +1,138 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Schema file written by PDE -->
+<schema targetNamespace="org.eclipse.tracecompass.tmf.core" xmlns="http://www.w3.org/2001/XMLSchema">
+<annotation>
+      <appinfo>
+         <meta.schema plugin="org.eclipse.tracecompass.tmf.core" id="org.eclipse.tracecompass.tmf.core.config" name="Trace Compass Configuration"/>
+      </appinfo>
+      <documentation>
+         This extension point is used to contribute new configuration sources to the TMF framework.  Configuration sources are meant to provide a common API to manage configurations, e.g. XML analysis, custom parsers etc.
+      </documentation>
+   </annotation>
+
+   <element name="extension">
+      <annotation>
+         <appinfo>
+            <meta.element />
+         </appinfo>
+      </annotation>
+      <complexType>
+         <choice minOccurs="0" maxOccurs="unbounded">
+            <element ref="source"/>
+         </choice>
+         <attribute name="point" type="string" use="required">
+            <annotation>
+               <documentation>
+                  a fully qualified identifier of the target extension point
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="id" type="string">
+            <annotation>
+               <documentation>
+                  an optional identifier of the extension instance
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="name" type="string">
+            <annotation>
+               <documentation>
+                  an optional name of the extension instance
+               </documentation>
+               <appinfo>
+                  <meta.attribute translatable="true"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="source">
+      <complexType>
+         <attribute name="id" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The unique ID that identifies this configuration source type handler
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="class" type="string" use="default">
+            <annotation>
+               <documentation>
+                  The fully qualified name of a class that implements the &lt;samp&gt;IConfigurationSource&lt;/samp&gt; interface.
+               </documentation>
+               <appinfo>
+                  <meta.attribute kind="java" basedOn=":org.eclipse.tracecompass.tmf.core.config.IConfigurationSource"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <annotation>
+      <appinfo>
+         <meta.section type="since"/>
+      </appinfo>
+      <documentation>
+         9.2
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appinfo>
+         <meta.section type="examples"/>
+      </appinfo>
+      <documentation>
+         &lt;p&gt;
+For an example implementation of an configuration source see:
+&lt;pre&gt;
+plug-in: org.eclipse.linuxtools.tmf.core.tests
+package: org.eclipse.linuxtools.tmf.core.tests.stubs.model.config.
+class: TestConfigurationSource
+&lt;/pre&gt;
+&lt;/p&gt;
+&lt;p&gt;
+The following is an example of the extension point:
+&lt;pre&gt;
+&lt;plugin&gt;
+   &lt;/extension&gt;
+      &lt;extension
+         point=&quot;org.eclipse.tracecompass.tmf.core.config&quot;&gt;
+      &lt;source
+            id=&quot;org.eclipse.tracecompass.tmf.tests.stubs.model.config.testsourcetype&quot;
+            class=&quot;org.eclipse.tracecompass.tmf.tests.stubs.model.config.TestConfigurationSource&quot;&gt;
+      &lt;/source&gt;
+   &lt;/extension&gt;
+&lt;/plugin&gt;
+&lt;/pre&gt;
+&lt;/p&gt;
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appinfo>
+         <meta.section type="apiinfo"/>
+      </appinfo>
+      <documentation>
+         &lt;p&gt;
+For this extension point, a class implementing ITmfConfigurationSource must be defined (org.eclipse.tracecompass.tmf.core.config.ITmfConfigurationSource).
+&lt;/p&gt;
+&lt;/p&gt;
+      </documentation>
+   </annotation>
+
+
+   <annotation>
+      <appinfo>
+         <meta.section type="copyright"/>
+      </appinfo>
+      <documentation>
+         Copyright (c) 2023 Ericsson
+
+All rights reserved. This program and the accompanying materials are made available under the terms of the Eclipse Public License 2.0 which accompanies this distribution, and is available at &amp;lt;a href=&amp;quot;https://www.eclipse.org/legal/epl-2.0/&amp;quot;&amp;gt;https://www.eclipse.org/legal/epl-2.0/&amp;lt;/a&amp;gt;
+
+SPDX-License-Identifier: EPL-2.0
+      </documentation>
+   </annotation>
+
+</schema>

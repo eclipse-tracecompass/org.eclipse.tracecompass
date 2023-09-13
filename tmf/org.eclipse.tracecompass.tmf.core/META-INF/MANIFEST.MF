@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name
 Bundle-Vendor: %Bundle-Vendor
-Bundle-Version: 9.1.0.qualifier
+Bundle-Version: 9.2.0.qualifier
 Bundle-Localization: plugin
 Bundle-SymbolicName: org.eclipse.tracecompass.tmf.core;singleton:=true
 Bundle-Activator: org.eclipse.tracecompass.internal.tmf.core.Activator
@@ -93,6 +93,7 @@ Export-Package: org.eclipse.tracecompass.internal.provisional.tmf.core.model,
  org.eclipse.tracecompass.tmf.core.analysis.ondemand,
  org.eclipse.tracecompass.tmf.core.analysis.requirements,
  org.eclipse.tracecompass.tmf.core.component,
+ org.eclipse.tracecompass.tmf.core.config,
  org.eclipse.tracecompass.tmf.core.dataprovider,
  org.eclipse.tracecompass.tmf.core.event,
  org.eclipse.tracecompass.tmf.core.event.aspect,
