@@ -240,21 +240,21 @@
               <executions>
                 <execution>
                   <id>dmg-package-rcp-aarch64</id>
-                  <phase>package</phase>
+                  <phase>pre-integration-test</phase>
                   <goals>
                     <goal>package-dmg</goal>
                   </goals>
                   <configuration>
                     <source>${project.build.directory}/products/${archiveFileName}-macosx.cocoa.aarch64.tar.gz</source>
                     <serviceUrl>https://cbi.eclipse.org/macos/packager/dmg/create</serviceUrl>
-                    <continueOnFail>false</continueOnFail>
+                    <continueOnFail>true</continueOnFail>
                     <timeoutMillis>600000</timeoutMillis>
                     <sign>true</sign>
                   </configuration>
                 </execution>
                 <execution>
                   <id>dmg-package-rcp-x86-64</id>
-                  <phase>package</phase>
+                  <phase>pre-integration-test</phase>
                   <goals>
                     <goal>package-dmg</goal>
                   </goals>
