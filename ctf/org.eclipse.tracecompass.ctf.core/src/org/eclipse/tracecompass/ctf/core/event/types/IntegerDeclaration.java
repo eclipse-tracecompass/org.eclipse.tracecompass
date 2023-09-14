@@ -154,6 +154,7 @@ public final class IntegerDeclaration extends Declaration implements ISimpleData
      * @param alignment
      *            The minimum alignment. Should be >= 1
      * @return the integer declaration
+     * @deprecated use {@link #createDeclaration(int, boolean, int, ByteOrder, Encoding, String, long, String)}
      */
     @Deprecated
     public static IntegerDeclaration createDeclaration(int len, boolean signed, int base,
