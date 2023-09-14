@@ -410,6 +410,7 @@ public final class XmlUtils {
                 }
             }
         }
+        updateCachedOuputElements();
     }
 
     /**

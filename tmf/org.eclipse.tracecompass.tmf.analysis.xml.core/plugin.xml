@@ -9,4 +9,11 @@
             class="org.eclipse.tracecompass.internal.tmf.analysis.xml.core.module.XmlAnalysisModuleSource">
       </source>
    </extension>
+   <extension
+         point="org.eclipse.tracecompass.tmf.core.config">
+      <source
+            id="org.eclipse.tracecompass.tmf.core.config.xmlsourcetype"
+            class="org.eclipse.tracecompass.internal.tmf.analysis.xml.core.config.XmlConfigurationSource">
+      </source>
+   </extension>
 </plugin>
