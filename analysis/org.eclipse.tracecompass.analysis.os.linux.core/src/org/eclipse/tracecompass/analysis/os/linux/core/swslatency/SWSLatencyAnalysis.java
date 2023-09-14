@@ -120,12 +120,12 @@ public class SWSLatencyAnalysis extends AbstractSegmentStoreAnalysisEventBasedMo
                     return;
                 }
 
-                /* Record the event's data into the intial system call info */
+                /* Record the event's data into the initial system call info */
                 long startTime = event.getTimestamp().toNanos();
                 String threadName = event.getContent().getFieldValue(String.class, layout.fieldComm());
 
-                if (threadName == null) {
-                    threadName = ""; //$NON-NLS-1$
+                if (threadName == null || "".equals(threadName)) {
+                    threadName = "UNKNOWN"; //$NON-NLS-1$
                 }
 
                 SchedWS.InitialInfo newSchedWS = new SchedWS.InitialInfo(startTime, threadName.intern(), tid);
