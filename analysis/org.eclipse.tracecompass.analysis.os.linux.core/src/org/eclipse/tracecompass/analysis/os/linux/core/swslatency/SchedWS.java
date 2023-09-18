@@ -15,6 +15,7 @@ import org.eclipse.tracecompass.analysis.os.linux.core.model.OsStrings;
 import org.eclipse.tracecompass.datastore.core.interval.IHTIntervalReader;
 import org.eclipse.tracecompass.datastore.core.serialization.ISafeByteBufferWriter;
 import org.eclipse.tracecompass.datastore.core.serialization.SafeByteBufferFactory;
+import org.eclipse.tracecompass.internal.analysis.os.linux.core.segmentstore.IPrioritySegment;
 import org.eclipse.tracecompass.segmentstore.core.ISegment;
 import org.eclipse.tracecompass.segmentstore.core.segment.interfaces.INamedSegment;
 import org.eclipse.tracecompass.tmf.core.model.ICoreElementResolver;
@@ -29,7 +30,7 @@ import com.google.common.collect.Multimap;
  * @author Abdellah Rahmani
  * @since 8.1
  */
-public final class SchedWS implements INamedSegment, ICoreElementResolver {
+public final class SchedWS implements INamedSegment, IPrioritySegment, ICoreElementResolver {
 
     private static final long serialVersionUID = 4183872871733170072L;
 
@@ -132,6 +133,7 @@ public final class SchedWS implements INamedSegment, ICoreElementResolver {
      *
      * @return The priority value of the thread
      */
+    @Override
     public int getPriority() {
         return fPriority;
     }

@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2021 Ericsson
+ * Copyright (c) 2021, 2023 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -98,6 +98,12 @@ public class DataProviderManagerTest {
                 .setId("org.eclipse.tracecompass.internal.analysis.timing.core.segmentstore.scatter.dataprovider:lttng.analysis.futex");
         EXPECTED_KERNEL_DP_DESCRIPTORS.add(builder.build());
         builder = new DataProviderDescriptor.Builder();
+        builder.setName("Futex Contention Analysis - Priority/Thread name Statistics Table")
+                .setDescription("Show Priority/Thread name Statistics Table provided by Analysis module: Futex Contention Analysis")
+                .setProviderType(ProviderType.DATA_TREE)
+                .setId("org.eclipse.tracecompass.internal.analysis.os.linux.core.segmentstore.PriorityThreadNameStatisticsDataProvider:lttng.analysis.futex");
+        EXPECTED_KERNEL_DP_DESCRIPTORS.add(builder.build());
+        builder = new DataProviderDescriptor.Builder();
         builder.setName("Histogram")
                 .setDescription("Show a histogram of number of events to time for a trace")
                 .setProviderType(ProviderType.TREE_TIME_XY)
@@ -126,6 +132,12 @@ public class DataProviderManagerTest {
                 .setDescription("Show latencies provided by Analysis module: IRQ Analysis")
                 .setProviderType(ProviderType.TREE_TIME_XY)
                 .setId("org.eclipse.tracecompass.internal.analysis.timing.core.segmentstore.scatter.dataprovider:lttng.analysis.irq");
+        EXPECTED_KERNEL_DP_DESCRIPTORS.add(builder.build());
+        builder = new DataProviderDescriptor.Builder();
+        builder.setName("IRQ Analysis - Priority/Thread name Statistics Table")
+                .setDescription("Show Priority/Thread name Statistics Table provided by Analysis module: IRQ Analysis")
+                .setProviderType(ProviderType.DATA_TREE)
+                .setId("org.eclipse.tracecompass.internal.analysis.os.linux.core.segmentstore.PriorityThreadNameStatisticsDataProvider:lttng.analysis.irq");
         EXPECTED_KERNEL_DP_DESCRIPTORS.add(builder.build());
         builder = new DataProviderDescriptor.Builder();
         builder.setName("Memory Usage")
@@ -164,27 +176,41 @@ public class DataProviderManagerTest {
                 .setId("org.eclipse.tracecompass.internal.analysis.timing.core.segmentstore.scatter.dataprovider:org.eclipse.tracecompass.analysis.os.linux.latency.syscall");
         EXPECTED_KERNEL_DP_DESCRIPTORS.add(builder.build());
         builder = new DataProviderDescriptor.Builder();
+        builder.setName("System Call Latency - Priority/Thread name Statistics Table")
+                .setDescription("Show Priority/Thread name Statistics Table provided by Analysis module: System Call Latency")
+                .setProviderType(ProviderType.DATA_TREE)
+                .setId("org.eclipse.tracecompass.internal.analysis.os.linux.core.segmentstore.PriorityThreadNameStatisticsDataProvider:org.eclipse.tracecompass.analysis.os.linux.latency.syscall");
+        EXPECTED_KERNEL_DP_DESCRIPTORS.add(builder.build());
+        builder = new DataProviderDescriptor.Builder();
         builder.setName("Thread Status")
                 .setDescription("Show the hierarchy of Linux threads and their status (RUNNING, SYSCALL, IRQ, IDLE)")
                 .setProviderType(ProviderType.TIME_GRAPH)
                 .setId("org.eclipse.tracecompass.internal.analysis.os.linux.core.threadstatus.ThreadStatusDataProvider");
         EXPECTED_KERNEL_DP_DESCRIPTORS.add(builder.build());
+        builder = new DataProviderDescriptor.Builder();
         builder.setName("Scheduler Wakeup to Scheduler Switch Latency - Latency Statistics")
                 .setDescription("Show latency statistics provided by Analysis module: Scheduler Wakeup to Scheduler Switch Latency")
                 .setProviderType(ProviderType.DATA_TREE)
                 .setId("org.eclipse.tracecompass.analysis.timing.core.segmentstore.SegmentStoreStatisticsDataProvider:org.eclipse.tracecompass.analysis.os.linux.core.swslatency.sws");
         EXPECTED_KERNEL_DP_DESCRIPTORS.add(builder.build());
+        builder = new DataProviderDescriptor.Builder();
         builder.setName("Scheduler Wakeup to Scheduler Switch Latency - Latency Table")
                 .setDescription("Show latency table provided by Analysis module: Scheduler Wakeup to Scheduler Switch Latency")
                 .setProviderType(ProviderType.TABLE)
                 .setId("org.eclipse.tracecompass.analysis.timing.core.segmentstore.SegmentStoreTableDataProvider:org.eclipse.tracecompass.analysis.os.linux.core.swslatency.sws");
         EXPECTED_KERNEL_DP_DESCRIPTORS.add(builder.build());
+        builder = new DataProviderDescriptor.Builder();
         builder.setName("Scheduler Wakeup to Scheduler Switch Latency - Latency vs Time")
                 .setDescription("Show latencies provided by Analysis module: Scheduler Wakeup to Scheduler Switch Latency")
                 .setProviderType(ProviderType.TREE_TIME_XY)
                 .setId("org.eclipse.tracecompass.internal.analysis.timing.core.segmentstore.scatter.dataprovider:org.eclipse.tracecompass.analysis.os.linux.core.swslatency.sws");
         EXPECTED_KERNEL_DP_DESCRIPTORS.add(builder.build());
-
+        builder = new DataProviderDescriptor.Builder();
+        builder.setName("Scheduler Wakeup to Scheduler Switch Latency - Priority/Thread name Statistics Table")
+                .setDescription("Show Priority/Thread name Statistics Table provided by Analysis module: Scheduler Wakeup to Scheduler Switch Latency")
+                .setProviderType(ProviderType.DATA_TREE)
+                .setId("org.eclipse.tracecompass.internal.analysis.os.linux.core.segmentstore.PriorityThreadNameStatisticsDataProvider:org.eclipse.tracecompass.analysis.os.linux.core.swslatency.sws");
+        EXPECTED_KERNEL_DP_DESCRIPTORS.add(builder.build());
         // UST Trace
         builder = new DataProviderDescriptor.Builder();
         builder.setName("Events Table")
@@ -233,6 +259,12 @@ public class DataProviderManagerTest {
                 .setDescription("Show latencies provided by Analysis module: LTTng-UST CallStack")
                 .setProviderType(ProviderType.TREE_TIME_XY)
                 .setId("org.eclipse.tracecompass.internal.analysis.timing.core.segmentstore.scatter.dataprovider:org.eclipse.linuxtools.lttng2.ust.analysis.callstack");
+        EXPECTED_UST_DP_DESCRIPTORS.add(builder.build());
+        builder = new DataProviderDescriptor.Builder();
+        builder.setName("LTTng-UST CallStack - Priority/Thread name Statistics Table")
+                .setDescription("Show Priority/Thread name Statistics Table provided by Analysis module: LTTng-UST CallStack")
+                .setProviderType(ProviderType.DATA_TREE)
+                .setId("org.eclipse.tracecompass.internal.analysis.os.linux.core.segmentstore.PriorityThreadNameStatisticsDataProvider:org.eclipse.linuxtools.lttng2.ust.analysis.callstack");
         EXPECTED_UST_DP_DESCRIPTORS.add(builder.build());
     }
 
