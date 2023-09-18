@@ -23,7 +23,7 @@
             id="org.eclipse.tracecompass.internal.analysis.timing.core.segmentstore.scatter.dataprovider">
       </dataProviderFactory>
       <dataProviderFactory
-            class="org.eclipse.tracecompass.internal.analysis.timing.core.segmentstore.SegmentStoreStatisticsDataProviderFactory"
+            class="org.eclipse.tracecompass.internal.analysis.timing.core.segmentstore.SegmentNameSegmentStoreStatisticsDataProviderFactory"
             id="org.eclipse.tracecompass.analysis.timing.core.segmentstore.SegmentStoreStatisticsDataProvider">
       </dataProviderFactory>
       <dataProviderFactory

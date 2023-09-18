@@ -1,5 +1,5 @@
 /**********************************************************************
- * Copyright (c) 2018, 2021 Ericsson
+ * Copyright (c) 2018, 2023 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -8,27 +8,20 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  **********************************************************************/
-
 package org.eclipse.tracecompass.internal.analysis.timing.core.segmentstore;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.osgi.util.NLS;
+import org.eclipse.tracecompass.analysis.timing.core.segmentstore.GenericSegmentStatisticsAnalysis;
 import org.eclipse.tracecompass.analysis.timing.core.segmentstore.ISegmentStoreProvider;
 import org.eclipse.tracecompass.analysis.timing.core.segmentstore.statistics.AbstractSegmentStatisticsAnalysis;
-import org.eclipse.tracecompass.segmentstore.core.ISegment;
-import org.eclipse.tracecompass.segmentstore.core.segment.interfaces.INamedSegment;
 import org.eclipse.tracecompass.tmf.core.analysis.IAnalysisModule;
-import org.eclipse.tracecompass.tmf.core.component.DataProviderConstants;
 import org.eclipse.tracecompass.tmf.core.dataprovider.IDataProviderDescriptor;
-import org.eclipse.tracecompass.tmf.core.dataprovider.IDataProviderDescriptor.ProviderType;
 import org.eclipse.tracecompass.tmf.core.dataprovider.IDataProviderFactory;
 import org.eclipse.tracecompass.tmf.core.exceptions.TmfAnalysisException;
 import org.eclipse.tracecompass.tmf.core.model.DataProviderDescriptor;
@@ -41,39 +34,16 @@ import org.eclipse.tracecompass.tmf.core.trace.TmfTraceUtils;
 import org.eclipse.tracecompass.tmf.core.trace.experiment.TmfExperiment;
 
 /**
- * Generalized {@link SegmentStoreStatisticsDataProvider} factory using
- * secondary ID to identify which segment store provider to build it from.
+ * An abstract data provider factory for segment store statistics. To extend a
+ * new data provider factory, create an
+ * {@link GenericSegmentStatisticsAnalysis} and override the
+ * getSegmentType function to specify how entries should be grouped for the
+ * statistics. Then, bind the statistics analysis to the data provider by returning an
+ * instance of the analysis using the getAnalysis function.
  *
  * @author Loic Prieur-Drevon
- * @since 4.0
  */
-public class SegmentStoreStatisticsDataProviderFactory implements IDataProviderFactory {
-
-    private static final class GenericSegmentStatisticsAnalysis extends AbstractSegmentStatisticsAnalysis {
-        private final String fSecondaryId;
-
-        private GenericSegmentStatisticsAnalysis(String secondaryId) {
-            fSecondaryId = secondaryId;
-        }
-
-        @Override
-        protected @Nullable String getSegmentType(@NonNull ISegment segment) {
-            if (segment instanceof INamedSegment) {
-                return ((INamedSegment) segment).getName();
-            }
-            return null;
-        }
-
-        @Deprecated
-        @Override
-        protected @Nullable ISegmentStoreProvider getSegmentProviderAnalysis(@NonNull ITmfTrace trace) {
-            IAnalysisModule segmentStoreModule = trace.getAnalysisModule(fSecondaryId);
-            if (segmentStoreModule instanceof ISegmentStoreProvider) {
-                return (ISegmentStoreProvider) segmentStoreModule;
-            }
-            return null;
-        }
-    }
+public abstract class AbstractSegmentStoreStatisticsDataProviderFactory implements IDataProviderFactory {
 
     @Override
     public @Nullable ITmfTreeDataProvider<? extends ITmfTreeDataModel> createProvider(ITmfTrace trace) {
@@ -83,27 +53,27 @@ public class SegmentStoreStatisticsDataProviderFactory implements IDataProviderF
     @Override
     public @Nullable ITmfTreeDataProvider<? extends ITmfTreeDataModel> createProvider(ITmfTrace trace, String secondaryId) {
 
-        IAnalysisModule m = trace.getAnalysisModule(secondaryId);
-        String composedId = SegmentStoreStatisticsDataProvider.ID + ':' + secondaryId;
+        IAnalysisModule baseAnalysisModule = trace.getAnalysisModule(secondaryId);
+        String composedId = getDataProviderId() + ':' + secondaryId;
         // check that this trace has the queried analysis.
-        if (!(m instanceof ISegmentStoreProvider)) {
+        if (!(baseAnalysisModule instanceof ISegmentStoreProvider)) {
             if (!(trace instanceof TmfExperiment)) {
                 return null;
             }
             return TmfTreeCompositeDataProvider.create(TmfTraceManager.getTraceSet(trace), composedId);
         }
-        m.schedule();
+        baseAnalysisModule.schedule();
 
-        AbstractSegmentStatisticsAnalysis module = new GenericSegmentStatisticsAnalysis(secondaryId);
+        AbstractSegmentStatisticsAnalysis statisticsAnalysisModule = getAnalysis(secondaryId);
         try {
-            module.setName(Objects.requireNonNull(NLS.bind(Messages.SegmentStoreStatisticsDataProviderFactory_AnalysisName, m.getName())));
-            module.setTrace(trace);
+            setStatisticsAnalysisModuleName(statisticsAnalysisModule, baseAnalysisModule);
+            statisticsAnalysisModule.setTrace(trace);
         } catch (TmfAnalysisException e) {
-            module.dispose();
+            statisticsAnalysisModule.dispose();
             return null;
         }
-        module.schedule();
-        return new SegmentStoreStatisticsDataProvider(trace, module, composedId);
+        statisticsAnalysisModule.schedule();
+        return new SegmentStoreStatisticsDataProvider(trace, statisticsAnalysisModule, composedId);
     }
 
     @Override
@@ -115,11 +85,7 @@ public class SegmentStoreStatisticsDataProviderFactory implements IDataProviderF
             IAnalysisModule analysis = (IAnalysisModule) module;
             // Only add analysis once per trace (which could be an experiment)
             if (!existingModules.contains(analysis.getId())) {
-                DataProviderDescriptor.Builder builder = new DataProviderDescriptor.Builder();
-                builder.setId(SegmentStoreStatisticsDataProvider.ID + DataProviderConstants.ID_SEPARATOR + analysis.getId())
-                    .setName(Objects.requireNonNull(NLS.bind(Messages.SegmentStoreStatisticsDataProvider_title, analysis.getName())))
-                    .setDescription(Objects.requireNonNull(NLS.bind(Messages.SegmentStoreStatisticsDataProvider_description, analysis.getHelpText())))
-                    .setProviderType(ProviderType.DATA_TREE);
+                DataProviderDescriptor.Builder builder = getDataProviderDescriptor(analysis);
                 descriptors.add(builder.build());
                 existingModules.add(analysis.getId());
             }
@@ -127,4 +93,45 @@ public class SegmentStoreStatisticsDataProviderFactory implements IDataProviderF
         return descriptors;
     }
 
+    /**
+     * Get a {@link AbstractSegmentStatisticsAnalysis} that generates the
+     * statistics for another analysis which is identified by the secondaryId
+     * parameter. The statistics analysis should implement the getSegmentType method
+     * to specify how entries should be grouped for the statistics.
+     *
+     * @param secondaryId
+     *            The ID of the analysis which the returned
+     *            {@link AbstractSegmentStatisticsAnalysis} is based on.
+     * @return An {@link AbstractSegmentStatisticsAnalysis} that is based on the
+     *         analysis that is identified by the secondary id.
+     */
+    protected abstract AbstractSegmentStatisticsAnalysis getAnalysis(String secondaryId);
+
+    /**
+     * Get the ID of the data provider to create.
+     *
+     * @return the ID of the data provider to create
+     */
+    protected abstract String getDataProviderId();
+
+    /**
+     * Set the statistics analysis module name.
+     *
+     * @param statisticsAnalysisModule
+     *            The statistics analysis module
+     * @param baseAnalysisModule
+     *            The base module, which the statistics analysis is based on
+     */
+    protected abstract void setStatisticsAnalysisModuleName(AbstractSegmentStatisticsAnalysis statisticsAnalysisModule, IAnalysisModule baseAnalysisModule);
+
+    /**
+     * Get the data provider descriptor
+     *
+     * @param analysis
+     *            The base analysis on which the statistics are based on.
+     * @return A
+     *         {@link org.eclipse.tracecompass.tmf.core.model.DataProviderDescriptor.Builder}
+     *         that contains the data provider information
+     */
+    protected abstract DataProviderDescriptor.Builder getDataProviderDescriptor(IAnalysisModule analysis);
 }
