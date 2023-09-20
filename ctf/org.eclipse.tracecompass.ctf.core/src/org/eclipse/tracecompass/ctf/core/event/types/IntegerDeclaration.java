@@ -245,7 +245,7 @@ public final class IntegerDeclaration extends Declaration implements ISimpleData
      * @param role
      *            The role of the declaration
      * @return The integer declaration
-     * @since 4.3
+     * @since 4.4
      */
     public static IntegerDeclaration createDeclaration(int len, boolean signed, int base,
             @Nullable ByteOrder byteOrder, Encoding encoding, String clock, long alignment, @Nullable String role) {

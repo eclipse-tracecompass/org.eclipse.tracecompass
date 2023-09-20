@@ -99,7 +99,7 @@ public interface IDeclaration {
     /**
      * This method returns the role of a declaration
      * @return the role of the declaration
-     * @since 4.3
+     * @since 4.4
      */
     public default @Nullable String getRole() {
         return null;
@@ -109,7 +109,7 @@ public interface IDeclaration {
      * This method sets the role for a declaration
      * @param role
      *            the new role for the declaration
-     * @since 4.3
+     * @since 4.4
      */
     public default void setRole(String role) {}
 }

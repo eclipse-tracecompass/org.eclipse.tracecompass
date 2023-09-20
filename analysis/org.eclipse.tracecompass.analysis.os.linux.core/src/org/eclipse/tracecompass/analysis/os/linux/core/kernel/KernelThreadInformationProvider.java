@@ -541,7 +541,7 @@ public final class KernelThreadInformationProvider {
      * @param monitor
      *            The monitor to cancel the query
      * @return A Map associating the intervals to each tid
-     * @since 8.1
+     * @since 8.2
      */
     public static Map<Integer, List<ITmfStateInterval>> getStatusIntervalsForThreads(KernelAnalysisModule module, Collection<Integer> threadIds, Collection<Long> times, IProgressMonitor monitor) {
         ITmfStateSystem ss = module.getStateSystem();

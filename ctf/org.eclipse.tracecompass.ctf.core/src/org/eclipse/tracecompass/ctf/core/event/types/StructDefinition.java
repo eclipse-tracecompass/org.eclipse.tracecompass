@@ -228,7 +228,7 @@ public final class StructDefinition extends ScopedDefinition implements IComposi
      * @param role
      *            the role we are searching for
      * @return the definition with the wanted role
-     * @since 4.3
+     * @since 4.4
      */
     public IDefinition lookupRole(String role) {
         for (IDefinition def : fDefinitions) {

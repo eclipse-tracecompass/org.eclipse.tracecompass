@@ -571,7 +571,7 @@ public class CTFTrace implements IDefinitionScope {
      * Checks whether the trace is CTF2 or not
      *
      * @return boolean true if trace is CTF2
-     * @since 4.3
+     * @since 4.4
      */
     public boolean isCTF2() {
         return Long.valueOf(2).equals(fMajor);
