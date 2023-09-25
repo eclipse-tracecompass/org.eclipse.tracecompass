@@ -19,7 +19,7 @@
     <timeGraphView id="xml.scenarios">
         <head>
             <analysis id="lttng.analysis.irq" />
-            <label value="scenario" />
+            <label value="Scenarios" />
         </head>
         <!-- FFA040 -->
         <definedValue name="PENDING" value="0" color="#CCCCCC" />
