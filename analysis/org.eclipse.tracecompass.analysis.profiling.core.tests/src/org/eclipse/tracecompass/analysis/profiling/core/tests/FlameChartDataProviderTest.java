@@ -12,6 +12,7 @@
 package org.eclipse.tracecompass.analysis.profiling.core.tests;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -21,6 +22,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
@@ -39,8 +41,10 @@ import org.eclipse.tracecompass.tmf.core.dataprovider.IDataProviderDescriptor;
 import org.eclipse.tracecompass.tmf.core.model.OutputElementStyle;
 import org.eclipse.tracecompass.tmf.core.model.filters.SelectionTimeQueryFilter;
 import org.eclipse.tracecompass.tmf.core.model.filters.TimeQueryFilter;
+import org.eclipse.tracecompass.tmf.core.model.timegraph.ITimeGraphArrow;
 import org.eclipse.tracecompass.tmf.core.model.timegraph.ITimeGraphRowModel;
 import org.eclipse.tracecompass.tmf.core.model.timegraph.ITimeGraphState;
+import org.eclipse.tracecompass.tmf.core.model.timegraph.TimeGraphArrow;
 import org.eclipse.tracecompass.tmf.core.model.timegraph.TimeGraphModel;
 import org.eclipse.tracecompass.tmf.core.model.timegraph.TimeGraphState;
 import org.eclipse.tracecompass.tmf.core.model.tree.TmfTreeModel;
@@ -178,6 +182,7 @@ public class FlameChartDataProviderTest extends CallStackTestBase2 {
         List<FlameChartEntryModel> tid3Children = FlameDataProviderTestUtils.findEntriesByParent(modelEntries, tid3.getId());
         assertEquals(3, tid3Children.size());
         tid3Children.forEach(child -> selectedIds.add(child.getId()));
+
         // Pid 5
         FlameChartEntryModel pid5 = FlameDataProviderTestUtils.findEntryByNameAndType(modelEntries, "5", EntryType.LEVEL);
         assertNotNull(pid5);
@@ -280,6 +285,44 @@ public class FlameChartDataProviderTest extends CallStackTestBase2 {
         verifyStates(rows, FlameDataProviderTestUtils.findEntryByDepthAndType(tid6Children, -1, EntryType.KERNEL), ImmutableList.of(
                 new TimeGraphState(1, 5, null, new OutputElementStyle(LinuxStyle.USERMODE.getLabel())),
                 new TimeGraphState(12, 8, null, new OutputElementStyle(LinuxStyle.USERMODE.getLabel()))), true);
+
+        // Check arrows
+        FlameChartEntryModel tid2 = FlameDataProviderTestUtils.findEntryByNameAndType(modelEntries, "2", EntryType.LEVEL);
+        assertNotNull(tid2);
+        List<FlameChartEntryModel> tid2Children = FlameDataProviderTestUtils.findEntriesByParent(modelEntries, tid2.getId());
+        FlameChartEntryModel tid7 = FlameDataProviderTestUtils.findEntryByNameAndType(modelEntries, "7", EntryType.LEVEL);
+        assertNotNull(tid7);
+        List<FlameChartEntryModel> tid7Children = FlameDataProviderTestUtils.findEntriesByParent(modelEntries, tid7.getId());
+
+        Map<@NonNull String, @NonNull Object> everythingQuery = FetchParametersUtils.timeQueryToMap(new TimeQueryFilter(0, Long.MAX_VALUE, 2));
+        TmfModelResponse<@NonNull List<@NonNull ITimeGraphArrow>> arrowResponse = dataProvider.fetchArrows(everythingQuery, new NullProgressMonitor());
+        assertNotNull(arrowResponse);
+        assertEquals(ITmfResponse.Status.COMPLETED, arrowResponse.getStatus());
+        List<@NonNull ITimeGraphArrow> arrowModel = arrowResponse.getModel();
+        assertNotNull(arrowModel);
+        assertFalse(arrowModel.isEmpty());
+
+        FlameChartEntryModel tid2Child1 = FlameDataProviderTestUtils.findEntryByDepthAndType(tid2Children, 1, EntryType.FUNCTION);
+        assertNotNull(tid2Child1);
+        FlameChartEntryModel tid2Child2 = FlameDataProviderTestUtils.findEntryByDepthAndType(tid2Children, 2, EntryType.FUNCTION);
+        assertNotNull(tid2Child2);
+        FlameChartEntryModel tid2Child3 = FlameDataProviderTestUtils.findEntryByDepthAndType(tid2Children, 3, EntryType.FUNCTION);
+        assertNotNull(tid2Child3);
+        FlameChartEntryModel tid3Child2 = FlameDataProviderTestUtils.findEntryByDepthAndType(tid3Children, 2, EntryType.FUNCTION);
+        assertNotNull(tid3Child2);
+        FlameChartEntryModel tid6Child2 = FlameDataProviderTestUtils.findEntryByDepthAndType(tid6Children, 2, EntryType.FUNCTION);
+        assertNotNull(tid6Child2);
+        FlameChartEntryModel tid6Child3 = FlameDataProviderTestUtils.findEntryByDepthAndType(tid6Children, 3, EntryType.FUNCTION);
+        assertNotNull(tid6Child3);
+        FlameChartEntryModel tid7Child3 = FlameDataProviderTestUtils.findEntryByDepthAndType(tid7Children, 3, EntryType.FUNCTION);
+        assertNotNull(tid7Child3);
+
+        verifyArrows(arrowModel, ImmutableList.of(
+                new TimeGraphArrow(tid2Child1.getId(), tid2Child2.getId(), 1, 2, 1),
+                new TimeGraphArrow(tid2Child3.getId(), tid3Child2.getId(), 4, 3, 2),
+                new TimeGraphArrow(tid3Child2.getId(), tid6Child3.getId(), 5, 4, 3),
+                new TimeGraphArrow(tid6Child3.getId(), tid7Child3.getId(), 5, 5, 4),
+                new TimeGraphArrow(tid6Child3.getId(), tid6Child2.getId(), 9, 3, 5)));
     }
 
     /**
@@ -389,6 +432,20 @@ public class FlameChartDataProviderTest extends CallStackTestBase2 {
             assertEquals("Label at " + i + FOR_ENTRY + entryName, expected.getLabel(), actual.getLabel());
             if (checkStyles) {
                 assertEquals("Style at " + i + FOR_ENTRY + entryName, expected.getStyle(), actual.getStyle());
+            }
+        }
+    }
+
+    private static void verifyArrows(List<ITimeGraphArrow> arrows, List<ITimeGraphArrow> expectedArrows) {
+        assertEquals(expectedArrows.size(), arrows.size());
+        for (ITimeGraphArrow expectedArrow : expectedArrows) {
+            for (ITimeGraphArrow arrow: arrows) {
+                if (arrow.getValue() == expectedArrow.getValue()) {
+                    assertEquals("Duration for arrow " + arrow.getValue(), expectedArrow.getDuration(), arrow.getDuration());
+                    assertEquals("Start time for arrow " + arrow.getValue(), expectedArrow.getStartTime(), arrow.getStartTime());
+                    assertEquals("Source Id for arrow " + arrow.getValue(), expectedArrow.getSourceId(), arrow.getSourceId());
+                    assertEquals("Destination Id for arrow " + arrow.getValue(), expectedArrow.getDestinationId(), arrow.getDestinationId());
+                }
             }
         }
     }

@@ -12,9 +12,15 @@
 package org.eclipse.tracecompass.analysis.profiling.core.tests.stubs2;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.tracecompass.analysis.os.linux.core.model.HostThread;
+import org.eclipse.tracecompass.internal.analysis.profiling.core.instrumented.EdgeStateValue;
 import org.eclipse.tracecompass.internal.analysis.profiling.core.instrumented.InstrumentedCallStackAnalysis;
+import org.eclipse.tracecompass.statesystem.core.interval.ITmfStateInterval;
+import org.eclipse.tracecompass.statesystem.core.tests.shared.utils.StateIntervalStub;
 import org.eclipse.tracecompass.tmf.core.statesystem.ITmfStateProvider;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
 
@@ -42,5 +48,24 @@ public class CallStackAnalysisStub extends InstrumentedCallStackAnalysis {
     @Override
     public List<String[]> getPatterns() {
         return super.getPatterns();
+    }
+
+    @Override
+    public List<ITmfStateInterval> getLinks(long start, long end, IProgressMonitor monitor) {
+        String hostId = getHostId();
+        HostThread tid2 = new HostThread(hostId, 2);
+        HostThread tid3 = new HostThread(hostId, 3);
+        HostThread tid6 = new HostThread(hostId, 6);
+        HostThread tid7 = new HostThread(hostId, 7);
+
+        List<ITmfStateInterval> intervals = List.of(new StateIntervalStub(1, 2, new EdgeStateValue(1, tid2, tid2)),
+                new StateIntervalStub(4, 6, new EdgeStateValue(2, tid2, tid3)),
+                new StateIntervalStub(5, 8, new EdgeStateValue(3, tid3, tid6)),
+                new StateIntervalStub(5, 9, new EdgeStateValue(4, tid6, tid7)),
+                new StateIntervalStub(9, 11, new EdgeStateValue(5, tid6, tid6)));
+
+        return intervals.stream()
+                .filter(i -> (i.getStartTime() >= start && i.getStartTime() <= end) || (i.getEndTime() >= start && i.getEndTime() <= end))
+                .collect(Collectors.toList());
     }
 }
