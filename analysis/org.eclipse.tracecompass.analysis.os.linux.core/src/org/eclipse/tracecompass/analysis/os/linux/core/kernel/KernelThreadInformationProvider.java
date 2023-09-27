@@ -572,7 +572,7 @@ public final class KernelThreadInformationProvider {
                     kernelStatuses.put(threadId, states.stream().map(i -> addSyscallInformation(i, syscalls)).collect(Collectors.toList()));
                     continue;
                 }
-                kernelStatuses.put(threadId, Objects.requireNonNull(states.stream().toList()));
+                kernelStatuses.put(threadId, Objects.requireNonNull(states.stream().collect(Collectors.toList())));
             }
             return kernelStatuses;
         } catch (IndexOutOfBoundsException | TimeRangeException | StateSystemDisposedException e) {
