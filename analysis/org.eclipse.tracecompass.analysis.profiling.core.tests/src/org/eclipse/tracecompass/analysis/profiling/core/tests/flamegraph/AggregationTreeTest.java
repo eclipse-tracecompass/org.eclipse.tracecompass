@@ -91,6 +91,7 @@ public class AggregationTreeTest {
         assertNotNull(threads);
         assertEquals("Number of threads found", 0, threads.size());
         cga.dispose();
+        fCsa.dispose();
     }
 
     /**
@@ -162,6 +163,7 @@ public class AggregationTreeTest {
         assertEquals("Test second function's nombre of calls", 1, secondFunction.getNbCalls());
         assertEquals("Test third function's nombre of calls", 1, thirdFunction.getNbCalls());
         cga.dispose();
+        fCsa.dispose();
     }
 
     /**
@@ -236,6 +238,7 @@ public class AggregationTreeTest {
         assertEquals("Test second function's number of calls", 2, secondFunction.getNbCalls());
         assertEquals("Test third function's number of calls", 1, thirdFunction.getNbCalls());
         cga.dispose();
+        fCsa.dispose();
     }
 
     /**
@@ -322,6 +325,7 @@ public class AggregationTreeTest {
         assertEquals("Test first leaf's number of calls", 1, leaf1.getNbCalls());
         assertEquals("Test second leaf's number of calls", 1, leaf2.getNbCalls());
         cga.dispose();
+        fCsa.dispose();
     }
 
     /**
@@ -438,6 +442,7 @@ public class AggregationTreeTest {
         assertEquals("Test second child's number of calls", 1, function3.getNbCalls());
         assertEquals("Test leaf's number of calls", 2, function4.getNbCalls());
         cga.dispose();
+        fCsa.dispose();
     }
 
     /**
@@ -480,6 +485,7 @@ public class AggregationTreeTest {
             parent = child;
         }
         cga.dispose();
+        fCsa.dispose();
     }
 
     /**
@@ -553,6 +559,7 @@ public class AggregationTreeTest {
         assertEquals("Test second function's number of calls", 1, function2.getNbCalls());
         assertEquals("Test third function's number of calls", 1, function3.getNbCalls());
         cga.dispose();
+        fCsa.dispose();
     }
 
     /**
@@ -634,6 +641,7 @@ public class AggregationTreeTest {
         assertEquals("Test third function's number of calls", 1, function3.getNbCalls());
         assertEquals("Test third function's number of calls", 1, function4.getNbCalls());
         cga.dispose();
+        fCsa.dispose();
     }
 
     /**
