@@ -28,6 +28,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -406,7 +407,7 @@ public class FlameGraphDataProvider<@NonNull N, E, @NonNull T extends WeightedTr
         // Add the extra sites
         List<String> extraDataSets = wtProvider.getExtraDataSets();
         for (int i = 0; i < extraDataSets.size(); i++) {
-            List<WeightedTree<@NonNull N>> extraDataTrees = callSite.getExtraDataTrees(i).stream().sorted(fCctComparator2).toList();
+            List<WeightedTree<@NonNull N>> extraDataTrees = callSite.getExtraDataTrees(i).stream().sorted(fCctComparator2).collect(Collectors.toList());
             if (extraDataTrees.isEmpty()) {
                 continue;
             }
