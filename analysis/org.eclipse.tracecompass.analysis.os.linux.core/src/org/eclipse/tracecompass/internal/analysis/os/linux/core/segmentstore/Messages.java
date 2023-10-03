@@ -39,6 +39,23 @@ public class Messages extends NLS {
      */
     public static @Nullable String PriorityThreadNameStatisticsAnalysis_segmentType;
 
+    /**
+     * Name of the Priority statistics data provider
+     */
+    public static @Nullable String PriorityStatisticsDataProviderFactory_AnalysisName;
+    /**
+     * Title of the Priority statistics data provider
+     */
+    public static @Nullable String PriorityStatisticsDataProviderFactory_title;
+    /**
+     * Description of the Priority statistics data provider
+     */
+    public static @Nullable String PriorityStatisticsDataProviderFactory_description;
+    /**
+     * The segment type format of the PriorityStatisticsAnalysis
+     */
+    public static @Nullable String PriorityStatisticsAnalysis_segmentType;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, Messages.class);
