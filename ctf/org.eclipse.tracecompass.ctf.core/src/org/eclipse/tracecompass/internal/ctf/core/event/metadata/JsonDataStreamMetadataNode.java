@@ -133,12 +133,18 @@ public class JsonDataStreamMetadataNode extends CTFJsonMetadataNode {
         super.initialize();
         if (fPacketContextFieldClass != null) {
             fPacketContextFieldClass.initialize();
+            addChild(fPacketContextFieldClass);
+            fPacketContextFieldClass.setParent(this);
         }
         if (fEventRecordCommonContextClass != null) {
             fEventRecordCommonContextClass.initialize();
+            addChild(fEventRecordCommonContextClass);
+            fEventRecordCommonContextClass.setParent(this);
         }
         if (fEventRecordHeaderClass != null) {
             fEventRecordHeaderClass.initialize();
+            addChild(fEventRecordHeaderClass);
+            fEventRecordHeaderClass.setParent(this);
         }
     }
 }

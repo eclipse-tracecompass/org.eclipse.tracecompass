@@ -112,9 +112,13 @@ public class JsonEventRecordMetadataNode extends CTFJsonMetadataNode {
         super.initialize();
         if (fSpecificContextClass != null) {
             fSpecificContextClass.initialize();
+            addChild(fSpecificContextClass);
+            fSpecificContextClass.setParent(this);
         }
         if (fPayloadFieldClass != null) {
             fPayloadFieldClass.initialize();
+            addChild(fPayloadFieldClass);
+            fPayloadFieldClass.setParent(this);
         }
     }
 }
