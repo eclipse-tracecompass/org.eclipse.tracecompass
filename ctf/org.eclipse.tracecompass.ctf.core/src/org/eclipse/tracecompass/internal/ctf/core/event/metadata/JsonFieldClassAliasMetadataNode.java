@@ -29,7 +29,7 @@ public class JsonFieldClassAliasMetadataNode extends CTFJsonMetadataNode {
     @SerializedName("name")
     private final String fName;
     @SerializedName("field-class")
-    private final JsonObject fFieldClass;
+    private final FieldClass fFieldClass;
 
     /**
      * Constructor for a JsonFieldClassAliasMetadataNode
@@ -45,7 +45,7 @@ public class JsonFieldClassAliasMetadataNode extends CTFJsonMetadataNode {
      * @param fieldClass
      *            the field class described by this new node
      */
-    public JsonFieldClassAliasMetadataNode(ICTFMetadataNode parent, String type, String value, String name, JsonObject fieldClass) {
+    public JsonFieldClassAliasMetadataNode(ICTFMetadataNode parent, String type, String value, String name, FieldClass fieldClass) {
         super(parent, type, value);
         this.fName = name;
         this.fFieldClass = fieldClass;
@@ -66,7 +66,7 @@ public class JsonFieldClassAliasMetadataNode extends CTFJsonMetadataNode {
      * @return the field class
      */
     public JsonObject getFieldClass() {
-        return fFieldClass;
+        return fFieldClass.getFieldClass();
     }
 
 }

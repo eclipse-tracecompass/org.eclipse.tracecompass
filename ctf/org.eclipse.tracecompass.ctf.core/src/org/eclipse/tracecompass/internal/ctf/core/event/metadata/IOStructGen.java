@@ -167,6 +167,8 @@ public class IOStructGen {
             } else if (JsonMetadataStrings.FRAGMENT_PREAMBLE.equals(type)) {
                 // FIXME: support Preamble fragment (CTF2 spec 5.5)
                 // https://diamon.org/ctf/files/CTF2-SPECRC-7.0rA.html#preamble-frag
+            } else if (JsonMetadataStrings.FRAGMENT_FIELD_ALIAS.equals(type)) {
+                // nothing to do
             } else {
                 throw childTypeError(child);
             }

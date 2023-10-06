@@ -53,6 +53,8 @@ import org.eclipse.tracecompass.ctf.parser.CTFParser.parse_return;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.CTFAntlrMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.CTFJsonMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.CtfAntlrException;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.FieldClass;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.FieldClass.FieldClassDeserializer;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.IOStructGen;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonClockMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonDataStreamMetadataNode;
@@ -234,11 +236,12 @@ public class Metadata {
      * @since 4.1
      */
     private static ICTFMetadataNode parseJsonToTree(String json) throws CTFException {
-        String[] jsonBlocks = json.split("\u001e"); //$NON-NLS-1$
-        GsonBuilder builder = new GsonBuilder();
-        Gson gson = builder.create();
         ICTFMetadataNode root = new CTFJsonMetadataNode(null, CTFParser.tokenNames[CTFParser.ROOT], null);
+        GsonBuilder builder = new GsonBuilder();
+        builder.registerTypeAdapter(FieldClass.class, new FieldClassDeserializer(root));
+        Gson gson = builder.create();
 
+        String[] jsonBlocks = json.split("\u001e"); //$NON-NLS-1$
         for (int i = 1; i < jsonBlocks.length; i++) {
             ICTFMetadataNode fragment;
             try {

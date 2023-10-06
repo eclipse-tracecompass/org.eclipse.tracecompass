@@ -21,6 +21,7 @@ import org.eclipse.tracecompass.ctf.core.event.types.VariantDeclaration;
 import org.eclipse.tracecompass.ctf.core.trace.CTFTrace;
 import org.eclipse.tracecompass.ctf.parser.CTFParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.AbstractScopedCommonTreeParser;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonFieldClassAliasMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonStructureFieldMemberMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.enumeration.EnumParser;
@@ -30,7 +31,9 @@ import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.variant.Va
 import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.utils.JsonMetadataStrings;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 
 /**
  * The "typealias" declaration can be used to give a name (including pointer
@@ -94,13 +97,43 @@ public final class TypeAliasParser extends AbstractScopedCommonTreeParser {
         IDeclaration targetDeclaration = null;
         CTFTrace trace = ((Param) param).fTrace;
 
-        String aliasString;
+        String aliasString = null;
         if (typealias instanceof JsonStructureFieldMemberMetadataNode) {
             JsonStructureFieldMemberMetadataNode member = ((JsonStructureFieldMemberMetadataNode) typealias);
-            aliasString = member.getName();
             String type = typealias.getType();
+            JsonObject fieldClass = null;
             if (member.getFieldClass().isJsonObject()) {
-                JsonObject fieldClass = member.getFieldClass().getAsJsonObject();
+                fieldClass = member.getFieldClass().getAsJsonObject();
+                aliasString = member.getName();
+                type = member.getType();
+            } else if (member.getFieldClass().isJsonPrimitive()) {
+                JsonPrimitive jPrimitive = member.getFieldClass().getAsJsonPrimitive();
+                if (jPrimitive.isString()) {
+                    String fieldClassAlias = jPrimitive.getAsString();
+                    ICTFMetadataNode root = member;
+                    while (root.getParent() != null) {
+                        root = root.getParent();
+                    }
+                    for (ICTFMetadataNode node : root.getChildren()) {
+                        if (node instanceof JsonFieldClassAliasMetadataNode) {
+                            JsonFieldClassAliasMetadataNode aliasMetadataNode = (JsonFieldClassAliasMetadataNode) node;
+                            if (aliasMetadataNode.getName().equals(fieldClassAlias)) {
+                                fieldClass = aliasMetadataNode.getFieldClass();
+                                aliasString = aliasMetadataNode.getName();
+                                JsonElement typeMember = fieldClass.get(JsonMetadataStrings.TYPE);
+                                if (typeMember != null && typeMember.isJsonPrimitive()) {
+                                    type = typeMember.getAsString();
+                                }
+                                break;
+                            }
+                        }
+                    }
+                    if (fieldClass == null) {
+                        throw new ParseException("no previously occurring field class alias named '" + fieldClassAlias + '\''); //$NON-NLS-1$
+                    }
+                }
+            }
+            if (fieldClass != null) {
                 if (JsonMetadataStrings.FIXED_UNSIGNED_INTEGER_FIELD.equals(type)) {
                     fieldClass.addProperty(SIGNED, false);
                     targetDeclaration = IntegerDeclarationParser.INSTANCE.parse(typealias, new IntegerDeclarationParser.Param(trace));
@@ -119,8 +152,7 @@ public final class TypeAliasParser extends AbstractScopedCommonTreeParser {
                     throw new ParseException("Invalid field class: " + type); //$NON-NLS-1$
                 }
             } else {
-                // TODO: Implement parsing of field class aliases
-                throw new ParseException("Field classes that are not Json Objects are not yet supported"); //$NON-NLS-1$
+                throw new ParseException("field-class property is not a JSON object or JSON string"); //$NON-NLS-1$
             }
         } else {
             for (ICTFMetadataNode child : children) {
