@@ -34,6 +34,7 @@ import org.eclipse.tracecompass.tmf.core.signal.TmfTraceClosedSignal;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
 import org.eclipse.tracecompass.tmf.core.trace.TmfTraceManager;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 
@@ -248,5 +249,27 @@ public class DataProviderManager {
      */
     public <T extends ITmfTreeDataProvider<? extends ITmfTreeDataModel>> boolean removeDataProvider(ITmfTrace trace, T provider) {
         return fInstances.remove(trace, provider);
+    }
+
+    /**
+     * @return a collection of existing data provider factories
+     * @since 9.4
+     */
+    public synchronized Collection<IDataProviderFactory> getFactories() {
+        return ImmutableList.copyOf(fDataProviderFactories.values());
+    }
+
+    /**
+     * @param id
+     *            The id of the data provider factory or a data provider ID of
+     *            form factoryId:secondaryId
+     *
+     * @return the data provider factory for a given Id.
+     * @since 9.4
+     */
+    public synchronized @Nullable IDataProviderFactory getFactory(String id) {
+        String[] ids = id.split(DataProviderConstants.ID_SEPARATOR, 2);
+        String factoryId = ids.length > 1 ? ids[0] : id;
+        return fDataProviderFactories.get(factoryId);
     }
 }

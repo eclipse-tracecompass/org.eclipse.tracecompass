@@ -11,10 +11,12 @@
 
 package org.eclipse.tracecompass.integration.core.tests.dataproviders;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -28,6 +30,7 @@ import org.eclipse.tracecompass.testtraces.ctf.CtfTestTrace;
 import org.eclipse.tracecompass.tmf.core.dataprovider.DataProviderManager;
 import org.eclipse.tracecompass.tmf.core.dataprovider.IDataProviderDescriptor;
 import org.eclipse.tracecompass.tmf.core.dataprovider.IDataProviderDescriptor.ProviderType;
+import org.eclipse.tracecompass.tmf.core.dataprovider.IDataProviderFactory;
 import org.eclipse.tracecompass.tmf.core.event.ITmfEvent;
 import org.eclipse.tracecompass.tmf.core.model.DataProviderDescriptor;
 import org.eclipse.tracecompass.tmf.core.model.tree.ITmfTreeDataModel;
@@ -51,6 +54,7 @@ public class DataProviderManagerTest {
     private static TmfExperiment fExperiment;
     private static final Set<IDataProviderDescriptor> EXPECTED_KERNEL_DP_DESCRIPTORS = new HashSet<>();
     private static final Set<IDataProviderDescriptor> EXPECTED_UST_DP_DESCRIPTORS = new HashSet<>();
+    private static final String SEGMENTSTORE_SCATTER_FUTEX_DP_ID = "org.eclipse.tracecompass.internal.analysis.timing.core.segmentstore.scatter.dataprovider:lttng.analysis.futex";
 
     private static final String CPU_USAGE_DP_ID = "org.eclipse.tracecompass.analysis.os.linux.core.cpuusage.CpuUsageDataProvider";
 
@@ -96,7 +100,7 @@ public class DataProviderManagerTest {
         builder.setName("Futex Contention Analysis - Latency vs Time")
                 .setDescription("Show latencies provided by Analysis module: Futex Contention Analysis")
                 .setProviderType(ProviderType.TREE_TIME_XY)
-                .setId("org.eclipse.tracecompass.internal.analysis.timing.core.segmentstore.scatter.dataprovider:lttng.analysis.futex");
+                .setId(SEGMENTSTORE_SCATTER_FUTEX_DP_ID);
         EXPECTED_KERNEL_DP_DESCRIPTORS.add(builder.build());
         builder = new DataProviderDescriptor.Builder();
         builder.setName("Futex Contention Analysis - Priority/Thread name Statistics Table")
@@ -395,4 +399,26 @@ public class DataProviderManagerTest {
         assertTrue(dp == dp3);
         assertTrue(dp == dp2);
     }
+
+    /**
+    * Test different factory get methods
+    */
+   @Test
+   public void testFactoryMethods() {
+       ITmfTrace trace = fKernelTrace;
+       assertNotNull(trace);
+       Collection<IDataProviderFactory> factories = DataProviderManager.getInstance().getFactories();
+       assertNotNull(factories);
+       for (IDataProviderFactory factory : factories) {
+           Collection<IDataProviderDescriptor> descs = factory.getDescriptors(trace);
+           for (IDataProviderDescriptor descriptor : descs) {
+               assertTrue(descriptor.getName(), EXPECTED_KERNEL_DP_DESCRIPTORS.contains(descriptor));
+           }
+       }
+       IDataProviderFactory factory =  DataProviderManager.getInstance().getFactory(SEGMENTSTORE_SCATTER_FUTEX_DP_ID);
+       assertNotNull(factory);
+       Collection<IDataProviderDescriptor> descs = factory.getDescriptors(trace);
+       long count = descs.stream().filter(desc -> desc.getId().equals(SEGMENTSTORE_SCATTER_FUTEX_DP_ID)).count();
+       assertEquals(1, count);
+   }
 }
