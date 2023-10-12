@@ -50,7 +50,6 @@ public class XmlConfigurationSource implements ITmfConfigurationSource {
     private static final String DESCRIPTION = nullToEmptyString(Messages.XmlConfigurationSource_Description);
     private static final String PATH_KEY = "path"; //$NON-NLS-1$
     private static final String PATH_DESCRIPTION = nullToEmptyString(Messages.XmlConfigurationSource_PathDescription);
-    private static final boolean IS_WINDOWS = System.getProperty("os.name").contains("Windows"); //$NON-NLS-1$ //$NON-NLS-2$
     private Map<String, ITmfConfiguration> fConfigurations = new ConcurrentHashMap<>();
 
     static {
@@ -128,16 +127,6 @@ public class XmlConfigurationSource implements ITmfConfigurationSource {
 
     private static @Nullable File getFile(Map<String, Object> parameters) {
         String path = (String) parameters.get(PATH_KEY);
-        if (IS_WINDOWS && path != null && path.startsWith("/")) { //$NON-NLS-1$
-            /*
-             * Workaround for path created by the theia-trace-extension, see
-             * https://github.com/theia-ide/theia-trace-extension/issues/545.
-             * This is caused by
-             * https://github.com/eclipse-theia/theia/issues/8098. Once issue
-             * #8098 is resolved this workaround can be removed.
-             */
-            path = path.substring(1);
-        }
         if (path == null) {
             return null;
         }
