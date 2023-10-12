@@ -93,4 +93,9 @@ public interface ITmfConfigurationSource {
      * @return list of all configuration instances
      */
     List<ITmfConfiguration> getConfigurations();
+
+    /**
+     * Dispose the configuration source.
+     */
+    void dispose();
 }

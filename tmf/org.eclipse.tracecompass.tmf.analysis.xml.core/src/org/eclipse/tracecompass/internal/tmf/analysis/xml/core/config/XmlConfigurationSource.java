@@ -125,6 +125,11 @@ public class XmlConfigurationSource implements ITmfConfigurationSource {
         return fConfigurations.containsKey(id);
     }
 
+    @Override
+    public void dispose() {
+        fConfigurations.clear();
+    }
+
     private static @Nullable File getFile(Map<String, Object> parameters) {
         String path = (String) parameters.get(PATH_KEY);
         if (path == null) {

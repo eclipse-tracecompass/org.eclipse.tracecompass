@@ -66,6 +66,7 @@ public class TmfConfigurationSourceManager {
      * Disposes the instance.
      */
     public synchronized void dispose() {
+        fDescriptors.values().forEach(t -> t.dispose());
         fDescriptors.clear();
     }
 

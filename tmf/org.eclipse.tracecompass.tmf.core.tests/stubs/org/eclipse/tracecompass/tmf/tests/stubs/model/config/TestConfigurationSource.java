@@ -108,4 +108,9 @@ public class TestConfigurationSource implements ITmfConfigurationSource {
     public @Nullable ITmfConfiguration get(String id) {
         return fConfigurations.get(id);
     }
+
+    @Override
+    public void dispose() {
+        fConfigurations.clear();
+    }
 }
