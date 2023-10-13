@@ -261,7 +261,7 @@ public class DataProviderManager {
 
     /**
      * @param id
-     *            The id of the data provider factory or a data provider ID of
+     *            The ID of the data provider factory or a data provider ID of
      *            form factoryId:secondaryId
      *
      * @return the data provider factory for a given Id.
@@ -271,5 +271,54 @@ public class DataProviderManager {
         String[] ids = id.split(DataProviderConstants.ID_SEPARATOR, 2);
         String factoryId = ids.length > 1 ? ids[0] : id;
         return fDataProviderFactories.get(factoryId);
+    }
+
+    /**
+     * Add a new data provider factory.
+     *
+     * If a data provider factory is associated with the ID already exists
+     * it will replace and return the existing data provider factory.
+     *
+     * @param id
+     *            The data provider factory ID
+     * @param factory
+     *            The data provider factory implementation
+     * @return the previous data provider factory associated with the key or null
+     *
+     * @since 9.4
+     */
+    public synchronized @Nullable IDataProviderFactory addDataProviderFactory(String id, IDataProviderFactory factory) {
+        return fDataProviderFactories.put(id, factory);
+    }
+
+    /**
+     * Remove a data provider from the instances by ID. This method will not
+     * dispose of the data provider. It is the responsibility of the caller to
+     * dispose of it if needed.
+     *
+     * @param trace
+     *            The trace for which to remove the data provider
+     * @param id
+     *            The The ID of the data provider to remove
+     * @return {@code true} if any elements were removed
+     * @since 9.4
+     */
+    public boolean removeDataProvider(ITmfTrace trace, String id) {
+        return fInstances.get(trace).removeIf(p -> p.getId().equals(id));
+    }
+
+    /**
+     * Remove a data provider factory.
+     *
+     * @param id
+     *            The ID of the data provider factory or a data provider ID of
+     *            form factoryId:secondaryId
+     * @return the removed data provider factory associated with the key or null
+     * @since 9.4
+     */
+    public synchronized @Nullable IDataProviderFactory removeDataProviderFactory(String id) {
+        String[] ids = id.split(DataProviderConstants.ID_SEPARATOR, 2);
+        String factoryId = ids.length > 1 ? ids[0] : id;
+        return fDataProviderFactories.remove(factoryId);
     }
 }
