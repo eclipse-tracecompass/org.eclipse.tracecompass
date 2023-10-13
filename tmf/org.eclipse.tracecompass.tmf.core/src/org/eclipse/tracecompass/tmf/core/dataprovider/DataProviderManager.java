@@ -16,6 +16,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -34,7 +35,6 @@ import org.eclipse.tracecompass.tmf.core.signal.TmfTraceClosedSignal;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
 import org.eclipse.tracecompass.tmf.core.trace.TmfTraceManager;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 
@@ -258,7 +258,7 @@ public class DataProviderManager {
      * @since 9.4
      */
     public synchronized Collection<IDataProviderFactory> getFactories() {
-        return ImmutableList.copyOf(fDataProviderFactories.values());
+        return List.copyOf(fDataProviderFactories.values());
     }
 
     /**
@@ -272,8 +272,75 @@ public class DataProviderManager {
      * @since 9.4
      */
     public synchronized @Nullable IDataProviderFactory getFactory(String id) {
-        String[] ids = id.split(DataProviderConstants.ID_SEPARATOR, 2);
-        String factoryId = ids.length > 1 ? ids[0] : id;
+        String factoryId = extractFactoryId(id);
         return fDataProviderFactories.get(factoryId);
+    }
+
+    /**
+     * Add a new data provider factory.
+     *
+     * If a data provider factory associated with the ID already exists it will
+     * replace it and will remove and dispose all data provider instances
+     * created by the given factory for all open traces.
+     *
+     * @param id
+     *            The data provider factory ID
+     * @param factory
+     *            The data provider factory implementation
+     * @since 9.4
+     */
+    public synchronized void addDataProviderFactory(String id, IDataProviderFactory factory) {
+        IDataProviderFactory existingFactory = fDataProviderFactories.put(id, factory);
+        removeExistingDataProviders(existingFactory, id);
+    }
+
+    /**
+     * Remove a data provider factory. It will remove and dispose all data
+     * provider instances created by the factory associated with the ID for all
+     * open traces.
+     *
+     * Call this method only if calling method is owner of factory and had added
+     * factory before.
+     *
+     * @param id
+     *            The ID of the data provider factory or a data provider ID of
+     *            form factoryId:secondaryId
+     * @since 9.4
+     */
+    public synchronized void removeDataProviderFactory(String id) {
+        String passedFactoryId = extractFactoryId(id);
+        IDataProviderFactory existingFactory = fDataProviderFactories.remove(passedFactoryId);
+        removeExistingDataProviders(existingFactory, passedFactoryId);
+    }
+
+    /**
+     * Removes and disposes all existing data providers created by an existing
+     * factory with given factory ID.
+     *
+     * @param factory
+     *            the existing factory
+     * @param passedFactoryId
+     *            The factory ID (not data provider ID)
+     */
+    private void removeExistingDataProviders(IDataProviderFactory factory, String passedFactoryId) {
+        if (factory != null) {
+            for (ITmfTrace trace : fInstances.keySet()) {
+                Iterator<ITmfTreeDataProvider<? extends ITmfTreeDataModel>> iter = fInstances.get(trace).iterator();
+                while (iter.hasNext()) {
+                    ITmfTreeDataProvider<? extends ITmfTreeDataModel> dp = iter.next();
+                    String factoryId = extractFactoryId(dp.getId());
+                    if (passedFactoryId.equals(factoryId)) {
+                        dp.dispose();
+                        iter.remove();
+                    }
+                }
+            }
+        }
+
+    }
+
+    private static String extractFactoryId(String id) {
+        String[] ids = id.split(DataProviderConstants.ID_SEPARATOR, 2);
+        return ids.length > 1 ? ids[0] : id;
     }
 }
