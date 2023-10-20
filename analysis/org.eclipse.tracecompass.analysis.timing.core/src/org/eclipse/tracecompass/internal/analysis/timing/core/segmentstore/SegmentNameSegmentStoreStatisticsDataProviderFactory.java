@@ -13,14 +13,15 @@ package org.eclipse.tracecompass.internal.analysis.timing.core.segmentstore;
 
 import java.util.Objects;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.tracecompass.analysis.timing.core.segmentstore.GenericSegmentStatisticsAnalysis;
 import org.eclipse.tracecompass.analysis.timing.core.segmentstore.statistics.AbstractSegmentStatisticsAnalysis;
 import org.eclipse.tracecompass.tmf.core.analysis.IAnalysisModule;
 import org.eclipse.tracecompass.tmf.core.component.DataProviderConstants;
+import org.eclipse.tracecompass.tmf.core.dataprovider.IDataProviderDescriptor;
 import org.eclipse.tracecompass.tmf.core.dataprovider.IDataProviderDescriptor.ProviderType;
 import org.eclipse.tracecompass.tmf.core.model.DataProviderDescriptor;
-import org.eclipse.tracecompass.tmf.core.model.DataProviderDescriptor.Builder;
 
 /**
  * Generalized {@link SegmentStoreStatisticsDataProvider} factory using
@@ -49,12 +50,12 @@ public class SegmentNameSegmentStoreStatisticsDataProviderFactory extends Abstra
     }
 
     @Override
-    protected Builder getDataProviderDescriptor(IAnalysisModule analysis) {
+    protected @Nullable IDataProviderDescriptor getDataProviderDescriptor(IAnalysisModule analysis) {
         DataProviderDescriptor.Builder builder = new DataProviderDescriptor.Builder();
         builder.setId(SegmentStoreStatisticsDataProvider.ID + DataProviderConstants.ID_SEPARATOR + analysis.getId())
                 .setName(Objects.requireNonNull(NLS.bind(Messages.SegmentStoreStatisticsDataProvider_title, analysis.getName())))
                 .setDescription(Objects.requireNonNull(NLS.bind(Messages.SegmentStoreStatisticsDataProvider_description, analysis.getHelpText())))
                 .setProviderType(ProviderType.DATA_TREE);
-        return builder;
+        return builder.build();
     }
 }

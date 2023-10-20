@@ -13,9 +13,9 @@ package org.eclipse.tracecompass.internal.analysis.os.linux.core.segmentstore;
 
 import java.util.Objects;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.osgi.util.NLS;
+import org.eclipse.tracecompass.analysis.os.linux.core.swslatency.SWSLatencyAnalysis;
 import org.eclipse.tracecompass.analysis.timing.core.segmentstore.GenericSegmentStatisticsAnalysis;
 import org.eclipse.tracecompass.analysis.timing.core.segmentstore.statistics.AbstractSegmentStatisticsAnalysis;
 import org.eclipse.tracecompass.internal.analysis.timing.core.segmentstore.AbstractSegmentStoreStatisticsDataProviderFactory;
@@ -23,9 +23,9 @@ import org.eclipse.tracecompass.segmentstore.core.ISegment;
 import org.eclipse.tracecompass.segmentstore.core.segment.interfaces.INamedSegment;
 import org.eclipse.tracecompass.tmf.core.analysis.IAnalysisModule;
 import org.eclipse.tracecompass.tmf.core.component.DataProviderConstants;
+import org.eclipse.tracecompass.tmf.core.dataprovider.IDataProviderDescriptor;
 import org.eclipse.tracecompass.tmf.core.dataprovider.IDataProviderDescriptor.ProviderType;
 import org.eclipse.tracecompass.tmf.core.model.DataProviderDescriptor;
-import org.eclipse.tracecompass.tmf.core.model.DataProviderDescriptor.Builder;
 
 /**
  * A data provider factory for Priority/Thread name statistics analysis.
@@ -56,7 +56,7 @@ public class PriorityThreadNameStatisticsDataProviderFactory extends AbstractSeg
         }
 
         @Override
-        protected @Nullable String getSegmentType(@NonNull ISegment segment) {
+        protected @Nullable String getSegmentType(ISegment segment) {
             if ((segment instanceof INamedSegment) && (segment instanceof IPrioritySegment)) {
                 return NLS.bind(Messages.PriorityThreadNameStatisticsAnalysis_segmentType, ((IPrioritySegment) segment).getPriority(), ((INamedSegment) segment).getName());
             }
@@ -84,12 +84,15 @@ public class PriorityThreadNameStatisticsDataProviderFactory extends AbstractSeg
     }
 
     @Override
-    protected Builder getDataProviderDescriptor(IAnalysisModule analysis) {
-        DataProviderDescriptor.Builder builder = new DataProviderDescriptor.Builder();
-        builder.setId(DATA_PROVIDER_ID + DataProviderConstants.ID_SEPARATOR + analysis.getId())
-                .setName(Objects.requireNonNull(NLS.bind(Messages.PriorityThreadNameStatisticsDataProviderFactory_title, analysis.getName())))
-                .setDescription(Objects.requireNonNull(NLS.bind(Messages.PriorityThreadNameStatisticsDataProviderFactory_description, analysis.getHelpText())))
-                .setProviderType(ProviderType.DATA_TREE);
-        return builder;
+    protected @Nullable IDataProviderDescriptor getDataProviderDescriptor(IAnalysisModule analysis) {
+        if (analysis instanceof SWSLatencyAnalysis) {
+            DataProviderDescriptor.Builder builder = new DataProviderDescriptor.Builder();
+            builder.setId(DATA_PROVIDER_ID + DataProviderConstants.ID_SEPARATOR + analysis.getId())
+                   .setName(Objects.requireNonNull(NLS.bind(Messages.PriorityThreadNameStatisticsDataProviderFactory_title, analysis.getName())))
+                   .setDescription(Objects.requireNonNull(NLS.bind(Messages.PriorityThreadNameStatisticsDataProviderFactory_description, analysis.getHelpText())))
+                   .setProviderType(ProviderType.DATA_TREE);
+            return builder.build();
+        }
+        return null;
     }
 }

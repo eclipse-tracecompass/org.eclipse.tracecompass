@@ -24,7 +24,6 @@ import org.eclipse.tracecompass.tmf.core.analysis.IAnalysisModule;
 import org.eclipse.tracecompass.tmf.core.dataprovider.IDataProviderDescriptor;
 import org.eclipse.tracecompass.tmf.core.dataprovider.IDataProviderFactory;
 import org.eclipse.tracecompass.tmf.core.exceptions.TmfAnalysisException;
-import org.eclipse.tracecompass.tmf.core.model.DataProviderDescriptor;
 import org.eclipse.tracecompass.tmf.core.model.tree.ITmfTreeDataModel;
 import org.eclipse.tracecompass.tmf.core.model.tree.ITmfTreeDataProvider;
 import org.eclipse.tracecompass.tmf.core.model.tree.TmfTreeCompositeDataProvider;
@@ -85,9 +84,11 @@ public abstract class AbstractSegmentStoreStatisticsDataProviderFactory implemen
             IAnalysisModule analysis = (IAnalysisModule) module;
             // Only add analysis once per trace (which could be an experiment)
             if (!existingModules.contains(analysis.getId())) {
-                DataProviderDescriptor.Builder builder = getDataProviderDescriptor(analysis);
-                descriptors.add(builder.build());
-                existingModules.add(analysis.getId());
+                IDataProviderDescriptor descriptor = getDataProviderDescriptor(analysis);
+                if (descriptor != null) {
+                    descriptors.add(descriptor);
+                    existingModules.add(analysis.getId());
+                }
             }
         }
         return descriptors;
@@ -125,13 +126,13 @@ public abstract class AbstractSegmentStoreStatisticsDataProviderFactory implemen
     protected abstract void setStatisticsAnalysisModuleName(AbstractSegmentStatisticsAnalysis statisticsAnalysisModule, IAnalysisModule baseAnalysisModule);
 
     /**
-     * Get the data provider descriptor
+     * Get the data provider descriptor. Only return a descriptor if the
+     * analysis is applicable for that factory.
      *
      * @param analysis
      *            The base analysis on which the statistics are based on.
-     * @return A
-     *         {@link org.eclipse.tracecompass.tmf.core.model.DataProviderDescriptor.Builder}
-     *         that contains the data provider information
+     * @return A {@link IDataProviderDescriptor} that contains the data provider
+     *         information or null if not applicable for this analysis module
      */
-    protected abstract DataProviderDescriptor.Builder getDataProviderDescriptor(IAnalysisModule analysis);
+    protected abstract @Nullable IDataProviderDescriptor getDataProviderDescriptor(IAnalysisModule analysis);
 }
