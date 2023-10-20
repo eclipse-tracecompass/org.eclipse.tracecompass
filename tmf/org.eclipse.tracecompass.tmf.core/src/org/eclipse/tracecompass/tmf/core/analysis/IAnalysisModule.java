@@ -295,4 +295,17 @@ public interface IAnalysisModule extends ITmfComponent, IAnalysisRequirementProv
      *            The of the parameter that changed
      */
     void notifyParameterChanged(@NonNull String name);
+
+    /**
+     * Clear persistent data that an analysis module may create. This can be
+     * used to re-execute the analysis without having to close the trace.
+     *
+     * Callers of this method are responsible to notify users of the analysis
+     * module and schedule the analysis again.
+     *
+     * @since 9.4
+     */
+    default void clearPersistentData() {
+        cancel();
+    }
 }

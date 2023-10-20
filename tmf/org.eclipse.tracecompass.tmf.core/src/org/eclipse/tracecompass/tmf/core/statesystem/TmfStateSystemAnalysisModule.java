@@ -896,4 +896,35 @@ public abstract class TmfStateSystemAnalysisModule extends TmfAbstractAnalysisMo
         }
         return properties;
     }
+
+
+    /**
+     * @since 9.4
+     */
+    @Override
+    public void clearPersistentData() {
+        super.clearPersistentData();
+        if (fStateSystem != null) {
+            // State system is open
+            fStateSystem.removeFiles();
+        } else {
+            // State system is closed... delete directly
+            StateSystemBackendType backend = getBackendType();
+            switch (backend) {
+            case FULL:
+            case PARTIAL:
+                File htFile = getSsFile();
+                if ((htFile != null) && (htFile.exists())) {
+                    htFile.delete();
+                }
+                break;
+                //$CASES-OMITTED$
+            default:
+                break;
+            }
+        }
+
+        // Reset analysis so that it can be scheduled again
+        resetAnalysis();
+    }
 }
