@@ -516,4 +516,56 @@ public class StateSystemAnalysisModuleTest {
             TestStateSystemProvider.setEventHandler(null);
         }
     }
+
+    /**
+     * Test clearing persistent data
+     *
+     * @throws TmfAnalysisException
+     *             An exception when setting the trace
+     */
+    @Test
+    public void testClearSsModule() throws TmfAnalysisException {
+        TestStateSystemModule module = new TestStateSystemModule(true);
+        TestStateSystemModule module2 = new TestStateSystemModule(true);
+        try {
+            ITmfTrace trace = fTrace;
+            assertNotNull(trace);
+            module.setTrace(trace);
+            module2.setTrace(trace);
+
+            // Execute the first module
+            module.schedule();
+            assertTrue(module.waitForCompletion());
+
+            // Check if state system file exists
+            File ssFile = module.getSsFile();
+            assertNotNull(ssFile);
+            assertTrue(ssFile.exists());
+
+            // Delete state system file while open
+            module.clearPersistentData();
+
+            // The state system file should be deleted
+            ssFile = module.getSsFile();
+            assertNotNull(ssFile);
+            assertFalse(ssFile.exists());
+
+            // Re-schedule
+            module.schedule();
+            assertTrue(module.waitForCompletion());
+            // Dispose module (close file)
+            module.dispose();
+
+            module2.clearPersistentData();
+
+            // Delete state system file while closed
+            ssFile = module.getSsFile();
+            assertNotNull(ssFile);
+            assertFalse(ssFile.exists());
+        } finally {
+            module.dispose();
+            module2.dispose();
+        }
+    }
+
 }
