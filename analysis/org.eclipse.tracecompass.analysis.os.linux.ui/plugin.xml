@@ -31,7 +31,7 @@
       </view>
       <view
             category="org.eclipse.linuxtools.tmf.ui.views.category"
-            class="org.eclipse.tracecompass.analysis.os.linux.ui.segmentstore.statistics.PriorityThreadNameStatisticsView"
+            class="org.eclipse.tracecompass.internal.analysis.os.linux.ui.segmentstore.statistics.PriorityThreadNameStatisticsView"
             icon="icons/eview16/statistics_view.gif"
             id="org.eclipse.tracecompass.analysis.os.linux.ui.segmentstore.statistics.prioname"
             name="%view.segstore.statistics.prioname"
@@ -40,7 +40,7 @@
       <view
             allowMultiple="false"
             category="org.eclipse.linuxtools.lttng2.ui.views.category"
-            class="org.eclipse.tracecompass.analysis.os.linux.ui.segmentstore.statistics.PriorityThreadNameStatisticsView"
+            class="org.eclipse.tracecompass.internal.analysis.os.linux.ui.segmentstore.statistics.PriorityThreadNameStatisticsView"
             icon="icons/obj16/statistics_view.gif"
             id="org.eclipse.tracecompass.analysis.os.linux.ui.segmentstore.statistics.prioname:org.eclipse.tracecompass.analysis.os.linux.core.swslatency.sws"
             name="%swslatency.stats.view.name.prioname"
@@ -48,7 +48,7 @@
       </view>
       <view
             category="org.eclipse.linuxtools.tmf.ui.views.category"
-            class="org.eclipse.tracecompass.analysis.os.linux.ui.segmentstore.statistics.PriorityStatisticsView"
+            class="org.eclipse.tracecompass.internal.analysis.os.linux.ui.segmentstore.statistics.PriorityStatisticsView"
             icon="icons/eview16/statistics_view.gif"
             id="org.eclipse.tracecompass.analysis.os.linux.ui.segmentstore.statistics.priority"
             name="%view.segstore.statistics.priority"
@@ -57,7 +57,7 @@
       <view
             allowMultiple="false"
             category="org.eclipse.linuxtools.lttng2.ui.views.category"
-            class="org.eclipse.tracecompass.analysis.os.linux.ui.segmentstore.statistics.PriorityStatisticsView"
+            class="org.eclipse.tracecompass.internal.analysis.os.linux.ui.segmentstore.statistics.PriorityStatisticsView"
             icon="icons/obj16/statistics_view.gif"
             id="org.eclipse.tracecompass.analysis.os.linux.ui.segmentstore.statistics.priority:org.eclipse.tracecompass.analysis.os.linux.core.swslatency.sws"
             name="%swslatency.stats.view.name.priority"
@@ -218,42 +218,42 @@
             class="org.eclipse.tracecompass.tmf.ui.analysis.TmfAnalysisViewOutput"
             id="org.eclipse.tracecompass.analysis.timing.ui.segstore.table:org.eclipse.tracecompass.analysis.os.linux.core.swslatency.sws">
          <analysisModuleClass
-               class="org.eclipse.tracecompass.analysis.os.linux.core.swslatency.SWSLatencyAnalysis">
+               class="org.eclipse.tracecompass.internal.analysis.os.linux.core.swslatency.SWSLatencyAnalysis">
          </analysisModuleClass>
       </output>
       <output
             class="org.eclipse.tracecompass.tmf.ui.analysis.TmfAnalysisViewOutput"
             id="org.eclipse.tracecompass.internal.analysis.os.linux.ui.views.swslatency.scatter">
          <analysisModuleClass
-               class="org.eclipse.tracecompass.analysis.os.linux.core.swslatency.SWSLatencyAnalysis">
+               class="org.eclipse.tracecompass.internal.analysis.os.linux.core.swslatency.SWSLatencyAnalysis">
          </analysisModuleClass>
       </output>
       <output
             class="org.eclipse.tracecompass.tmf.ui.analysis.TmfAnalysisViewOutput"
             id="org.eclipse.tracecompass.analysis.timing.ui.segstore.statistics:org.eclipse.tracecompass.analysis.os.linux.core.swslatency.sws">
          <analysisModuleClass
-               class="org.eclipse.tracecompass.analysis.os.linux.core.swslatency.SWSLatencyAnalysis">
+               class="org.eclipse.tracecompass.internal.analysis.os.linux.core.swslatency.SWSLatencyAnalysis">
          </analysisModuleClass>
       </output>
       <output
             class="org.eclipse.tracecompass.tmf.ui.analysis.TmfAnalysisViewOutput"
             id="org.eclipse.tracecompass.analysis.os.linux.ui.segmentstore.statistics.prioname:org.eclipse.tracecompass.analysis.os.linux.core.swslatency.sws">
          <analysisModuleClass
-               class="org.eclipse.tracecompass.analysis.os.linux.core.swslatency.SWSLatencyAnalysis">
+               class="org.eclipse.tracecompass.internal.analysis.os.linux.core.swslatency.SWSLatencyAnalysis">
          </analysisModuleClass>
       </output>
       <output
             class="org.eclipse.tracecompass.tmf.ui.analysis.TmfAnalysisViewOutput"
             id="org.eclipse.tracecompass.analysis.os.linux.ui.segmentstore.statistics.priority:org.eclipse.tracecompass.analysis.os.linux.core.swslatency.sws">
          <analysisModuleClass
-               class="org.eclipse.tracecompass.analysis.os.linux.core.swslatency.SWSLatencyAnalysis">
+               class="org.eclipse.tracecompass.internal.analysis.os.linux.core.swslatency.SWSLatencyAnalysis">
          </analysisModuleClass>
       </output>
       <output
             class="org.eclipse.tracecompass.tmf.ui.analysis.TmfAnalysisViewOutput"
             id="org.eclipse.tracecompass.internal.analysis.os.linux.ui.views.swslatency.density">
          <analysisModuleClass
-               class="org.eclipse.tracecompass.analysis.os.linux.core.swslatency.SWSLatencyAnalysis">
+               class="org.eclipse.tracecompass.internal.analysis.os.linux.core.swslatency.SWSLatencyAnalysis">
          </analysisModuleClass>
       </output>
    </extension>

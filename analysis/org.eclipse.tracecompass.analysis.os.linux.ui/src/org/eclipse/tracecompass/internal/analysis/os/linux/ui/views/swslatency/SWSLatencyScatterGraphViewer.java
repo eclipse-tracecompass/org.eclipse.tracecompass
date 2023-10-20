@@ -12,8 +12,8 @@
 package org.eclipse.tracecompass.internal.analysis.os.linux.ui.views.swslatency;
 
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.tracecompass.analysis.os.linux.core.swslatency.SWSLatencyAnalysis;
 import org.eclipse.tracecompass.analysis.timing.ui.views.segmentstore.scatter.AbstractSegmentStoreScatterChartViewer2;
+import org.eclipse.tracecompass.internal.analysis.os.linux.core.swslatency.SWSLatencyAnalysis;
 import org.eclipse.tracecompass.tmf.ui.viewers.xychart.linechart.TmfXYChartSettings;
 
 /**

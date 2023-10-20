@@ -14,11 +14,11 @@ package org.eclipse.tracecompass.internal.analysis.os.linux.ui.views.swslatency;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.tracecompass.analysis.os.linux.core.swslatency.SWSLatencyAnalysis;
 import org.eclipse.tracecompass.analysis.timing.ui.views.segmentstore.density2.AbstractSegmentStoreDensityView;
 import org.eclipse.tracecompass.analysis.timing.ui.views.segmentstore.density2.AbstractSegmentStoreDensityViewer;
 import org.eclipse.tracecompass.analysis.timing.ui.views.segmentstore.table.AbstractSegmentStoreTableViewer;
 import org.eclipse.tracecompass.analysis.timing.ui.views.segmentstore.table.SegmentStoreTableViewer;
+import org.eclipse.tracecompass.internal.analysis.os.linux.core.swslatency.SWSLatencyAnalysis;
 
 /**
  * Sched_wakeup / sched_switch Density view

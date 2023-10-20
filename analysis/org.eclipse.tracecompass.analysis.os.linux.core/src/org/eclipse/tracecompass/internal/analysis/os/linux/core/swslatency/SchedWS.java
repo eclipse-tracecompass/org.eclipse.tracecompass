@@ -9,7 +9,7 @@
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
 
-package org.eclipse.tracecompass.analysis.os.linux.core.swslatency;
+package org.eclipse.tracecompass.internal.analysis.os.linux.core.swslatency;
 
 import org.eclipse.tracecompass.analysis.os.linux.core.model.OsStrings;
 import org.eclipse.tracecompass.datastore.core.interval.IHTIntervalReader;

@@ -8,20 +8,21 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  **********************************************************************/
-
-package org.eclipse.tracecompass.analysis.os.linux.ui.segmentstore.statistics;
+package org.eclipse.tracecompass.internal.analysis.os.linux.ui.segmentstore.statistics;
 
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.tracecompass.analysis.timing.ui.views.segmentstore.statistics.AbstractSegmentsStatisticsViewer;
-import org.eclipse.tracecompass.internal.analysis.os.linux.core.segmentstore.PriorityStatisticsDataProviderFactory;
+import org.eclipse.tracecompass.internal.analysis.os.linux.core.segmentstore.PriorityThreadNameStatisticsDataProviderFactory;
 
 /**
- * A segment store statistics viewer for showing statistics based on the priority
- * of segments.
+ * A segment store statistics viewer for showing statistics based on Priority
+ * and Thread name.
  *
  * @author Hoang Thuan Pham
+ * @since 6.2
  */
-public class PriorityStatisticsViewer extends AbstractSegmentsStatisticsViewer {
+public class PriorityThreadNameStatisticsViewer extends AbstractSegmentsStatisticsViewer {
+
     /**
      * Constructor
      *
@@ -30,7 +31,7 @@ public class PriorityStatisticsViewer extends AbstractSegmentsStatisticsViewer {
      * @param analysisId
      *            The ID of the segment store provider to do statistics on
      */
-    public PriorityStatisticsViewer(Composite parent, String analysisId) {
-        super(parent, PriorityStatisticsDataProviderFactory.DATA_PROVIDER_ID + ':' + analysisId);
+    public PriorityThreadNameStatisticsViewer(Composite parent, String analysisId) {
+        super(parent, PriorityThreadNameStatisticsDataProviderFactory.DATA_PROVIDER_ID + ':' + analysisId);
     }
 }

@@ -9,4 +9,4 @@
  *******************************************************************************/
 
 @org.eclipse.jdt.annotation.NonNullByDefault
-package org.eclipse.tracecompass.analysis.os.linux.core.swslatency;
+package org.eclipse.tracecompass.internal.analysis.os.linux.core.swslatency;

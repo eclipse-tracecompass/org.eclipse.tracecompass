@@ -9,7 +9,7 @@
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
 
-package org.eclipse.tracecompass.analysis.os.linux.core.swslatency;
+package org.eclipse.tracecompass.internal.analysis.os.linux.core.swslatency;
 
 import java.util.Collection;
 import java.util.Comparator;
@@ -124,7 +124,7 @@ public class SWSLatencyAnalysis extends AbstractSegmentStoreAnalysisEventBasedMo
                 long startTime = event.getTimestamp().toNanos();
                 String threadName = event.getContent().getFieldValue(String.class, layout.fieldComm());
 
-                if (threadName == null || "".equals(threadName)) {
+                if (threadName == null || "".equals(threadName)) { //$NON-NLS-1$
                     threadName = "UNKNOWN"; //$NON-NLS-1$
                 }
 

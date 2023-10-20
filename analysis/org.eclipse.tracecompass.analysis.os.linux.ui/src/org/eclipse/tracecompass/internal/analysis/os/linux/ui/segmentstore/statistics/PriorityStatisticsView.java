@@ -9,7 +9,7 @@
  * SPDX-License-Identifier: EPL-2.0
  **********************************************************************/
 
-package org.eclipse.tracecompass.analysis.os.linux.ui.segmentstore.statistics;
+package org.eclipse.tracecompass.internal.analysis.os.linux.ui.segmentstore.statistics;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
@@ -21,18 +21,16 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.views.IViewDescriptor;
 
 /**
- * A segment store statistics view for showing statistics based on Priority and
- * Thread name. The analysis specified by the secondaryId must create segments
- * that implement IPrioritySegment.
+ * A segment store statistics view for showing statistics based on the priority of segments
+ * The analysis specified by the secondaryId must create segments that implement IPrioritySegment.
  *
  * @author Hoang Thuan Pham
- * @since 6.2
  */
-public class PriorityThreadNameStatisticsView extends AbstractSegmentsStatisticsView {
+public class PriorityStatisticsView extends AbstractSegmentsStatisticsView {
     /**
      * ID of this view
      */
-    public static final String ID = "org.eclipse.tracecompass.analysis.os.linux.ui.segmentstore.statistics.prioname"; //$NON-NLS-1$
+    public static final String ID = "org.eclipse.tracecompass.analysis.os.linux.ui.segmentstore.statistics.priority"; //$NON-NLS-1$
 
     @Override
     public void createPartControl(@Nullable Composite parent) {
@@ -48,6 +46,6 @@ public class PriorityThreadNameStatisticsView extends AbstractSegmentsStatistics
     protected @NonNull AbstractSegmentsStatisticsViewer createSegmentStoreStatisticsViewer(@NonNull Composite parent) {
         // The analysis ID is the secondary ID of the view
         String analysisId = NonNullUtils.nullToEmptyString(getViewSite().getSecondaryId());
-        return new PriorityThreadNameStatisticsViewer(parent, analysisId);
+        return new PriorityStatisticsViewer(parent, analysisId);
     }
 }

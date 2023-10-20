@@ -9,7 +9,7 @@
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
 
-package org.eclipse.tracecompass.analysis.os.linux.core.swslatency;
+package org.eclipse.tracecompass.internal.analysis.os.linux.core.swslatency;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.annotation.Nullable;
@@ -23,7 +23,7 @@ import org.eclipse.osgi.util.NLS;
  */
 public class Messages extends NLS {
 
-    private static final String BUNDLE_NAME = "org.eclipse.tracecompass.analysis.os.linux.core.swslatency.messages"; //$NON-NLS-1$
+    private static final String BUNDLE_NAME = "org.eclipse.tracecompass.internal.analysis.os.linux.core.swslatency.messages"; //$NON-NLS-1$
 
     /** Sched_Wakeup/Sched_switch TID aspect help text */
     public static @Nullable String SegmentAspectHelpText_SWSTid;
