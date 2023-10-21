@@ -59,7 +59,6 @@ public class CallGraph implements IWeightedTreeSet<ICallStackSymbol, ICallStackE
      *            The element for which to get the calling context tree
      * @return The aggregated data for the first level of the callgraph
      */
-    @SuppressWarnings("null")
     public Collection<AggregatedCallSite> getCallingContextTree(ICallStackElement element) {
         return fCcts.get(element);
     }

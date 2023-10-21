@@ -13,6 +13,7 @@ package org.eclipse.tracecompass.internal.provisional.analysis.lami.core.types;
 
 import static org.eclipse.tracecompass.common.core.NonNullUtils.checkNotNull;
 
+import java.math.BigDecimal;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -228,12 +229,17 @@ public abstract class LamiData {
      * Map returning the Functions to build new LAMI objects for JSON primitive
      * types
      */
-    private static final Map<Class<?>, Function<Object, LamiData>> PRIMITIVE_TYPE_GENERATOR = ImmutableMap.of(
-            Boolean.class, (o) -> LamiBoolean.instance((Boolean) o),
-            Integer.class, (o) -> new LamiLongNumber(((Integer) o).longValue()),
-            Long.class, (o) -> new LamiLongNumber((Long) o),
-            Double.class, (o) -> new LamiDoubleNumber((Double) o),
-            String.class, (o) -> new LamiString((String) o));
+    private static final Map<Class<?>, Function<Object, LamiData>> PRIMITIVE_TYPE_GENERATOR;
+    static {
+        ImmutableMap.Builder<Class<?>, Function<Object, LamiData>> primitiveTypeGenBuilder = ImmutableMap.builder();
+        primitiveTypeGenBuilder.put(Boolean.class, (o) -> LamiBoolean.instance((Boolean) o));
+        primitiveTypeGenBuilder.put(Integer.class, (o) -> new LamiLongNumber(((Integer) o).longValue()));
+        primitiveTypeGenBuilder.put(Long.class, (o) -> new LamiLongNumber((Long) o));
+        primitiveTypeGenBuilder.put(Double.class, (o) -> new LamiDoubleNumber((Double) o));
+        primitiveTypeGenBuilder.put(BigDecimal.class, (o) -> new LamiDoubleNumber(((BigDecimal) o).doubleValue()));
+        primitiveTypeGenBuilder.put(String.class, (o) -> new LamiString((String) o));
+        PRIMITIVE_TYPE_GENERATOR = primitiveTypeGenBuilder.build();
+    }
 
     /**
      * Map returning the Functions to build new LAMI objects for LAMI-specific

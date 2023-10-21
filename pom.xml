@@ -298,7 +298,7 @@
                 <extraRequirements>
                   <requirement>
                     <type>eclipse-plugin</type>
-                    <id>org.slf4j.binding.simple</id>
+                    <id>slf4j.simple</id>
                     <versionRange>1.7.30</versionRange>
                   </requirement>
                   <requirement>

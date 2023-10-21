@@ -11,8 +11,7 @@ Bundle-RequiredExecutionEnvironment: JavaSE-11
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.tracecompass.common.core,
  org.eclipse.tracecompass.ctf.parser,
- org.eclipse.jdt.annotation;bundle-version="[2.0.0,3.0.0)";resolution:=optional,
- org.apache.commons.io
+ org.eclipse.jdt.annotation;bundle-version="[2.0.0,3.0.0)";resolution:=optional
 Export-Package: org.eclipse.tracecompass.ctf.core,
  org.eclipse.tracecompass.ctf.core.event,
  org.eclipse.tracecompass.ctf.core.event.io,
@@ -45,5 +44,6 @@ Import-Package: com.google.common.base,
  com.google.gson.annotations,
  org.antlr.runtime;version="3.2.0",
  org.antlr.runtime.tree;version="3.2.0",
+ org.apache.commons.io,
  org.json
 Automatic-Module-Name: org.eclipse.tracecompass.ctf.core 
