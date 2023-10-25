@@ -82,6 +82,18 @@ public class TmfAnalysisManager {
     }
 
     /**
+     * Deregisters a source of modules
+     *
+     * @param source
+     *            A {@link IAnalysisModuleSource} instance
+     * @since 9.4
+     */
+    public static synchronized void deregisterModuleSource(IAnalysisModuleSource source) {
+        fSources.remove(source);
+        refreshModules();
+    }
+
+    /**
      * Initializes sources and new module listeners from the extension point
      */
     public static synchronized void initialize() {
