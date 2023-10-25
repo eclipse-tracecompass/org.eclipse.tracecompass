@@ -21,10 +21,12 @@ package org.eclipse.tracecompass.tmf.core.trace;
 import java.io.File;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IAdaptable;
@@ -141,6 +143,10 @@ public abstract class TmfTrace extends TmfEventProvider implements ITmfTrace, IT
 
     private final Map<String, IAnalysisModule> fAnalysisModules =
             Collections.synchronizedMap(new LinkedHashMap<String, IAnalysisModule>());
+
+    // Analysis modules that were removed during lifecycle of the trace that need to be disposed
+    private final Set<IAnalysisModule> fToBeDisposedAnalysisModules =
+            Collections.synchronizedSet(new HashSet<IAnalysisModule>());
 
     // ------------------------------------------------------------------------
     // Construction
@@ -288,29 +294,12 @@ public abstract class TmfTrace extends TmfEventProvider implements ITmfTrace, IT
      *         successfully or not
      */
     protected IStatus executeAnalysis() {
-        MultiStatus status = new MultiStatus(Activator.PLUGIN_ID, IStatus.OK, null, null);
+        return refreshAnalysisModulesImpl();
+    }
 
-        /* First modules are initialized */
-        Map<String, IAnalysisModuleHelper> modules = TmfAnalysisManager.getAnalysisModules(this.getClass());
-        for (IAnalysisModuleHelper helper : modules.values()) {
-            try {
-                IAnalysisModule module = helper.newModule(this);
-                if (module == null) {
-                    continue;
-                }
-                fAnalysisModules.put(module.getId(), module);
-            } catch (TmfAnalysisException e) {
-                status.add(new Status(IStatus.WARNING, Activator.PLUGIN_ID, e.getMessage()));
-            }
-        }
-
-        /* Once all modules are initialized, automatic modules are executed */
-        for (IAnalysisModule module : getAnalysisModules()) {
-            if (module.isAutomatic()) {
-                status.add(module.schedule());
-            }
-        }
-        return status;
+    @Override
+    public IStatus refreshAnalysisModules() {
+        return refreshAnalysisModulesImpl();
     }
 
     @Override
@@ -348,6 +337,13 @@ public abstract class TmfTrace extends TmfEventProvider implements ITmfTrace, IT
             module.dispose();
         }
         fAnalysisModules.clear();
+
+        /* Clean up the analysis modules removed during lifecycle of trace */
+        analysisModules = fToBeDisposedAnalysisModules;
+        for (IAnalysisModule module : analysisModules) {
+            module.dispose();
+        }
+        fToBeDisposedAnalysisModules.clear();
 
         super.dispose();
         ByteBufferTracker.setMarked();
@@ -783,5 +779,57 @@ public abstract class TmfTrace extends TmfEventProvider implements ITmfTrace, IT
          * This should be overridden by trace classes that can support live
          * reading (traces in an incomplete state)
          */
+    }
+
+    private IStatus refreshAnalysisModulesImpl() {
+        Map<String, IAnalysisModule> previousAnalysisModules = new HashMap<>(fAnalysisModules);
+        Map<String, IAnalysisModule> newAnalysisModules = new HashMap<>();
+        MultiStatus status = new MultiStatus(Activator.PLUGIN_ID, IStatus.OK, null, null);
+        /* First modules are initialized */
+        Map<String, IAnalysisModuleHelper> modules = TmfAnalysisManager.getAnalysisModules(this.getClass());
+        for (IAnalysisModuleHelper helper : modules.values()) {
+            try {
+                IAnalysisModule module = helper.newModule(this);
+                if (module == null) {
+                    continue;
+                }
+                newAnalysisModules.put(module.getId(), module);
+            } catch (TmfAnalysisException e) {
+                status.add(new Status(IStatus.WARNING, Activator.PLUGIN_ID, e.getMessage()));
+            }
+        }
+
+        Set<String> oldAnalysisModulesKeys = new HashSet<>(previousAnalysisModules.keySet());
+        Set<String> keys = new HashSet<>(newAnalysisModules.keySet());
+
+        for (String key : keys) {
+            IAnalysisModule module = newAnalysisModules.remove(key);
+            if (!oldAnalysisModulesKeys.contains(key)) {
+                /* Once all modules are initialized, automatic modules are executed */
+                if (module != null && module.isAutomatic()) {
+                    status.add(module.schedule());
+                }
+                previousAnalysisModules.put(key, module);
+            } else {
+                oldAnalysisModulesKeys.remove(key);
+                if (module != null) {
+                    module.dispose();
+                }
+            }
+        }
+
+        /* Remove all remaining analysis modules */
+        for (String key : oldAnalysisModulesKeys) {
+            IAnalysisModule analysisModule = previousAnalysisModules.remove(key);
+            if (analysisModule != null) {
+                fToBeDisposedAnalysisModules.add(analysisModule);
+            }
+        }
+        /* Update fAnalysis with current list of analysis modules */
+        synchronized (fAnalysisModules) {
+            fAnalysisModules.clear();
+            fAnalysisModules.putAll(previousAnalysisModules);
+        }
+        return status;
     }
 }

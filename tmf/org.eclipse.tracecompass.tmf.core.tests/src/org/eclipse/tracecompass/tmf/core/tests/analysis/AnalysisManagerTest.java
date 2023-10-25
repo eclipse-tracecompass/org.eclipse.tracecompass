@@ -21,11 +21,16 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.stream.StreamSupport;
 
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.tracecompass.tmf.core.analysis.IAnalysisModule;
 import org.eclipse.tracecompass.tmf.core.analysis.IAnalysisModuleHelper;
 import org.eclipse.tracecompass.tmf.core.analysis.IAnalysisModuleSource;
 import org.eclipse.tracecompass.tmf.core.analysis.TmfAnalysisManager;
+import org.eclipse.tracecompass.tmf.core.signal.TmfSignalManager;
+import org.eclipse.tracecompass.tmf.core.signal.TmfTraceOpenedSignal;
 import org.eclipse.tracecompass.tmf.core.tests.shared.TmfTestTrace;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
 import org.eclipse.tracecompass.tmf.tests.stubs.analysis.AnalysisModuleSourceStub;
@@ -137,14 +142,75 @@ public class AnalysisManagerTest {
         assertFalse(map.containsKey(AnalysisModuleTestHelper.moduleStubEnum.TEST2.name()));
 
         /* Add new source */
-        TmfAnalysisManager.registerModuleSource(new AnalysisModuleSourceStub());
+        AnalysisModuleSourceStub stub = new AnalysisModuleSourceStub();
+        TmfAnalysisManager.registerModuleSource(stub);
+        try {
+            /* Now make sure the modules are present */
+            map = TmfAnalysisManager.getAnalysisModules(traceClass);
+            assertTrue(map.containsKey(AnalysisModuleTestHelper.moduleStubEnum.TEST.name()));
 
-        /* Now make sure the modules are present */
-        map = TmfAnalysisManager.getAnalysisModules(traceClass);
-        assertTrue(map.containsKey(AnalysisModuleTestHelper.moduleStubEnum.TEST.name()));
+            map = TmfAnalysisManager.getAnalysisModules(ftraceClass);
+            assertTrue(map.containsKey(AnalysisModuleTestHelper.moduleStubEnum.TEST2.name()));
+        } finally {
+            // Make sure source is removed after test
+            TmfAnalysisManager.deregisterModuleSource(stub);
+            trace.dispose();
+        }
+    }
 
-        map = TmfAnalysisManager.getAnalysisModules(ftraceClass);
-        assertTrue(map.containsKey(AnalysisModuleTestHelper.moduleStubEnum.TEST2.name()));
+    /**
+     * Test suite to test refresh of analysis module when adding a {@link IAnalysisModuleSource}
+     */
+    @Test
+    public void testRefreshModules() {
+        /* Make sure that modules in the new source are not in the list already */
+        /* Generic TmfTrace */
+        ITmfTrace trace = TmfTestTrace.A_TEST_10K.getTrace();
+
+        /* Trigger trace.executeAnalysis() to populate its analysis modules through open signal */
+        TmfSignalManager.dispatchSignal(new TmfTraceOpenedSignal(this, trace, null));
+        @NonNull Iterable<@NonNull IAnalysisModule> modules = trace.getAnalysisModules();
+        /* Test that specific signals are not there (yet)*/
+        assertFalse(StreamSupport.stream(modules.spliterator(), false).anyMatch(module -> module.getId().equals(AnalysisModuleTestHelper.moduleStubEnum.TEST.name())));
+
+        /* Add new source */
+        AnalysisModuleSourceStub stub = new AnalysisModuleSourceStub();
+        TmfAnalysisManager.registerModuleSource(stub);
+
+        try {
+            /* Now check that the modules are not part of the trace yet */
+            modules = trace.getAnalysisModules();
+            assertFalse(StreamSupport.stream(modules.spliterator(), false).anyMatch(module -> module.getId().equals(AnalysisModuleTestHelper.moduleStubEnum.TEST.name())));
+            long before = StreamSupport.stream(modules.spliterator(), false).count();
+
+            /* Refresh the analysis */
+            IStatus status = trace.refreshAnalysisModules();
+            assertTrue(status.isOK());
+
+            /* Now check that the modules are part of the trace */
+            modules = trace.getAnalysisModules();
+            long after = StreamSupport.stream(modules.spliterator(), false).count();
+            assertTrue(after == before + 1);
+            assertTrue(StreamSupport.stream(modules.spliterator(), false).anyMatch(module -> module.getId().equals(AnalysisModuleTestHelper.moduleStubEnum.TEST.name())));
+
+            before = after;
+            /* Remove source again */
+            TmfAnalysisManager.deregisterModuleSource(stub);
+
+            /* Refresh the analysis */
+            status = trace.refreshAnalysisModules();
+            assertTrue(status.isOK());
+
+            /* Now check that the modules are not part of the trace anymore */
+            modules = trace.getAnalysisModules();
+            after = StreamSupport.stream(modules.spliterator(), false).count();
+            assertTrue(after == before - 1);
+            assertFalse(StreamSupport.stream(modules.spliterator(), false).anyMatch(module -> module.getId().equals(AnalysisModuleTestHelper.moduleStubEnum.TEST.name())));
+        } finally {
+            // Make sure source is removed after test
+            TmfAnalysisManager.deregisterModuleSource(stub);
+            trace.dispose();
+        }
     }
 
 }
