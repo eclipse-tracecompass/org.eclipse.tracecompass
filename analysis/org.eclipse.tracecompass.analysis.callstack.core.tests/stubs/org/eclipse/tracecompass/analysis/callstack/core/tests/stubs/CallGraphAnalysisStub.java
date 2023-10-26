@@ -123,15 +123,13 @@ public class CallGraphAnalysisStub extends CallGraphAnalysis {
 
     /**
      * Will trigger the iteration over the callstack series
-     *
-     * @return The return value of the iteration
      */
-    public boolean iterate() {
+    public void iterate() {
         CallStackSeries callStackSeries = fCsProvider.getCallStackSeries();
         if (callStackSeries == null) {
             throw new IllegalArgumentException();
         }
-        return iterateOverCallstackSerie(callStackSeries, ModelManager.getModelFor(""), getCallGraph(), 0, Long.MAX_VALUE, new NullProgressMonitor());
+        iterateOverCallstackSerie(callStackSeries, ModelManager.getModelFor(""), getCallGraph(), 0, Long.MAX_VALUE, new NullProgressMonitor());
     }
 
     @Override

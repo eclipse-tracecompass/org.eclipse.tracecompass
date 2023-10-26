@@ -166,7 +166,8 @@ public class CallGraphAnalysis extends TmfAbstractAnalysisModule implements ICal
             long time1 = range.getEndTime().toNanos();
             long start = Math.min(time0, time1);
             long end = Math.max(time0, time1);
-            if (!iterateOverCallstackSerie(callstack, model, callgraph, start, end, monitor)) {
+            iterateOverCallstackSerie(callstack, model, callgraph, start, end, monitor);
+            if (monitor.isCanceled()) {
                 return false;
             }
         }
@@ -191,19 +192,17 @@ public class CallGraphAnalysis extends TmfAbstractAnalysisModule implements ICal
      *            The end time of the request
      * @param monitor
      *            A progress monitor
-     * @return Whether the series was successfully iterated over
      */
     @VisibleForTesting
-    protected boolean iterateOverCallstackSerie(CallStackSeries callstackSerie, IHostModel model, CallGraph callgraph, long start, long end, IProgressMonitor monitor) {
+    protected void iterateOverCallstackSerie(CallStackSeries callstackSerie, IHostModel model, CallGraph callgraph, long start, long end, IProgressMonitor monitor) {
         // The root elements are the same as the one from the callstack series
         Collection<ICallStackElement> rootElements = callstackSerie.getRootElements();
         for (ICallStackElement element : rootElements) {
             if (monitor.isCanceled()) {
-                return false;
+                return;
             }
             iterateOverElement(element, model, callgraph, start, end, monitor);
         }
-        return true;
     }
 
     private void iterateOverElement(ICallStackElement element, IHostModel model, CallGraph callgraph, long start, long end, IProgressMonitor monitor) {
@@ -215,6 +214,9 @@ public class CallGraphAnalysis extends TmfAbstractAnalysisModule implements ICal
             }
         }
         for (ICallStackElement child : element.getChildrenElements()) {
+            if (monitor.isCanceled()) {
+                return;
+            }
             iterateOverElement(child, model, callgraph, start, end, monitor);
         }
     }
@@ -234,6 +236,9 @@ public class CallGraphAnalysis extends TmfAbstractAnalysisModule implements ICal
         // Start with the first function
         AbstractCalledFunction nextFunction = (AbstractCalledFunction) callStack.getNextFunction(callStack.getStartTime(), 1, null, model, start, end);
         while (nextFunction != null) {
+            if (monitor.isCanceled()) {
+                return;
+            }
             AggregatedCalledFunction aggregatedChild = createCallSite(CallStackSymbolFactory.createSymbol(nextFunction.getSymbol(), element, nextFunction.getStart()));
             iterateOverCallstack(element, callStack, nextFunction, 2, aggregatedChild, model, start, end, monitor);
             aggregatedChild.addFunctionCall(nextFunction);
@@ -256,6 +261,9 @@ public class CallGraphAnalysis extends TmfAbstractAnalysisModule implements ICal
 
         AbstractCalledFunction nextFunction = (AbstractCalledFunction) callstack.getNextFunction(function.getStart(), nextLevel, function, model, Math.max(function.getStart(), start), Math.min(function.getEnd(), end));
         while (nextFunction != null) {
+            if (monitor.isCanceled()) {
+                return;
+            }
             // Add sampling data of the time between next function and beginning
             // of next level
             if (threadId > 0) {
