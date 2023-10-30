@@ -30,21 +30,21 @@
    </requires>
 
    <plugin
-         id="javax.xml"
+         id="org.eclipse.orbit.xml-apis-ext"
          download-size="0"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
 
    <plugin
-         id="javax.activation"
+         id="jakarta.activation-api"
          download-size="0"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
 
    <plugin
-         id="org.json"
+         id="json"
          download-size="0"
          install-size="0"
          version="0.0.0"
@@ -135,7 +135,7 @@
          unpack="false"/>
 
    <plugin
-         id="org.apache.commons.io"
+         id="org.apache.commons.commons-io"
          download-size="0"
          install-size="0"
          version="0.0.0"
@@ -303,7 +303,7 @@
          unpack="false"/>
 
    <plugin
-         id="org.apache.commons.compress"
+         id="org.apache.commons.commons-compress"
          download-size="0"
          install-size="0"
          version="0.0.0"
@@ -352,7 +352,7 @@
          unpack="false"/>
 
    <plugin
-         id="jakarta.xml.bind"
+         id="jakarta.xml.bind-api"
          download-size="0"
          install-size="0"
          version="0.0.0"
@@ -373,14 +373,14 @@
          unpack="false"/>
 
    <plugin
-         id="org.slf4j.api"
+         id="slf4j.api"
          download-size="0"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
 
    <plugin
-         id="org.mozilla.javascript"
+         id="org.mozilla.rhino"
          download-size="0"
          install-size="0"
          version="0.0.0"
@@ -415,17 +415,31 @@
          unpack="false"/>
 
    <plugin
-         id="javax.annotation"
+         id="jakarta.annotation-api"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="1.3.5"
          unpack="false"/>
 
    <plugin
-         id="javax.inject"
+         id="jakarta.annotation-api"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="2.1.1"
+         unpack="false"/>
+
+   <plugin
+         id="jakarta.inject.jakarta.inject-api"
+         download-size="0"
+         install-size="0"
+         version="1.0.5"
+         unpack="false"/>
+
+   <plugin
+         id="jakarta.inject.jakarta.inject-api"
+         download-size="0"
+         install-size="0"
+         version="2.0.1"
          unpack="false"/>
 
    <plugin
@@ -450,14 +464,196 @@
          unpack="false"/>
 
    <plugin
-         id="org.bouncycastle.bcpg"
+         id="bcpg"
          download-size="0"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
 
    <plugin
-         id="org.bouncycastle.bcprov"
+         id="bcprov"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.mortbay.jasper.apache-jsp"
+         download-size="0"
+         install-size="0"
+         version="9.0.52"
+         unpack="false"/>
+
+   <plugin
+         id="com.google.guava.failureaccess"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.apache.commons.logging"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.search.core"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.jetty.servlet-api"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.apache.aries.spifly.dynamic.bundle"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.objectweb.asm"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.objectweb.asm.commons"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.objectweb.asm.util"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.objectweb.asm.tree"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.objectweb.asm.tree.analysis"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="ch.qos.logback.classic"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="ch.qos.logback.core"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.apache.batik.css"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.apache.batik.i18n"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.apache.batik.util"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.apache.batik.constants"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.jetty.http"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.jetty.server"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.jetty.session"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.jetty.ee8.servlet"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.jetty.ee8.server"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.jetty.util"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.jetty.io"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.jetty.security"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.jetty.ee8.security"
          download-size="0"
          install-size="0"
          version="0.0.0"

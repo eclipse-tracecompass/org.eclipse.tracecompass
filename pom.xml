@@ -64,6 +64,9 @@
     <!-- Disable GTK3 because it's not quite usable yet and it can make the tests hang (bug in IcedTea http://icedtea.classpath.org/bugzilla/show_bug.cgi?id=1736) -->
     <SWT_GTK3>0</SWT_GTK3>
 
+    <slf4j-bundle>org.slf4j.binding.simple</slf4j-bundle>
+    <slf4j-version>1.7.30</slf4j-version>
+
     <!-- Sonar rule configuration -->
     <sonar-version>3.9.1.2184</sonar-version>
     <jacoco-version>0.8.10</jacoco-version>
@@ -298,8 +301,8 @@
                 <extraRequirements>
                   <requirement>
                     <type>eclipse-plugin</type>
-                    <id>slf4j.simple</id>
-                    <versionRange>1.7.30</versionRange>
+                    <id>${slf4j-bundle}</id>
+                    <versionRange>${slf4j-version}</versionRange>
                   </requirement>
                   <requirement>
                     <type>eclipse-plugin</type>
