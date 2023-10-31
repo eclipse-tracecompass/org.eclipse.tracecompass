@@ -11,6 +11,21 @@
                class="org.eclipse.tracecompass.tmf.tests.stubs.trace.xml.TmfXmlTraceStub">
          </tracetype>
       </module>
+      <module
+            analysis_module="org.eclipse.tracecompass.analysis.profiling.core.tests.stubs2.CallStackAnalysisStub"
+            id="org.eclipse.tracecompass.analysis.profiling.core.tests.stub"
+            name="Test Callstack (new)">
+         <tracetype
+               class="org.eclipse.tracecompass.tmf.tests.stubs.trace.xml.TmfXmlTraceStub">
+         </tracetype>
+      </module>
+      <module
+            analysis_module="org.eclipse.tracecompass.analysis.profiling.core.tests.stubs2.KernelAnalysisModuleStub"
+            id="org.eclipse.tracecompass.analysis.profiling.core.tests.kernelanalysis.stub"
+            name="Test Kernel Analysis">
+         <tracetype
+               class="org.eclipse.tracecompass.tmf.tests.stubs.trace.xml.TmfXmlTraceStub">
+         </tracetype>
+      </module>
    </extension>
-
 </plugin>

@@ -1,6 +1,0 @@
-trace,callstack.xml,0,72,-,-
-level,All,0,72,trace,callstack.xml
-function,0,0,72,level,All
-function,1,0,72,level,All
-function,2,0,72,level,All
-kernel,Kernel statuses,0,72,level,All
