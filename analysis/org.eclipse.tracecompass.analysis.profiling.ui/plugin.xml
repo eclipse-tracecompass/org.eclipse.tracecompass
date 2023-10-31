@@ -37,11 +37,57 @@
             name="%view.callgraph.statistics"
             restorable="true">
       </view>
+      <view
+            category="org.eclipse.linuxtools.tmf.ui.views.category"
+            class="org.eclipse.tracecompass.internal.analysis.profiling.ui.flamegraph2.FlameGraphView"
+            icon="icons/elcl16/flame.png"
+            id="org.eclipse.tracecompass.analysis.profiling.ui.flamegraph"
+            name="%view.flameGraph2"
+            restorable="true">
+      </view>
+      <view
+            category="org.eclipse.linuxtools.tmf.ui.views.category"
+            class="org.eclipse.tracecompass.internal.analysis.profiling.ui.flamegraph2.FlameGraphSelView"
+            icon="icons/elcl16/flame.png"
+            id="org.eclipse.tracecompass.analysis.profiling.ui.flamegraph.selection"
+            name="%view.flameGraphSel"
+            restorable="true">
+      </view>
+      <view
+            allowMultiple="false"
+            category="org.eclipse.linuxtools.tmf.ui.views.category"
+            class="org.eclipse.tracecompass.internal.analysis.profiling.ui.functiondensity.FunctionDensityView"
+            icon="icons/elcl16/funcdensity.png"
+            id="org.eclipse.tracecompass.analysis.profiling.ui.functiondensity"
+            name="%view.functionDensity"
+            restorable="true">
+      </view>
+      <view
+            allowMultiple="true"
+            category="org.eclipse.linuxtools.tmf.ui.views.category"
+            class="org.eclipse.tracecompass.internal.analysis.profiling.ui.weightedtree.WeightedTreeView"
+            icon="icons/obj16/stckframe_obj.gif"
+            id="org.eclipse.tracecompass.analysis.profiling.ui.weightedtree"
+            name="%view.weighted"
+            restorable="true">
+      </view>
+      <view
+            allowMultiple="true"
+            category="org.eclipse.linuxtools.tmf.ui.views.category"
+            class="org.eclipse.tracecompass.internal.analysis.profiling.ui.FlameChartView"
+            icon="icons/obj16/stckframe_obj.gif"
+            id="org.eclipse.tracecompass.analysis.profiling.ui.flamechart"
+            name="%view.flameChart"
+            restorable="true">
+      </view>
    </extension>
    <extension
          point="org.eclipse.linuxtools.tmf.core.analysis">
       <listener
             class="org.eclipse.tracecompass.internal.analysis.profiling.ui.views.flamechart.CallStackAnalysisListener">
+      </listener>
+      <listener
+            class="org.eclipse.tracecompass.internal.analysis.profiling.ui.CallStackAnalysisListener">
       </listener>
    </extension>
    <extension

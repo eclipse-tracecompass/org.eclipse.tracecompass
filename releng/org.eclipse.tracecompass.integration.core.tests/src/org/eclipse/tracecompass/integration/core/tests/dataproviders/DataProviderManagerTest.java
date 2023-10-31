@@ -33,6 +33,7 @@ import org.eclipse.tracecompass.tmf.core.model.DataProviderDescriptor;
 import org.eclipse.tracecompass.tmf.core.model.tree.ITmfTreeDataModel;
 import org.eclipse.tracecompass.tmf.core.model.xy.ITmfTreeXYDataProvider;
 import org.eclipse.tracecompass.tmf.core.signal.TmfSignalManager;
+import org.eclipse.tracecompass.tmf.core.signal.TmfTraceClosedSignal;
 import org.eclipse.tracecompass.tmf.core.signal.TmfTraceOpenedSignal;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
 import org.eclipse.tracecompass.tmf.core.trace.experiment.TmfExperiment;
@@ -297,6 +298,27 @@ public class DataProviderManagerTest {
                 .setProviderType(ProviderType.DATA_TREE)
                 .setId("org.eclipse.tracecompass.internal.analysis.os.linux.core.segmentstore.PriorityStatisticsDataProvider:org.eclipse.linuxtools.lttng2.ust.analysis.callstack");
         EXPECTED_UST_DP_DESCRIPTORS.add(builder.build());
+        builder = new DataProviderDescriptor.Builder();
+        builder.setName("FlameChart LTTng-UST CallStack (new)")
+                .setDescription("Show FlameChart provided by Analysis module: LTTng-UST CallStack (new)")
+                .setProviderType(ProviderType.TIME_GRAPH)
+                .setId("org.eclipse.tracecompass.analysis.profiling.core.flamechart:org.eclipse.tracecompass.lttng2.ust.core.analysis.callstack");
+        EXPECTED_UST_DP_DESCRIPTORS.add(builder.build());
+        builder.setName("LTTng-UST CallStack (new) - Latency Statistics")
+                .setDescription("Show latency statistics provided by Analysis module: LTTng-UST CallStack (new)")
+                .setProviderType(ProviderType.DATA_TREE)
+                .setId("org.eclipse.tracecompass.analysis.timing.core.segmentstore.SegmentStoreStatisticsDataProvider:org.eclipse.tracecompass.lttng2.ust.core.analysis.callstack");
+        EXPECTED_UST_DP_DESCRIPTORS.add(builder.build());
+        builder.setName("LTTng-UST CallStack (new) - Latency Table")
+                .setDescription("Show latency table provided by Analysis module: LTTng-UST CallStack (new)")
+                .setProviderType(ProviderType.TABLE)
+                .setId("org.eclipse.tracecompass.analysis.timing.core.segmentstore.SegmentStoreTableDataProvider:org.eclipse.tracecompass.lttng2.ust.core.analysis.callstack");
+        EXPECTED_UST_DP_DESCRIPTORS.add(builder.build());
+        builder.setName("LTTng-UST CallStack (new) - Latency vs Time")
+                .setDescription("Show latencies provided by Analysis module: LTTng-UST CallStack (new)")
+                .setProviderType(ProviderType.TREE_TIME_XY)
+                .setId("org.eclipse.tracecompass.internal.analysis.timing.core.segmentstore.scatter.dataprovider:org.eclipse.tracecompass.lttng2.ust.core.analysis.callstack");
+        EXPECTED_UST_DP_DESCRIPTORS.add(builder.build());
     }
 
     /**
@@ -326,6 +348,7 @@ public class DataProviderManagerTest {
     public static void tearDown() {
         // Dispose experiment and traces
         if (fExperiment != null) {
+            TmfSignalManager.dispatchSignal(new TmfTraceClosedSignal(fExperiment, fExperiment));
             fExperiment.dispose();
         }
         DataProviderManager.dispose();

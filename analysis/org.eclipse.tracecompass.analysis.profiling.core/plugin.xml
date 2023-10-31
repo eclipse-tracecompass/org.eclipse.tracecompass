@@ -11,5 +11,19 @@
             class="org.eclipse.tracecompass.internal.analysis.profiling.core.callgraph.CallGraphStatisticsDataProviderFactory"
             id="org.eclipse.tracecompass.internal.analysis.profiling.core.callgraph.callgraphanalysis.statistics">
       </dataProviderFactory>
+      <dataProviderFactory
+            class="org.eclipse.tracecompass.internal.analysis.profiling.core.flamegraph.FlameGraphDataProviderFactory"
+            id="org.eclipse.tracecompass.analysis.profiling.core.flamegraph">
+      </dataProviderFactory>
+      <dataProviderFactory
+            class="org.eclipse.tracecompass.internal.analysis.profiling.core.instrumented.FlameChartDataProviderFactory"
+            id="org.eclipse.tracecompass.analysis.profiling.core.flamechart">
+      </dataProviderFactory>
+   </extension>
+   <extension
+         point="org.eclipse.linuxtools.tmf.core.analysis">
+      <listener
+            class="org.eclipse.tracecompass.internal.analysis.profiling.core.model.ModelListener">
+      </listener>
    </extension>
 </plugin>

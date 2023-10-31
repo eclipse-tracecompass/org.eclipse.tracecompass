@@ -17,6 +17,7 @@ Export-Package: org.eclipse.tracecompass.internal.lttng2.ust.core;x-friends:="or
    org.eclipse.tracecompass.lttng2.ust.core.tests,
    org.eclipse.tracecompass.lttng2.ust.ui,
    org.eclipse.tracecompass.lttng2.ust.ui.swtbot.tests",
+ org.eclipse.tracecompass.internal.lttng2.ust.core.callstack2;x-friends:="org.eclipse.tracecompass.lttng2.ust.core.tests",
  org.eclipse.tracecompass.internal.lttng2.ust.core.trace;x-internal:=true,
  org.eclipse.tracecompass.internal.lttng2.ust.core.trace.layout;x-internal:=true,
  org.eclipse.tracecompass.lttng2.ust.core.analysis.debuginfo,
