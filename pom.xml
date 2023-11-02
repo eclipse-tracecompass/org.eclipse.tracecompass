@@ -285,6 +285,18 @@
             <groupId>org.eclipse.tycho</groupId>
             <artifactId>tycho-surefire-plugin</artifactId>
             <configuration>
+              <bundleStartLevel>
+                <bundle>
+                  <id>org.apache.aries.spifly.dynamic.bundle</id>
+                  <level>2</level>
+                  <autoStart>true</autoStart>
+                </bundle>
+                <bundle>
+                  <id>${slf4j-bundle}</id>
+                  <level>2</level>
+                  <autoStart>true</autoStart>
+                </bundle>
+              </bundleStartLevel>
               <useUIHarness>true</useUIHarness>
               <useUIThread>false</useUIThread>
               <environmentVariables>
