@@ -125,8 +125,10 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.WorkbenchException;
 import org.eclipse.ui.handlers.IHandlerService;
 import org.hamcrest.Matcher;
+import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.helpers.NOPLoggerFactory;
 
 import com.google.common.collect.Lists;
 
@@ -421,6 +423,7 @@ public final class SWTBotUtils {
      * Initialize the environment for SWTBot
      */
     public static void initialize() {
+        checkLogger();
         failIfUIThread();
 
         SWTWorkbenchBot bot = new SWTWorkbenchBot();
@@ -493,6 +496,18 @@ public final class SWTBotUtils {
         System.out.println("Time zone: " + TimeZone.getDefault().getDisplayName());
 
         fPrintedEnvironment = true;
+    }
+
+    /**
+     * Check if the SLF4J logger is activated
+     */
+    private static void checkLogger() {
+        ILoggerFactory factory = LoggerFactory.getILoggerFactory();
+        if (factory instanceof NOPLoggerFactory) {
+            System.err.println("SLF4J binding not active. To enable logging, set Auto-Start to true");
+            System.err.println("for org.apache.aries.spifly.dynamic.bundle and slf4j.simple in the");
+            System.err.println("Plug-ins tab of your JUnit Plug-in Test's Run/Debug Configuration.");
+        }
     }
 
     /**
