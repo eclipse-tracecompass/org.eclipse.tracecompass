@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -51,6 +52,7 @@ import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Table;
+import com.google.common.primitives.Doubles;
 
 /**
  * This data provider will return XY models (wrapped in a response) based on a
@@ -228,6 +230,8 @@ public class DataDrivenXYDataProvider extends AbstractTmfTraceDataProvider
     private static double extractValue(@Nullable Object val) {
         if (val instanceof Number) {
             return ((Number) val).doubleValue();
+        } else if (val instanceof String) {
+            return Optional.ofNullable(Doubles.tryParse((String) val)).orElse(0.0);
         }
         return 0;
     }
