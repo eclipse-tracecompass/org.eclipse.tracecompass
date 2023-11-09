@@ -201,6 +201,7 @@ public final class XmlUtils {
      *            XML file to validate
      * @return True if the XML validates
      */
+    @SuppressWarnings("null")
     public static IStatus xmlValidate(File xmlFile) {
         URL url = TmfXmlUtils.class.getResource(XSD);
         List<@NonNull URL> xsdFiles = getExtraXsdFiles();
@@ -235,10 +236,7 @@ public final class XmlUtils {
         }
         Source xmlSource = new StreamSource(xmlFile);
         try {
-            /*
-             * TODO: Unsecure, figure out how to harden this and do it.
-             */
-            schema.newValidator().validate(xmlSource);
+            org.eclipse.tracecompass.common.core.xml.XmlUtils.safeValidate(schema, xmlSource);
         } catch (SAXParseException e) {
             String error = NLS.bind(Messages.XmlUtils_XmlParseError, e.getLineNumber(), e.getLocalizedMessage());
             Activator.logError(error);
