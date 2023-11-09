@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParserFactory;
@@ -135,22 +134,10 @@ public class ColorSettingsXML {
         if (!new File(pathName).canRead()) {
             return new ColorSetting[0];
         }
-        /*
-         * Below, the NOSONAR comment disables the java:S2755 rule check.
-         * Eclipse fails to recognize the corresponding, more
-         * specific @SuppressWarnings annotated token unfortunately. Use
-         * FEATURE_SECURE_PROCESSING to ensure that the factory is secure.
-         */
-        SAXParserFactory parserFactory = SAXParserFactory.newInstance(); // NOSONAR
-        try {
-            parserFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-        } catch (SAXException | ParserConfigurationException e) {
-            Activator.getDefault().logError("Error setting XML parser's FEATURE_SECURE_PROCESSING; continuing", e); //$NON-NLS-1$
-        }
-        parserFactory.setNamespaceAware(true);
-
         ColorSettingsContentHandler handler = new ColorSettingsContentHandler();
         try {
+            SAXParserFactory parserFactory = XmlUtils.newSafeSaxParserFactory();
+            parserFactory.setNamespaceAware(true);
             XMLReader saxReader = parserFactory.newSAXParser().getXMLReader();
             saxReader.setContentHandler(handler);
             saxReader.parse(pathName);
