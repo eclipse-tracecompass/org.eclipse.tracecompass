@@ -21,5 +21,7 @@ Export-Package: org.eclipse.tracecompass.segmentstore.core.tests,
  org.eclipse.tracecompass.segmentstore.core.tests.perf
 Import-Package: com.google.common.collect,
  org.apache.commons.io,
- org.eclipse.test.performance
+ org.eclipse.test.performance,
+ org.eclipse.tracecompass.internal.provisional.datastore.core.historytree,
+ org.eclipse.tracecompass.internal.provisional.datastore.core.historytree.overlapping
 Automatic-Module-Name: org.eclipse.tracecompass.segmentstore.core.tests

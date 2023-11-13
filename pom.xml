@@ -40,7 +40,7 @@
   </licenses>
 
   <properties>
-    <required-maven-version>3.6.3</required-maven-version>
+    <required-maven-version>3.9</required-maven-version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <testArgLine></testArgLine>
@@ -52,8 +52,8 @@
     <skip-short-tc-ui-tests>false</skip-short-tc-ui-tests>
     <skip-long-tc-ui-tests>false</skip-long-tc-ui-tests>
 
-    <tycho-version>2.7.5</tycho-version>
-    <tycho-extras-version>2.7.5</tycho-extras-version>
+    <tycho-version>4.0.3</tycho-version>
+    <tycho-extras-version>4.0.3</tycho-extras-version>
     <tycho-use-project-settings>true</tycho-use-project-settings>
     <tycho.scmUrl>scm:git:git://git.eclipse.org/gitroot/tracecompass/org.eclipse.tracecompass.git</tycho.scmUrl>
     <cbi-plugins.version>1.4.2</cbi-plugins.version>
@@ -129,20 +129,6 @@
       <id>sign-update-site</id>
       <build>
         <plugins>
-          <plugin>
-            <groupId>org.eclipse.tycho.extras</groupId>
-            <artifactId>tycho-pack200a-plugin</artifactId>
-            <version>${tycho-extras-version}</version>
-            <executions>
-              <execution>
-                <id>pack200-normalize</id>
-                <goals>
-                  <goal>normalize</goal>
-                </goals>
-                <phase>package</phase>
-              </execution>
-            </executions>
-          </plugin>
 
           <plugin>
             <groupId>org.eclipse.cbi.maven.plugins</groupId>
@@ -159,20 +145,6 @@
             </executions>
           </plugin>
 
-          <plugin>
-            <groupId>org.eclipse.tycho.extras</groupId>
-            <artifactId>tycho-pack200b-plugin</artifactId>
-            <version>${tycho-extras-version}</version>
-            <executions>
-              <execution>
-                <id>pack200-pack</id>
-                <goals>
-                  <goal>pack</goal>
-                </goals>
-                <phase>package</phase>
-              </execution>
-            </executions>
-          </plugin>
         </plugins>
       </build>
     </profile>
@@ -417,7 +389,6 @@
         <artifactId>target-platform-configuration</artifactId>
         <configuration>
           <executionEnvironment>JavaSE-${jdk.version}</executionEnvironment>
-          <includePackedArtifacts>true</includePackedArtifacts>
           <environments>
             <environment>
                 <os>win32</os>
@@ -462,6 +433,9 @@
         <groupId>org.eclipse.tycho</groupId>
         <artifactId>tycho-source-plugin</artifactId>
         <version>${tycho-version}</version>
+        <configuration>
+          <includeBinaryFeature>false</includeBinaryFeature>
+        </configuration>
         <executions>
           <execution>
             <id>plugin-source</id>
@@ -469,38 +443,12 @@
               <goal>plugin-source</goal>
             </goals>
           </execution>
-        </executions>
-      </plugin>
-
-      <plugin>
-        <groupId>org.eclipse.tycho</groupId>
-        <artifactId>tycho-source-plugin</artifactId>
-        <version>${tycho-version}</version>
-        <configuration>
-          <includeBinaryFeature>false</includeBinaryFeature>
-        </configuration>
-        <executions>
           <execution>
             <id>feature-source</id>
             <phase>package</phase>
             <goals>
               <goal>feature-source</goal>
             </goals>
-          </execution>
-        </executions>
-      </plugin>
-
-      <plugin>
-        <groupId>org.eclipse.tycho.extras</groupId>
-        <artifactId>tycho-pack200b-plugin</artifactId>
-        <version>${tycho-extras-version}</version>
-        <executions>
-          <execution>
-            <id>pack200-pack</id>
-            <goals>
-              <goal>pack</goal>
-            </goals>
-            <phase>package</phase>
           </execution>
         </executions>
       </plugin>
@@ -618,6 +566,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-toolchains-plugin</artifactId>
+          <version>3.1.0</version>
           <executions>
             <execution>
               <goals>
