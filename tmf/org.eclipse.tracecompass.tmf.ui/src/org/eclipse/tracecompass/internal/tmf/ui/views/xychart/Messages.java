@@ -17,7 +17,7 @@ import org.eclipse.osgi.util.NLS;
  * Messages class
  */
 public class Messages extends NLS {
-    private static final String BUNDLE_NAME = "org.eclipse.tracecompass.internal.tmf.ui.views.xychart..messages"; //$NON-NLS-1$
+    private static final String BUNDLE_NAME = "org.eclipse.tracecompass.internal.tmf.ui.views.xychart.messages"; //$NON-NLS-1$
     /**
      * Title for the "Lock Y Axis" dialog
      */
