@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014 Ericsson
+ * Copyright (c) 2014, 2023 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -23,10 +23,13 @@ package org.eclipse.tracecompass.internal.pcap.core.protocol.ipv4;
  */
 public interface IPv4Values {
 
+    /** Version */
+    int VERSION = 4;
+
     /** Size in bytes of an IP address */
     int IP_ADDRESS_SIZE = 4;
 
-    /** Size in bytes of a default IPv4 packet header */
+    /** Size in 32-bit blocks of a default IPv4 packet header */
     int DEFAULT_HEADER_LENGTH = 5;
 
     /** Size in bytes of a block of data. Used to convert data block to bytes */

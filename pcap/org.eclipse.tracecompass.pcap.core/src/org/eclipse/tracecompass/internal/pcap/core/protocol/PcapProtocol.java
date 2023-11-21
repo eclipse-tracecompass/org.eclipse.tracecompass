@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014 Ericsson
+ * Copyright (c) 2014, 2023 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -46,6 +46,10 @@ public enum PcapProtocol {
      * The description of the Internet Protocol Version 4.
      */
     IPV4("Internet Protocol Version 4", "ipv4", Layer.LAYER_3, true), //$NON-NLS-1$ //$NON-NLS-2$
+    /**
+     * The description of the Internet Protocol Version 6.
+     */
+    IPV6("Internet Protocol Version 6", "ipv6", Layer.LAYER_3, true), //$NON-NLS-1$ //$NON-NLS-2$
 
     // Layer 4
     /**

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014 Ericsson
+ * Copyright (c) 2014, 2023 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -40,6 +40,8 @@ public final class ProtocolConversion {
             return TmfPcapProtocol.ETHERNET_II;
         case IPV4:
             return TmfPcapProtocol.IPV4;
+        case IPV6:
+            return TmfPcapProtocol.IPV6;
         case PCAP:
             return TmfPcapProtocol.PCAP;
         case TCP:
@@ -66,6 +68,8 @@ public final class ProtocolConversion {
             return PcapProtocol.ETHERNET_II;
         case IPV4:
             return PcapProtocol.IPV4;
+        case IPV6:
+            return PcapProtocol.IPV6;
         case PCAP:
             return PcapProtocol.PCAP;
         case TCP:

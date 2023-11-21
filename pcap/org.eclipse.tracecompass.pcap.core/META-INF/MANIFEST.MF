@@ -19,6 +19,7 @@ Export-Package: org.eclipse.tracecompass.internal.pcap.core;x-friends:="org.ecli
  org.eclipse.tracecompass.internal.pcap.core.protocol;x-friends:="org.eclipse.tracecompass.pcap.core.tests,org.eclipse.tracecompass.tmf.pcap.core.tests,org.eclipse.tracecompass.tmf.pcap.core",
  org.eclipse.tracecompass.internal.pcap.core.protocol.ethernet2;x-friends:="org.eclipse.tracecompass.pcap.core.tests",
  org.eclipse.tracecompass.internal.pcap.core.protocol.ipv4;x-friends:="org.eclipse.tracecompass.pcap.core.tests,org.eclipse.tracecompass.tmf.pcap.core.tests,org.eclipse.tracecompass.tmf.pcap.core",
+ org.eclipse.tracecompass.internal.pcap.core.protocol.ipv6;x-friends:="org.eclipse.tracecompass.pcap.core.tests,org.eclipse.tracecompass.tmf.pcap.core.tests,org.eclipse.tracecompass.tmf.pcap.core",
  org.eclipse.tracecompass.internal.pcap.core.protocol.pcap;x-friends:="org.eclipse.tracecompass.pcap.core.tests,org.eclipse.tracecompass.tmf.pcap.core.tests,org.eclipse.tracecompass.tmf.pcap.core",
  org.eclipse.tracecompass.internal.pcap.core.protocol.tcp;x-friends:="org.eclipse.tracecompass.pcap.core.tests",
  org.eclipse.tracecompass.internal.pcap.core.protocol.udp;x-friends:="org.eclipse.tracecompass.pcap.core.tests",

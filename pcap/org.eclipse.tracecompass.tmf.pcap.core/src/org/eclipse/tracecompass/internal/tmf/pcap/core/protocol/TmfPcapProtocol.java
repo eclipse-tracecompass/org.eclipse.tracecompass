@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, 2015 Ericsson
+ * Copyright (c) 2014, 2023 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -46,6 +46,10 @@ public enum TmfPcapProtocol {
      * The description of the Internet Protocol Version 4.
      */
     IPV4(PcapProtocol.IPV4),
+    /**
+     * The description of the Internet Protocol Version 6.
+     */
+    IPV6(PcapProtocol.IPV6),
 
     // Layer 4
     /**

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014 Ericsson
+ * Copyright (c) 2014, 2023 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -65,6 +65,7 @@ public class ProtocolTest {
                 break;
             case LAYER_3:
                 manualListLayer.add(PcapProtocol.IPV4);
+                manualListLayer.add(PcapProtocol.IPV6);
                 break;
             case LAYER_4:
                 manualListLayer.add(PcapProtocol.TCP);
