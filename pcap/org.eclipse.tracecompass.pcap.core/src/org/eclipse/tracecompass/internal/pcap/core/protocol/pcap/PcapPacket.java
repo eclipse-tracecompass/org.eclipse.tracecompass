@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, 2019 Ericsson
+ * Copyright (c) 2014, 2023 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -16,6 +16,7 @@
 package org.eclipse.tracecompass.internal.pcap.core.protocol.pcap;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.Map;
 import java.util.Objects;
 
@@ -24,6 +25,10 @@ import org.eclipse.tracecompass.internal.pcap.core.packet.BadPacketException;
 import org.eclipse.tracecompass.internal.pcap.core.packet.Packet;
 import org.eclipse.tracecompass.internal.pcap.core.protocol.PcapProtocol;
 import org.eclipse.tracecompass.internal.pcap.core.protocol.ethernet2.EthernetIIPacket;
+import org.eclipse.tracecompass.internal.pcap.core.protocol.ipv4.IPv4Packet;
+import org.eclipse.tracecompass.internal.pcap.core.protocol.ipv4.IPv4Values;
+import org.eclipse.tracecompass.internal.pcap.core.protocol.ipv6.IPv6Packet;
+import org.eclipse.tracecompass.internal.pcap.core.protocol.ipv6.IPv6Values;
 import org.eclipse.tracecompass.internal.pcap.core.protocol.unknown.UnknownPacket;
 import org.eclipse.tracecompass.internal.pcap.core.trace.PcapFile;
 import org.eclipse.tracecompass.internal.pcap.core.util.ConversionHelper;
@@ -215,6 +220,17 @@ public abstract class PcapPacket extends Packet {
         switch ((int) getDataLinkType()) {
         case LinkTypeHelper.LINKTYPE_ETHERNET:
             return new EthernetIIPacket(getPcapFile(), this, payload);
+        case LinkTypeHelper.LINKTYPE_RAW:
+            payload.order(ByteOrder.BIG_ENDIAN);
+            payload.position(0);
+            int version = ((payload.get() & 0xF0) >> 4) & 0x0F;
+            if (version == IPv4Values.VERSION) {
+                return new IPv4Packet(getPcapFile(), this, payload);
+            }
+            if (version == IPv6Values.VERSION) {
+                return new IPv6Packet(getPcapFile(), this, payload);
+            }
+            //$FALL-THROUGH$
         default:
             return new UnknownPacket(getPcapFile(), this, payload);
         }
