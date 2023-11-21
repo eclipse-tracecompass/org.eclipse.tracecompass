@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Enumeration;
 
+import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
@@ -64,7 +65,8 @@ public class TarFile {
         }
         entryEnumerationStream = new TarArchiveInputStream(fInputStream);
         try {
-            curEntry = (TarArchiveEntry) entryEnumerationStream.getNextEntry();
+            ArchiveEntry nextEntry = entryEnumerationStream.getNextEntry();
+            curEntry = (TarArchiveEntry) nextEntry;
             if (curEntry == null || !curEntry.isCheckSumOK()) {
                 throw new IOException("Error detected parsing initial entry header"); //$NON-NLS-1$
             }
@@ -114,7 +116,8 @@ public class TarFile {
             public TarArchiveEntry nextElement() {
                 TarArchiveEntry oldEntry = curEntry;
                 try {
-                    curEntry = (TarArchiveEntry) entryEnumerationStream.getNextEntry();
+                    ArchiveEntry nextEntry = entryEnumerationStream.getNextEntry();
+                    curEntry = (TarArchiveEntry) nextEntry;
                 } catch(IOException e) {
                     curEntry = null;
                 }
