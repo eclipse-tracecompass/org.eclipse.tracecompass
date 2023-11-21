@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, 2019 Ericsson
+ * Copyright (c) 2014, 2023 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -45,11 +45,11 @@ import com.google.common.collect.ImmutableMap;
 public class UnknownPacketTest {
 
     private static final Map<String, String> EXPECTED_FIELDS = ImmutableMap.of(
-            "Binary", "61",
-            "Character", "a"
+            "Binary", "00 01 02 31 32 33 41 42 43 61 62 63 fd fe ff",
+            "Character", "···123ABCabc···"
             );
 
-    private static final String fToString = "Payload: 61";
+    private static final String fToString = "Payload: 00 01 02 31 32 33 41 42 43 61 62 63 fd fe ff";
 
     private ByteBuffer fPacket;
 
@@ -58,11 +58,25 @@ public class UnknownPacketTest {
      */
     @Before
     public void initialize() {
-        fPacket = ByteBuffer.allocate(1);
+        fPacket = ByteBuffer.allocate(15);
         fPacket.order(ByteOrder.BIG_ENDIAN);
 
-        // Payload - 1 byte
-        fPacket.put((byte) 97);
+        // Payload - 15 bytes
+        fPacket.put((byte) 0x00);
+        fPacket.put((byte) 0x01);
+        fPacket.put((byte) 0x02);
+        fPacket.put((byte) 0x31);
+        fPacket.put((byte) 0x32);
+        fPacket.put((byte) 0x33);
+        fPacket.put((byte) 0x41);
+        fPacket.put((byte) 0x42);
+        fPacket.put((byte) 0x43);
+        fPacket.put((byte) 0x61);
+        fPacket.put((byte) 0x62);
+        fPacket.put((byte) 0x63);
+        fPacket.put((byte) 0xfd);
+        fPacket.put((byte) 0xfe);
+        fPacket.put((byte) 0xff);
 
         fPacket.flip();
     }
@@ -94,14 +108,14 @@ public class UnknownPacketTest {
 
             // Abstract methods Testing
             assertTrue(packet.validate());
-            assertEquals(1089, packet.hashCode());
             assertFalse(packet.equals(null));
             assertEquals(new UnknownPacket(dummy, null, byteBuffer), packet);
+            assertEquals(new UnknownPacket(dummy, null, byteBuffer).hashCode(), packet.hashCode());
 
             assertEquals(EXPECTED_FIELDS, packet.getFields());
             assertEquals(fToString, packet.toString());
-            assertEquals("Len: 1 bytes", packet.getLocalSummaryString());
-            assertEquals("Data: 1 bytes", packet.getGlobalSummaryString());
+            assertEquals("Len: 15 bytes", packet.getLocalSummaryString());
+            assertEquals("Data: 15 bytes", packet.getGlobalSummaryString());
             // TODO take care of plural form.
 
             // Unknown Endpoints are never equal!
@@ -109,7 +123,7 @@ public class UnknownPacketTest {
             assertFalse(packet.getDestinationEndpoint().equals(new UnknownEndpoint(packet, false)));
 
             fPacket.position(0);
-            byte[] payload = new byte[1];
+            byte[] payload = new byte[15];
             fPacket.get(payload);
             ByteBuffer payloadBB = ByteBuffer.wrap(payload);
             payloadBB.flip();

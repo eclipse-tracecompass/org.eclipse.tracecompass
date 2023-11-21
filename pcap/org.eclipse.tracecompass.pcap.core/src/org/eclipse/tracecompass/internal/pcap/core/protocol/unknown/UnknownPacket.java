@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, 2019 Ericsson
+ * Copyright (c) 2014, 2023 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -14,7 +14,6 @@
 
 package org.eclipse.tracecompass.internal.pcap.core.protocol.unknown;
 
-import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Map;
@@ -138,12 +137,16 @@ public class UnknownPacket extends Packet {
 
             Builder<String, String> builder = ImmutableMap.<@NonNull String, @NonNull String> builder()
                     .put("Binary", ConversionHelper.bytesToHex(array, true)); //$NON-NLS-1$
-            try {
-                String s = new String(array, "UTF-8"); //$NON-NLS-1$
-                builder.put("Character", s); //$NON-NLS-1$
-            } catch (UnsupportedEncodingException e) {
-                // Do nothing. The string won't be added to the map anyway.
+            StringBuilder sb = new StringBuilder();
+            for (byte b : array) {
+                char ch = (char) b;
+                if (ch >= 32 && ch < 127) {
+                    sb.append(ch);
+                } else {
+                    sb.append('·');
+                }
             }
+            builder.put("Character", sb.toString()); //$NON-NLS-1$
             fFields = builder.build();
             return fFields;
         }
