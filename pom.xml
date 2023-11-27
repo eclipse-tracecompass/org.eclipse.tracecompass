@@ -323,7 +323,13 @@
                    <artifactId>maven-javadoc-plugin</artifactId>
                    <version>3.6.2</version>
                    <configuration>
-                      <excludePackageNames>org.eclipse.tracecompass.internal.*:*.test*:*.test:*.example:*.alltests:*.alltests.*:*.stubs:*.remote.*</excludePackageNames>
+                      <groups>
+                         <group>
+                            <title>Backend</title>
+                            <packages>org.eclipse.tracecompass.statesystem.*:org.eclipse.tracecompass.segmentstore.*:org.eclipse.tracecompass.datastore.*</packages>
+                         </group>
+                      </groups>
+                      <excludePackageNames>org.eclipse.tracecompass.internal.*:*.test*:*.test:*.example:*.btf.*:*.rcp.*:*.alltests:*.alltests.*:*.stubs:*.remote.*</excludePackageNames>
                       <overview>overview.html</overview>
                       <noindex>true</noindex>
                       <nodeprecated>false</nodeprecated>
@@ -333,6 +339,7 @@
                       <doctitle>Trace Compass API</doctitle>
                       <show>public</show>
                       <verbose>true</verbose>
+                      <doclint>none</doclint>
                    </configuration>
                 </plugin>
             </plugins>
@@ -649,9 +656,18 @@
               <group>
                 <title>Backend</title>
                 <packages>org.eclipse.tracecompass.statesystem.*:org.eclipse.tracecompass.segmentstore.*:org.eclipse.tracecompass.datastore.*</packages>
-               </group>
+              </group>
             </groups>
-            <excludePackageNames>org.eclipse.tracecompass.internal.*:*.test*:*.test:*.example:*.alltests:*.alltests.*:*.stubs</excludePackageNames>
+            <excludePackageNames>org.eclipse.tracecompass.internal.*:*.test*:*.test:*.example:*.btf.*:*.rcp.*:*.alltests:*.alltests.*:*.stubs:*.remote.*</excludePackageNames>
+            <overview>overview.html</overview>
+            <noindex>true</noindex>
+            <nodeprecated>false</nodeprecated>
+            <nodeprecatedlist>false</nodeprecatedlist>
+            <nohelp>true</nohelp>
+            <notree>true</notree>
+            <doctitle>Trace Compass API</doctitle>
+            <show>public</show>
+            <verbose>true</verbose>
             <doclint>none</doclint>
           </configuration>
         </plugin>
