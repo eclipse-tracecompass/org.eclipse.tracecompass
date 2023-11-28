@@ -55,7 +55,7 @@ placed in `releng/org.eclipse.tracecompass.releng-site/target/repository`.
 To generate the javadoc from the Trace Compass source code, run the following
 command from the top-level directory:
 
-    mvn clean package javadoc:aggregate
+    mvn compile javadoc:aggregate
 
 The javadoc html files will be under `target/site/apidocs`.
 
