@@ -13,10 +13,9 @@ package org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl;
 
 import java.util.List;
 
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.tracecompass.ctf.core.event.CTFClock;
 import org.eclipse.tracecompass.ctf.parser.CTFParser;
-import org.eclipse.tracecompass.internal.ctf.core.Activator;
+import org.eclipse.tracecompass.internal.ctf.core.CtfCoreLoggerUtil;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ICommonTreeParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonClockMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
@@ -181,7 +180,7 @@ public final class ClockParser implements ICommonTreeParser {
                     try {
                         numValue = Long.parseLong(text);
                     } catch (NumberFormatException e) {
-                        Activator.log(IStatus.WARNING, "Number conversion issue with " + text + ". Assigning " + key + " = 0."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                        CtfCoreLoggerUtil.logWarning("Number conversion issue with " + text + ". Assigning " + key + " = 0."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                         numValue = Long.valueOf(0L);
                     }
                     ctfClock.addAttribute(key, numValue);

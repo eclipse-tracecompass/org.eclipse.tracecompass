@@ -35,7 +35,7 @@ import org.eclipse.tracecompass.ctf.core.event.types.ISimpleDatatypeDeclaration;
 import org.eclipse.tracecompass.ctf.core.event.types.SimpleDatatypeDefinition;
 import org.eclipse.tracecompass.ctf.core.event.types.StringDefinition;
 import org.eclipse.tracecompass.ctf.core.event.types.StructDefinition;
-import org.eclipse.tracecompass.internal.ctf.core.Activator;
+import org.eclipse.tracecompass.internal.ctf.core.CtfCoreLoggerUtil;
 import org.eclipse.tracecompass.internal.ctf.core.SafeMappedByteBuffer;
 import org.eclipse.tracecompass.internal.ctf.core.trace.CTFPacketReader;
 import org.eclipse.tracecompass.internal.ctf.core.trace.StreamInputPacketIndexEntry;
@@ -318,7 +318,7 @@ public class CTFStreamPacketOutputWriter {
         try {
             bytes = stringDefinition.toString().getBytes(stringDefinition.getDeclaration().getEncoding().toString());
         } catch (UnsupportedEncodingException e) {
-            Activator.log("Writing packet made an encoding error! " + e.getMessage()); //$NON-NLS-1$
+            CtfCoreLoggerUtil.logInfo("Writing packet made an encoding error! " + e.getMessage()); //$NON-NLS-1$
         }
         bb.put(bytes);
         bb.put((byte) 0);

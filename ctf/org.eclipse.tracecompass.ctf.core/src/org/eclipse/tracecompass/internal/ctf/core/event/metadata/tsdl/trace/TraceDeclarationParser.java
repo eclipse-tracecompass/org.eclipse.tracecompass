@@ -18,7 +18,6 @@ import java.nio.ByteOrder;
 import java.util.List;
 import java.util.UUID;
 
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.tracecompass.ctf.core.event.metadata.DeclarationScope;
 import org.eclipse.tracecompass.ctf.core.event.types.EnumDeclaration;
@@ -29,7 +28,7 @@ import org.eclipse.tracecompass.ctf.core.event.types.StructDeclaration;
 import org.eclipse.tracecompass.ctf.core.event.types.VariantDeclaration;
 import org.eclipse.tracecompass.ctf.core.trace.CTFTrace;
 import org.eclipse.tracecompass.ctf.parser.CTFParser;
-import org.eclipse.tracecompass.internal.ctf.core.Activator;
+import org.eclipse.tracecompass.internal.ctf.core.CtfCoreLoggerUtil;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.AbstractScopedCommonTreeParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.CTFAntlrMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonPreambleMetadataNode;
@@ -220,7 +219,7 @@ public final class TraceDeclarationParser extends AbstractScopedCommonTreeParser
 
                 trace.setPacketHeader((StructDeclaration) packetHeaderDecl);
             } else {
-                Activator.log(IStatus.WARNING, Messages.IOStructGen_UnknownTraceAttributeWarning + " " + left); //$NON-NLS-1$
+                CtfCoreLoggerUtil.logWarning(Messages.IOStructGen_UnknownTraceAttributeWarning + " " + left); //$NON-NLS-1$
             }
         }
         return trace;

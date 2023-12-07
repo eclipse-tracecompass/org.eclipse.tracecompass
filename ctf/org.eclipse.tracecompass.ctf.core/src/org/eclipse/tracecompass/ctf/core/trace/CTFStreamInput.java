@@ -24,7 +24,6 @@ import java.nio.file.StandardOpenOption;
 import java.util.Objects;
 import java.util.UUID;
 
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.ctf.core.CTFException;
@@ -38,7 +37,7 @@ import org.eclipse.tracecompass.ctf.core.event.types.Definition;
 import org.eclipse.tracecompass.ctf.core.event.types.IntegerDefinition;
 import org.eclipse.tracecompass.ctf.core.event.types.StructDeclaration;
 import org.eclipse.tracecompass.ctf.core.event.types.StructDefinition;
-import org.eclipse.tracecompass.internal.ctf.core.Activator;
+import org.eclipse.tracecompass.internal.ctf.core.CtfCoreLoggerUtil;
 import org.eclipse.tracecompass.internal.ctf.core.SafeMappedByteBuffer;
 import org.eclipse.tracecompass.internal.ctf.core.trace.StreamInputPacketIndex;
 import org.eclipse.tracecompass.internal.ctf.core.trace.StreamInputPacketIndexEntry;
@@ -361,7 +360,7 @@ public class CTFStreamInput implements IDefinitionScope {
         }
         if (!Objects.equals(getStream().getTrace().getUUID(), uuid) && !fUUIDMismatchWarning) {
             fUUIDMismatchWarning = true;
-            Activator.log(IStatus.WARNING, "Reading CTF trace: UUID mismatch for trace " + getStream().getTrace()); //$NON-NLS-1$
+            CtfCoreLoggerUtil.logWarning("Reading CTF trace: UUID mismatch for trace " + getStream().getTrace()); //$NON-NLS-1$
         }
         if (streamIDDef != null) {
             long streamID = streamIDDef.getValue();

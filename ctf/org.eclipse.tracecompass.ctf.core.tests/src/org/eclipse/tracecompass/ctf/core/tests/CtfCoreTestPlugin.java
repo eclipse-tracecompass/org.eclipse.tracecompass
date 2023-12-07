@@ -24,7 +24,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.URIUtil;
-import org.eclipse.tracecompass.internal.ctf.core.Activator;
+import org.eclipse.tracecompass.internal.ctf.core.CtfCoreLoggerUtil;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -108,7 +108,7 @@ public class CtfCoreTestPlugin extends Plugin {
                 }
                 return dir.getAbsolutePath();
             } catch (URISyntaxException e) {
-                Activator.logError(e.getLocalizedMessage(), e);
+                CtfCoreLoggerUtil.logError(e.getLocalizedMessage(), e);
             }
         }
         return System.getProperty("java.io.tmpdir"); //$NON-NLS-1$

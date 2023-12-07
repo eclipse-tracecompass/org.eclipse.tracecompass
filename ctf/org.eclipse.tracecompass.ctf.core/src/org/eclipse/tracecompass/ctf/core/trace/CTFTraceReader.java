@@ -29,7 +29,7 @@ import java.util.Set;
 import org.eclipse.tracecompass.ctf.core.CTFException;
 import org.eclipse.tracecompass.ctf.core.event.IEventDeclaration;
 import org.eclipse.tracecompass.ctf.core.event.IEventDefinition;
-import org.eclipse.tracecompass.internal.ctf.core.Activator;
+import org.eclipse.tracecompass.internal.ctf.core.CtfCoreLoggerUtil;
 import org.eclipse.tracecompass.internal.ctf.core.trace.StreamInputReaderTimestampComparator;
 
 /**
@@ -148,7 +148,7 @@ public class CTFTraceReader implements AutoCloseable {
                     try {
                         reader.close();
                     } catch (IOException e) {
-                        Activator.logError(e.getMessage(), e);
+                        CtfCoreLoggerUtil.logError(e.getMessage(), e);
                     }
                 }
             }
@@ -259,7 +259,7 @@ public class CTFTraceReader implements AutoCloseable {
                         readers.add(streamInputReaderToAdd);
                     }
                 } catch (IOException e) {
-                    Activator.logError(e.getMessage(), e);
+                    CtfCoreLoggerUtil.logError(e.getMessage(), e);
                 }
             }
         }
@@ -515,7 +515,7 @@ public class CTFTraceReader implements AutoCloseable {
             }
 
             sb.append("]\t" + fEventCountPerTraceFile[se.getName()] + " Events"); //$NON-NLS-1$//$NON-NLS-2$
-            Activator.log(sb.toString());
+            CtfCoreLoggerUtil.logInfo(sb.toString());
         }
     }
 

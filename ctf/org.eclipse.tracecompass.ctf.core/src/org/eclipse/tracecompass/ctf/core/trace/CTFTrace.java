@@ -36,7 +36,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.ctf.core.CTFException;
@@ -54,7 +53,7 @@ import org.eclipse.tracecompass.ctf.core.event.types.IDefinition;
 import org.eclipse.tracecompass.ctf.core.event.types.IntegerDefinition;
 import org.eclipse.tracecompass.ctf.core.event.types.StructDeclaration;
 import org.eclipse.tracecompass.ctf.core.event.types.StructDefinition;
-import org.eclipse.tracecompass.internal.ctf.core.Activator;
+import org.eclipse.tracecompass.internal.ctf.core.CtfCoreLoggerUtil;
 import org.eclipse.tracecompass.internal.ctf.core.SafeMappedByteBuffer;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.MetadataStrings;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
@@ -563,7 +562,7 @@ public class CTFTrace implements IDefinitionScope {
 
         if (otheruuid != null && !fUuid.equals(otheruuid) && !fUUIDMismatchWarning) {
             fUUIDMismatchWarning = true;
-            Activator.log(IStatus.WARNING, "Reading CTF trace: UUID mismatch for trace " + this); //$NON-NLS-1$
+            CtfCoreLoggerUtil.logWarning("Reading CTF trace: UUID mismatch for trace " + this); //$NON-NLS-1$
         }
     }
 

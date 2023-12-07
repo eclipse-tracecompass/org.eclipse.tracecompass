@@ -19,18 +19,18 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.tracecompass.ctf.core.event.types.EnumDeclaration;
 import org.eclipse.tracecompass.ctf.core.event.types.IntegerDeclaration;
 import org.eclipse.tracecompass.ctf.parser.CTFParser;
-import org.eclipse.tracecompass.internal.ctf.core.Activator;
+import org.eclipse.tracecompass.internal.ctf.core.CtfCoreLoggerUtil;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ICommonTreeParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonStructureFieldMemberMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.UnaryIntegerParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.UnaryStringParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -150,7 +150,7 @@ public final class EnumeratorParser implements ICommonTreeParser {
             throw new ParseException("enum low value greater than high value"); //$NON-NLS-1$
         }
         if (valueSpecified && !enumDeclaration.add(low, high, label)) {
-            Activator.log(IStatus.WARNING, "enum declarator values overlap. " + enumDeclaration.getLabels() + " and " + label); //$NON-NLS-1$ //$NON-NLS-2$
+            CtfCoreLoggerUtil.logWarning("enum declarator values overlap. " + enumDeclaration.getLabels() + " and " + label); //$NON-NLS-1$ //$NON-NLS-2$
         } else if (!valueSpecified && !enumDeclaration.add(label)) {
             throw new ParseException("enum cannot add element " + label); //$NON-NLS-1$
         }

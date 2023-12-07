@@ -25,10 +25,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.tracecompass.ctf.core.trace.ICTFPacketDescriptor;
-import org.eclipse.tracecompass.internal.ctf.core.Activator;
+import org.eclipse.tracecompass.internal.ctf.core.CtfCoreLoggerUtil;
 
 /**
  * <b><u>StreamInputPacketIndex</u></b>
@@ -95,7 +94,7 @@ public class StreamInputPacketIndex {
         ICTFPacketDescriptor entryToAdd = entry;
         /* Validate consistent entry. */
         if (entryToAdd.getTimestampBegin() > entryToAdd.getTimestampEnd()) {
-            Activator.log(IStatus.WARNING, "Packet at offset " + entryToAdd.getOffsetBytes() + //$NON-NLS-1$
+            CtfCoreLoggerUtil.logWarning("Packet at offset " + entryToAdd.getOffsetBytes() + //$NON-NLS-1$
                     " begin timestamp is after end timestamp"); //$NON-NLS-1$
             entryToAdd = new StreamInputPacketIndexEntry(entryToAdd, Long.MAX_VALUE);
         }

@@ -31,7 +31,7 @@ import org.eclipse.tracecompass.ctf.core.event.IEventDefinition;
 import org.eclipse.tracecompass.ctf.core.event.io.BitBuffer;
 import org.eclipse.tracecompass.ctf.core.event.types.IDeclaration;
 import org.eclipse.tracecompass.ctf.core.event.types.StructDeclaration;
-import org.eclipse.tracecompass.internal.ctf.core.Activator;
+import org.eclipse.tracecompass.internal.ctf.core.CtfCoreLoggerUtil;
 import org.eclipse.tracecompass.internal.ctf.core.SafeMappedByteBuffer;
 import org.eclipse.tracecompass.internal.ctf.core.trace.CTFPacketReader;
 import org.eclipse.tracecompass.internal.ctf.core.trace.NullPacketReader;
@@ -377,7 +377,7 @@ public class CTFStreamInputReader implements AutoCloseable {
                 goToNextPacket();
             } catch (CTFException e) {
                 // do nothing here
-                Activator.log(e.getMessage());
+                CtfCoreLoggerUtil.logInfo(e.getMessage());
             }
         }
         if (fPacketReader.getCurrentPacket() == null) {

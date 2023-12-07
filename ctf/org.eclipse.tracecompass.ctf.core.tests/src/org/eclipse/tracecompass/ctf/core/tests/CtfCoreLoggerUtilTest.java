@@ -17,24 +17,16 @@ package org.eclipse.tracecompass.ctf.core.tests;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-import org.eclipse.tracecompass.internal.ctf.core.Activator;
+import org.eclipse.tracecompass.internal.ctf.core.CtfCoreLoggerUtil;
 import org.junit.Test;
 
 /**
  * <b><u>CtfCorePluginTest</u></b>
  * <p>
- * Test the CTF core plug-in activator
+ * Test the CTF core logger utility
  */
 @SuppressWarnings("javadoc")
-public class CtfCorePluginTest {
-
-    // ------------------------------------------------------------------------
-    // Attributes
-    // ------------------------------------------------------------------------
-
-    // Plug-in instantiation
-    private final static Activator fPlugin = Activator.getDefault();
-
+public class CtfCoreLoggerUtilTest {
 
     // ------------------------------------------------------------------------
     // Test cases
@@ -43,19 +35,13 @@ public class CtfCorePluginTest {
     @Test
     public void testCtfCorePluginId() {
         assertEquals(
-                "Plugin ID", "org.eclipse.tracecompass.ctf.core", Activator.PLUGIN_ID);
-    }
-
-    @Test
-    public void testGetDefault() {
-        Activator plugin = Activator.getDefault();
-        assertEquals("getDefault()", plugin, fPlugin);
+                "Plugin ID", "org.eclipse.tracecompass.ctf.core", CtfCoreLoggerUtil.PLUGIN_ID);
     }
 
     @Test
     public void testLog() {
         try {
-            Activator.log("Some message");
+            CtfCoreLoggerUtil.logInfo("Some message");
         } catch (Exception e) {
             fail();
         }

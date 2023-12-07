@@ -18,14 +18,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.ctf.core.CTFException;
 import org.eclipse.tracecompass.ctf.core.event.io.BitBuffer;
 import org.eclipse.tracecompass.ctf.core.event.scope.IDefinitionScope;
 import org.eclipse.tracecompass.ctf.core.event.scope.ILexicalScope;
-import org.eclipse.tracecompass.internal.ctf.core.Activator;
+import org.eclipse.tracecompass.internal.ctf.core.CtfCoreLoggerUtil;
 
 /**
  * A CTF structure declaration.
@@ -198,7 +197,7 @@ public class StructDeclaration extends Declaration {
      */
     public void addField(@NonNull String name, @NonNull IDeclaration declaration) {
         if (hasField(name)) {
-            Activator.log(IStatus.WARNING, "Struct already contains a field named " + name); //$NON-NLS-1$
+            CtfCoreLoggerUtil.logWarning("Struct already contains a field named " + name); //$NON-NLS-1$
             return;
         }
         /* extend by one */
