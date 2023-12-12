@@ -14,6 +14,8 @@
 
 package org.eclipse.tracecompass.internal.ctf.core.trace;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.AbstractMap;
 import java.util.Collections;
 import java.util.Map;
@@ -21,7 +23,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNull;
-import org.eclipse.tracecompass.common.core.NonNullUtils;
 import org.eclipse.tracecompass.ctf.core.CTFStrings;
 import org.eclipse.tracecompass.ctf.core.event.types.Declaration;
 import org.eclipse.tracecompass.ctf.core.event.types.EnumDefinition;
@@ -234,8 +235,8 @@ public class StreamInputPacketIndexEntry implements ICTFPacketDescriptor {
             } else if (id instanceof EnumDefinition) {
                 final EnumDefinition enumDec = (EnumDefinition) id;
                 attributeBuilder.put(fieldName, new AbstractMap.SimpleImmutableEntry<>(
-                        NonNullUtils.checkNotNull(enumDec.getStringValue()),
-                        NonNullUtils.checkNotNull(enumDec.getIntegerValue())));
+                        requireNonNull(enumDec.getStringValue()),
+                        requireNonNull(enumDec.getIntegerValue())));
             } else if (id instanceof StringDefinition) {
                 attributeBuilder.put(fieldName, ((StringDefinition) id).getValue());
             }

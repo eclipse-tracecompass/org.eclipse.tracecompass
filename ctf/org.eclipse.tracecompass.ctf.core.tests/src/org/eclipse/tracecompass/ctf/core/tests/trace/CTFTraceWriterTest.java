@@ -14,7 +14,7 @@
 
 package org.eclipse.tracecompass.ctf.core.tests.trace;
 
-import static org.eclipse.tracecompass.common.core.NonNullUtils.checkNotNull;
+import static java.util.Objects.requireNonNull;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -176,7 +176,7 @@ public class CTFTraceWriterTest {
     public void testKernelTrace() {
             try {
                 CTFTrace trace = CtfTestTraceUtils.getTrace(CtfTestTrace.KERNEL);
-                CTFTraceWriter ctfWriter = new CTFTraceWriter(checkNotNull(trace));
+                CTFTraceWriter ctfWriter = new CTFTraceWriter(requireNonNull(trace));
                 String traceName = createTraceName(fName);
                 ctfWriter.copyPackets(fStartTime, fEndTime, traceName);
 

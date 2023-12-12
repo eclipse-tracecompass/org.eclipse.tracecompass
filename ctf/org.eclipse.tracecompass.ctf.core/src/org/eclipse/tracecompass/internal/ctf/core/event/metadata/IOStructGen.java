@@ -16,13 +16,14 @@
 
 package org.eclipse.tracecompass.internal.ctf.core.event.metadata;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNull;
-import org.eclipse.tracecompass.common.core.NonNullUtils;
 import org.eclipse.tracecompass.ctf.core.event.CTFCallsite;
 import org.eclipse.tracecompass.ctf.core.event.CTFClock;
 import org.eclipse.tracecompass.ctf.core.event.metadata.DeclarationScope;
@@ -87,7 +88,7 @@ public class IOStructGen {
     public IOStructGen(ICTFMetadataNode tree, @NonNull CTFTrace trace) {
         fTrace = trace;
         fTree = tree;
-        fRoot = NonNullUtils.checkNotNull(trace.getScope());
+        fRoot = requireNonNull(trace.getScope());
     }
 
     /**

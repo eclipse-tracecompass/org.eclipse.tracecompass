@@ -16,14 +16,13 @@
 
 package org.eclipse.tracecompass.internal.ctf.core.trace;
 
-import static org.eclipse.tracecompass.common.core.NonNullUtils.checkNotNull;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.tracecompass.ctf.core.trace.ICTFPacketDescriptor;
@@ -79,7 +78,7 @@ public class StreamInputPacketIndex {
      */
     public void appendAll(Collection<ICTFPacketDescriptor> preParsedIndex) {
         for (ICTFPacketDescriptor sipie : preParsedIndex) {
-            append(checkNotNull(sipie));
+            append(Objects.requireNonNull(sipie));
         }
     }
 

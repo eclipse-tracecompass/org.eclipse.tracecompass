@@ -17,6 +17,8 @@
 
 package org.eclipse.tracecompass.ctf.core.trace;
 
+import static java.util.Objects.requireNonNull;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -45,7 +47,6 @@ import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.RewriteCardinalityException;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.tracecompass.common.core.NonNullUtils;
 import org.eclipse.tracecompass.ctf.core.CTFException;
 import org.eclipse.tracecompass.ctf.parser.CTFLexer;
 import org.eclipse.tracecompass.ctf.parser.CTFParser;
@@ -215,7 +216,7 @@ public class Metadata {
         try (InputStream is = new FileInputStream(metadataFile)) {
             String json = IOUtils.toString(is, "UTF-8"); //$NON-NLS-1$
             ICTFMetadataNode tree = parseJsonToTree(json);
-            fTreeParser = new IOStructGen(tree, NonNullUtils.checkNotNull(fTrace));
+            fTreeParser = new IOStructGen(tree, requireNonNull(fTrace));
             fTreeParser.generate();
 
         } catch (FileNotFoundException e) {
@@ -295,7 +296,7 @@ public class Metadata {
                 @Nullable ICTFMetadataNode metadata;
                 metadata = gson.fromJson(json, JsonPreambleMetadataNode.class);
 
-                TraceDeclarationParser.INSTANCE.parse(metadata, new TraceDeclarationParser.Param(fTrace, NonNullUtils.checkNotNull(fTrace.getScope())));
+                TraceDeclarationParser.INSTANCE.parse(metadata, new TraceDeclarationParser.Param(fTrace, requireNonNull(fTrace.getScope())));
 
             } catch (IOException | ParseException e) {
                 throw new CTFIOException(e);
@@ -380,7 +381,7 @@ public class Metadata {
 
     private void readMetaDataText(Reader metadataTextInput) throws IOException, RecognitionException, ParseException {
         ICTFMetadataNode tree = createAST(metadataTextInput);
-        fTreeParser = new IOStructGen(tree, NonNullUtils.checkNotNull(fTrace));
+        fTreeParser = new IOStructGen(tree, requireNonNull(fTrace));
         /* Generate IO structures (declarations) */
         fTreeParser.generate();
         /* store locally in case of concurrent modification */

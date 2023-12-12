@@ -14,7 +14,7 @@
 
 package org.eclipse.tracecompass.ctf.core.trace;
 
-import static org.eclipse.tracecompass.common.core.NonNullUtils.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -72,7 +72,7 @@ public class CTFStreamOutputWriter {
         Path outFilePath = FileSystems.getDefault().getPath(file.getAbsolutePath(), inFileName);
 
         try {
-            fOutFile = checkNotNull(Files.createFile(outFilePath).toFile());
+            fOutFile = requireNonNull(Files.createFile(outFilePath).toFile());
         } catch (IOException e) {
             throw new CTFIOException("Output file can't be created: " + outFilePath, e); //$NON-NLS-1$
         }
@@ -102,7 +102,7 @@ public class CTFStreamOutputWriter {
             throw new CTFIOException("StreamInput is null. Can't copy packets"); //$NON-NLS-1$
         }
 
-        try (FileChannel fc = checkNotNull(FileChannel.open(fOutFile.toPath(), StandardOpenOption.WRITE));
+        try (FileChannel fc = requireNonNull(FileChannel.open(fOutFile.toPath(), StandardOpenOption.WRITE));
                 FileChannel source = FileChannel.open(streamInput.getFile().toPath(), StandardOpenOption.READ);) {
             StreamInputPacketIndex index = streamInput.getIndex();
             int count = 0;

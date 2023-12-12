@@ -14,7 +14,7 @@
 
 package org.eclipse.tracecompass.ctf.core.trace;
 
-import static org.eclipse.tracecompass.common.core.NonNullUtils.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -104,7 +104,7 @@ public class CTFTraceWriter {
             for (ICTFStream stream : trace.getStreams()) {
                 Set<CTFStreamInput> inputs = stream.getStreamInputs();
                 for (CTFStreamInput s : inputs) {
-                    CTFStreamOutputWriter streamOutputwriter = new CTFStreamOutputWriter(checkNotNull(s), out);
+                    CTFStreamOutputWriter streamOutputwriter = new CTFStreamOutputWriter(requireNonNull(s), out);
                     streamOutputwriter.copyPackets(adjustedStart, adjustedEnd);
                 }
             }

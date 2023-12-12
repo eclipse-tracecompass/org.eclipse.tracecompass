@@ -16,7 +16,7 @@
 
 package org.eclipse.tracecompass.ctf.core.event.types;
 
-import static org.eclipse.tracecompass.common.core.NonNullUtils.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 import java.math.BigInteger;
 import java.nio.ByteOrder;
@@ -503,7 +503,7 @@ public final class IntegerDeclaration extends Declaration implements ISimpleData
          * For a given N significant bits, compute the maximal value which is (1
          * << N) - 1.
          */
-        return checkNotNull(BigInteger.ONE.shiftLeft(significantBits).subtract(BigInteger.ONE));
+        return requireNonNull(BigInteger.ONE.shiftLeft(significantBits).subtract(BigInteger.ONE));
     }
 
     /**
@@ -513,7 +513,7 @@ public final class IntegerDeclaration extends Declaration implements ISimpleData
      */
     public BigInteger getMinValue() {
         if (!fSigned) {
-            return checkNotNull(BigInteger.ZERO);
+            return requireNonNull(BigInteger.ZERO);
         }
 
         /*
@@ -525,7 +525,7 @@ public final class IntegerDeclaration extends Declaration implements ISimpleData
          * For a given N significant bits, compute the minimal value which is -
          * (1 << N).
          */
-        return checkNotNull(BigInteger.ONE.shiftLeft(significantBits).negate());
+        return requireNonNull(BigInteger.ONE.shiftLeft(significantBits).negate());
     }
 
     private long read(BitBuffer input) throws CTFException {
