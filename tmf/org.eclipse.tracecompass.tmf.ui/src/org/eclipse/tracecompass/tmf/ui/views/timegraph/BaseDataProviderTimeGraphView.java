@@ -507,9 +507,10 @@ public class BaseDataProviderTimeGraphView extends AbstractTimeGraphView {
             if (prev != null) {
                 long prevEnd = prev.getTime() + prev.getDuration();
                 ViewFilterDialog viewFilterDialog = getViewFilterDialog();
-                if (prevEnd < event.getTime() && (viewFilterDialog == null || !viewFilterDialog.hasActiveSavedFilters())) {
+                long duration = event.getTime() - prevEnd;
+                if (duration > 0 && (viewFilterDialog == null || !viewFilterDialog.hasActiveSavedFilters())) {
                     // fill in the gap.
-                    TimeEvent timeEvent = new TimeEvent(entry, prevEnd, event.getTime() - prevEnd);
+                    TimeEvent timeEvent = new TimeEvent(entry, prevEnd, duration);
                     if (viewFilterDialog != null && viewFilterDialog.isFilterActive()) {
                         timeEvent.setProperty(CoreFilterProperty.DIMMED, true);
                     }
