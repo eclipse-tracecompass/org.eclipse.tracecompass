@@ -560,6 +560,7 @@
             <sourceReferences>
               <generate>true</generate>
             </sourceReferences>
+            <deriveHeaderFromSource>false</deriveHeaderFromSource>
           </configuration>
           <dependencies>
             <dependency>
