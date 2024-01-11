@@ -728,8 +728,10 @@ public class TmfStatisticsViewer extends TmfViewer {
                 /* No statistics module available for this trace */
                 continue;
             }
-
-            updateJobs.computeIfAbsent(aTrace, k -> {
+            updateJobs.compute(aTrace, (k, v) -> {
+                if (v != null) {
+                    v.cancel(); /* Cancel previous job */
+                }
                 Job job = new StatisticsUpdateJob("Statistics update", aTrace, isGlobal, timeRange, statsMod, this); //$NON-NLS-1$
                 job.setSystem(true);
                 job.schedule();
