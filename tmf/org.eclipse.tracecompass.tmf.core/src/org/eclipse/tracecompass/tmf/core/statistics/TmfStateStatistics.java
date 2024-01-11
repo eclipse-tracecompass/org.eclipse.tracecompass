@@ -17,15 +17,23 @@ package org.eclipse.tracecompass.tmf.core.statistics;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.tracecompass.common.core.log.TraceCompassLog;
+import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils.FlowScopeLog;
+import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils.FlowScopeLogBuilder;
 import org.eclipse.tracecompass.statesystem.core.ITmfStateSystem;
 import org.eclipse.tracecompass.statesystem.core.exceptions.StateSystemDisposedException;
 import org.eclipse.tracecompass.statesystem.core.interval.ITmfStateInterval;
+
+import com.google.common.collect.Lists;
 
 /**
  * Implementation of ITmfStatistics which uses a state history for storing its
@@ -51,6 +59,8 @@ public class TmfStateStatistics implements ITmfStatistics {
 
     /** The state system for event types */
     private final ITmfStateSystem fTypesStats;
+
+    private static final @NonNull Logger LOGGER = TraceCompassLog.getLogger(TmfStateStatistics.class);
 
     // ------------------------------------------------------------------------
     // Constructors
@@ -103,16 +113,42 @@ public class TmfStateStatistics implements ITmfStatistics {
         if (fTotalsStats.isCancelled()) {
             return list;
         }
-
-        long prevTotal = (timeRequested[0] == fTotalsStats.getStartTime()) ? 0 : getEventCountAt(timeRequested[0] - 1);
-        for (int i = 0; i < timeRequested.length; i++) {
-            long curTotal = getEventCountAt(timeRequested[i]);
-            long count = curTotal - prevTotal;
-            list.add(count);
-            prevTotal = curTotal;
+        final int quark = fTotalsStats.optQuarkAbsolute(Attributes.TOTAL);
+        if (quark == ITmfStateSystem.INVALID_ATTRIBUTE) {
+            return Collections.emptyList();
         }
-
-        return list;
+        List<Long> times = new ArrayList<>();
+        for (int i = 0; i < timeRequested.length; i++) {
+            if (timeRequested[i] > fTotalsStats.getCurrentEndTime()) {
+                times.add(fTotalsStats.getCurrentEndTime());
+                break;
+            }
+            times.add(timeRequested[i]);
+        }
+        try (FlowScopeLog log = new FlowScopeLogBuilder(LOGGER, Level.FINE, "StateStatistics:histogramQuery").build()) { //$NON-NLS-1$
+            Iterable<@NonNull ITmfStateInterval> intervals = fTotalsStats.query2D(Collections.singletonList(quark), times);
+            List<@NonNull ITmfStateInterval> sortedIntervals = Lists.newArrayList(intervals);
+            sortedIntervals.sort(Comparator.comparingLong(ITmfStateInterval::getStartTime));
+            int j = 0;
+            long previousTotal;
+            if (!sortedIntervals.isEmpty() && fTotalsStats.getStartTime() != sortedIntervals.get(0).getStartTime()) {
+                previousTotal = sortedIntervals.get(0).getValueInt();
+            } else {
+                previousTotal = 0;
+            }
+            for (int i = 0; i < timeRequested.length; i++) {
+                while (j < sortedIntervals.size() - 1 && sortedIntervals.get(j).getEndTime() < timeRequested[i]) {
+                    j++;
+                }
+                long count = sortedIntervals.get(j).getValueInt() - previousTotal;
+                list.add(count);
+                previousTotal = sortedIntervals.get(j).getValueInt();
+            }
+            return list;
+        } catch (StateSystemDisposedException e) {
+            /* Assume there is no events, nothing will be put in the histogram. */
+            return Collections.emptyList();
+        }
     }
 
     @Override
@@ -181,15 +217,15 @@ public class TmfStateStatistics implements ITmfStatistics {
     public Map<String, Long> getEventTypesInRange(long start, long end) {
 
         /*
-         * Make sure the start/end times are within the state history, so we don't get
-         * TimeRange exceptions.
+         * Make sure the start/end times are within the state history, so we
+         * don't get TimeRange exceptions.
          */
         long startTime = Long.max(start, fTypesStats.getStartTime());
         long endTime = Long.min(end, fTypesStats.getCurrentEndTime());
         if (endTime < startTime) {
             /*
-             * The start/end times do not intersect this state system range. Return the
-             * empty map.
+             * The start/end times do not intersect this state system range.
+             * Return the empty map.
              */
             return Collections.emptyMap();
         }
@@ -198,8 +234,9 @@ public class TmfStateStatistics implements ITmfStatistics {
         int quark = fTypesStats.optQuarkAbsolute(Attributes.EVENT_TYPES);
         if (quark == ITmfStateSystem.INVALID_ATTRIBUTE) {
             /*
-             * The state system does not (yet?) have the needed attributes, it probably
-             * means there are no events counted yet. Return the empty map.
+             * The state system does not (yet?) have the needed attributes, it
+             * probably means there are no events counted yet. Return the empty
+             * map.
              */
             return Collections.emptyMap();
         }
@@ -233,7 +270,9 @@ public class TmfStateStatistics implements ITmfStatistics {
             }
 
         } catch (StateSystemDisposedException e) {
-            /* Assume there is no (more) events, nothing will be put in the map. */
+            /*
+             * Assume there is no (more) events, nothing will be put in the map.
+             */
         }
         return map;
     }
@@ -255,7 +294,9 @@ public class TmfStateStatistics implements ITmfStatistics {
         try {
             return extractCount(fTotalsStats.querySingleState(ts, quark).getValue());
         } catch (StateSystemDisposedException e) {
-            /* Assume there is no (more) events, nothing will be put in the map. */
+            /*
+             * Assume there is no (more) events, nothing will be put in the map.
+             */
             return 0;
         }
     }
@@ -278,8 +319,11 @@ public class TmfStateStatistics implements ITmfStatistics {
         /** event_types */
         public static final String EVENT_TYPES = "event_types"; //$NON-NLS-1$
 
-        /** lost_events
-         * @since 2.0*/
+        /**
+         * lost_events
+         *
+         * @since 2.0
+         */
         public static final String LOST_EVENTS = "lost_events"; //$NON-NLS-1$
     }
 }
