@@ -32,8 +32,10 @@ wiki page:
 Compiling manually
 ------------------
 
-The Maven project build requires version 3.3 or later. It can be downloaded from
+The Maven project build requires version 3.9 or later. It can be downloaded from
 <http://maven.apache.org> or from the package management system of your distro.
+
+It also requires Java version 11 or later.
 
 To build the project manually using Maven, simply run the following command from
 the top-level directory:
@@ -64,7 +66,7 @@ Tracing Trace Compass
 
 Trace Compass can be traced by doing the following in the launch configuration:
 
-* (java 8 only) -vmargs
+* -vmargs
 * -Djava.util.logging.config.file=%gitroot%/logging.properties (where %gitroot% is the directory tracecompass is checked out to)
 * -Dorg.eclipse.tracecompass.logging=true
 
@@ -77,10 +79,6 @@ NOTE: thread 1 is always the UI thread for Trace Compass. Also, the thread numbe
 Maven profiles and properties
 -----------------------------
 
-NOTE: if you want to build the RCP with older platforms than 4.12 you need to
-copy the legacy `tracing.product`:
-`cp rcp/org.eclipse.tracecompass.rcp.product/legacy/tracing.product rcp/org.eclipse.tracecompass.rcp.product/`
-
 The following Maven profiles and properties are defined in
 the build system. You can set them by using `-P[profile name]` and
 `-D[property name]=[value]` in `mvn` commands.
@@ -92,6 +90,14 @@ the build system. You can set them by using `-P[profile name]` and
   `releng/org.eclipse.tracecompass.target`. The default is usually the latest
   stable platform. To use the staging target for example, use
   `-Dtarget-platform=tracecompass-eStaging`.
+
+NOTE: To support building for older platforms from the same source code tree, it is often required to
+  modify the tracecompass.product file or the RCP feature.xml. You can find them under a sub-directory
+  of the respective folders. For example, copy the legacy `tracing.product`:
+`cp rcp/org.eclipse.tracecompass.rcp.product/legacy/tracing.product rcp/org.eclipse.tracecompass.rcp.product/`
+
+If you encounter a problem for a certain target, please contact the Trace Compass
+  development team on the Trace Compass mailing list <https://accounts.eclipse.org/mailing-list/tracecompass-dev>.
 
 * `-Dskip-tc-core-tests`
 
