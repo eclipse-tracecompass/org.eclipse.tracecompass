@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.tracecompass.rcp"
       label="%featureName"
-      version="9.3.0.qualifier"
+      version="9.2.0.qualifier"
       provider-name="%featureProvider"
       plugin="org.eclipse.tracecompass.rcp.branding"
       license-feature="org.eclipse.license"
@@ -481,7 +481,7 @@
          id="org.mortbay.jasper.apache-jsp"
          download-size="0"
          install-size="0"
-         version="9.0.83"
+         version="9.0.52"
          unpack="false"/>
 
    <plugin
@@ -668,55 +668,6 @@
 
    <plugin
          id="com.ibm.icu"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.osgi.services"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.equinox.http.service.api"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.osgi.service.http.whiteboard"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.mortbay.jasper.apache-el"
-         download-size="0"
-         install-size="0"
-         version="9.0.83"
-         unpack="false"/>
-
-   <plugin
-         id="jakarta.el-api"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="jakarta.servlet.jsp-api"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="jakarta.servlet-api"
          download-size="0"
          install-size="0"
          version="0.0.0"
