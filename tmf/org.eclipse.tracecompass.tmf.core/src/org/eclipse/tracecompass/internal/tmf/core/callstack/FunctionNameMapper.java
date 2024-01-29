@@ -37,7 +37,7 @@ import org.eclipse.cdt.core.IBinaryParser;
 import org.eclipse.cdt.core.IBinaryParser.IBinaryFile;
 import org.eclipse.cdt.core.IBinaryParser.ISymbol;
 import org.eclipse.cdt.utils.CPPFilt;
-import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.ISafeRunnable;
 import org.eclipse.core.runtime.Path;
@@ -49,6 +49,7 @@ import org.eclipse.tracecompass.internal.tmf.core.Activator;
 import org.eclipse.tracecompass.tmf.core.symbols.TmfResolvedSymbol;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 
 /**
  * Class containing the different methods to import an address->name mapping.
@@ -65,6 +66,8 @@ public final class FunctionNameMapper {
     private static final Pattern REMOVE_ZEROS_PATTERN = Pattern.compile("^0+(?!$)"); //$NON-NLS-1$
     private static final Pattern NM_PATTERN = Pattern.compile("([0-9a-f]+)([\\s][a-zA-Z][\\s])(.+)"); //$NON-NLS-1$
     private static final Pattern MAP_WITH_SIZE_PATTERN = Pattern.compile("([0-9a-f]+)[\\s]([a-f0-9]+)[\\s](.+)"); //$NON-NLS-1$
+    private static final String DEPRECATED = "(Deprecated)"; //$NON-NLS-1$
+    private static final String GNU = "GNU"; //$NON-NLS-1$
 
     /**
      * The type of mapping used in a file. Each type of mapping has its pattern
@@ -268,24 +271,30 @@ public final class FunctionNameMapper {
 
         /* Get all the available binary parsers */
         final List<IBinaryParser> binaryParsers = new ArrayList<>();
-        IConfigurationElement[] elements = Platform.getExtensionRegistry()
-                .getConfigurationElementsFor(CCorePlugin.BINARY_PARSER_UNIQ_ID);
-        for (IConfigurationElement element : elements) {
-            IConfigurationElement[] children = element.getChildren("run"); //$NON-NLS-1$
-            for (final IConfigurationElement run : children) {
-                SafeRunner.run(new ISafeRunnable() {
-                    @Override
-                    public void run() throws Exception {
-                        IBinaryParser binaryParser = (IBinaryParser) run.createExecutableExtension("class"); //$NON-NLS-1$
-                        binaryParsers.add(Objects.requireNonNull(binaryParser));
-                    }
+        IExtension[] extensions = Platform.getExtensionRegistry().
+                getExtensionPoint(CCorePlugin.BINARY_PARSER_UNIQ_ID).getExtensions();
 
-                    @Override
-                    public void handleException(@Nullable Throwable exception) {
-                        Activator.logError("Error creating binary parser", exception); //$NON-NLS-1$
-                    }
-                });
-            }
+        /*
+         * Remove GNU extensions that require CProject configuration and
+         * deprecated extensions
+         */
+        List<IExtension> filteredExtensions = Lists.newArrayList(extensions);
+        filteredExtensions.removeIf(ext -> ext.getLabel().startsWith(GNU));
+        filteredExtensions.removeIf(ext -> ext.getLabel().endsWith(DEPRECATED));
+
+        for (IExtension extension : filteredExtensions) {
+            SafeRunner.run(new ISafeRunnable() {
+                @Override
+                public void run() throws Exception {
+                    IBinaryParser binaryParser = CCorePlugin.getDefault().getBinaryParser(extension.getUniqueIdentifier());
+                    binaryParsers.add(Objects.requireNonNull(binaryParser));
+                }
+
+                @Override
+                public void handleException(@Nullable Throwable exception) {
+                    Activator.logError("Error creating binary parser", exception); //$NON-NLS-1$
+                }
+            });
         }
 
         /*
