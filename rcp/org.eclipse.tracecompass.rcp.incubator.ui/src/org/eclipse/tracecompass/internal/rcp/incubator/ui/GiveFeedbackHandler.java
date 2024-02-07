@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017 École Polytechnique de Montréal
+ * Copyright (c) 2017, 2024 École Polytechnique de Montréal and others
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -21,7 +21,7 @@ import org.eclipse.swt.program.Program;
  */
 public class GiveFeedbackHandler extends AbstractHandler {
 
-    private static final String URL = "https://bugs.eclipse.org/bugs/enter_bug.cgi?product=Tracecompass"; //$NON-NLS-1$
+    private static final String URL = "https://github.com/eclipse-tracecompass/org.eclipse.tracecompass/issues"; //$NON-NLS-1$
 
     @Override
     public Object execute(ExecutionEvent event) throws ExecutionException {
