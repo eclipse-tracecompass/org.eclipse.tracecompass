@@ -55,7 +55,7 @@
     <tycho-version>4.0.3</tycho-version>
     <tycho-extras-version>4.0.3</tycho-extras-version>
     <tycho-use-project-settings>true</tycho-use-project-settings>
-    <tycho.scmUrl>scm:git:git://git.eclipse.org/gitroot/tracecompass/org.eclipse.tracecompass.git</tycho.scmUrl>
+    <tycho.scmUrl>scm:git:https://github.com/eclipse-tracecompass/org.eclipse.tracecompass</tycho.scmUrl>
     <cbi-plugins.version>1.4.2</cbi-plugins.version>
     <target-platform>tracecompass-e4.30</target-platform>
     <help-docs-eclipserun-repo>http://download.eclipse.org/eclipse/updates/4.20</help-docs-eclipserun-repo>
