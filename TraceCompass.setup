@@ -44,7 +44,7 @@
   <setupTask
       xsi:type="setup:EclipseIniTask"
       option="-Doomph.redirection.tracecompass="
-      value="https://git.eclipse.org/c/tracecompass/org.eclipse.tracecompass.git/plain/TraceCompass.setup->${git.clone.tracecompass.location|uri}/TraceCompass.setup"
+      value="https://raw.githubusercontent.com/eclipse-tracecompass/org.eclipse.tracecompass/master/TraceCompass.setup->${git.clone.tracecompass.location|uri}/TraceCompass.setup"
       vm="true"/>
   <setupTask
       xsi:type="setup:ResourceCreationTask"
