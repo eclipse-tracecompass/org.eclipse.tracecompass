@@ -1,168 +1,52 @@
-Eclipse Trace Compass
-=====================
+# Eclipse Trace Compass
 
-This source tree contains the source code for the Trace Compass plugins for
-Eclipse.
+<img align="right" src="doc/images/tc-logo.png">
 
-The plugins are categorized as follows:
+`Eclipse Trace Compass™` is an open source application to solve performance and
+reliability issues by reading and analyzing logs or traces of a system. Its goal
+is to provide views, graphs, metrics, and more to help extract useful
+information from traces, in a way that is more user-friendly and informative
+than huge text dumps.
 
-    analysis/    | Generic extensions to the base framework
-    btf/         | Best Trace Format (BTF) integration
-    common/      | Generic utilities that can be used by other plugins
-    ctf/         | Common Trace Format (CTF) reader library
-    doc/         | Documentation and code examples
-    gdbtrace/    | Support for reading and viewing GDB traces
-    lttng/       | LTTng integration
-    pcap/        | libpcap integration
-    rcp/         | Code specific to the RCP version
-    releng/      | Releng-related plugins
-    statesystem/ | State System library
-    tmf/         | Core framework
+`Eclipse Trace Compass` is also a framework to build such trace analysis and
+visualization tools. It provides Eclipse extension points, declarative XML and
+scripting capabilities to extend the core Trace Compass functionality for 
+domain-specific trace formats and use cases.
 
-See the `components.svg` file for a diagram showing the dependencies between the
-different components.
+For more information about the key features, see [Trace Compass website](https://eclipse.dev/tracecompass/).
 
-Setting up the development environment
---------------------------------------
+Also, check-out the [user guides and developer guides](https://wiki.eclipse.org/Trace_Compass#User_Guides).
 
-To set up the environment to build Trace Compass from within Eclipse, see this
-wiki page:
-<http://wiki.eclipse.org/Trace_Compass/Development_Environment_Setup>
+<img src="doc/images/tc-screenshot.png" width="66%">
 
-Compiling manually
-------------------
+## Releases
 
-The Maven project build requires version 3.9 or later. It can be downloaded from
-<http://maven.apache.org> or from the package management system of your distro.
+Information about releases can be found on the [Trace Compass project](https://projects.eclipse.org/projects/tools.tracecompass) page at Eclipse.org. 
 
-It also requires Java version 11 or later.
+See [New & Noteworthy](https://wiki.eclipse.org/Trace_Compass/NewInTraceCompass)
+for release details.
 
-To build the project manually using Maven, simply run the following command from
-the top-level directory:
+## Downloads
 
-    mvn clean install
+`Eclipse Trace Compass` is available as plug-ins that can be installed to an
+Eclipse IDE, as well as standalone application.
 
-The default command will compile and run the unit tests. Running the tests can
-take some time, to skip them you can append `-Dmaven.test.skip=true` to the
-`mvn` command:
+Check [Downloads](https://projects.eclipse.org/projects/tools.tracecompass/downloads) 
+for downloading specific versions of Trace Compass.
 
-    mvn clean install -Dmaven.test.skip=true
+## Contributing to Trace Compass
 
-Stand-alone application (RCP) packages will be placed in
-`rcp/org.eclipse.tracecompass.rcp.product/target/products`.
+**👋 Want to help?** Read our [contributor guide](CONTRIBUTING.md) and follow the
+instructions to contribute code. 
 
-The p2 update site, used for installation as plugins inside Eclipse, will be
-placed in `releng/org.eclipse.tracecompass.releng-site/target/repository`.
+You will also find there information about the `setup of the development environment`,
+`build instructions`, the `development and review process` as well as the `API policy`.
 
-To generate the javadoc from the Trace Compass source code, run the following
-command from the top-level directory:
+## Reporting issues
 
-    mvn compile javadoc:aggregate
+Read our [contributor guide](CONTRIBUTING.md#when-to-submit-patches) to get details on
+how to report issues.
 
-The javadoc html files will be under `target/site/apidocs`.
+## Help and support
 
-Tracing Trace Compass
----------------------
-
-Trace Compass can be traced by doing the following in the launch configuration:
-
-* -vmargs
-* -Djava.util.logging.config.file=%gitroot%/logging.properties (where %gitroot% is the directory tracecompass is checked out to)
-* -Dorg.eclipse.tracecompass.logging=true
-
-Additionally the folder the trace is being written to (default is `home/.tracecompass/logs`) needs to be created in advance. After running Trace Compass, a `trace_n.json` will be created in the tracing folder. It needs to be converted to true json, so use the `jsonify.sh` script in the root directory to convert it. Then it can be loaded into Trace Compass, if the **Trace Event format** is installed from the incubator, or from a web browser such as Chromium.
-
-The performance impact is low enough as long as the log level is greater than "*FINEST*".
-
-NOTE: thread 1 is always the UI thread for Trace Compass. Also, the thread numbers are the JVM threads and do not correspond necessarily to Process IDs.
-
-Maven profiles and properties
------------------------------
-
-The following Maven profiles and properties are defined in
-the build system. You can set them by using `-P[profile name]` and
-`-D[property name]=[value]` in `mvn` commands.
-
-* `-Dtarget-platform=[target]`
-
-  Defines which target to use. This is used to build against various versions of
-  the Eclipse platform. Available ones are in
-  `releng/org.eclipse.tracecompass.target`. The default is usually the latest
-  stable platform. To use the staging target for example, use
-  `-Dtarget-platform=tracecompass-eStaging`.
-
-NOTE: To support building for older platforms from the same source code tree, it is often required to
-  modify the tracecompass.product file or the RCP feature.xml. You can find them under a sub-directory
-  of the respective folders. For example, copy the legacy `tracing.product`:
-`cp rcp/org.eclipse.tracecompass.rcp.product/legacy/tracing.product rcp/org.eclipse.tracecompass.rcp.product/`
-
-If you encounter a problem for a certain target, please contact the Trace Compass
-  development team on the Trace Compass mailing list <https://accounts.eclipse.org/mailing-list/tracecompass-dev>.
-
-* `-Dskip-tc-core-tests`
-
-  Skips the automated core tests. Not required when using
-  `-Dmaven.test.skip=true` or `-DskipTests=true` , which already skips
-  all the tests.
-
-* `-Dskip-short-tc-ui-tests`
-
-  Skips the short UI integration tests. Not required when using
-  `-Dmaven.test.skip=true` or `-DskipTests=true`, which already skips
-  all the tests.
-
-* `-Dskip-long-tc-ui-tests`
-
-  Skips the long UI integration tests. Not required when using
-  `-Dmaven.test.skip=true` or `-DskipTests=true`, which already skips
-  all the tests.
-
-* `-Dskip-rcp`
-
-  Skips building the RCP archives and related deployment targets. Only works in
-  conjunction with `-Dskip-tc-long-ui-tests`, due to a limitation in Maven.
-
-* `-Pctf-grammar`
-
-  Re-compiles the CTF grammar files. This should be enabled if you modify the
-  `.g` files in the `ctf.parser` plugin.
-
-* `-Prun-custom-test-suite`
-
-  Runs a test suite present in `releng/org.eclipse.tracecompass.alltests`. The
-  test suite to run has to be defined by `-DcustomTestSuite=[name]`, for example
-  `-DcustomTestSuite=RunAllPerfTests`.
-
-* `-Pdeploy-rcp`
-
-  Mainly for use on build servers. Copies the generated RCP archives, as well as
-  the RCP-specific update site, to the paths specified by
-  `-DrcpDestination=/absolute/path/to/destination` and
-  `-DrcpSiteDestination=/absolute/path/to/destination`, respectively.
-
-* `-Pdeploy-update-site`
-
-  Mainly for use on build servers. Copies the standard update site (for the
-  Eclipse plugin installation) to the destination specified by
-  `-DsiteDestination=/absolute/path/to/destination`.
-
-* `-Psign-update-site`
-
-  Mainly for use on build servers. Signs all the generated update sites using
-  the Eclipse signing server.
-
-* `-Pdeploy-doc`
-
-  Mainly for use on build servers. Copies the generated HTML documentation to
-  the destination specified by `-DdocDestination=/absolute/path/to/destination`.
-  Some directories may need to already exist at the destination (or Maven will
-  throw related errors).
-
-Build Trace Compass image with Docker
--------------------------------------
-
-To compile the image of Trace Compass with Docker, run the following command from the top level directory:
-
-    docker build -f releng/dockerfiles/Dockerfile -t tracecompass .
-
-The image will be tagged `tracecompass`.
+See [contact](CONTRIBUTING.md#contact) section of the contributor guide on how to get help and support. 
