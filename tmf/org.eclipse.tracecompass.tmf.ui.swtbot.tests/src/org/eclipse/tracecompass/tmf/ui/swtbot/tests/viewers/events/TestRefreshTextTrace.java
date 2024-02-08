@@ -111,12 +111,14 @@ public class TestRefreshTextTrace {
 
             // Force resource refresh and ignore trace change
             fBot.viewByTitle("Project Explorer").show();
+            SWTBotUtils.focusMainWindow(fBot.shells());
             fBot.menu().menu("File", "Refresh").click();
             fBot.shell("Trace Changed").activate().bot().button("No").click();
 
             // Refresh
             SWTBotEditor eventsEditor = SWTBotUtils.activeEventsEditor(fBot);
             eventsEditor.show();
+            SWTBotUtils.focusMainWindow(fBot.shells());
             fBot.menu().menu("File", "Refresh").click();
 
             // Make sure the refresh is completed

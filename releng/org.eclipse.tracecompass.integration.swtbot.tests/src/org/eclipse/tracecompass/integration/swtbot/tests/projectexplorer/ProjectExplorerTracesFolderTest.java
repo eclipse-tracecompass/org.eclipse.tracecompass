@@ -1639,6 +1639,7 @@ public class ProjectExplorerTracesFolderTest {
     }
 
     private static SWTBotShell openWorkbenchMenuImport() {
+        SWTBotUtils.focusMainWindow(fBot.shells());
         fBot.menu().menu("File", "Import...").click();
 
         SWTBot shellBot = fBot.shell("Import").activate().bot();
