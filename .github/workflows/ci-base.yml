@@ -2,12 +2,13 @@ name: Continuous Integration (base)
 
 on:
   workflow_call:
-    maven-opts:
-      description: maven opts to use, defaults to empty string
-      required: false
-      default: ''
-      type: string
-    maven-goals:
+    inputs:
+      maven-opts:
+        description: maven opts to use, defaults to empty string
+        required: false
+        default: ''
+        type: string
+      maven-goals:
         description: maven goals to use, defaults to 'clean verify'
         required: false
         default: 'clean install'
