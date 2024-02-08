@@ -1,4 +1,4 @@
-Eclipse Trace Compass
+Eclipse Trace Compazz
 =====================
 
 This source tree contains the source code for the Trace Compass plugins for
