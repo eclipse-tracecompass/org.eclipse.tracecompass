@@ -3,7 +3,7 @@
 ## Compiling manually
 
 The Maven project build requires version 3.9 or later. It can be downloaded from
-<http://maven.apache.org> or from the package management system of your distro.
+<https://maven.apache.org> or from the package management system of your distro.
 
 It also requires Java version 11 or later.
 
