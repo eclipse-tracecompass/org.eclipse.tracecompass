@@ -33,6 +33,7 @@ import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swtbot.eclipse.finder.SWTWorkbenchBot;
 import org.eclipse.swtbot.swt.finder.SWTBot;
+import org.eclipse.swtbot.swt.finder.exceptions.WidgetNotFoundException;
 import org.eclipse.swtbot.swt.finder.junit.SWTBotJunit4ClassRunner;
 import org.eclipse.swtbot.swt.finder.keyboard.Keystrokes;
 import org.eclipse.swtbot.swt.finder.utils.SWTBotPreferences;
@@ -43,6 +44,7 @@ import org.eclipse.swtbot.swt.finder.widgets.SWTBotShell;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotText;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTree;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTreeItem;
+import org.eclipse.swtbot.swt.finder.widgets.TimeoutException;
 import org.eclipse.tracecompass.ctf.core.tests.shared.LttngTraceGenerator;
 import org.eclipse.tracecompass.tmf.remote.ui.swtbot.tests.TmfRemoteUISWTBotTestPlugin;
 import org.eclipse.tracecompass.tmf.ui.dialog.TmfFileDialogFactory;
@@ -635,8 +637,11 @@ public class FetchRemoteTracesTest {
         SWTBotShell shell = fBot.shell(FETCH_SHELL_NAME).activate();
         fBot.comboBox().setSelection("TestAllRecursive");
         fBot.button("Next >").click();
-        fBot.button("Finish").click();
-        fBot.button("Cancel").click();
+        try {
+            fBot.button("Cancel").click();
+        } catch (WidgetNotFoundException | TimeoutException e) {
+            // shell closed too fast due to timing... ignore
+        }
         fBot.waitUntil(Conditions.shellCloses(shell), FETCH_TIME_OUT);
         WaitUtils.waitForJobs();
 
