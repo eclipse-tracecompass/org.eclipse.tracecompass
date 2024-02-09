@@ -15,7 +15,6 @@
 package org.eclipse.tracecompass.lttng2.kernel.ui.swtbot.tests;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
@@ -257,22 +256,24 @@ public class ResourcesViewTest extends KernelTimeGraphViewTestBase {
         assertTrue(viewBot.viewMenu(LOST_EVENTS).isChecked());
 
         /* check that "Next Marker" and "Previous Marker" are enabled */
-        assertTrue(viewBot.toolbarButton(NEXT_MARKER).isEnabled());
-        assertTrue(viewBot.toolbarButton(PREVIOUS_MARKER).isEnabled());
+        SWTBotUtils.waitUntil(button -> button.isEnabled(), viewBot.toolbarButton(NEXT_MARKER), () -> "NEXT_MARKER is not enabled");
+        SWTBotUtils.waitUntil(button -> button.isEnabled(), viewBot.toolbarButton(PREVIOUS_MARKER), () -> "PREVIOUS_MARKER is not enabled");
 
         /* disable Lost Events markers */
         viewBot.viewMenu(LOST_EVENTS).click();
 
         /* check that "Next Marker" and "Previous Marker" are disabled */
-        assertFalse(viewBot.toolbarButton(NEXT_MARKER).isEnabled());
-        assertFalse(viewBot.toolbarButton(PREVIOUS_MARKER).isEnabled());
+        SWTBotUtils.waitUntil(button -> !button.isEnabled(), viewBot.toolbarButton(NEXT_MARKER), () -> "NEXT_MARKER is enabled");
+        SWTBotUtils.waitUntil(button -> !button.isEnabled(), viewBot.toolbarButton(PREVIOUS_MARKER), () -> "PREVIOUS_MARKER is enabled");
 
         /* enable Lost Events markers */
         viewBot.viewMenu(LOST_EVENTS).click();
 
+        timeGraphIsReadyCondition(new TmfTimeRange(START_TIME, START_TIME), START_TIME);
+
         /* check that "Next Marker" and "Previous Marker" are enabled */
-        assertTrue(viewBot.toolbarButton(NEXT_MARKER).isEnabled());
-        assertTrue(viewBot.toolbarButton(PREVIOUS_MARKER).isEnabled());
+        SWTBotUtils.waitUntil(button -> button.isEnabled(), viewBot.toolbarButton(NEXT_MARKER), () -> "NEXT_MARKER is not enabled");
+        SWTBotUtils.waitUntil(button -> button.isEnabled(), viewBot.toolbarButton(PREVIOUS_MARKER), () -> "PREVIOUS_MARKER is not enabled");
     }
 
     /**
