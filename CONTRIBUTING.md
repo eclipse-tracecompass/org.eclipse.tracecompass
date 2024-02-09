@@ -70,7 +70,7 @@ If you have a simple and straightforward fix to an obvious bug, feel free to pus
 it directly to the project's GitHub (see below).
 
 This project uses GitHub issues to track ongoing development and issues. In order
-to contribute, please first [open an issue](issues) that clearly describes the
+to contribute, please first [open an issue][issues] that clearly describes the
 bug you intend to fix or the feature you would like to add. Make sure you provide
 a way to reproduce the bug or test the proposed feature.
 
@@ -83,7 +83,7 @@ Be sure to search for existing bugs before you create another one.
 
 Note that before migrating to GitHub issues ongoing development and issues were
 tracked using Bugzilla. The bugs were not batch migrated. Only selected issues
-have been migrated to GitHub issues. You can search for [here](buzilla)
+have been migrated to GitHub issues. You can search for [here][bugzilla]
 for Bugzilla issues.
 
 ## Where to submit
@@ -157,7 +157,7 @@ For more information about the API policies, read the [API_POLICY](API_POLICY.md
 
 ## Contact
 
-Contact the project developers via the [project's "dev" mailing list](mailing-list) or open an [issue tracer][issues].
+Contact the project developers via the [project's "dev" mailing list][mailing-list] or open an [issue tracker][issues].
 
 [bugzilla]: https://bugs.eclipse.org/bugs/buglist.cgi?product=Tracecompass
 [code-of-conduct]: https://github.com/eclipse/.github/blob/master/CODE_OF_CONDUCT.md
@@ -171,6 +171,6 @@ Contact the project developers via the [project's "dev" mailing list](mailing-li
 [issues]: https://github.com/eclipse-tracecompass/org.eclipse.tracecompass/issues
 [mailing-list]: https://dev.eclipse.org/mailman/listinfo/tracecompass-dev
 [pr-guide]: #pull-request-guidelines
-[pull-requests]: https://github.com/eclipse-tracecompass/org.eclipse.tracecomapss/pulls
+[pull-requests]: https://github.com/eclipse-tracecompass/org.eclipse.tracecompass/pulls
 [sign-off]: https://git-scm.com/docs/git-commit#Documentation/git-commit.txt---signoff
 [terms]: https://www.eclipse.org/legal/termsofuse.php

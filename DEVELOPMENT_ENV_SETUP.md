@@ -1,4 +1,4 @@
-# Development envrionment setup
+# Development environment setup
 
 This page describes how to setup the `Trace Compass` development environment.
 
