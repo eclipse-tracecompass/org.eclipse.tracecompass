@@ -9,7 +9,7 @@ The Trace Compass project provides APIs for building custom trace analysis and v
 * Optionally open a bug report to discuss the API deprecation
 * In the java-doc, add a @deprecated tag with a description if the reason for deprecation (optional), and provide steps for how to replace their usage with an alternative implementation. Note that deprecated APIs still have to work as originally specified.
 * Mark the API element with @Deprecated annotation
-* In the commit message, have one or more lines with starting with [Deprecated] to describe the deprecation. This lines will be shown in the [https://wiki.eclipse.org/Trace_Compass/NewInTraceCompass Note&Noteworthy] of the following release.
+* In the commit message, have one or more lines with starting with [Deprecated] to describe the deprecation. This lines will be shown in the [Note&Noteworthy][nan] of the following release.
 * Push the change to Gerrit. Trace Compass committers will review and provide feedback.
 
 ## Identifying Deprecated API
@@ -26,18 +26,18 @@ Elements and attributes in extension points are deprecated by setting the "Depre
 
 ## Process to remove Deprecated APIs
 
-The Trace Compass project is doing a major release version increase once a year, co-existing with the June release, and with the simultaneous Eclipse releases. Deprecated APIs can be removed for this release that follows the [Retention Policy][#Retention Policy] below. 
+The Trace Compass project is doing a major release version increase once a year, co-existing with the June release, and with the simultaneous Eclipse releases. Deprecated APIs can be removed for this release that follows the [Retention Policy](#retention-policy) below. 
 
 To remove deprecated APIs, a Trace Compass committer will do the following steps:
-* Create a [GitHub issue][issues] for discussion the removal of APIs, for example [Bug572888](Bug572888)
+* Create a [GitHub issue][issues] for discussion the removal of APIs, similar to example in bugzilla the [Bug572888][Bug572888]
 * Make an announcement on the Trace Compass mailing list to inform the API clients about that major change, for example: [API Clean-up for Trace Compass 7.0][mail].
-* Provide Gerrit patches that remove API
-** Add reference of the bug report
-** In the commit message, add the commit sha of the commit where it was deprecated
-** In the commit message, have one or more lines with starting with [Removed] line to describe the removal(s) which will be picked up in the News@Noteworthy
-** Example: [Bug 579484: Remove deprecated segmentstore.SubSecondTimeWithUnitFormat][example-patch]
+* Provide pull requests that remove API
+  * Add reference of the issue tracker
+  * In the commit message, add the commit sha of the commit where it was deprecated
+  * In the commit message, have one or more lines with starting with [Removed] line to describe the removal(s) which will be picked up in the News@Noteworthy
+  * Example: [Bug 579484: Remove deprecated segmentstore.SubSecondTimeWithUnitFormat][example-patch]
 
-== Retention Policy ==
+## Retention Policy
 
 The Eclipse Trace Compass policy is to maintain deprecated API for at least one major release cycle. For example, if an API was deprecated for the minor release 6.3 in March 2021, and another API was deprecated for major release 7.0 in June 2021, both APIs can be removed for release 8.0 in June 2022. The retention time will give adopters at least 1 year, and usually 3 minor releases, time to adjust their code base before APIs are removed. 
 
