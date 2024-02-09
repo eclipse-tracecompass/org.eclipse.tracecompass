@@ -32,7 +32,6 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swtbot.eclipse.finder.SWTWorkbenchBot;
-import org.eclipse.swtbot.eclipse.finder.widgets.SWTBotView;
 import org.eclipse.swtbot.swt.finder.SWTBot;
 import org.eclipse.swtbot.swt.finder.junit.SWTBotJunit4ClassRunner;
 import org.eclipse.swtbot.swt.finder.keyboard.Keystrokes;
@@ -80,7 +79,6 @@ public class FetchRemoteTracesTest {
     private static final String PASSWORD_SHELL_NAME = "Password Required";
     private static final String PROFILE_NAME = "new profile";
     private static final String PROFILES_LOCATION;
-    private static final String PROJECT_EXPLORER = "Project Explorer";
     private static final String PROJECT_NAME = "Test";
     private static final String SYSLOG_FILE_PATTERN = ".*syslog";
     private static final String WILDCARD_PATTERN = ".*";
@@ -295,10 +293,7 @@ public class FetchRemoteTracesTest {
      */
     @Test
     public void test_8_04() {
-        SWTBotView projectExplorerBot = fBot.viewByTitle(PROJECT_EXPLORER);
-        projectExplorerBot.show();
-        SWTBotTreeItem tracesFolderItem = getTracesFolderTreeItem(projectExplorerBot);
-
+        SWTBotTreeItem tracesFolderItem = SWTBotUtils.selectTracesFolder(fBot, PROJECT_NAME);
         tracesFolderItem.contextMenu(FETCH_COMMAND_NAME).click();
         SWTBotShell shell = fBot.shell(FETCH_SHELL_NAME).activate();
         fBot.comboBox().setSelection("TestAllRecursive");
@@ -323,9 +318,7 @@ public class FetchRemoteTracesTest {
      */
     @Test
     public void test_8_05() {
-        SWTBotView projectExplorerBot = fBot.viewByTitle(PROJECT_EXPLORER);
-        projectExplorerBot.show();
-        SWTBotTreeItem tracesFolderItem = getTracesFolderTreeItem(projectExplorerBot);
+        SWTBotTreeItem tracesFolderItem = SWTBotUtils.selectTracesFolder(fBot, PROJECT_NAME);
 
         tracesFolderItem.contextMenu(FETCH_COMMAND_NAME).click();
         SWTBotShell shell = fBot.shell(FETCH_SHELL_NAME).activate();
@@ -368,9 +361,7 @@ public class FetchRemoteTracesTest {
      */
     @Test
     public void test_8_06() throws CoreException {
-        SWTBotView projectExplorerBot = fBot.viewByTitle(PROJECT_EXPLORER);
-        projectExplorerBot.show();
-        SWTBotTreeItem tracesFolderItem = getTracesFolderTreeItem(projectExplorerBot);
+        SWTBotTreeItem tracesFolderItem = SWTBotUtils.selectTracesFolder(fBot, PROJECT_NAME);
 
         tracesFolderItem.contextMenu(FETCH_COMMAND_NAME).click();
         SWTBotShell shell = fBot.shell(FETCH_SHELL_NAME).activate();
@@ -419,9 +410,7 @@ public class FetchRemoteTracesTest {
      */
     @Test
     public void test_8_07() throws CoreException {
-        SWTBotView projectExplorerBot = fBot.viewByTitle(PROJECT_EXPLORER);
-        projectExplorerBot.show();
-        SWTBotTreeItem tracesFolderItem = getTracesFolderTreeItem(projectExplorerBot);
+        SWTBotTreeItem tracesFolderItem = SWTBotUtils.selectTracesFolder(fBot, PROJECT_NAME);
 
         tracesFolderItem.contextMenu(FETCH_COMMAND_NAME).click();
         SWTBotShell shell = fBot.shell(FETCH_SHELL_NAME).activate();
@@ -471,9 +460,7 @@ public class FetchRemoteTracesTest {
      */
     @Test
     public void test_8_08() throws CoreException {
-        SWTBotView projectExplorerBot = fBot.viewByTitle(PROJECT_EXPLORER);
-        projectExplorerBot.show();
-        SWTBotTreeItem tracesFolderItem = getTracesFolderTreeItem(projectExplorerBot);
+        SWTBotTreeItem tracesFolderItem = SWTBotUtils.selectTracesFolder(fBot, PROJECT_NAME);
 
         tracesFolderItem.contextMenu(FETCH_COMMAND_NAME).click();
         SWTBotShell shell = fBot.shell(FETCH_SHELL_NAME).activate();
@@ -518,9 +505,7 @@ public class FetchRemoteTracesTest {
      */
     @Test
     public void test_8_09() {
-        SWTBotView projectExplorerBot = fBot.viewByTitle(PROJECT_EXPLORER);
-        projectExplorerBot.show();
-        SWTBotTreeItem tracesFolderItem = getTracesFolderTreeItem(projectExplorerBot);
+        SWTBotTreeItem tracesFolderItem = SWTBotUtils.selectTracesFolder(fBot, PROJECT_NAME);
 
         tracesFolderItem.contextMenu(FETCH_COMMAND_NAME).click();
         SWTBotShell shell = fBot.shell(FETCH_SHELL_NAME).activate();
@@ -545,9 +530,7 @@ public class FetchRemoteTracesTest {
      */
     @Test
     public void test_8_10() {
-        SWTBotView projectExplorerBot = fBot.viewByTitle(PROJECT_EXPLORER);
-        projectExplorerBot.show();
-        SWTBotTreeItem tracesFolderItem = getTracesFolderTreeItem(projectExplorerBot);
+        SWTBotTreeItem tracesFolderItem = SWTBotUtils.selectTracesFolder(fBot, PROJECT_NAME);
 
         tracesFolderItem.contextMenu(FETCH_COMMAND_NAME).click();
         SWTBotShell shell = fBot.shell(FETCH_SHELL_NAME).activate();
@@ -572,9 +555,7 @@ public class FetchRemoteTracesTest {
      */
     @Test
     public void test_8_11() {
-        SWTBotView projectExplorerBot = fBot.viewByTitle(PROJECT_EXPLORER);
-        projectExplorerBot.show();
-        SWTBotTreeItem tracesFolderItem = getTracesFolderTreeItem(projectExplorerBot);
+        SWTBotTreeItem tracesFolderItem = SWTBotUtils.selectTracesFolder(fBot, PROJECT_NAME);
 
         tracesFolderItem.contextMenu(FETCH_COMMAND_NAME).click();
         SWTBotShell shell = fBot.shell(FETCH_SHELL_NAME).activate();
@@ -599,9 +580,7 @@ public class FetchRemoteTracesTest {
      */
     @Test
     public void test_8_12() {
-        SWTBotView projectExplorerBot = fBot.viewByTitle(PROJECT_EXPLORER);
-        projectExplorerBot.show();
-        SWTBotTreeItem tracesFolderItem = getTracesFolderTreeItem(projectExplorerBot);
+        SWTBotTreeItem tracesFolderItem = SWTBotUtils.selectTracesFolder(fBot, PROJECT_NAME);
 
         tracesFolderItem.contextMenu(FETCH_COMMAND_NAME).click();
         SWTBotShell shell = fBot.shell(FETCH_SHELL_NAME).activate();
@@ -625,9 +604,7 @@ public class FetchRemoteTracesTest {
      */
     @Test
     public void test_8_13() {
-        SWTBotView projectExplorerBot = fBot.viewByTitle(PROJECT_EXPLORER);
-        projectExplorerBot.show();
-        SWTBotTreeItem tracesFolderItem = getTracesFolderTreeItem(projectExplorerBot);
+        SWTBotTreeItem tracesFolderItem = SWTBotUtils.selectTracesFolder(fBot, PROJECT_NAME);
 
         tracesFolderItem.contextMenu(FETCH_COMMAND_NAME).click();
         SWTBotShell shell = fBot.shell(FETCH_SHELL_NAME).activate();
@@ -652,9 +629,7 @@ public class FetchRemoteTracesTest {
      */
     @Test
     public void test_8_14() {
-        SWTBotView projectExplorerBot = fBot.viewByTitle(PROJECT_EXPLORER);
-        projectExplorerBot.show();
-        SWTBotTreeItem tracesFolderItem = getTracesFolderTreeItem(projectExplorerBot);
+        SWTBotTreeItem tracesFolderItem = SWTBotUtils.selectTracesFolder(fBot, PROJECT_NAME);
 
         tracesFolderItem.contextMenu(FETCH_COMMAND_NAME).click();
         SWTBotShell shell = fBot.shell(FETCH_SHELL_NAME).activate();
@@ -673,9 +648,7 @@ public class FetchRemoteTracesTest {
      */
     @Test
     public void test_8_15() {
-        SWTBotView projectExplorerBot = fBot.viewByTitle(PROJECT_EXPLORER);
-        projectExplorerBot.show();
-        SWTBotTreeItem tracesFolderItem = getTracesFolderTreeItem(projectExplorerBot);
+        SWTBotTreeItem tracesFolderItem = SWTBotUtils.selectTracesFolder(fBot, PROJECT_NAME);
 
         tracesFolderItem.contextMenu(FETCH_COMMAND_NAME).click();
         SWTBotShell shell = fBot.shell(FETCH_SHELL_NAME).activate();
@@ -700,9 +673,7 @@ public class FetchRemoteTracesTest {
      */
     @Test
     public void test_9_01() {
-        SWTBotView projectExplorerBot = fBot.viewByTitle(PROJECT_EXPLORER);
-        projectExplorerBot.show();
-        SWTBotTreeItem tracesFolderItem = getTracesFolderTreeItem(projectExplorerBot);
+        SWTBotTreeItem tracesFolderItem = SWTBotUtils.selectTracesFolder(fBot, PROJECT_NAME);
 
         tracesFolderItem.contextMenu(FETCH_COMMAND_NAME).click();
         SWTBotShell shell = fBot.shell(FETCH_SHELL_NAME).activate();
@@ -723,9 +694,7 @@ public class FetchRemoteTracesTest {
     @Test
     @Ignore
     public void test_9_02() {
-        SWTBotView projectExplorerBot = fBot.viewByTitle(PROJECT_EXPLORER);
-        projectExplorerBot.show();
-        SWTBotTreeItem tracesFolderItem = getTracesFolderTreeItem(projectExplorerBot);
+        SWTBotTreeItem tracesFolderItem = SWTBotUtils.selectTracesFolder(fBot, PROJECT_NAME);
 
         tracesFolderItem.contextMenu(FETCH_COMMAND_NAME).click();
         SWTBotShell shell = fBot.shell(FETCH_SHELL_NAME).activate();
@@ -839,10 +808,7 @@ public class FetchRemoteTracesTest {
     }
 
     private static void testImport(Runnable selectionFunctor, Runnable verifyTracesFunctor) {
-        SWTBotView projectExplorerBot = fBot.viewByTitle(PROJECT_EXPLORER);
-        assertNotNull("Cannot find " + PROJECT_EXPLORER, projectExplorerBot);
-        projectExplorerBot.show();
-        SWTBotTreeItem treeItem = getTracesFolderTreeItem(projectExplorerBot);
+        SWTBotTreeItem treeItem = SWTBotUtils.selectTracesFolder(fBot, PROJECT_NAME);
 
         treeItem.contextMenu(FETCH_COMMAND_NAME).click();
         SWTBotShell shell = fBot.shell(FETCH_SHELL_NAME).activate();
@@ -994,12 +960,4 @@ public class FetchRemoteTracesTest {
         treeNode = treeNode.getNode("Remote Profiles");
         treeNode.select();
     }
-
-    private static SWTBotTreeItem getTracesFolderTreeItem(SWTBotView projectExplorerBot) {
-        SWTBotTreeItem treeItem = projectExplorerBot.bot().tree().getTreeItem(PROJECT_NAME);
-        treeItem.select();
-        treeItem.expand();
-        return treeItem.getNode("Traces [0]");
-    }
-
 }
