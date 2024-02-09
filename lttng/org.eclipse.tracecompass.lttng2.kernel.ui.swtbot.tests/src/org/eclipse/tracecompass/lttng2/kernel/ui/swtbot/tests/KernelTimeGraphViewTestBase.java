@@ -33,9 +33,17 @@ import org.eclipse.swtbot.swt.finder.matchers.WidgetOfType;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotCLabel;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotShell;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotToolbarButton;
+import org.eclipse.tracecompass.tmf.core.signal.TmfSelectionRangeUpdatedSignal;
+import org.eclipse.tracecompass.tmf.core.signal.TmfSignalManager;
+import org.eclipse.tracecompass.tmf.core.timestamp.ITmfTimestamp;
+import org.eclipse.tracecompass.tmf.core.timestamp.TmfTimeRange;
+import org.eclipse.tracecompass.tmf.core.timestamp.TmfTimestamp;
+import org.eclipse.tracecompass.tmf.ui.swtbot.tests.shared.ConditionHelpers;
 import org.eclipse.tracecompass.tmf.ui.swtbot.tests.shared.SWTBotTimeGraph;
 import org.eclipse.tracecompass.tmf.ui.swtbot.tests.shared.SWTBotTimeGraphEntry;
+import org.eclipse.tracecompass.tmf.ui.views.timegraph.AbstractTimeGraphView;
 import org.eclipse.tracecompass.tmf.ui.widgets.timegraph.widgets.TimeGraphControl;
+import org.eclipse.ui.IWorkbenchPart;
 import org.junit.Test;
 
 /**
@@ -46,6 +54,11 @@ import org.junit.Test;
  *
  */
 public abstract class KernelTimeGraphViewTestBase extends KernelTestBase {
+
+    /**
+     * The start time
+     */
+    protected static final @NonNull ITmfTimestamp START_TIME = TmfTimestamp.fromNanos(1368000272650993664L);
 
     /**
      * The vertical scrollbar is the first slider described in the view, so its
@@ -133,10 +146,13 @@ public abstract class KernelTimeGraphViewTestBase extends KernelTestBase {
     @Test
     public void testOpenCloseOpen() {
         SWTBotView viewBot = openView();
+        TmfSignalManager.dispatchSignal(new TmfSelectionRangeUpdatedSignal(this, START_TIME));
+        timeGraphIsReadyCondition(new TmfTimeRange(START_TIME, START_TIME));
         SWTBotTimeGraph tgBot = new SWTBotTimeGraph(viewBot.bot());
         Map<String, List<String>> before = getItemNames(tgBot);
         viewBot.close();
         viewBot = openView();
+        timeGraphIsReadyCondition(new TmfTimeRange(START_TIME, START_TIME));
         tgBot = new SWTBotTimeGraph(viewBot.bot());
         Map<String, List<String>> after = getItemNames(tgBot);
         assertEquals(before, after);
@@ -170,6 +186,17 @@ public abstract class KernelTimeGraphViewTestBase extends KernelTestBase {
         SWTBotTimeGraph tgBot = new SWTBotTimeGraph(viewBot.bot().widget(WidgetOfType.widgetOfType(TimeGraphControl.class)));
         Rectangle timegraphRect = getBounds(viewBot.bot().widget(WidgetOfType.widgetOfType(TimeGraphControl.class)));
         assertEquals("Incorrect horizontal slider start position", timegraphRect.x + tgBot.getNameSpace(), sliderRect.x);
+    }
+
+    /**
+     * Wait until timegraph is ready
+     *
+     * @param selectionRange
+     *          selection range
+     */
+    protected void timeGraphIsReadyCondition(@NonNull TmfTimeRange selectionRange) {
+        IWorkbenchPart part = getViewBot().getViewReference().getPart(false);
+        fBot.waitUntil(ConditionHelpers.timeGraphIsReadyCondition((AbstractTimeGraphView) part, selectionRange, selectionRange.getEndTime()));
     }
 
     private @NonNull static Map<String, List<String>> getItemNames(SWTBotTimeGraph tgBot) {

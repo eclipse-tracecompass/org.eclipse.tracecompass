@@ -94,7 +94,6 @@ public class ResourcesViewTest extends KernelTimeGraphViewTestBase {
     private static final String ZOOM_IN = "Zoom In";
     private static final String ZOOM_OUT = "Zoom Out";
 
-    private static final @NonNull ITmfTimestamp START_TIME = TmfTimestamp.fromNanos(1368000272650993664L);
     private static final @NonNull ITmfTimestamp LOST_EVENT_TIME1 = TmfTimestamp.fromNanos(1368000272697356476L);
     private static final @NonNull ITmfTimestamp LOST_EVENT_END1 = TmfTimestamp.fromNanos(1368000272703627994L);
     private static final @NonNull ITmfTimestamp LOST_EVENT_TIME2 = TmfTimestamp.fromNanos(1368000272728168642L);

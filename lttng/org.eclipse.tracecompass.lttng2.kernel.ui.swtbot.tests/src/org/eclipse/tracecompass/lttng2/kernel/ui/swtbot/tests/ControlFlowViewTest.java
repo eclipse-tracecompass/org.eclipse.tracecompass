@@ -47,8 +47,6 @@ import org.eclipse.tracecompass.tmf.ui.swtbot.tests.shared.ConditionHelpers;
 import org.eclipse.tracecompass.tmf.ui.swtbot.tests.shared.SWTBotTimeGraph;
 import org.eclipse.tracecompass.tmf.ui.swtbot.tests.shared.SWTBotTimeGraphEntry;
 import org.eclipse.tracecompass.tmf.ui.swtbot.tests.shared.SWTBotUtils;
-import org.eclipse.tracecompass.tmf.ui.views.timegraph.AbstractTimeGraphView;
-import org.eclipse.ui.IWorkbenchPart;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -86,7 +84,6 @@ public class ControlFlowViewTest extends KernelTimeGraphViewTestBase {
     private static final String FOLLOW_CPU_FORWARD = "Follow CPU Forward";
     private static final String SELECT_PREVIOUS_STATE_CHANGE = "Select Previous State Change";
     private static final String SELECT_NEXT_STATE_CHANGE = "Select Next State Change";
-    private static final @NonNull ITmfTimestamp START_TIME = TmfTimestamp.fromNanos(1368000272650993664L);
     private static final @NonNull ITmfTimestamp TID1_TIME1 = TmfTimestamp.fromNanos(1368000272651208498L);
     private static final @NonNull ITmfTimestamp TID1_TIME2 = TmfTimestamp.fromNanos(1368000272656149680L);
     private static final @NonNull ITmfTimestamp TID1_TIME3 = TmfTimestamp.fromNanos(1368000272656364514L);
@@ -739,10 +736,5 @@ public class ControlFlowViewTest extends KernelTimeGraphViewTestBase {
         timeGraphIsReadyCondition(new TmfTimeRange(START_TIME, START_TIME));
         fBot.waitUntil(ConditionHelpers.selectionRange(new TmfTimeRange(START_TIME, START_TIME)));
         assertTrue(TmfTraceManager.getInstance().getCurrentTraceContext().getWindowRange().contains(START_TIME));
-    }
-
-    private void timeGraphIsReadyCondition(@NonNull TmfTimeRange selectionRange) {
-        IWorkbenchPart part = getViewBot().getViewReference().getPart(false);
-        fBot.waitUntil(ConditionHelpers.timeGraphIsReadyCondition((AbstractTimeGraphView) part, selectionRange, selectionRange.getEndTime()));
     }
 }
