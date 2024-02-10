@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="org.eclipse.tracecompass.analysis.callstack.doc.user" default="build" basedir=".">
+<project name="org.eclipse.tracecompass.analysis.profiling.doc.user" default="build" basedir=".">
     <description>
         Generate Eclipse help content for the (new) callstack User Guide
     </description>
