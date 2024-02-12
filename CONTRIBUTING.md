@@ -8,7 +8,7 @@ This repository is subject to the [Terms of Use of the Eclipse Foundation][terms
 
 ## Code of Conduct
 
-This project is governed by the [Eclipse Community Code of Conduct][code-of-conduct].
+This project is governed by the [Eclipse Community Code of Conduct](CODE_OF_CONDUCT.md).
 By participating, you are expected to uphold this code.
 
 ## Eclipse Development Process
@@ -160,8 +160,7 @@ For more information about the API policies, read the [API_POLICY](API_POLICY.md
 Contact the project developers via the [project's "dev" mailing list][mailing-list] or open an [issue tracker][issues].
 
 [bugzilla]: https://bugs.eclipse.org/bugs/buglist.cgi?product=Tracecompass
-[code-of-conduct]: https://github.com/eclipse/.github/blob/master/CODE_OF_CONDUCT.md
-[code-style]: https://wiki.eclipse.org/Trace_Compass/Contributor_Guidelines
+[code-style]: https://wiki.eclipse.org/Trace_Compass/Code_Style
 [commit-message-message]: https://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html
 [commiter-handbook]: https://www.eclipse.org/projects/handbook/#resources-commit
 [creating-changes]: https://www.dataschool.io/how-to-contribute-on-github/
