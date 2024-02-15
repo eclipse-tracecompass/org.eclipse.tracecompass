@@ -15,15 +15,15 @@ domain-specific trace formats and use cases.
 
 For more information about the key features, see [Trace Compass website](https://eclipse.dev/tracecompass/).
 
-Also, check-out the [user guides and developer guides](https://wiki.eclipse.org/Trace_Compass#User_Guides).
+Also, check-out the [user guides and developer guides](https://github.com/eclipse-tracecompass/org.eclipse.tracecompass/wiki#user-guides).
 
 <img src="doc/images/tc-screenshot.png" width="66%">
 
 ## Releases
 
-Information about releases can be found on the [Trace Compass project](https://projects.eclipse.org/projects/tools.tracecompass) page at Eclipse.org. 
+Information about releases can be found on the [Trace Compass project](https://projects.eclipse.org/projects/tools.tracecompass) page at Eclipse.org.
 
-See [New & Noteworthy](https://wiki.eclipse.org/Trace_Compass/NewInTraceCompass)
+See [New & Noteworthy](https://github.com/eclipse-tracecompass/org.eclipse.tracecompass/wiki/New_In_Trace_Compass)
 for release details.
 
 ## Downloads
@@ -31,13 +31,12 @@ for release details.
 `Eclipse Trace Compass` is available as plug-ins that can be installed to an
 Eclipse IDE, as well as standalone application.
 
-Check [Downloads](https://projects.eclipse.org/projects/tools.tracecompass/downloads) 
-for downloading specific versions of Trace Compass.
+Check [Downloads](https://projects.eclipse.org/projects/tools.tracecompass/downloads) for downloading specific versions of Trace Compass.
 
 ## Contributing to Trace Compass
 
 **👋 Want to help?** Read our [contributor guide](CONTRIBUTING.md) and follow the
-instructions to contribute code. 
+instructions to contribute code.
 
 You will also find there information about the `setup of the development environment`,
 `build instructions`, the `development and review process` as well as the `API policy`.

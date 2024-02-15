@@ -2729,7 +2729,7 @@ public class OpenSDView extends AbstractHandler {
 
 === Downloading the Tutorial ===
 
-Use the following link to download the source code of the tutorial [https://wiki.eclipse.org/images/7/79/SamplePluginTC.zip Plug-in of Tutorial].
+Use the following link to download the source code of the tutorial [https://github.com/eclipse-tracecompass/org.eclipse.tracecompass/wiki/Trace_Compass/media/SamplePluginTC.zip Plug-in of Tutorial].
 
 == Integration of Tracing and Monitoring Framework with Sequence Diagram Framework ==
 
@@ -2840,7 +2840,7 @@ The analysis looks for event type Strings containing ''SEND'' and ''RECEIVE''. I
 
 === How to use the Reference Implementation ===
 
-An example CTF (Common Trace Format) trace is provided that contains trace events with sequence diagram information. To download the reference trace, use the following link: [https://wiki.eclipse.org/images/3/35/ReferenceTrace.zip Reference Trace].
+An example CTF (Common Trace Format) trace is provided that contains trace events with sequence diagram information. To download the reference trace, use the following link: [https://github.com/eclipse-tracecompass/org.eclipse.tracecompass/wiki/Trace_Compass/media/ReferenceTrace.zip Reference Trace].
 
 Run an Eclipse application with Trace Compass 0.1.0 or later installed. To open the Reference Sequence Diagram View, select '''Windows -> Show View -> Other... -> Tracing -> Sequence Diagram''' <br>
 [[Image:images/ShowTmfSDView.png]]<br>

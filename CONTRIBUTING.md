@@ -41,6 +41,7 @@ information about building the application see the description in the
 [BUILDING](BUILDING.md) file.
 
 ## Source code tree
+
 This source tree contains the source code for the Trace Compass plugins for
 Eclipse.
 
@@ -151,7 +152,7 @@ Other commit information:
 * Not a hard requirement, but we normally prefix the commit titles with the name of the component to which the patch applies, in lowercase. This normally corresponds to the plugin name, so "lttng: xxxx" or "tmf: xxxx".
 * If the patch is significant enough to have a mention in the New & Noteworthy, annotate the patch with `[Fixed]`, `[Added]`, `[Changed]`, `[Deprecated]`, or `[Security]` with a short description of what the change does.
 
-# API policy
+## API policy
 
 For more information about the API policies, read the [API_POLICY](API_POLICY.md) file.
 
@@ -160,7 +161,7 @@ For more information about the API policies, read the [API_POLICY](API_POLICY.md
 Contact the project developers via the [project's "dev" mailing list][mailing-list] or open an [issue tracker][issues].
 
 [bugzilla]: https://bugs.eclipse.org/bugs/buglist.cgi?product=Tracecompass
-[code-style]: https://wiki.eclipse.org/Trace_Compass/Code_Style
+[code-style]: https://github.com/eclipse-tracecompass/org.eclipse.tracecompass/wiki/Coding_style
 [commit-message-message]: https://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html
 [commiter-handbook]: https://www.eclipse.org/projects/handbook/#resources-commit
 [creating-changes]: https://www.dataschool.io/how-to-contribute-on-github/

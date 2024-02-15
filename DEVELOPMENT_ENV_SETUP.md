@@ -25,10 +25,11 @@ After the Eclipse workbench is installed and launched, wait for the `Executing s
 Under [eclipse.org download packages](https://www.eclipse.org/downloads/packages/), select the `Eclipse IDE for Eclipse Committers` archive. You can start with any Eclipse pre-package, but make sure you have the `Eclipse Plug-in Development Environment` feature installed.
 
 Uncompress and start Eclipse. Example for Linux:
-```
-$ tar xzvf eclipse-committers-2023-12-R-linux-gtk-x86_64.tar.gz 
-$ cd eclipse
-$ ./eclipse
+
+```bash
+tar xzvf eclipse-committers-2023-12-R-linux-gtk-x86_64.tar.gz 
+cd eclipse
+./eclipse
 ```
 
 The first time you run it, it will ask for a workspace directory. You can use the default location.
@@ -39,8 +40,8 @@ You will then be greeted by the welcome screen, which you can dismiss by clickin
 
 `Trace Compass` uses source compatibility to Java 11. However, to run the eclipse.org download packages RCP and to develop it, Java 17 is required. Here is how to install Java 17 on recent Ubuntu:
 
-```
-$ sudo apt-get install openjdk-17-jdk
+``` bash
+sudo apt-get install openjdk-17-jdk
 ```
 
 For old versions of Ubuntu, install from the [OpenJDK PPA](https://launchpad.net/~openjdk-r/+archive/ubuntu/ppa).
@@ -55,9 +56,11 @@ Next, the JRE must be added in Eclipse.
 Note: if you migrate your environment to Java 17, existing debug and run configurations will continue to use the previous JRE. To use the new JRE, open the run configuration pannel `Run -> Run configurations...` and from the tab "Main", select the appropriate JRE under "Java Runtime Environment -> Execution environment".
 
 ### Setup Maven
+
 To be able run a Maven build from command-line, Maven version v3.9.x or later needs to be installed. Follow the [installation guide](https://maven.apache.org/install.html) for that.
 
 ### Setup Maven Plug-ins
+
 When developing for the `Trace Compass incubator` project, make sure to install the `M2E` plug-ins to your Eclipse IDE. You can omit these steps if not developing incubator features. This is a recent addition to `M2E` and requires an `Eclipse IDE 2021-06` or later.
 
 To install `M2E`, select menu `Help -> Install New Software...`. An `Install` dialog will open. Select the release update site from the `Work with` drop-down menu. For example, if your IDE is based on `Eclipse 2023-03` then select `2023-03 - http://download.eclipse.org/releases/2023-03`. Then select `M2E- Integration for Eclipse` and `M2E - PDE Integration` and select `Next` button and the `Finish`. Restart Eclipse when asked for it.
@@ -67,9 +70,9 @@ To install `M2E`, select menu `Help -> Install New Software...`. An `Install` di
 First, make sure you have a Git client installed (either the git command-line tool, or the [Eclipse Git Team Provider](http://www.eclipse.org/egit/) plugin, also available in Eclipse's `Install New Software`.
 
 Then, simply clone the following repository somewhere on your hard drive:
-* https://github.com/eclipse-tracecompass/org.eclipse.tracecompass
+* <https://github.com/eclipse-tracecompass/org.eclipse.tracecompass>
 
-```
+```bash
 git clone https://github.com/eclipse-tracecompass/org.eclipse.tracecompass.git
 ```
 
@@ -77,15 +80,15 @@ If adding tests that require an actual trace, then it should be added to the fol
 
 * https://github.com/eclipse-tracecompass/tracecompass-test-traces
 
-```
+```bash
 git clone https://github.com/eclipse-tracecompass/tracecompass-test-traces.git
-``` 
+```
 
 Extra functionalities are developed in the `Trace Compass Incubator` sub-project. If interested in any of those feature, the following repository can be cloned
 
 * https://git.eclipse.org/c/tracecompass.incubator/org.eclipse.tracecompass.incubator.git/
 
-```
+```bash
 git clone https://git.eclipse.org/r/tracecompass.incubator/org.eclipse.tracecompass.incubator.git
 ```
 
@@ -101,6 +104,7 @@ git clone https://git.eclipse.org/r/tracecompass.incubator/org.eclipse.tracecomp
 You will probably get a bunch of build errors at this point. DON'T PANIC! This is because `Trace Compass` needs additional dependencies that might not be present in your current Eclipse installation. We will install those in the following section.
 
 ### Setting the Target Platform
+
 Eclipse offers the ability to set target platforms, which will download a specific environment to run your plugins, without having to "pollute" your Eclipse install. `Trace Compass` ships target definition files, which is the recommended way of installing its dependencies.
 
 To set the target platform for the `Trace Compass` plugins:
@@ -139,9 +143,10 @@ If you imported the *.help plugins (which contain the user and developer guides)
 
 You can now build the documentation plugins using maven build from the command-line from the `Trace Compass` root directory:
 
+```bash
+mvn clean install -DskipTests=true
 ```
-$ mvn clean install -DskipTests=true
-```
+
 After it is built, the warning should disappear, and the HTML files should be present in its `doc/` subdirectory.
 
 Note that this builder does not run automatically ; Ant is not very smart at figuring out which files were changed, so it would end up constantly rebuilding the doc plugins for nothing. For this reason, if you modify the source (.mediawiki) files, you will have to rebuild the HTML manually, using the same method.
@@ -178,6 +183,7 @@ You can also consult the static analysis results at:
 * [Trace Compass Incubator at sonarcloud.io](https://sonarcloud.io/project/overview?id=org.eclipse.tracecompass.incubator)
 
 ### Setup virtual display on Ubuntu ==
+
 * Install Xephyr and Metacity: sudo apt-get install xserver-xephyr metacity
 * Start the virtual display: Xephyr :2 -screen 1024x768 &
 * Setup environment: export DISPLAY=:2

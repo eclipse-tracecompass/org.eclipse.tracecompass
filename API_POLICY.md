@@ -47,4 +47,4 @@ API clients should follow the Trace Compass [New&Noteworthy][nan] for each relea
 [example-patch]: https://git.eclipse.org/r/c/tracecompass/org.eclipse.tracecompass/+/193428
 [issues]: https://github.com/eclipse-tracecompass/org.eclipse.tracecompass/issues
 [mail]: https://www.eclipse.org/lists/tracecompass-dev/msg01661.html
-[nan]: https://wiki.eclipse.org/Trace_Compass/NewInTraceCompass
+[nan]: https://github.com/eclipse-tracecompass/org.eclipse.tracecompass/wiki/New_In_Trace_Compass
