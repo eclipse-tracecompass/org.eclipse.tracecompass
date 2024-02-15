@@ -92,7 +92,7 @@ Extra functionalities are developed in the `Trace Compass Incubator` sub-project
 git clone https://git.eclipse.org/r/tracecompass.incubator/org.eclipse.tracecompass.incubator.git
 ```
 
-= Import the `Trace Compass` projects into the workspace =
+### Import the `Trace Compass` projects into the workspace
 
 * Select `File -> Import...`
 * Select `General -> Existing Projects into Workspace`
@@ -151,7 +151,7 @@ After it is built, the warning should disappear, and the HTML files should be pr
 
 Note that this builder does not run automatically ; Ant is not very smart at figuring out which files were changed, so it would end up constantly rebuilding the doc plugins for nothing. For this reason, if you modify the source (.mediawiki) files, you will have to rebuild the HTML manually, using the same method.
 
-### Running (or Debugging) the plugins =
+### Running (or Debugging) the plugins
 
 To run (or debug) the code, start a nested Eclipse with the plugins loaded:
 
@@ -171,7 +171,7 @@ The next time you can just select `Eclipse Application` or `tracing.product` fro
 
 Before submitting a PR to GitHub, it may be useful to validate changes for possible regression. Running the GUI tests opens windows that will interfere with the main desktop session. On Linux, the windows can be redirected to a virtual display.
 
-### Static code verification ==
+### Static code verification
 
 In the testing phase, it is suggested to use [Findbugs](http://www.vogella.com/tutorials/Findbugs/article.html FindBugs) to check the code for common errors. Coding conventions are checked with Checkstyle. Bad practices are verified by (PMD).
 
@@ -182,7 +182,7 @@ You can also consult the static analysis results at:
 * [Trace Compass at sonarcloud.io](https://sonarcloud.io/project/overview?id=org.eclipse.tracecompass)
 * [Trace Compass Incubator at sonarcloud.io](https://sonarcloud.io/project/overview?id=org.eclipse.tracecompass.incubator)
 
-### Setup virtual display on Ubuntu ==
+### Setup virtual display on Ubuntu
 
 * Install Xephyr and Metacity: sudo apt-get install xserver-xephyr metacity
 * Start the virtual display: Xephyr :2 -screen 1024x768 &
