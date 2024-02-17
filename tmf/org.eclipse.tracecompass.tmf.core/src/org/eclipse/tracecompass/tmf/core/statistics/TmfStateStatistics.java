@@ -119,11 +119,14 @@ public class TmfStateStatistics implements ITmfStatistics {
         }
         List<Long> times = new ArrayList<>();
         for (int i = 0; i < timeRequested.length; i++) {
-            if (timeRequested[i] > fTotalsStats.getCurrentEndTime()) {
+            if (timeRequested[i] < fTotalsStats.getStartTime()) {
+                times.add(fTotalsStats.getStartTime());
+            } else if (timeRequested[i] < fTotalsStats.getCurrentEndTime()) {
+                times.add(timeRequested[i]);
+            } else {
                 times.add(fTotalsStats.getCurrentEndTime());
                 break;
             }
-            times.add(timeRequested[i]);
         }
         try (FlowScopeLog log = new FlowScopeLogBuilder(LOGGER, Level.FINE, "StateStatistics:histogramQuery").build()) { //$NON-NLS-1$
             Iterable<@NonNull ITmfStateInterval> intervals = fTotalsStats.query2D(Collections.singletonList(quark), times);
