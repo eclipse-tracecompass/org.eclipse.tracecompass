@@ -18,11 +18,11 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.tracecompass.internal.analysis.profiling.core.instrumented.InstrumentedCallStackAnalysis;
+import org.eclipse.tracecompass.analysis.profiling.core.instrumented.InstrumentedCallStackAnalysis;
+import org.eclipse.tracecompass.analysis.profiling.core.model.IHostModel;
+import org.eclipse.tracecompass.analysis.profiling.core.model.IHostModel.ModelDataType;
 import org.eclipse.tracecompass.internal.analysis.profiling.core.model.ModelManager;
 import org.eclipse.tracecompass.internal.lttng2.ust.core.callstack.LttngUstCallStackProvider;
-import org.eclipse.tracecompass.internal.provisional.analysis.profiling.core.model.IHostModel;
-import org.eclipse.tracecompass.internal.provisional.analysis.profiling.core.model.IHostModel.ModelDataType;
 import org.eclipse.tracecompass.lttng2.ust.core.trace.LttngUstTrace;
 import org.eclipse.tracecompass.lttng2.ust.core.trace.layout.ILttngUstEventLayout;
 import org.eclipse.tracecompass.tmf.core.analysis.IAnalysisModule;

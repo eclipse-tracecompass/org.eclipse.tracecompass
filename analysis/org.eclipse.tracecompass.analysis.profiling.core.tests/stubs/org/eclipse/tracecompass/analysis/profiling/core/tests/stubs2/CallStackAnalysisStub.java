@@ -12,13 +12,14 @@
 package org.eclipse.tracecompass.analysis.profiling.core.tests.stubs2;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.tracecompass.analysis.os.linux.core.model.HostThread;
-import org.eclipse.tracecompass.internal.analysis.profiling.core.instrumented.EdgeStateValue;
-import org.eclipse.tracecompass.internal.analysis.profiling.core.instrumented.InstrumentedCallStackAnalysis;
+import org.eclipse.tracecompass.analysis.profiling.core.instrumented.EdgeStateValue;
+import org.eclipse.tracecompass.analysis.profiling.core.instrumented.InstrumentedCallStackAnalysis;
 import org.eclipse.tracecompass.statesystem.core.interval.ITmfStateInterval;
 import org.eclipse.tracecompass.statesystem.core.tests.shared.utils.StateIntervalStub;
 import org.eclipse.tracecompass.tmf.core.statesystem.ITmfStateProvider;
@@ -52,7 +53,9 @@ public class CallStackAnalysisStub extends InstrumentedCallStackAnalysis {
 
     @Override
     public List<ITmfStateInterval> getLinks(long start, long end, IProgressMonitor monitor) {
-        String hostId = getHostId();
+        ITmfTrace trace = Objects.requireNonNull(getTrace());
+        String hostId = trace.getHostId();
+
         HostThread tid2 = new HostThread(hostId, 2);
         HostThread tid3 = new HostThread(hostId, 3);
         HostThread tid6 = new HostThread(hostId, 6);

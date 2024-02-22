@@ -44,7 +44,7 @@ public final class CallStackHostUtils {
      * host ID is used to identify the machine on which the callstack was taken and
      * can be correlated with the model of a system to obtain additional data.
      */
-    public interface IHostIdProvider extends Function<Long, @NonNull String> {
+    public interface IHostIdProvider extends Function<Long, String> {
 
     }
 
@@ -130,7 +130,7 @@ public final class CallStackHostUtils {
      * Interface for describing how a callstack will get the host ID, it will return
      * the host ID provider for a callstack element
      */
-    public interface IHostIdResolver extends Function<IProfilingElement, @NonNull IHostIdProvider> {
+    public interface IHostIdResolver extends Function<IProfilingElement, IHostIdProvider> {
 
     }
 

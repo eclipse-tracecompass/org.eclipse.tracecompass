@@ -24,14 +24,14 @@ import java.util.Objects;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.tracecompass.analysis.profiling.core.base.ICallStackElement;
+import org.eclipse.tracecompass.analysis.profiling.core.callgraph.CallGraph;
+import org.eclipse.tracecompass.analysis.profiling.core.callgraph.ICallGraphProvider2;
 import org.eclipse.tracecompass.analysis.profiling.core.tests.ActivatorTest;
 import org.eclipse.tracecompass.analysis.profiling.core.tests.CallStackTestBase2;
 import org.eclipse.tracecompass.analysis.profiling.core.tests.stubs2.CallGraphAnalysisStub;
 import org.eclipse.tracecompass.internal.analysis.profiling.core.callgraph2.AggregatedCalledFunction;
 import org.eclipse.tracecompass.internal.analysis.profiling.core.model.ModelManager;
-import org.eclipse.tracecompass.internal.provisional.analysis.profiling.core.base.ICallStackElement;
-import org.eclipse.tracecompass.internal.provisional.analysis.profiling.core.callgraph.CallGraph;
-import org.eclipse.tracecompass.internal.provisional.analysis.profiling.core.callgraph.ICallGraphProvider;
 import org.eclipse.tracecompass.statesystem.core.ITmfStateSystemBuilder;
 import org.eclipse.tracecompass.statesystem.core.StateSystemFactory;
 import org.eclipse.tracecompass.statesystem.core.backend.IStateHistoryBackend;
@@ -106,7 +106,7 @@ public class AggregationTreeTest {
         return leafGroups;
     }
 
-    private static @NonNull List<ICallStackElement> getLeafElements(ICallGraphProvider cga) {
+    private static @NonNull List<ICallStackElement> getLeafElements(ICallGraphProvider2 cga) {
         @SuppressWarnings("null")
         Collection<ICallStackElement> elements = cga.getCallGraph().getElements();
         List<ICallStackElement> leafGroups = new ArrayList<>();

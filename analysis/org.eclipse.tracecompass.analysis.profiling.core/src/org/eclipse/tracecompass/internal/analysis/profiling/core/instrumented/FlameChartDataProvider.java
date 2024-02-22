@@ -34,21 +34,22 @@ import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.analysis.os.linux.core.model.HostThread;
+import org.eclipse.tracecompass.analysis.profiling.core.base.FlameDefaultPalette2;
+import org.eclipse.tracecompass.analysis.profiling.core.base.FlameWithKernelPalette;
+import org.eclipse.tracecompass.analysis.profiling.core.base.ICallStackElement;
+import org.eclipse.tracecompass.analysis.profiling.core.callgraph.ICalledFunction;
+import org.eclipse.tracecompass.analysis.profiling.core.callstack2.CallStack;
+import org.eclipse.tracecompass.analysis.profiling.core.callstack2.CallStackDepth;
+import org.eclipse.tracecompass.analysis.profiling.core.callstack2.CallStackSeries;
+import org.eclipse.tracecompass.analysis.profiling.core.instrumented.EdgeStateValue;
+import org.eclipse.tracecompass.analysis.profiling.core.instrumented.IFlameChartProvider;
+import org.eclipse.tracecompass.analysis.profiling.core.model.IHostModel;
 import org.eclipse.tracecompass.common.core.log.TraceCompassLog;
 import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils.FlowScopeLog;
 import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils.FlowScopeLogBuilder;
-import org.eclipse.tracecompass.internal.analysis.profiling.core.callstack.CallStackSeries;
 import org.eclipse.tracecompass.internal.analysis.profiling.core.instrumented.FlameChartEntryModel.EntryType;
 import org.eclipse.tracecompass.internal.analysis.profiling.core.model.ModelManager;
 import org.eclipse.tracecompass.internal.analysis.profiling.core.model.ProcessStatusInterval;
-import org.eclipse.tracecompass.internal.provisional.analysis.profiling.core.base.FlameDefaultPalette;
-import org.eclipse.tracecompass.internal.provisional.analysis.profiling.core.base.FlameWithKernelPalette;
-import org.eclipse.tracecompass.internal.provisional.analysis.profiling.core.base.ICallStackElement;
-import org.eclipse.tracecompass.internal.provisional.analysis.profiling.core.callgraph.ICalledFunction;
-import org.eclipse.tracecompass.internal.provisional.analysis.profiling.core.callstack.CallStack;
-import org.eclipse.tracecompass.internal.provisional.analysis.profiling.core.callstack.CallStackDepth;
-import org.eclipse.tracecompass.internal.provisional.analysis.profiling.core.instrumented.IFlameChartProvider;
-import org.eclipse.tracecompass.internal.provisional.analysis.profiling.core.model.IHostModel;
 import org.eclipse.tracecompass.segmentstore.core.ISegment;
 import org.eclipse.tracecompass.statesystem.core.exceptions.TimeRangeException;
 import org.eclipse.tracecompass.statesystem.core.interval.ITmfStateInterval;
@@ -615,7 +616,7 @@ public class FlameChartDataProvider extends AbstractTmfTraceDataProvider impleme
         ICalledFunction function = (ICalledFunction) state;
         Integer pid = function.getProcessId();
         String name = String.valueOf(fTimeEventNames.getUnchecked(new Pair<>(pid, function)));
-        return new TimeGraphState(function.getStart(), function.getLength(), name, FlameDefaultPalette.getInstance().getStyleFor(state));
+        return new TimeGraphState(function.getStart(), function.getLength(), name, FlameDefaultPalette2.getInstance().getStyleFor(state));
     }
 
     /**

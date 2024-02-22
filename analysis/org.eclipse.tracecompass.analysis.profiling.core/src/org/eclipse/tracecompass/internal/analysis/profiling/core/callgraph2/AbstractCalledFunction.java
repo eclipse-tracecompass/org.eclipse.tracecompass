@@ -15,10 +15,10 @@ import java.util.Comparator;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.tracecompass.analysis.profiling.core.callgraph.ICalledFunction;
+import org.eclipse.tracecompass.analysis.profiling.core.instrumented.SymbolAspect;
+import org.eclipse.tracecompass.analysis.profiling.core.model.IHostModel;
 import org.eclipse.tracecompass.common.core.NonNullUtils;
-import org.eclipse.tracecompass.internal.provisional.analysis.profiling.core.callgraph.ICalledFunction;
-import org.eclipse.tracecompass.internal.provisional.analysis.profiling.core.instrumented.SymbolAspect;
-import org.eclipse.tracecompass.internal.provisional.analysis.profiling.core.model.IHostModel;
 import org.eclipse.tracecompass.segmentstore.core.ISegment;
 import org.eclipse.tracecompass.segmentstore.core.SegmentComparators;
 

@@ -11,9 +11,9 @@
 
 package org.eclipse.tracecompass.internal.analysis.profiling.core.callgraph2;
 
+import org.eclipse.tracecompass.analysis.profiling.core.callgraph.ICalledFunction;
 import org.eclipse.tracecompass.analysis.timing.core.statistics.IStatistics;
 import org.eclipse.tracecompass.analysis.timing.core.statistics.Statistics;
-import org.eclipse.tracecompass.internal.provisional.analysis.profiling.core.callgraph.ICalledFunction;
 
 /**
  * Class to calculate statistics for an aggregated function.
