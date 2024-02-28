@@ -85,7 +85,7 @@ public class TmfStatisticsTotalsModule extends TmfStateSystemAnalysisModule {
          * Version number of this input handler. Please bump this if you modify the
          * contents of the generated state history in some way.
          */
-        private static final int VERSION = 2;
+        private static final int VERSION = 3;
 
         /**
          * Constructor
@@ -122,7 +122,7 @@ public class TmfStatisticsTotalsModule extends TmfStateSystemAnalysisModule {
 
             /* Total number of events */
             int quark = ss.getQuarkAbsoluteAndAdd(Attributes.TOTAL);
-            StateSystemBuilderUtils.incrementAttributeInt(ss, ts, quark, 1);
+            StateSystemBuilderUtils.incrementAttributeLong(ss, ts, quark, 1);
         }
     }
 

@@ -101,7 +101,7 @@ public class TmfStatisticsEventTypesModule extends TmfStateSystemAnalysisModule 
          * Version number of this input handler. Please bump this if you modify the
          * contents of the generated state history in some way.
          */
-        private static final int VERSION = 3;
+        private static final int VERSION = 4;
 
         /**
          * Constructor
@@ -139,12 +139,12 @@ public class TmfStatisticsEventTypesModule extends TmfStateSystemAnalysisModule 
                 ITmfLostEvent le = (ITmfLostEvent) event;
                 quark = ss.getQuarkAbsoluteAndAdd(Attributes.EVENT_TYPES, eventName);
 
-                int curVal = ss.queryOngoingState(quark).unboxInt();
+                long curVal = ss.queryOngoingState(quark).unboxLong();
                 if (curVal == -1) {
                     curVal = 0;
                 }
 
-                ss.modifyAttribute(ts, (int) (curVal + le.getNbLostEvents()), quark);
+                ss.modifyAttribute(ts, curVal + le.getNbLostEvents(), quark);
 
                 long lostEventsStartTime = le.getTimeRange().getStartTime().toNanos();
                 long lostEventsEndTime = le.getTimeRange().getEndTime().toNanos();
@@ -160,7 +160,7 @@ public class TmfStatisticsEventTypesModule extends TmfStateSystemAnalysisModule 
 
             /* Number of events of each type, globally */
             quark = ss.getQuarkAbsoluteAndAdd(Attributes.EVENT_TYPES, eventName);
-            StateSystemBuilderUtils.incrementAttributeInt(ss, ts, quark, 1);
+            StateSystemBuilderUtils.incrementAttributeLong(ss, ts, quark, 1);
         }
     }
 }

@@ -155,7 +155,7 @@ public class TmfStateStatistics implements ITmfStatistics {
             sortedIntervals.sort(Comparator.comparingLong(ITmfStateInterval::getStartTime));
             long previousTotal;
             if (fTotalsStats.getStartTime() != sortedIntervals.get(0).getStartTime()) {
-                previousTotal = sortedIntervals.get(0).getValueInt();
+                previousTotal = sortedIntervals.get(0).getValueLong();
             } else {
                 previousTotal = 0;
             }
@@ -164,9 +164,9 @@ public class TmfStateStatistics implements ITmfStatistics {
                 while (j < sortedIntervals.size() - 1 && sortedIntervals.get(j).getEndTime() < times.get(i)) {
                     j++;
                 }
-                long count = sortedIntervals.get(j).getValueInt() - previousTotal;
+                long count = sortedIntervals.get(j).getValueLong() - previousTotal;
                 results.add(count);
-                previousTotal = sortedIntervals.get(j).getValueInt();
+                previousTotal = sortedIntervals.get(j).getValueLong();
             }
             return results;
         } catch (StateSystemDisposedException e) {
