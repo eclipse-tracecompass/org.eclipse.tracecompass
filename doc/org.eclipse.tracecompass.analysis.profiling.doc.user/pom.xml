@@ -16,7 +16,7 @@
   <parent>
     <artifactId>org.eclipse.tracecompass.doc</artifactId>
     <groupId>org.eclipse.tracecompass</groupId>
-    <version>9.2.0-SNAPSHOT</version>
+    <version>9.3.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.eclipse.tracecompass.analysis.profiling.doc.user</artifactId>
