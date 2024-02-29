@@ -68,6 +68,7 @@
       <module
             analysis_module="org.eclipse.tracecompass.internal.lttng2.ust.core.callstack2.LttngUstCallStackAnalysis"
             id="org.eclipse.tracecompass.lttng2.ust.core.analysis.callstack"
+            icon="icons/callstack.png"
             name="%analysis.callstack2">
          <tracetype
                class="org.eclipse.tracecompass.lttng2.ust.core.trace.LttngUstTrace">
