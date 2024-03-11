@@ -24,7 +24,6 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.tracecompass.common.core.NonNullUtils;
 import org.eclipse.tracecompass.ctf.core.CTFException;
 import org.eclipse.tracecompass.ctf.core.event.IEventDeclaration;
 import org.eclipse.tracecompass.ctf.core.event.IEventDefinition;
@@ -547,7 +546,8 @@ public class CTFStreamInputReader implements AutoCloseable {
     @Override
     public String toString() {
         // this helps debugging
-        return fId + ' ' + NonNullUtils.nullToEmptyString(fCurrentEvent);
+        IEventDefinition currentEvent = fCurrentEvent;
+        return fId + ' ' + (currentEvent == null ? "" : currentEvent.toString()); //$NON-NLS-1$
     }
 
 }
