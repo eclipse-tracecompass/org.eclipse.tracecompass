@@ -28,7 +28,6 @@ import org.eclipse.tracecompass.internal.ctf.core.event.metadata.AbstractScopedC
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.CTFJsonMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonDataStreamMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonStructureFieldMetadataNode;
-import org.eclipse.tracecompass.internal.ctf.core.event.metadata.Messages;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.MetadataStrings;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.TypeSpecifierListParser;
@@ -242,7 +241,7 @@ public final class StreamDeclarationParser extends AbstractScopedCommonTreeParse
 
                 stream.setPacketContext((StructDeclaration) packetContextDecl);
             } else {
-                CtfCoreLoggerUtil.logWarning(Messages.IOStructGen_UnknownStreamAttributeWarning + ' ' + left);
+                CtfCoreLoggerUtil.logWarning("Unknown stream attribute: " + left); //$NON-NLS-1$
             }
         }
         return stream;

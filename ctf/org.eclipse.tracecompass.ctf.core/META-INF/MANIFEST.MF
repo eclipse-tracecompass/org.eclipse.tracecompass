@@ -7,8 +7,7 @@ Bundle-Localization: plugin
 Bundle-SymbolicName: org.eclipse.tracecompass.ctf.core;singleton:=true
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-11
-Require-Bundle: org.eclipse.core.runtime,
- org.eclipse.tracecompass.common.core,
+Require-Bundle: org.eclipse.tracecompass.common.core,
  org.eclipse.tracecompass.ctf.parser,
  org.eclipse.jdt.annotation;bundle-version="[2.0.0,3.0.0)";resolution:=optional
 Export-Package: org.eclipse.tracecompass.ctf.core,
