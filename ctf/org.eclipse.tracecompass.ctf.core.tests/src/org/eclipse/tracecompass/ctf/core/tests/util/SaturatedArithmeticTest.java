@@ -1,24 +1,25 @@
 /*******************************************************************************
- * Copyright (c) 2016 Ericsson
+ * Copyright (c) 2024 Ericsson
  *
- * All rights reserved. This program and the accompanying materials are
- * made available under the terms of the Eclipse Public License 2.0 which
+ * All rights reserved. This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0 which
  * accompanies this distribution, and is available at
  * https://www.eclipse.org/legal/epl-2.0/
  *
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
 
-package org.eclipse.tracecompass.common.core.tests.math;
+package org.eclipse.tracecompass.ctf.core.tests.util;
 
-import org.eclipse.tracecompass.common.core.math.SaturatedArithmetic;
+import org.eclipse.tracecompass.common.core.tests.math.BaseSaturatedArithmeticTest;
+import org.eclipse.tracecompass.internal.ctf.core.utils.SaturatedArithmetic;
 
 /**
  * Test suite for the {@link SaturatedArithmetic} class.
- * <p>
- * @author Matthew Khouzam
  */
+@SuppressWarnings("restriction")
 public class SaturatedArithmeticTest extends BaseSaturatedArithmeticTest {
+
     @Override
     protected int multiply(int left, int right) {
         return SaturatedArithmetic.multiply(left, right);

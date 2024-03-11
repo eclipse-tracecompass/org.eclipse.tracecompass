@@ -20,10 +20,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNull;
-import org.eclipse.tracecompass.common.core.math.SaturatedArithmetic;
 import org.eclipse.tracecompass.ctf.core.event.scope.IDefinitionScope;
 import org.eclipse.tracecompass.ctf.core.event.scope.ILexicalScope;
 import org.eclipse.tracecompass.ctf.core.event.types.StructDeclaration.InternalDef;
+import org.eclipse.tracecompass.internal.ctf.core.utils.SaturatedArithmetic;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
