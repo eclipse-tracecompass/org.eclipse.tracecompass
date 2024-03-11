@@ -29,7 +29,6 @@ import org.eclipse.tracecompass.internal.ctf.core.event.metadata.CTFAntlrMetadat
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.CTFJsonMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ICommonTreeParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonStructureFieldMemberMetadataNode;
-import org.eclipse.tracecompass.internal.ctf.core.event.metadata.Messages;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.MetadataStrings;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.AlignmentParser;
@@ -204,7 +203,7 @@ public final class IntegerDeclarationParser implements ICommonTreeParser {
                         clock = ClockMapParser.INSTANCE.parse(rightNode, null);
                         break;
                     default:
-                        CtfCoreLoggerUtil.logWarning(Messages.IOStructGen_UnknownIntegerAttributeWarning + " " + left); //$NON-NLS-1$
+                        CtfCoreLoggerUtil.logWarning("Unknown integer attribute: " + left); //$NON-NLS-1$
                         break;
                     }
                 } else {

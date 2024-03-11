@@ -32,7 +32,6 @@ import org.eclipse.tracecompass.internal.ctf.core.CtfCoreLoggerUtil;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.AbstractScopedCommonTreeParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.CTFAntlrMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonPreambleMetadataNode;
-import org.eclipse.tracecompass.internal.ctf.core.event.metadata.Messages;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.MetadataStrings;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.ByteOrderParser;
@@ -219,7 +218,7 @@ public final class TraceDeclarationParser extends AbstractScopedCommonTreeParser
 
                 trace.setPacketHeader((StructDeclaration) packetHeaderDecl);
             } else {
-                CtfCoreLoggerUtil.logWarning(Messages.IOStructGen_UnknownTraceAttributeWarning + " " + left); //$NON-NLS-1$
+                CtfCoreLoggerUtil.logWarning("Unknown trace attribute: " + left); //$NON-NLS-1$
             }
         }
         return trace;
