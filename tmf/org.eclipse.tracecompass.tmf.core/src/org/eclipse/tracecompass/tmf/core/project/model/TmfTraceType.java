@@ -751,4 +751,36 @@ public final class TmfTraceType {
         }
         return (ITmfEvent) ce.createExecutableExtension(TmfTraceType.EVENT_TYPE_ATTR);
     }
+
+    /**
+     * Checks whether the parent or grandparent path of given path to a file is
+     * a valid directory trace. If it is a directory trace then return the
+     * parent or grandparent path.
+     *
+     * @param path
+     *            the path to check
+     * @return root path of trace to use (for example for trace type
+     *         validation).
+     * @since 9.3
+     */
+    public static String checkAndUpdateTracePath(String path) {
+        File file = new File(path);
+        if (file.exists() && !file.isDirectory()) {
+            // First check parent
+            File parent = file.getParentFile();
+            String pathToUse = parent.getAbsolutePath();
+            if (TmfTraceType.isDirectoryTrace(pathToUse)) {
+                return pathToUse;
+            }
+            // Second check grandparent
+            File grandParent = parent.getParentFile();
+            if (grandParent != null) {
+                pathToUse = grandParent.getAbsolutePath();
+                if (TmfTraceType.isDirectoryTrace(pathToUse)) {
+                    return pathToUse;
+                }
+            }
+        }
+        return path;
+    }
 }
