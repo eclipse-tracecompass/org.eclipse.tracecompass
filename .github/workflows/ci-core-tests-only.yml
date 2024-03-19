@@ -37,6 +37,8 @@ jobs:
         mvn -B -Pctf-grammar -Pbuild-rcp
         -Dskip-short-tc-ui-tests=true
         -Dskip-long-tc-ui-tests=true
+        -Declipse.p2.mirrors=false
+        -Dtycho.disableP2Mirrors=true
         clean install
     - name: Upload logs
       uses: actions/upload-artifact@v3
