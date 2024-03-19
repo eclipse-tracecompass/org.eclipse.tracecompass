@@ -138,7 +138,7 @@ public class TmfOpenTraceHelper {
      *             end
      */
     public static IStatus openTraceFromPath(TmfTraceFolder destinationFolder, String path, Shell shell, String tracetypeHint) throws CoreException {
-        final String pathToUse = checkTracePath(path);
+        final String pathToUse = TmfTraceType.checkAndUpdateTracePath(path);
         TraceTypeHelper traceTypeToSet = null;
         try (ScopeLog scopeLog = new ScopeLog(LOGGER, Level.FINE, "TmfOpenTraceHelper#openTraceFromPath", "Get trace type")) { //$NON-NLS-1$//$NON-NLS-2$
             traceTypeToSet = TmfTraceTypeUIUtils.selectTraceType(pathToUse, null, tracetypeHint);
@@ -174,36 +174,6 @@ public class TmfOpenTraceHelper {
             ret = openTraceFromFolder(destinationFolder, traceName);
         }
         return ret;
-    }
-
-    /**
-     * Checks whether the parent or grandparent of given path to a file is a valid
-     * directory trace. If it is a directory trace then return the parent or
-     * grandparent path.
-     *
-     * @param path
-     *            the path to check
-     * @return path to use for trace type validation.
-     */
-    private static String checkTracePath(String path) {
-        File file = new File(path);
-        if (file.exists() && !file.isDirectory()) {
-            // First check parent
-            File parent = file.getParentFile();
-            String pathToUse = parent.getAbsolutePath();
-            if (TmfTraceType.isDirectoryTrace(pathToUse)) {
-                return pathToUse;
-            }
-            // Second check grandparent
-            File grandParent = parent.getParentFile();
-            if (grandParent != null) {
-                pathToUse = grandParent.getAbsolutePath();
-                if (TmfTraceType.isDirectoryTrace(pathToUse)) {
-                    return pathToUse;
-                }
-            }
-        }
-        return path;
     }
 
     private static boolean traceExists(String path, IFolder folder) {
