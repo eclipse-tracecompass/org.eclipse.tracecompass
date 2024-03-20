@@ -610,6 +610,11 @@ public class HistogramView extends TmfView implements ITmfTimeAligned {
             realStart = fTraceStartTime;
         }
 
+        if (duration == 1) {
+            fTimeSpanControl.setValue(fWindowSpan);
+            return;
+        }
+        
         long endTime = realStart + duration;
         if (endTime > fTraceEndTime) {
             endTime = fTraceEndTime;
