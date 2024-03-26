@@ -9,7 +9,7 @@
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
 
-package org.eclipse.tracecompass.internal.analysis.profiling.core.instrumented;
+package org.eclipse.tracecompass.analysis.profiling.core.instrumented;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.analysis.profiling.core.base.ICallStackGroupDescriptor;
@@ -18,6 +18,7 @@ import org.eclipse.tracecompass.analysis.profiling.core.base.ICallStackGroupDesc
  * A basic group descriptor implementation.
  *
  * @author Geneviève Bastien
+ * @since 2.5
  */
 public class CallStackGroupDescriptor implements ICallStackGroupDescriptor {
 

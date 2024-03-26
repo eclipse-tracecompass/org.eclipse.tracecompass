@@ -36,6 +36,7 @@ Export-Package: org.eclipse.tracecompass.analysis.profiling.core.base;uses:="org
  org.eclipse.tracecompass.analysis.profiling.core.callstack2,
  org.eclipse.tracecompass.analysis.profiling.core.instrumented,
  org.eclipse.tracecompass.analysis.profiling.core.model,
+ org.eclipse.tracecompass.analysis.profiling.core.sampled.callgraph,
  org.eclipse.tracecompass.analysis.profiling.core.tree,
  org.eclipse.tracecompass.internal.analysis.profiling.core;x-friends:="org.eclipse.tracecompass.analysis.profiling.core.tests,org.eclipse.tracecompass.analysis.profiling.ui",
  org.eclipse.tracecompass.internal.analysis.profiling.core.callgraph;x-friends:="org.eclipse.tracecompass.analysis.profiling.core.tests,org.eclipse.tracecompass.analysis.profiling.ui",
