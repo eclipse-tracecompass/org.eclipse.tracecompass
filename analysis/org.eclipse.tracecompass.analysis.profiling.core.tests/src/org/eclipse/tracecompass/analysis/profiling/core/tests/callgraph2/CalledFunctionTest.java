@@ -19,12 +19,12 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.tracecompass.analysis.profiling.core.callgraph.ICalledFunction;
+import org.eclipse.tracecompass.analysis.profiling.core.model.IHostModel;
 import org.eclipse.tracecompass.internal.analysis.profiling.core.callgraph2.CalledFunction;
 import org.eclipse.tracecompass.internal.analysis.profiling.core.callgraph2.CalledFunctionFactory;
 import org.eclipse.tracecompass.internal.analysis.profiling.core.callgraph2.CalledStringFunction;
 import org.eclipse.tracecompass.internal.analysis.profiling.core.model.ModelManager;
-import org.eclipse.tracecompass.internal.provisional.analysis.profiling.core.callgraph.ICalledFunction;
-import org.eclipse.tracecompass.internal.provisional.analysis.profiling.core.model.IHostModel;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

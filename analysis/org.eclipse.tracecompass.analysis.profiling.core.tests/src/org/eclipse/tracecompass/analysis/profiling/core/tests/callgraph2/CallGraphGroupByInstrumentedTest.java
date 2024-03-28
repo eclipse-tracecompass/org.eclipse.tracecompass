@@ -21,18 +21,18 @@ import java.util.Collections;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.tracecompass.analysis.profiling.core.base.ICallStackElement;
+import org.eclipse.tracecompass.analysis.profiling.core.base.ICallStackSymbol;
+import org.eclipse.tracecompass.analysis.profiling.core.callgraph.CallGraph;
 import org.eclipse.tracecompass.analysis.profiling.core.tests.CallStackTestBase2;
 import org.eclipse.tracecompass.analysis.profiling.core.tests.stubs2.CallStackAnalysisStub;
+import org.eclipse.tracecompass.analysis.profiling.core.tree.ITree;
+import org.eclipse.tracecompass.analysis.profiling.core.tree.IWeightedTreeGroupDescriptor;
+import org.eclipse.tracecompass.analysis.profiling.core.tree.WeightedTree;
+import org.eclipse.tracecompass.analysis.profiling.core.tree.WeightedTreeGroupBy;
+import org.eclipse.tracecompass.analysis.profiling.core.tree.WeightedTreeSet;
 import org.eclipse.tracecompass.internal.analysis.profiling.core.callgraph2.AggregatedCalledFunction;
 import org.eclipse.tracecompass.internal.analysis.profiling.core.tree.AllGroupDescriptor;
-import org.eclipse.tracecompass.internal.analysis.profiling.core.tree.WeightedTree;
-import org.eclipse.tracecompass.internal.analysis.profiling.core.tree.WeightedTreeGroupBy;
-import org.eclipse.tracecompass.internal.analysis.profiling.core.tree.WeightedTreeSet;
-import org.eclipse.tracecompass.internal.provisional.analysis.profiling.core.base.ICallStackElement;
-import org.eclipse.tracecompass.internal.provisional.analysis.profiling.core.base.ICallStackSymbol;
-import org.eclipse.tracecompass.internal.provisional.analysis.profiling.core.callgraph.CallGraph;
-import org.eclipse.tracecompass.internal.provisional.analysis.profiling.core.tree.ITree;
-import org.eclipse.tracecompass.internal.provisional.analysis.profiling.core.tree.IWeightedTreeGroupDescriptor;
 import org.junit.Test;
 
 import com.google.common.collect.ImmutableMap;

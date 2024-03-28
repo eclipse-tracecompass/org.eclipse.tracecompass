@@ -16,7 +16,7 @@ import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.tracecompass.internal.provisional.analysis.profiling.core.base.ICallStackSymbol;
+import org.eclipse.tracecompass.analysis.profiling.core.base.ICallStackSymbol;
 import org.eclipse.tracecompass.tmf.core.symbols.ISymbolProvider;
 
 /**

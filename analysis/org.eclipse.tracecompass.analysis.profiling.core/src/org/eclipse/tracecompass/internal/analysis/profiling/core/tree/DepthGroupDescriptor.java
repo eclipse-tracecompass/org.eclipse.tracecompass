@@ -14,8 +14,8 @@ package org.eclipse.tracecompass.internal.analysis.profiling.core.tree;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.tracecompass.internal.provisional.analysis.profiling.core.tree.ITree;
-import org.eclipse.tracecompass.internal.provisional.analysis.profiling.core.tree.IWeightedTreeGroupDescriptor;
+import org.eclipse.tracecompass.analysis.profiling.core.tree.ITree;
+import org.eclipse.tracecompass.analysis.profiling.core.tree.IWeightedTreeGroupDescriptor;
 
 /**
  * A group descriptor adapted to {@link ITree} structure for weighted tree

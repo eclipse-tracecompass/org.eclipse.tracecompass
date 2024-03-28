@@ -12,8 +12,8 @@
 package org.eclipse.tracecompass.internal.analysis.profiling.core.callgraph2;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.tracecompass.internal.provisional.analysis.profiling.core.callgraph.ICalledFunction;
-import org.eclipse.tracecompass.internal.provisional.analysis.profiling.core.model.IHostModel;
+import org.eclipse.tracecompass.analysis.profiling.core.callgraph.ICalledFunction;
+import org.eclipse.tracecompass.analysis.profiling.core.model.IHostModel;
 
 /**
  * Factory to create {@link ICalledFunction}s.

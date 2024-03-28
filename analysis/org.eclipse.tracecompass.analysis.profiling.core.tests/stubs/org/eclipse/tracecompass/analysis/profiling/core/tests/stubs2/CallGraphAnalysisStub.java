@@ -16,12 +16,11 @@ import java.util.List;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.tracecompass.analysis.profiling.core.callstack2.CallStackHostUtils;
+import org.eclipse.tracecompass.analysis.profiling.core.callstack2.CallStackSeries;
+import org.eclipse.tracecompass.analysis.profiling.core.instrumented.IFlameChartProvider;
+import org.eclipse.tracecompass.analysis.profiling.core.instrumented.InstrumentedCallStackAnalysis;
 import org.eclipse.tracecompass.internal.analysis.profiling.core.callgraph2.CallGraphAnalysis;
-import org.eclipse.tracecompass.internal.analysis.profiling.core.callstack.CallStackSeries;
-import org.eclipse.tracecompass.internal.analysis.profiling.core.instrumented.InstrumentedCallStackAnalysis;
-import org.eclipse.tracecompass.internal.analysis.profiling.core.model.ModelManager;
-import org.eclipse.tracecompass.internal.provisional.analysis.profiling.core.callstack.CallStackHostUtils;
-import org.eclipse.tracecompass.internal.provisional.analysis.profiling.core.instrumented.IFlameChartProvider;
 import org.eclipse.tracecompass.statesystem.core.ITmfStateSystem;
 import org.eclipse.tracecompass.statesystem.core.ITmfStateSystemBuilder;
 import org.eclipse.tracecompass.tmf.core.statesystem.ITmfStateProvider;
@@ -129,7 +128,7 @@ public class CallGraphAnalysisStub extends CallGraphAnalysis {
         if (callStackSeries == null) {
             throw new IllegalArgumentException();
         }
-        iterateOverCallstackSerie(callStackSeries, ModelManager.getModelFor(""), getCallGraph(), 0, Long.MAX_VALUE, new NullProgressMonitor());
+        iterateOverCallstackSerie(callStackSeries, getCallGraph(), 0, Long.MAX_VALUE, new NullProgressMonitor());
     }
 
     @Override
