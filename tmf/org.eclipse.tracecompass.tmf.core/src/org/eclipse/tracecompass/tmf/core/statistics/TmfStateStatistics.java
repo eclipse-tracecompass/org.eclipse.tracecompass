@@ -117,40 +117,63 @@ public class TmfStateStatistics implements ITmfStatistics {
         if (quark == ITmfStateSystem.INVALID_ATTRIBUTE) {
             return Collections.emptyList();
         }
-        List<Long> times = new ArrayList<>();
+        List<@NonNull Long> times = new ArrayList<>();
         for (int i = 0; i < timeRequested.length; i++) {
+            /* create padding for every window of time before the start time */
             if (timeRequested[i] < fTotalsStats.getStartTime()) {
-                times.add(fTotalsStats.getStartTime());
-            } else if (timeRequested[i] < fTotalsStats.getCurrentEndTime()) {
-                times.add(timeRequested[i]);
+                list.add(0L);
             } else {
+                if (!list.isEmpty()) {
+                    /* replace this bucket with the [start time, next time] */
+                    times.add(fTotalsStats.getStartTime());
+                    list.remove(list.size() - 1);
+                }
+                times.add(timeRequested[i]);
+            }
+            if (timeRequested[i] > fTotalsStats.getCurrentEndTime()) {
                 times.add(fTotalsStats.getCurrentEndTime());
                 break;
             }
         }
         try (FlowScopeLog log = new FlowScopeLogBuilder(LOGGER, Level.FINE, "StateStatistics:histogramQuery").build()) { //$NON-NLS-1$
+            addHistogramValuesFromQuery2d(quark, times, list);
+            /* Padding for after trace ends */
+            for (int i = list.size(); i < timeRequested.length; i++) {
+                list.add(0L);
+            }
+            return list;
+        }
+    }
+
+    private List<@NonNull Long> addHistogramValuesFromQuery2d(int quark, List<@NonNull Long> times, List<@NonNull Long> results) {
+        try {
             Iterable<@NonNull ITmfStateInterval> intervals = fTotalsStats.query2D(Collections.singletonList(quark), times);
             List<@NonNull ITmfStateInterval> sortedIntervals = Lists.newArrayList(intervals);
+            if (sortedIntervals.isEmpty()) {
+                return results;
+            }
             sortedIntervals.sort(Comparator.comparingLong(ITmfStateInterval::getStartTime));
-            int j = 0;
             long previousTotal;
-            if (!sortedIntervals.isEmpty() && fTotalsStats.getStartTime() != sortedIntervals.get(0).getStartTime()) {
-                previousTotal = sortedIntervals.get(0).getValueInt();
+            if (fTotalsStats.getStartTime() != sortedIntervals.get(0).getStartTime()) {
+                previousTotal = sortedIntervals.get(0).getValueLong();
             } else {
                 previousTotal = 0;
             }
-            for (int i = 0; i < timeRequested.length; i++) {
-                while (j < sortedIntervals.size() - 1 && sortedIntervals.get(j).getEndTime() < timeRequested[i]) {
+            int j = 0;
+            for (int i = 0; i < times.size(); i++) {
+                while (j < sortedIntervals.size() - 1 && sortedIntervals.get(j).getEndTime() < times.get(i)) {
                     j++;
                 }
-                long count = sortedIntervals.get(j).getValueInt() - previousTotal;
-                list.add(count);
-                previousTotal = sortedIntervals.get(j).getValueInt();
+                long count = sortedIntervals.get(j).getValueLong() - previousTotal;
+                results.add(count);
+                previousTotal = sortedIntervals.get(j).getValueLong();
             }
-            return list;
+            return results;
         } catch (StateSystemDisposedException e) {
-            /* Assume there is no events, nothing will be put in the histogram. */
-            return Collections.emptyList();
+            /*
+             * Assume there is no events, nothing will be put in the histogram.
+             */
+            return results;
         }
     }
 
