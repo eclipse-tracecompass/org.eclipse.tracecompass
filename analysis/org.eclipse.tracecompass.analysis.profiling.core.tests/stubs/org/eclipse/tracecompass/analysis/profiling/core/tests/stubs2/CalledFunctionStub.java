@@ -12,7 +12,7 @@
 package org.eclipse.tracecompass.analysis.profiling.core.tests.stubs2;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.tracecompass.internal.provisional.analysis.profiling.core.callgraph.ICalledFunction;
+import org.eclipse.tracecompass.analysis.profiling.core.callgraph.ICalledFunction;
 
 /**
  * A Stub for the CalledFunction segment.

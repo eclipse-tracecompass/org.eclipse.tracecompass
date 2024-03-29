@@ -70,6 +70,9 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
+import org.eclipse.tracecompass.analysis.profiling.core.callgraph.ICallGraphProvider2;
+import org.eclipse.tracecompass.analysis.profiling.core.tree.IWeightedTreeGroupDescriptor;
+import org.eclipse.tracecompass.analysis.profiling.core.tree.IWeightedTreeProvider;
 import org.eclipse.tracecompass.common.core.NonNullUtils;
 import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils.FlowScopeLog;
 import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils.FlowScopeLogBuilder;
@@ -78,9 +81,6 @@ import org.eclipse.tracecompass.internal.analysis.profiling.core.flamegraph.Data
 import org.eclipse.tracecompass.internal.analysis.profiling.core.flamegraph.FlameGraphDataProvider;
 import org.eclipse.tracecompass.internal.analysis.profiling.core.tree.AllGroupDescriptor;
 import org.eclipse.tracecompass.internal.analysis.profiling.ui.flamegraph.SortOption;
-import org.eclipse.tracecompass.internal.provisional.analysis.profiling.core.callgraph.ICallGraphProvider;
-import org.eclipse.tracecompass.internal.provisional.analysis.profiling.core.tree.IWeightedTreeGroupDescriptor;
-import org.eclipse.tracecompass.internal.provisional.analysis.profiling.core.tree.IWeightedTreeProvider;
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.filters.TmfFilterAppliedSignal;
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.filters.TraceCompassFilter;
 import org.eclipse.tracecompass.internal.provisional.tmf.ui.widgets.timegraph.BaseDataProviderTimeGraphPresentationProvider;
@@ -358,14 +358,14 @@ public class FlameGraphView extends TmfView {
      *
      * @return The call graph provider modules
      */
-    protected Iterable<ICallGraphProvider> getCallgraphModules() {
+    protected Iterable<ICallGraphProvider2> getCallgraphModules() {
         ITmfTrace trace = fTrace;
         if (trace == null) {
             return null;
         }
         String analysisId = NonNullUtils.nullToEmptyString(getViewSite().getSecondaryId());
         @SuppressWarnings("null")
-        Iterable<ICallGraphProvider> modules = TmfTraceUtils.getAnalysisModulesOfClass(trace, ICallGraphProvider.class);
+        Iterable<ICallGraphProvider2> modules = TmfTraceUtils.getAnalysisModulesOfClass(trace, ICallGraphProvider2.class);
         return StreamSupport.stream(modules.spliterator(), false)
                 .filter(m -> {
                     if (m instanceof IAnalysisModule) {
@@ -1352,16 +1352,16 @@ public class FlameGraphView extends TmfView {
                         menu.dispose();
                     }
                     menu = new Menu(parent);
-                    Iterable<ICallGraphProvider> callgraphModules = getCallgraphModules();
-                    Iterator<ICallGraphProvider> iterator = callgraphModules.iterator();
+                    Iterable<ICallGraphProvider2> callgraphModules = getCallgraphModules();
+                    Iterator<ICallGraphProvider2> iterator = callgraphModules.iterator();
                     if (!iterator.hasNext()) {
                         return menu;
                     }
-                    ICallGraphProvider provider = iterator.next();
+                    ICallGraphProvider2 provider = iterator.next();
                     // Add the all group element
                     Action allGroupAction = createActionForGroup(AllGroupDescriptor.getInstance());
                     new ActionContributionItem(allGroupAction).fill(menu, -1);
-                    Collection<org.eclipse.tracecompass.internal.provisional.analysis.profiling.core.tree.IWeightedTreeGroupDescriptor> series = provider.getGroupDescriptors();
+                    Collection<org.eclipse.tracecompass.analysis.profiling.core.tree.IWeightedTreeGroupDescriptor> series = provider.getGroupDescriptors();
                     series.forEach(group -> {
                         IWeightedTreeGroupDescriptor subGroup = group;
                         do {

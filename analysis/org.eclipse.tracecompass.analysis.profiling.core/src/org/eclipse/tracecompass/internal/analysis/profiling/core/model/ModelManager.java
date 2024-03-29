@@ -14,7 +14,7 @@ package org.eclipse.tracecompass.internal.analysis.profiling.core.model;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.tracecompass.internal.provisional.analysis.profiling.core.model.IHostModel;
+import org.eclipse.tracecompass.analysis.profiling.core.model.IHostModel;
 
 /**
  * Utility class to manage the models for the hosts

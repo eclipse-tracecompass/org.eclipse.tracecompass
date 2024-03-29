@@ -12,6 +12,7 @@
 package org.eclipse.tracecompass.internal.analysis.profiling.core.callgraph2;
 
 import org.eclipse.tracecompass.analysis.os.linux.core.model.ProcessStatus;
+import org.eclipse.tracecompass.analysis.profiling.core.callgraph.AggregatedCallSite;
 import org.eclipse.tracecompass.internal.analysis.profiling.core.base.StringSymbol;
 import org.eclipse.tracecompass.internal.analysis.profiling.core.model.ProcessStatusInterval;
 

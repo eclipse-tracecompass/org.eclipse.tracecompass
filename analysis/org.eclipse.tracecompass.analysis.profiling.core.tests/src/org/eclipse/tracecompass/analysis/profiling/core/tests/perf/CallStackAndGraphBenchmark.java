@@ -25,13 +25,13 @@ import java.util.Objects;
 import org.eclipse.test.performance.Dimension;
 import org.eclipse.test.performance.Performance;
 import org.eclipse.test.performance.PerformanceMeter;
-import org.eclipse.tracecompass.internal.analysis.profiling.core.instrumented.InstrumentedCallStackAnalysis;
+import org.eclipse.tracecompass.analysis.profiling.core.callgraph.CallGraph;
+import org.eclipse.tracecompass.analysis.profiling.core.callgraph.ICallGraphProvider2;
+import org.eclipse.tracecompass.analysis.profiling.core.instrumented.IFlameChartProvider;
+import org.eclipse.tracecompass.analysis.profiling.core.instrumented.InstrumentedCallStackAnalysis;
+import org.eclipse.tracecompass.analysis.profiling.core.tree.IWeightedTreeGroupDescriptor;
+import org.eclipse.tracecompass.analysis.profiling.core.tree.WeightedTreeGroupBy;
 import org.eclipse.tracecompass.internal.analysis.profiling.core.tree.AllGroupDescriptor;
-import org.eclipse.tracecompass.internal.analysis.profiling.core.tree.WeightedTreeGroupBy;
-import org.eclipse.tracecompass.internal.provisional.analysis.profiling.core.callgraph.CallGraph;
-import org.eclipse.tracecompass.internal.provisional.analysis.profiling.core.callgraph.ICallGraphProvider;
-import org.eclipse.tracecompass.internal.provisional.analysis.profiling.core.instrumented.IFlameChartProvider;
-import org.eclipse.tracecompass.internal.provisional.analysis.profiling.core.tree.IWeightedTreeGroupDescriptor;
 import org.eclipse.tracecompass.segmentstore.core.ISegment;
 import org.eclipse.tracecompass.segmentstore.core.ISegmentStore;
 import org.eclipse.tracecompass.tmf.core.analysis.IAnalysisModule;
@@ -49,7 +49,7 @@ import org.junit.Test;
  * partial callgraph for time ranges and group by of call graph.
  *
  * This base class can be extended by any performance test for analysis that
- * implement {@link ICallGraphProvider}, whether or not it also implements
+ * implement {@link ICallGraphProvider2}, whether or not it also implements
  * {@link IFlameChartProvider}.
  *
  * @author Geneviève Bastien
@@ -114,8 +114,8 @@ public abstract class CallStackAndGraphBenchmark {
                 trace = getTrace();
                 trace.traceOpened(new TmfTraceOpenedSignal(this, trace, null));
                 IAnalysisModule analysisModule = TmfTraceUtils.getAnalysisModuleOfClass(trace, IAnalysisModule.class, fAnalysisId);
-                assertTrue(analysisModule instanceof ICallGraphProvider);
-                ICallGraphProvider callGraphModule = (ICallGraphProvider) analysisModule;
+                assertTrue(analysisModule instanceof ICallGraphProvider2);
+                ICallGraphProvider2 callGraphModule = (ICallGraphProvider2) analysisModule;
 
                 if (analysisModule instanceof IFlameChartProvider) {
                     // Do the performance test for the instrumented call stack,
@@ -183,7 +183,7 @@ public abstract class CallStackAndGraphBenchmark {
         callgraphGroupByPm.commit();
     }
 
-    private static void benchmarkCallGraphProvider(ICallGraphProvider callGraphModule, PerformanceMeter callgraphBuildPm) {
+    private static void benchmarkCallGraphProvider(ICallGraphProvider2 callGraphModule, PerformanceMeter callgraphBuildPm) {
         // Do the performance test for building the callgraph only
         callgraphBuildPm.start();
         TmfTestHelper.executeAnalysis((IAnalysisModule) callGraphModule);
@@ -219,7 +219,7 @@ public abstract class CallStackAndGraphBenchmark {
         // Getting the callgraph will schedule the analysis and wait for its
         // completion
         callgraphBuildPm.start();
-        CallGraph callGraph = ((ICallGraphProvider) analysisModule).getCallGraph();
+        CallGraph callGraph = ((ICallGraphProvider2) analysisModule).getCallGraph();
         callgraphBuildPm.stop();
 
         assertTrue(!callGraph.getElements().isEmpty());
