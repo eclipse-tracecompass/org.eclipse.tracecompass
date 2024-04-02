@@ -32,5 +32,6 @@ Export-Package: org.eclipse.tracecompass.analysis.profiling.core.tests,
  org.eclipse.tracecompass.analysis.profiling.core.tests.flamegraph,
  org.eclipse.tracecompass.analysis.profiling.core.tests.perf;x-friends:="org.eclipse.tracecompass.lttng2.ust.core.tests",
  org.eclipse.tracecompass.analysis.profiling.core.tests.stubs,
+ org.eclipse.tracecompass.analysis.profiling.core.tests.stubs.weighted,
  org.eclipse.tracecompass.analysis.profiling.core.tests.stubs2
 Import-Package: com.google.common.collect
