@@ -32,8 +32,10 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.analysis.os.linux.core.event.aspect.LinuxTidAspect;
+import org.eclipse.tracecompass.analysis.os.linux.core.model.HostThread;
 import org.eclipse.tracecompass.analysis.os.linux.core.model.OsStrings;
 import org.eclipse.tracecompass.analysis.os.linux.core.model.ProcessStatus;
+import org.eclipse.tracecompass.analysis.os.linux.core.signals.TmfThreadSelectedSignal;
 import org.eclipse.tracecompass.analysis.os.linux.core.trace.IKernelTrace;
 import org.eclipse.tracecompass.internal.analysis.os.linux.core.Activator;
 import org.eclipse.tracecompass.internal.analysis.os.linux.core.kernel.Attributes;
@@ -78,6 +80,7 @@ import org.eclipse.tracecompass.tmf.core.model.timegraph.TimeGraphState;
 import org.eclipse.tracecompass.tmf.core.model.tree.TmfTreeModel;
 import org.eclipse.tracecompass.tmf.core.response.ITmfResponse;
 import org.eclipse.tracecompass.tmf.core.response.TmfModelResponse;
+import org.eclipse.tracecompass.tmf.core.signal.TmfSignalManager;
 import org.eclipse.tracecompass.tmf.core.statesystem.TmfStateSystemAnalysisModule;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
 import org.eclipse.tracecompass.tmf.core.trace.TmfTraceUtils;
@@ -177,6 +180,7 @@ public class ThreadStatusDataProvider extends AbstractTmfTraceDataProvider imple
 
     /** Cache for entry metadata */
     private final Map<Long, @NonNull Multimap<@NonNull String, @NonNull Object>> fEntryMetadata = new HashMap<>();
+    private final Map<Long, @NonNull TimeGraphEntryModel> fEntryModel = new HashMap<>();
 
     private IOutputAnnotationProvider fEventAnnotationProvider;
 
@@ -274,6 +278,7 @@ public class ThreadStatusDataProvider extends AbstractTmfTraceDataProvider imple
 
             for (TimeGraphEntryModel model : list) {
                 fEntryMetadata.put(model.getId(), model.getMetadata());
+                fEntryModel.put(model.getId(), model);
             }
 
             if (complete) {
@@ -824,5 +829,41 @@ public class ThreadStatusDataProvider extends AbstractTmfTraceDataProvider imple
     @Override
     public @NonNull TmfModelResponse<@NonNull AnnotationModel> fetchAnnotations(@NonNull Map<@NonNull String, @NonNull Object> fetchParameters, @Nullable IProgressMonitor monitor) {
         return fEventAnnotationProvider.fetchAnnotations(fetchParameters, monitor);
+    }
+
+    @Override
+    public @NonNull TmfModelResponse<@NonNull Map<@NonNull String, @NonNull Object>> fetchTreeContext(@NonNull Map<@NonNull String, @NonNull Object> fetchParameters, @Nullable IProgressMonitor monitor) {
+        // TODO Auto-generated method stub
+        fModule.waitForInitialization();
+        ITmfStateSystem ss = fModule.getStateSystem();
+        if (ss == null) {
+            return new TmfModelResponse<>(null, ITmfResponse.Status.FAILED, CommonStatusMessage.ANALYSIS_INITIALIZATION_FAILED);
+        }
+
+        /*
+         * As we are caching the intermediate result, we only want a single thread to
+         * update them.
+         */
+        synchronized (fBuildMap) {
+            List<Long> selectedItems = DataProviderParameterUtils.extractSelectedItems(fetchParameters);
+            if (selectedItems != null && selectedItems.size() > 0) {
+                Long id = selectedItems.get(0);
+                TimeGraphEntryModel model = fEntryModel.get(id);
+                if (model instanceof ThreadEntryModel) {
+                    Map<String, Object> retMap = new HashMap<>();
+                    ThreadEntryModel mod = (ThreadEntryModel) model;
+                    retMap.put("name", mod.getName());
+                    retMap.put("tid", mod.getThreadId());
+                    retMap.put("hostId", getTrace().getHostId());
+
+                    // Not restful ...
+                    HostThread hostThread = new HostThread(getTrace().getHostId(), mod.getThreadId());
+                    TmfThreadSelectedSignal signal = new TmfThreadSelectedSignal(this, hostThread);
+                    TmfSignalManager.dispatchSignal(signal);
+                    return new TmfModelResponse<>(retMap, ITmfResponse.Status.COMPLETED, CommonStatusMessage.COMPLETED);
+                }
+            }
+        }
+        return ITimeGraphDataProvider.super.fetchTreeContext(fetchParameters, monitor);
     }
 }

@@ -236,6 +236,12 @@ public class DataProviderManagerTest {
                 .setProviderType(ProviderType.DATA_TREE)
                 .setId("org.eclipse.tracecompass.internal.analysis.os.linux.core.segmentstore.PriorityStatisticsDataProvider:org.eclipse.tracecompass.analysis.os.linux.core.swslatency.sws");
         EXPECTED_KERNEL_DP_DESCRIPTORS.add(builder.build());
+        builder = new DataProviderDescriptor.Builder();
+        builder.setName("Critical Path")
+                .setDescription("Shows the critical path of a selected thread")
+                .setProviderType(ProviderType.TIME_GRAPH)
+                .setId("org.eclipse.tracecompass.analysis.graph.core.dataprovider.CriticalPathDataProvider");
+        EXPECTED_KERNEL_DP_DESCRIPTORS.add(builder.build());
 
         // UST Trace
         builder = new DataProviderDescriptor.Builder();
@@ -318,6 +324,12 @@ public class DataProviderManagerTest {
                 .setDescription("Show latencies provided by Analysis module: LTTng-UST CallStack (new)")
                 .setProviderType(ProviderType.TREE_TIME_XY)
                 .setId("org.eclipse.tracecompass.internal.analysis.timing.core.segmentstore.scatter.dataprovider:org.eclipse.tracecompass.lttng2.ust.core.analysis.callstack");
+        EXPECTED_UST_DP_DESCRIPTORS.add(builder.build());
+        builder = new DataProviderDescriptor.Builder();
+        builder.setName("Critical Path")
+                .setDescription("Shows the critical path of a selected thread")
+                .setProviderType(ProviderType.TIME_GRAPH)
+                .setId("org.eclipse.tracecompass.analysis.graph.core.dataprovider.CriticalPathDataProvider");
         EXPECTED_UST_DP_DESCRIPTORS.add(builder.build());
     }
 
