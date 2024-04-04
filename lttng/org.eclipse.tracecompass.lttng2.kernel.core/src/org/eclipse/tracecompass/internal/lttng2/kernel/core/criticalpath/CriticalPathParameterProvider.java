@@ -9,7 +9,7 @@
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
 
-package org.eclipse.tracecompass.internal.lttng2.kernel.ui.criticalpath;
+package org.eclipse.tracecompass.internal.lttng2.kernel.core.criticalpath;
 
 import org.eclipse.tracecompass.analysis.graph.core.criticalpath.AbstractCriticalPathModule;
 import org.eclipse.tracecompass.analysis.graph.core.criticalpath.OSCriticalPathModule;
@@ -28,6 +28,7 @@ import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
  * traces
  *
  * @author Geneviève Bastien
+ * @since 3.2
  */
 public class CriticalPathParameterProvider extends TmfAbstractAnalysisParamProvider {
 

@@ -49,4 +49,13 @@
          class="org.eclipse.tracecompass.internal.lttng2.kernel.core.analysis.graph.building.LttngGraphHandlerBuilder$HandlerBuilderExecutionGraph"
          priority="10" />
    </extension>
+   <extension
+         point="org.eclipse.linuxtools.tmf.core.analysis">
+      <parameterProvider
+            class="org.eclipse.tracecompass.internal.lttng2.kernel.core.criticalpath.CriticalPathParameterProvider">
+         <analysisId
+               id="org.eclipse.tracecompass.analysis.graph.core.criticalpath">
+         </analysisId>
+      </parameterProvider>
+   </extension>
 </plugin>
