@@ -4,8 +4,7 @@
 
 `Eclipse Trace Compass™` is an open source application to solve performance and
 reliability issues by reading and analyzing logs or traces of a system. Its goal
-is to provide views, graphs, metrics, and more to help extract useful
-information from traces, in a way that is more user-friendly and informative
+is to provide views, graphs, metrics, and more to help extract useful information from traces, in a way that is more user-friendly and informative
 than huge text dumps.
 
 `Eclipse Trace Compass` is also a framework to build such trace analysis and
