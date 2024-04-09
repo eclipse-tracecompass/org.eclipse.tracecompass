@@ -163,6 +163,9 @@ public class CallGraphAnalysis extends TmfAbstractAnalysisModule implements ICal
             return false;
         }
         IFlameChartProvider callstackModule = fCsProvider;
+        if (!callstackModule.isComplete()) {
+            return false;
+        }
         CallStackSeries callstack = callstackModule.getCallStackSeries();
         if (callstack != null) {
             long time0 = range.getStartTime().toNanos();
