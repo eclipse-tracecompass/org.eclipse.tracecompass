@@ -78,7 +78,8 @@ public class HelpMessageTest extends KernelTestBase {
             shell.activate();
             SWTBot helpShellBot = shell.bot();
             assertEquals("Help", helpShellBot.canvas().getText());
-            assertEquals(entry.getValue(), helpShellBot.label(1).getText());
+            String text = helpShellBot.label(entry.getValue()).getText();
+            assertEquals(entry.getValue(), text);
             helpShellBot.button().click();
             SWTBotUtils.waitUntil(shellBot -> !shellBot.isOpen(), shell, "Help Dialog did not close.");
         }
