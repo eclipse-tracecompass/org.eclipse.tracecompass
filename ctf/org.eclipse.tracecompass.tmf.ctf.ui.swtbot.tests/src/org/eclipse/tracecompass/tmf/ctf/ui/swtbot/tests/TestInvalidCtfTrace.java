@@ -34,7 +34,6 @@ import java.util.Map;
 import org.eclipse.swtbot.eclipse.finder.SWTWorkbenchBot;
 import org.eclipse.swtbot.swt.finder.SWTBot;
 import org.eclipse.swtbot.swt.finder.utils.SWTBotPreferences;
-import org.eclipse.swtbot.swt.finder.waits.Conditions;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotShell;
 import org.eclipse.tracecompass.tmf.ui.swtbot.tests.shared.SWTBotUtils;
 import org.eclipse.tracecompass.tmf.ui.tests.shared.WaitUtils;
@@ -202,11 +201,14 @@ public class TestInvalidCtfTrace {
         SWTBotUtils.openTrace(PROJET_NAME, fLocation.getAbsolutePath(), "org.eclipse.linuxtools.tmf.ui.type.ctf", false);
         final SWTBotShell shell = fBot.shell("Open Trace").activate();
         final SWTBot dialogBot = shell.bot();
-        String text = dialogBot.label(1).getText();
-        dialogBot.button().click();
-        fBot.waitUntil(Conditions.shellCloses(shell));
+        int i = 0;
+        String text = dialogBot.label(i).getText();
+        // Find the label out of 3 labels that contains the expected message
+        while (!text.contains(fExpectedMessage) && i <= 2) {
+            i++;
+            text = dialogBot.label(i).getText();
+        }
         assertContains(fExpectedMessage, text);
-
     }
 
 }
