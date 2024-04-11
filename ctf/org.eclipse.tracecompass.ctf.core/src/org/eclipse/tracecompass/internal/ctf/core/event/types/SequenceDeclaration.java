@@ -121,6 +121,9 @@ public class SequenceDeclaration extends CompoundDeclaration {
             throw new CTFException("Sequence length too long " + length); //$NON-NLS-1$
         }
 
+        // Explicitly align to support 0-length sequences
+        alignRead(input);
+
         if (isAlignedBytes()) {
             // Don't create "useless" definitions
             byte[] data = new byte[(int) length];
