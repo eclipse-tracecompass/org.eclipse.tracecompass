@@ -215,6 +215,52 @@ public interface TmfXmlStrings {
 
     String PATTERN_HANDLER = "patternHandler";
 
+    /* XML callstack elements */
+    /**
+     * @since 4.2
+     */
+    String CALLSTACK = "callstack";
+    /**
+     * @since 4.2
+     */
+    String CALLSTACK_LEVEL = "level";
+    /**
+     * @since 4.2
+     */
+    String CALLSTACK_PATH = "path";
+    /**
+     * @since 4.2
+     */
+    String CALLSTACK_HOST = "host";
+    /**
+     * @since 4.2
+     */
+    String CALLSTACK_THREAD = "thread";
+    /**
+     * @since 4.2
+     */
+    String CALLSTACK_THREADCPU = "cpu";
+    /**
+     * @since 4.2
+     */
+    String CALLSTACK_THREADLEVEL = "level";
+    /**
+     * @since 4.2
+     */
+    String CALLSTACK_THREADLEVEL_NAME = "name";
+    /**
+     * @since 4.2
+     */
+    String CALLSTACK_THREADLEVEL_TYPE = "type";
+    /**
+     * @since 4.2
+     */
+    String CALLSTACK_THREADLEVEL_VALUE = "value";
+    /**
+     * @since 4.2
+     */
+    String CALLSTACK_GROUP = "callstackGroup";
+
     /* XML synthetic segment elements */
     String SEGMENT_NAME = "segName";
     String SEGMENT = "segment";

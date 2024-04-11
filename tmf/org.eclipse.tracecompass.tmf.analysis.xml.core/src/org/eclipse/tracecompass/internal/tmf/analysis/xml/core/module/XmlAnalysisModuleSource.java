@@ -19,6 +19,7 @@ import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -26,11 +27,12 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.tracecompass.common.core.NonNullUtils;
 import org.eclipse.tracecompass.internal.tmf.analysis.xml.core.Activator;
+import org.eclipse.tracecompass.internal.tmf.analysis.xml.core.callstack.CallstackXmlModuleHelper;
 import org.eclipse.tracecompass.internal.tmf.analysis.xml.core.output.XmlDataProviderManager;
 import org.eclipse.tracecompass.tmf.analysis.xml.core.module.ITmfXmlSchemaParser;
 import org.eclipse.tracecompass.tmf.analysis.xml.core.module.TmfAnalysisModuleHelperXml;
-import org.eclipse.tracecompass.tmf.analysis.xml.core.module.TmfXmlStrings;
 import org.eclipse.tracecompass.tmf.analysis.xml.core.module.TmfAnalysisModuleHelperXml.XmlAnalysisModuleType;
+import org.eclipse.tracecompass.tmf.analysis.xml.core.module.TmfXmlStrings;
 import org.eclipse.tracecompass.tmf.core.analysis.IAnalysisModuleHelper;
 import org.eclipse.tracecompass.tmf.core.analysis.IAnalysisModuleSource;
 import org.eclipse.tracecompass.tmf.core.analysis.TmfAnalysisManager;
@@ -102,6 +104,15 @@ public class XmlAnalysisModuleSource implements IAnalysisModuleSource {
                 Element node = (Element) patternNodes.item(i);
 
                 IAnalysisModuleHelper helper = new TmfAnalysisModuleHelperXml(xmlFile, node, XmlAnalysisModuleType.PATTERN);
+                fModules.add(helper);
+            }
+
+            /* get callstack modules */
+            NodeList callstackNodes = doc.getElementsByTagName(TmfXmlStrings.CALLSTACK);
+            for (int i = 0; i < callstackNodes.getLength(); i++) {
+                Element node = (Element) Objects.requireNonNull(callstackNodes.item(i));
+
+                IAnalysisModuleHelper helper = new CallstackXmlModuleHelper(xmlFile, node);
                 fModules.add(helper);
             }
 

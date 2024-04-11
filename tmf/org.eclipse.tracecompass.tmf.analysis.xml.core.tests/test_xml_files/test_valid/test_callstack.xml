@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tmfxml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="xmlDefinition.xsd">
+<!-- ***************************************************************************
+* Copyright (c) 2017 École Polytechnique de Montréal
+*
+* All rights reserved. This program and the accompanying materials are
+* made available under the terms of the Eclipse Public License 2.0 which
+* accompanies this distribution, and is available at
+* https://www.eclipse.org/legal/epl-2.0/*\1 SPDX-License-Identifier: EPL-2.0
+*************************************************************************** -->
+<callstack id="callstack.analysis">
+	<callstackGroup>
+		<level path="threads/*"/>
+	</callstackGroup>
+
+	<pattern version="0" id="callstack.pattern">
+		<head>
+			<traceType id="org.eclipse.linuxtools.tmf.core.tests.xmlstub" />
+			<label value="Test XML callstack" />
+		</head>
+
+		<patternHandler>
+
+			<action id="functionEntry">
+				<stateChange>
+					<stateAttribute type="constant" value="threads" />
+					<stateAttribute type="eventField" value="tid" />
+					<stateAttribute type="constant" value="CallStack" />
+					<stateValue type="eventField" value="op" stack="push"/>
+				</stateChange>
+			</action>
+
+			<action id="functionExit">
+				<stateChange>
+					<stateAttribute type="constant" value="threads" />
+					<stateAttribute type="eventField" value="tid" />
+					<stateAttribute type="constant" value="CallStack" />
+					<stateValue type="eventField" value="op" stack="pop"/>
+				</stateChange>
+			</action>
+
+			<fsm id="callstack" multiple="false" initial="oneState">
+				<state id="oneState">
+					<transition event="entry" target="oneState" action="functionEntry"/>
+					<transition event="exit" target="oneState" action="functionExit"/>
+				</state>
+			</fsm>
+
+		</patternHandler>
+	</pattern>
+</callstack>
+
+<timeGraphView id="callstack.pattern.tgview">
+	<head>
+		<analysis id="callstack.analysis" />
+		<label value="XML Callstack SS view" />
+	</head>
+	<!-- StateValues -->
+
+	<!-- Control Flow View -->
+	<entry path="threads/*">
+		<display type="self" />
+		<entry path="callstack/*">
+			<display type="self" />
+		</entry>
+	</entry>
+</timeGraphView>
+</tmfxml>
