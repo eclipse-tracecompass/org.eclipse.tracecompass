@@ -40,11 +40,15 @@ Export-Package: org.eclipse.tracecompass.analysis.profiling.core.base;uses:="org
  org.eclipse.tracecompass.analysis.profiling.core.tree,
  org.eclipse.tracecompass.internal.analysis.profiling.core;x-friends:="org.eclipse.tracecompass.analysis.profiling.core.tests,org.eclipse.tracecompass.analysis.profiling.ui",
  org.eclipse.tracecompass.internal.analysis.profiling.core.callgraph;x-friends:="org.eclipse.tracecompass.analysis.profiling.core.tests,org.eclipse.tracecompass.analysis.profiling.ui",
- org.eclipse.tracecompass.internal.analysis.profiling.core.callgraph2;x-friends:="org.eclipse.tracecompass.analysis.profiling.core.tests,org.eclipse.tracecompass.analysis.profiling.ui,org.eclipse.tracecompass.lttng2.ust.core.tests",
+ org.eclipse.tracecompass.internal.analysis.profiling.core.callgraph2;
+  x-friends:="org.eclipse.tracecompass.analysis.profiling.core.tests,
+   org.eclipse.tracecompass.analysis.profiling.ui,
+   org.eclipse.tracecompass.lttng2.ust.core.tests,
+   org.eclipse.tracecompass.tmf.analysis.xml.core",
  org.eclipse.tracecompass.internal.analysis.profiling.core.callstack;x-friends:="org.eclipse.tracecompass.analysis.profiling.core.tests,org.eclipse.tracecompass.analysis.profiling.ui",
  org.eclipse.tracecompass.internal.analysis.profiling.core.callstack.provider;x-friends:="org.eclipse.tracecompass.analysis.profiling.core.tests,org.eclipse.tracecompass.analysis.profiling.ui",
  org.eclipse.tracecompass.internal.analysis.profiling.core.flamegraph;x-friends:="org.eclipse.tracecompass.analysis.profiling.core.tests,org.eclipse.tracecompass.analysis.profiling.ui,org.eclipse.tracecompass.analysis.profiling.ui.swtbot.tests",
- org.eclipse.tracecompass.internal.analysis.profiling.core.instrumented;x-friends:="org.eclipse.tracecompass.analysis.profiling.core.tests,org.eclipse.tracecompass.analysis.profiling.ui",
+ org.eclipse.tracecompass.internal.analysis.profiling.core.instrumented;x-friends:="org.eclipse.tracecompass.analysis.profiling.core.tests,org.eclipse.tracecompass.analysis.profiling.ui,org.eclipse.tracecompass.tmf.analysis.xml.core",
  org.eclipse.tracecompass.internal.analysis.profiling.core.model;x-friends:="org.eclipse.tracecompass.analysis.profiling.core.tests",
  org.eclipse.tracecompass.internal.analysis.profiling.core.tree;x-friends:="org.eclipse.tracecompass.analysis.profiling.core.tests,org.eclipse.tracecompass.analysis.profiling.ui"
 Import-Package: com.google.common.annotations,

@@ -19,6 +19,7 @@
 	<xs:include schemaLocation="xmlStateProvider.xsd" />
 	<xs:include schemaLocation="xmlPatternStateProvider.xsd" />
 	<xs:include schemaLocation="xmlView.xsd" />
+	<xs:include schemaLocation="xmlCallstack.xsd" />
 	<xs:element name="tmfxml">
 		<xs:complexType>
 			<xs:choice maxOccurs="unbounded">

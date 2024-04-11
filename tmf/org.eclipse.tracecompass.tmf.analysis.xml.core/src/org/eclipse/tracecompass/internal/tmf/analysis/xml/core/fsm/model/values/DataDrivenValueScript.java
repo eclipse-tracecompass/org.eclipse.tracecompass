@@ -119,9 +119,7 @@ public class DataDrivenValueScript extends DataDrivenValue {
                 String stateValueId = Objects.requireNonNull(entry.getKey());
                 DataDrivenValue stateValue = Objects.requireNonNull(entry.getValue());
                 Object value = function.apply(stateValue);
-                if (value != null) {
-                    rhino.put(stateValueId, value);
-                }
+                rhino.put(stateValueId, value);
             }
             result = rhino.execute(fScript);
         } catch (RhinoException e) {

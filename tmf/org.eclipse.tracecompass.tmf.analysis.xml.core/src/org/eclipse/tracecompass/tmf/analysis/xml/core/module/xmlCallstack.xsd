@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- ***************************************************************************
+ * Copyright (c) 2016, 2024 École Polytechnique de Montréal and others
+ *
+ * All rights reserved. This program and the accompanying materials are
+ * made available under the terms of the Eclipse Public License 2.0 which
+ * accompanies this distribution, and is available at
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *************************************************************************** -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	attributeFormDefault="unqualified" elementFormDefault="qualified">
+
+	<xs:element name="callstack" substitutionGroup="extra" type="callstackType"/>
+
+	<xs:complexType name="callstackType">
+		<xs:complexContent>
+			<xs:extension base="extraType">
+				<xs:annotation>
+					<xs:documentation>Declares a callstack path in the state system. If part of the state system describes a callstack, defining a callstack element will allow the analysis to have access to all callstack analysis information.</xs:documentation>
+				</xs:annotation>
+				<xs:sequence>
+					<xs:element maxOccurs="unbounded" minOccurs="1" name="callstackGroup" type="callstackGroup">
+						<xs:annotation>
+							<xs:documentation>Defines a value that maps a string used in the pattern state provider to a numbered value.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:choice maxOccurs="1" minOccurs="1">
+						<xs:element maxOccurs="1" minOccurs="0" name="analysis">
+							<xs:annotation>
+								<xs:documentation>The ID of the analysis whose state system is to be used as base for the state system. Both the callstack and the analysis it links to will appear for a given trace. The trace type it applies to are the same as the base analysis.</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:attribute name="id" type="xs:string" use="required">
+									<xs:annotation>
+										<xs:documentation>The ID of the analysis whose state system is to be used as base for the state system. Both the callstack and the analysis it links to will appear for a given trace. The trace type it applies to are the same as the base analysis.</xs:documentation>
+									</xs:annotation>
+								</xs:attribute>
+							</xs:complexType>
+						</xs:element>
+						<xs:element maxOccurs="unbounded" minOccurs="0" name="pattern" type="pattern" >
+							<xs:annotation>
+								<xs:documentation>Defines an internal pattern analysis that will be used to populate the callstack. This analysis will not appear under the trace, only the callstack one, but its label and trace type will be used for the callstack analysis</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element maxOccurs="unbounded" minOccurs="0" name="stateProvider" type="stateProvider" >
+							<xs:annotation>
+								<xs:documentation>Defines an internal state system analysis that will be used to populate the callstack. This analysis will not appear under the trace, only the callstack one, but its label and trace type will be used for the callstack analysis</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:choice>
+				</xs:sequence>
+				<xs:attribute name="id" type="xs:string" use="required" >
+					<xs:annotation>
+						<xs:documentation>The unique ID of this callstack. It will be used to identify the analysis that will be built from this pattern provider.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="callstackGroup">
+		<xs:annotation>
+			<xs:documentation>Declares a callstack path in the state system. If
+				part of the state system describes a callstack, defining a
+				callstack element will allow the analysis to have access to all
+				callstack analysis information.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element maxOccurs="unbounded" minOccurs="0" name="level"
+				type="callstackLevel">
+				<xs:annotation>
+					<xs:documentation>Defines the path in the state system that
+						describes a level of the callstack.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element maxOccurs="1" minOccurs="0" name="thread"
+				type="callstackThreadProvider">
+				<xs:annotation>
+					<xs:documentation>Defines how to get the thread ID of the
+						thread doing the callstack.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element maxOccurs="1" minOccurs="0" name="host"
+				type="callstackHostProvider">
+				<xs:annotation>
+					<xs:documentation>Defines how to get the host ID for a
+						callstack.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="name" type="xs:string" use="optional">
+			<xs:annotation>
+				<xs:documentation>A name to identify this callstack group</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+
+	<xs:complexType name="callstackLevel">
+		<xs:annotation>
+			<xs:documentation>Defines a level in the callstack</xs:documentation>
+		</xs:annotation>
+		<xs:attribute name="path" type="xs:string" use="required">
+			<xs:annotation>
+				<xs:documentation>The path from the root of the state system
+					where the callstack process pattern starts. It can be empty.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+
+	<xs:complexType name="callstackThreadProvider">
+		<xs:annotation>
+			<xs:documentation>Defines the way to get the thread ID for the
+				callstack.</xs:documentation>
+		</xs:annotation>
+		<xs:attribute name="cpu" type="xs:string" use="optional">
+			<xs:annotation>
+				<xs:documentation>The path relative to the last element of the
+					callstack where to find the CPU that will be used to get the
+					Thread ID.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="level" type="xs:integer" use="optional">
+			<xs:annotation>
+				<xs:documentation>The level whose value contains the thread ID.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="type" use="optional">
+			<xs:annotation>
+				<xs:documentation>Describe where at this level the thread ID
+					value is.</xs:documentation>
+			</xs:annotation>
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="name">
+						<xs:annotation>
+							<xs:documentation>The thread ID is the name of the
+								level</xs:documentation>
+						</xs:annotation>
+					</xs:enumeration>
+					<xs:enumeration value="value">
+						<xs:annotation>
+							<xs:documentation>The thread ID is the value at this
+								level</xs:documentation>
+						</xs:annotation>
+					</xs:enumeration>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+	</xs:complexType>
+
+	<xs:complexType name="callstackHostProvider">
+		<xs:annotation>
+			<xs:documentation>Defines the way to get the host ID for the
+				callstack.</xs:documentation>
+		</xs:annotation>
+		<xs:attribute name="level" type="xs:integer" use="required">
+			<xs:annotation>
+				<xs:documentation>The level whose data to use to get the host
+					ID.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="type" use="optional">
+			<xs:annotation>
+				<xs:documentation>Describe where at this level the host ID is.</xs:documentation>
+			</xs:annotation>
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="name">
+						<xs:annotation>
+							<xs:documentation>The host ID is the name of the
+								level</xs:documentation>
+						</xs:annotation>
+					</xs:enumeration>
+					<xs:enumeration value="value">
+						<xs:annotation>
+							<xs:documentation>The host ID is the value at this
+								level</xs:documentation>
+						</xs:annotation>
+					</xs:enumeration>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+	</xs:complexType>
+
+</xs:schema>

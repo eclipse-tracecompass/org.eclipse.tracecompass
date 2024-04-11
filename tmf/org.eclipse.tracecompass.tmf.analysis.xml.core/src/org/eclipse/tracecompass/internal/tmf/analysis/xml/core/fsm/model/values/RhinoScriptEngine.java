@@ -135,7 +135,7 @@ public class RhinoScriptEngine {
      * @param value
      *            value to set the property to
      */
-    public void put(String name, Object value) {
+    public void put(String name, @Nullable Object value) {
         ScriptableObject scope = fScope;
         if (scope != null) {
             scope.put(name, scope, value);
