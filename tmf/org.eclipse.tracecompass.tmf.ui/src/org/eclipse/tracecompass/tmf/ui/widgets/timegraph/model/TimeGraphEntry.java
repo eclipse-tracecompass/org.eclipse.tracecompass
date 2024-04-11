@@ -350,6 +350,7 @@ public class TimeGraphEntry implements ITimeGraphEntry, ICoreElementResolver {
      *
      * @param eventList
      *            The modifiable list of time events, or null to clear the list
+     *            and reset the sampling
      */
     public void setZoomedEventList(List<ITimeEvent> eventList) {
         if (eventList != null) {
