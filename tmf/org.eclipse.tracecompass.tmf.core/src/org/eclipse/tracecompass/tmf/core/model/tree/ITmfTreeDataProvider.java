@@ -15,6 +15,8 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.tracecompass.tmf.core.model.CommonStatusMessage;
+import org.eclipse.tracecompass.tmf.core.response.ITmfResponse;
 import org.eclipse.tracecompass.tmf.core.response.TmfModelResponse;
 
 /**
@@ -42,6 +44,23 @@ public interface ITmfTreeDataProvider<T extends ITmfTreeDataModel> {
      * @since 5.0
      */
     TmfModelResponse<TmfTreeModel<T>> fetchTree(Map<String, Object> fetchParameters, @Nullable IProgressMonitor monitor);
+
+    /**
+     * This methods computes a tree model context. Then, it returns a
+     * {@link TmfModelResponse} that contains the model. Tree model will be used
+     * by tree viewer to show entries as a tree or flat hierarchy
+     *
+     * @param fetchParameters
+     *            A query filter that contains an array of time. Times are used
+     *            for requesting data.
+     * @param monitor
+     *            A ProgressMonitor to cancel task
+     * @return A {@link TmfModelResponse} instance
+     * @since 9.3
+     */
+    default TmfModelResponse<Map<String, Object>> fetchTreeContext(Map<String, Object> fetchParameters, @Nullable IProgressMonitor monitor) {
+        return new TmfModelResponse<>(null, ITmfResponse.Status.CANCELLED, CommonStatusMessage.COMPLETED);
+    }
 
     /**
      * This method return the extension point ID of this provider

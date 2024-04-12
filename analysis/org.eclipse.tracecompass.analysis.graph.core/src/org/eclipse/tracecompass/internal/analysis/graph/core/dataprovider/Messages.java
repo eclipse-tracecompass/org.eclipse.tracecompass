@@ -26,6 +26,10 @@ public class Messages extends NLS {
     public static String CriticalPathDataProvider_NetworkArrow;
     /** Label for unknown arrows */
     public static String CriticalPathDataProvider_UnknownArrow;
+    /** The data provider title text */
+    public static String CriticalPathDataProviderFactory_title;
+    /**The data provider description text */
+    public static String CriticalPathDataProviderFactory_descriptionText;
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, Messages.class);

@@ -250,5 +250,28 @@ public class TmfTreeCompositeDataProvider<M extends ITmfTreeDataModel, P extends
         }
         return new TmfModelResponse<>(model, ITmfResponse.Status.RUNNING, CommonStatusMessage.RUNNING);
     }
+
+    @Override
+    public TmfModelResponse<Map<String, Object>> fetchTreeContext(Map<String, Object> fetchParameters, @Nullable IProgressMonitor monitor) {
+        boolean isComplete = true;
+        Map<String, Object> model = new HashMap<>();
+        for (P dataProvider : getProviders()) {
+            TmfModelResponse<Map<String, Object>> response = dataProvider.fetchTreeContext(fetchParameters, monitor);
+            isComplete &= response.getStatus() == ITmfResponse.Status.COMPLETED;
+            if (monitor != null && monitor.isCanceled()) {
+                return new TmfModelResponse<>(null, ITmfResponse.Status.CANCELLED, CommonStatusMessage.TASK_CANCELLED);
+            }
+            Map<String, Object> retModel = response.getModel();
+            if (retModel != null && !retModel.isEmpty()) {
+                model = retModel;
+                // only one data provider should return the context
+                break;
+            }
+        }
+        if (isComplete) {
+            return new TmfModelResponse<>(model, ITmfResponse.Status.COMPLETED, CommonStatusMessage.COMPLETED);
+        }
+        return new TmfModelResponse<>(model, ITmfResponse.Status.RUNNING, CommonStatusMessage.RUNNING);
+    }
 }
 
