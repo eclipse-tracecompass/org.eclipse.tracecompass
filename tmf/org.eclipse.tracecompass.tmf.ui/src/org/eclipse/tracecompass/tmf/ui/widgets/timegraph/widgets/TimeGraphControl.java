@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2007, 2022 Intel Corporation and others
+ * Copyright (c) 2007, 2024 Intel Corporation and others
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -2342,13 +2342,7 @@ public class TimeGraphControl extends TimeGraphBaseControl
                 gc.setForeground(color);
                 int height = (int) (rect.height * heightFactor);
                 TimeGraphRender.setFontForHeight(height, gc);
-                int textSize = (gc.textExtent(symbol).y + 1) / 2;
-                if (VerticalAlign.BOTTOM.equals(verticalAlign)) {
-                    y = rect.y + rect.height / 2 + Math.max(0, rect.height / 2 - textSize);
-                } else if (VerticalAlign.TOP.equals(verticalAlign)) {
-                    y = rect.y + rect.height / 2 - Math.max(0, rect.height / 2 - textSize);
-                }
-                gc.drawText(symbol, rect.x - symbolSize, y - textSize, true);
+                gc.drawText(symbol, rect.x - symbolSize, y - symbolSize, true);
                 gc.setForeground(oldColor);
             }
             gc.setAlpha(OPAQUE);
