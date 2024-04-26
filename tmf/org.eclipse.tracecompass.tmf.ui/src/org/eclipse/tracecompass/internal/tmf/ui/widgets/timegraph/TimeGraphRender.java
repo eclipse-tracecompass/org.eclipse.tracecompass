@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 Ericsson
+ * Copyright (c) 2020, 2024 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -26,6 +26,7 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.tracecompass.tmf.core.presentation.RGBAColor;
 import org.eclipse.tracecompass.tmf.ui.colors.RGBAUtil;
 import org.eclipse.tracecompass.tmf.ui.widgets.timegraph.ITimeGraphPresentationProvider;
@@ -693,7 +694,7 @@ public final class TimeGraphRender {
     private static final Map<Integer, Font> FONTS = new HashMap<>();
 
     /** Dots per inch */
-    private static final int DPI = 96;
+    private static final int DPI = Display.getDefault().getDPI().y;
 
     /** points per inch */
     private static final int PPI = 72;
@@ -724,14 +725,23 @@ public final class TimeGraphRender {
      *            the graphics context
      */
     public static void setFontForHeight(int pixels, GC gc) {
-        /* convert font height from pixels to points */
-        int height = Math.max(pixels * PPI / DPI, 1);
-        Font font = FONTS.computeIfAbsent(height, fontHeight -> {
+        gc.setFont(FONTS.computeIfAbsent(pixels, px -> {
+            /* convert font height from pixels to points */
+            int pt = Math.max(px * PPI / DPI, 1);
             FontData fontData = gc.getFont().getFontData()[0];
-            fontData.setHeight(fontHeight);
-            return new Font(gc.getDevice(), fontData);
-        });
-        gc.setFont(font);
+            Font font = new Font(gc.getDevice(), fontData);
+            // https://github.com/eclipse-platform/eclipse.platform.swt/issues/1193
+            for (int height = pt; height > 0; height--) {
+                fontData.setHeight(height);
+                font.dispose();
+                font = new Font(gc.getDevice(), fontData);
+                gc.setFont(font);
+                if (gc.textExtent("").y <= px) { //$NON-NLS-1$
+                    break;
+                }
+            }
+            return font;
+        }));
     }
 
     /**
