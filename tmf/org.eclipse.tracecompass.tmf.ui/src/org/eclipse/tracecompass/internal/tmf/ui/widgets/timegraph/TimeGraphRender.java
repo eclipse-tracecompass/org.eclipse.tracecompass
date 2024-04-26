@@ -81,7 +81,7 @@ public final class TimeGraphRender {
 
             /* Set the font for this item */
             int height = fBounds.height;
-            setFontForHeight(height - getMarginForHeight(height), gc);
+            setFontForHeight(height - getMarginForHeight(height) + 2, gc);
 
             for (DeferredItem item : getItems()) {
                 item.draw(provider, gc);

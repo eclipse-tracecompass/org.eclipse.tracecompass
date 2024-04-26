@@ -2763,7 +2763,7 @@ public class TimeGraphControl extends TimeGraphBaseControl
         }
 
         int height = bounds.height - TimeGraphRender.getMarginForHeight(bounds.height);
-        TimeGraphRender.setFontForHeight(height, Objects.requireNonNull(gc));
+        TimeGraphRender.setFontForHeight(height + 2, Objects.requireNonNull(gc));
 
         String name = fLabelProvider == null ? item.fName : fLabelProvider.getColumnText(item.fEntry, 0);
         Rectangle rect = Utils.clone(bounds);
