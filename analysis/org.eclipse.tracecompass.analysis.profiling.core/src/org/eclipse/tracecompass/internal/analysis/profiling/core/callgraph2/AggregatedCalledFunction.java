@@ -293,4 +293,37 @@ public class AggregatedCalledFunction extends AggregatedCallSite {
     public String toString() {
         return "Aggregate Function: " + getObject() + ", Duration: " + getDuration() + ", Self Time: " + fSelfTime + " on " + getNbCalls() + " calls"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
     }
+    /**
+     * Updates the statistic based on its statistics and other's one
+     *
+     * @param other
+     *            the other weighted tree
+     */
+    public void meanData(WeightedTree<ICallStackSymbol> other) {
+        if (!(other instanceof AggregatedCalledFunction)) {
+            return;
+        }
+        AggregatedCalledFunction otherFct = (AggregatedCalledFunction) other;
+        fDuration = fDuration / 2 + otherFct.getDuration() / 2;
+        fSelfTime = fSelfTime / 2 + otherFct.getDuration() / 2;
+        fCpuTime = fCpuTime / 2 + otherFct.getDuration() / 2;
+        fDuration = fDuration / 2 + otherFct.getDuration() / 2;
+
+        getFunctionStatistics().merge(otherFct.getFunctionStatistics(), true);
+        mergeProcessStatuses(otherFct);
+    }
+    /**
+     * Get the weight, be it self time, the duration, or other.
+     *
+     * @param name
+     *            the name of the weight
+     * @return the weight
+     */
+    public long getWeight(String name) {
+        if (name.equals("Self Time")) { //$NON-NLS-1$
+            return fSelfTime;
+        }
+        return fDuration;
+    }
+
 }
