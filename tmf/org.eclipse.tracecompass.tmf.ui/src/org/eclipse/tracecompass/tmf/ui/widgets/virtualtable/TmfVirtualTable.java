@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2010, 2018 Ericsson and others.
+ * Copyright (c) 2010, 2024 Ericsson and others.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -27,6 +27,7 @@ import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.events.MenuDetectListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
@@ -716,29 +717,21 @@ public class TmfVirtualTable extends Composite {
         return fTable.getSelection();
     }
 
-    /**
-     * Method addListener.
-     * @param eventType int
-     * @param listener Listener
-     */
     @Override
     public void addListener(int eventType, Listener listener) {
         fTable.addListener(eventType, listener);
     }
 
-    /**
-     * Method addKeyListener.
-     * @param listener KeyListener
-     */
     @Override
     public void addKeyListener(KeyListener listener) {
         fTable.addKeyListener(listener);
     }
 
-    /**
-     * Method addMouseListener.
-     * @param listener MouseListener
-     */
+    @Override
+    public void addMenuDetectListener(MenuDetectListener listener) {
+        fTable.addMenuDetectListener(listener);
+    }
+
     @Override
     public void addMouseListener(MouseListener listener) {
         fTable.addMouseListener(listener);
