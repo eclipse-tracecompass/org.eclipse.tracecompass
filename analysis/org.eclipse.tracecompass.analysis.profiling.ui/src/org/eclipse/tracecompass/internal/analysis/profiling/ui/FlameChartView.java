@@ -18,9 +18,14 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jface.action.Action;
@@ -78,6 +83,8 @@ import org.eclipse.tracecompass.tmf.ui.widgets.timegraph.model.NamedTimeEvent;
 import org.eclipse.tracecompass.tmf.ui.widgets.timegraph.model.TimeGraphEntry;
 import org.eclipse.tracecompass.tmf.ui.widgets.timegraph.widgets.TimeGraphControl;
 import org.eclipse.tracecompass.tmf.ui.widgets.timegraph.widgets.Utils;
+import org.eclipse.tracecompass.traceeventlogger.LogUtils.FlowScopeLog;
+import org.eclipse.tracecompass.traceeventlogger.LogUtils.FlowScopeLogBuilder;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchActionConstants;
 
@@ -100,6 +107,7 @@ public class FlameChartView extends BaseDataProviderTimeGraphView {
 
     /** View ID. */
     public static final String ID = "org.eclipse.tracecompass.analysis.profiling.ui.flamechart"; //$NON-NLS-1$
+    private static final Logger LOGGER = Logger.getLogger(FlameChartView.class.getName());
 
     private static final String[] COLUMN_NAMES = new String[] {
             Messages.CallStackView_FunctionColumn,
@@ -667,13 +675,13 @@ public class FlameChartView extends BaseDataProviderTimeGraphView {
         getConfigureSymbolsAction().setEnabled(providerPages.length > 0);
     }
 
-    private void resetSymbols() {
+    private IStatus resetSymbolsSync() {
         List<TimeGraphEntry> traceEntries = getEntryList(getTrace());
         if (traceEntries != null) {
             for (TraceEntry traceEntry : Iterables.filter(traceEntries, TraceEntry.class)) {
                 ITimeGraphDataProvider<? extends TimeGraphEntryModel> provider = traceEntry.getProvider();
-                if (provider instanceof FlameChartDataProvider) {
-                    ((FlameChartDataProvider) provider).resetFunctionNames(new NullProgressMonitor());
+                if (provider instanceof FlameChartDataProvider callstackProvider) {
+                    callstackProvider.resetFunctionNames(new NullProgressMonitor());
                 }
 
                 // reset full and zoomed events here
@@ -690,6 +698,20 @@ public class FlameChartView extends BaseDataProviderTimeGraphView {
             refresh();
         }
         synchingToTime(getTimeGraphViewer().getSelectionBegin());
+        return Status.OK_STATUS;
+    }
+
+    private void resetSymbols() {
+        try (FlowScopeLog flowParent = new FlowScopeLogBuilder(LOGGER, Level.FINE, "Resetting Symbols - Job launch").setCategory("Flame Chart").build();) { //$NON-NLS-1$ //$NON-NLS-2$
+            new Job("Resetting Symbols") { //$NON-NLS-1$
+                @Override
+                protected IStatus run(@Nullable IProgressMonitor monitor) {
+                    try (FlowScopeLog log = new FlowScopeLogBuilder(LOGGER, Level.FINE, "Resetting Symbols").setParentScope(flowParent).build()) { //$NON-NLS-1$
+                        return resetSymbolsSync();
+                    }
+                }
+            }.schedule();
+        }
     }
 
     @TmfSignalHandler
