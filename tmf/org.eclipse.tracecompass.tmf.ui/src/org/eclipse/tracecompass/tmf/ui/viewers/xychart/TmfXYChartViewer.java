@@ -805,13 +805,4 @@ public abstract class TmfXYChartViewer extends TmfTimeViewer implements ITmfChar
             fDataProvider.setTimeFormat(fTimeFormat);
         }
     }
-    /**
-     * @since 9.1
-     * refresh fMouseSelectionProvider
-     */
-
-    public void refreshMouseSelectionProvider() {
-        fMouseSelectionProvider.refresh();
-    }
-
 }

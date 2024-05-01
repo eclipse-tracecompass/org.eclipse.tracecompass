@@ -294,7 +294,9 @@ public class AggregatedCalledFunction extends AggregatedCallSite {
         return "Aggregate Function: " + getObject() + ", Duration: " + getDuration() + ", Self Time: " + fSelfTime + " on " + getNbCalls() + " calls"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
     }
     /**
-     * Updates the statistic based on its statistics and other's one
+     * Updates the statistic based on its statistics and other's one to compute the average statistic which is needed for merging
+     * flame graphs together.Unlike the mergedata in which the statistics of other node are added to the statistics of this node,
+     * in this function, the statistics are computed as the average of two node's statistic.
      *
      * @param other
      *            the other weighted tree
@@ -304,26 +306,11 @@ public class AggregatedCalledFunction extends AggregatedCallSite {
             return;
         }
         AggregatedCalledFunction otherFct = (AggregatedCalledFunction) other;
-        fDuration = fDuration / 2 + otherFct.getDuration() / 2;
-        fSelfTime = fSelfTime / 2 + otherFct.getDuration() / 2;
-        fCpuTime = fCpuTime / 2 + otherFct.getDuration() / 2;
-        fDuration = fDuration / 2 + otherFct.getDuration() / 2;
+        fDuration = (fDuration  + otherFct.getDuration()) / 2;
+        fSelfTime = (fSelfTime  + otherFct.getDuration()) / 2;
+        fCpuTime = (fCpuTime  + otherFct.getDuration()) / 2;
 
         getFunctionStatistics().merge(otherFct.getFunctionStatistics(), true);
         mergeProcessStatuses(otherFct);
     }
-    /**
-     * Get the weight, be it self time, the duration, or other.
-     *
-     * @param name
-     *            the name of the weight
-     * @return the weight
-     */
-    public long getWeight(String name) {
-        if (name.equals("Self Time")) { //$NON-NLS-1$
-            return fSelfTime;
-        }
-        return fDuration;
-    }
-
 }
