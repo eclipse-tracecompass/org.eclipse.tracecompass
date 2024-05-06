@@ -26,6 +26,8 @@ public class Messages extends NLS {
     public static String SegmentEndTimeAspect_endDescription;
     /** Segment duration */
     public static String SegmentDurationAspect_durationDescription;
+    /** Segment start time (ns timestamp)*/
+    public static String SegmentStartNsTimeAspect_startDescription;
 
     static {
         // initialize resource bundle

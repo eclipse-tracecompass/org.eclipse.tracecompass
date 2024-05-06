@@ -90,4 +90,15 @@ public final class TmfStrings {
     public static String source() {
         return Objects.requireNonNull(org.eclipse.tracecompass.internal.tmf.core.aspect.Messages.TmfCallsiteAspect_name);
     }
+
+    /**
+     * Get the string for nanosecond timestamp
+     *
+     * @return the label for nanosecond timestamp
+     * @since 10.1
+     */
+    public static @NonNull String nsTime() {
+        return Objects.requireNonNull(org.eclipse.tracecompass.tmf.core.event.aspect.Messages.AspectName_Timestamp_Nanoseconds);
+    }
+
 }
