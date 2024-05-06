@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019 École Polytechnique de Montréal
+ * Copyright (c) 2019, 2024 École Polytechnique de Montréal
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -90,4 +90,15 @@ public final class TmfStrings {
     public static String source() {
         return Objects.requireNonNull(org.eclipse.tracecompass.internal.tmf.core.aspect.Messages.TmfCallsiteAspect_name);
     }
+
+    /**
+     * Get the string for nanosecond timestamp
+     *
+     * @return the label for nanosecond timestamp
+     * @since 9.3
+     */
+    public static @NonNull String nsTime() {
+        return Objects.requireNonNull(org.eclipse.tracecompass.tmf.core.event.aspect.Messages.AspectName_Timestamp_Nanoseconds);
+    }
+
 }

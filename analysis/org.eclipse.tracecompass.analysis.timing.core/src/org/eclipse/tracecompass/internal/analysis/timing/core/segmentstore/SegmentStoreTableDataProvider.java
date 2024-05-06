@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2022 Ericsson
+ * Copyright (c) 2022, 2024 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -65,6 +65,7 @@ import org.eclipse.tracecompass.tmf.core.response.TmfModelResponse;
 import org.eclipse.tracecompass.tmf.core.segment.ISegmentAspect;
 import org.eclipse.tracecompass.tmf.core.segment.SegmentDurationAspect;
 import org.eclipse.tracecompass.tmf.core.segment.SegmentEndTimeAspect;
+import org.eclipse.tracecompass.tmf.core.segment.SegmentStartNsTimeAspect;
 import org.eclipse.tracecompass.tmf.core.timestamp.TmfTimestamp;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
 
@@ -352,6 +353,19 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTableDataProvider 
                 }
                 model.add(new TmfTreeDataModel(id, -1, Collections.singletonList(aspect.getName())));
             }
+        }
+
+        ISegmentAspect aspect = SegmentStartNsTimeAspect.SEGMENT_START_NS_TIME_ASPECT;
+        synchronized (fAspectToIdMap) {
+            long id = fAspectToIdMap.computeIfAbsent(aspect, a -> createColumnId());
+            Comparator<ISegment> comparator = (Comparator<ISegment>) aspect.getComparator();
+            if (comparator != null && aspect.getName().equals(SegmentEndTimeAspect.SEGMENT_END_TIME_ASPECT.getName())) {
+                comparator = comparator.reversed();
+            }
+            if (comparator != null) {
+                buildIndex(id, comparator, aspect.getName());
+            }
+            model.add(new TmfTreeDataModel(id, -1, Collections.singletonList(aspect.getName())));
         }
         return new TmfModelResponse<>(new TmfTreeModel<>(Collections.emptyList(), model), ITmfResponse.Status.COMPLETED, CommonStatusMessage.COMPLETED);
     }
