@@ -548,12 +548,16 @@ public final class KernelThreadInformationProvider {
         if (ss == null) {
             return Objects.requireNonNull(Collections.emptyMap());
         }
+        List<Long> currentTimes = times.stream().filter(time -> (time > ss.getCurrentEndTime() || time < ss.getStartTime())).sorted().collect(Collectors.toList());
+        if (currentTimes.isEmpty()) {
+            return Objects.requireNonNull(Collections.emptyMap());
+        }
         Map<Integer, String> quarkToThreadIds = getQuarkToThreadIds(module, threadIds);
         TreeMultimap<String, ITmfStateInterval> intervals = TreeMultimap.create(Comparator.naturalOrder(),
                 Comparator.comparing(ITmfStateInterval::getStartTime));
         Map<Integer, List<ITmfStateInterval>> kernelStatuses = new HashMap<>();
         try {
-            for (ITmfStateInterval interval : ss.query2D(quarkToThreadIds.keySet(), times)) {
+            for (ITmfStateInterval interval : ss.query2D(quarkToThreadIds.keySet(), currentTimes)) {
                 if (monitor.isCanceled()) {
                     return Objects.requireNonNull(Collections.emptyMap());
                 }
