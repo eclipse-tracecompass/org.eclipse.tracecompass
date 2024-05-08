@@ -72,6 +72,29 @@ public class IntegerDeclarationTest {
     }
 
     /**
+     * Run the createVarintDeclaration method test (boolean, int, String,
+     * boolean)
+     */
+    @Test
+    public void testVarintDeclaration() {
+        boolean signed = false;
+        boolean varint = true;
+        int base = 1;
+        ByteOrder byteOrder = ByteOrder.LITTLE_ENDIAN;
+
+        IntegerDeclaration result = IntegerDeclaration.createVarintDeclaration(signed, base, null, varint);
+
+        assertNotNull(result);
+        assertEquals(1, result.getBase());
+        assertEquals(true, result.isVarint());
+        String outputValue = "[declaration] integer[";
+        assertEquals(outputValue,
+                result.toString().substring(0, outputValue.length()));
+        assertEquals(byteOrder, result.getByteOrder());
+        assertEquals(false, result.isSigned());
+    }
+
+    /**
      * Test the factory part more rigorously to make sure there are no
      * regressions
      */
@@ -156,6 +179,15 @@ public class IntegerDeclarationTest {
     @Test
     public void testIsCharacter() {
         boolean result = fixture.isCharacter();
+        assertEquals(false, result);
+    }
+
+    /**
+     * Run the boolean isVarint() method test.
+     */
+    @Test
+    public void testIsVarint() {
+        boolean result = fixture.isVarint();
         assertEquals(false, result);
     }
 

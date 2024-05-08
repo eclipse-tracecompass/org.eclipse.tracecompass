@@ -110,6 +110,7 @@ public final class IntegerDeclarationParser implements ICommonTreeParser {
     private static final @NonNull String LENGTH = "length"; //$NON-NLS-1$
     private static final @NonNull String SIGNED = "signed"; //$NON-NLS-1$
     private static final @NonNull String ALIGNMENT = "alignment"; //$NON-NLS-1$
+    private static final @NonNull String VARINT = "varint"; //$NON-NLS-1$
 
     private IntegerDeclarationParser() {
     }
@@ -131,6 +132,7 @@ public final class IntegerDeclarationParser implements ICommonTreeParser {
 
         /* The return value */
         boolean signed = false;
+        boolean varint = false;
         ByteOrder byteOrder = trace.getByteOrder();
         long size = 0;
         long alignment = 0;
@@ -144,21 +146,28 @@ public final class IntegerDeclarationParser implements ICommonTreeParser {
         if (integer instanceof JsonStructureFieldMemberMetadataNode) {
             JsonStructureFieldMemberMetadataNode member = (JsonStructureFieldMemberMetadataNode) integer;
             JsonObject fieldclass = member.getFieldClass().getAsJsonObject();
-
-            size = fieldclass.get(LENGTH).getAsInt();
+            role = member.getRole();
             // by default fieldclass is unsigned
             if (fieldclass.has(SIGNED)) {
                 signed = fieldclass.get(SIGNED).getAsBoolean();
             }
-            CTFJsonMetadataNode bo = new CTFJsonMetadataNode(integer, CTFParser.tokenNames[CTFParser.UNARY_EXPRESSION_STRING], fieldclass.get(BYTE_ORDER).getAsString());
-            byteOrder = ByteOrderParser.INSTANCE.parse(bo, new ByteOrderParser.Param(trace));
-            if (fieldclass.has(ALIGNMENT)) {
-                alignment = fieldclass.get(ALIGNMENT).getAsInt();
-            }
             if (fieldclass.has(PREFERRED_BASE)) {
                 base = fieldclass.get(PREFERRED_BASE).getAsInt();
             }
-            role = member.getRole();
+            if (fieldclass.has(VARINT)) {
+                varint = fieldclass.get(VARINT).getAsBoolean();
+            }
+            if (varint) {
+                return IntegerDeclaration.createVarintDeclaration(signed, base, role, true);
+            }
+            if (fieldclass.has(ALIGNMENT)) {
+                alignment = fieldclass.get(ALIGNMENT).getAsInt();
+            }
+            size = fieldclass.get(LENGTH).getAsInt();
+
+            CTFJsonMetadataNode bo = new CTFJsonMetadataNode(integer, CTFParser.tokenNames[CTFParser.UNARY_EXPRESSION_STRING], fieldclass.get(BYTE_ORDER).getAsString());
+            byteOrder = ByteOrderParser.INSTANCE.parse(bo, new ByteOrderParser.Param(trace));
+
         } else if (integer instanceof CTFAntlrMetadataNode) {
             List<ICTFMetadataNode> children = integer.getChildren();
             /*

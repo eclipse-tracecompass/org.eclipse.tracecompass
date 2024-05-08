@@ -26,6 +26,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.ctf.core.CTFException;
 import org.eclipse.tracecompass.ctf.core.event.io.BitBuffer;
 import org.eclipse.tracecompass.ctf.core.event.scope.IDefinitionScope;
+import org.eclipse.tracecompass.internal.ctf.core.utils.LEB128;
 
 /**
  * A CTF integer declaration.
@@ -127,6 +128,7 @@ public final class IntegerDeclaration extends Declaration implements ISimpleData
     private final Encoding fEncoding;
     private final long fAlignment;
     private final String fClock;
+    private boolean fVarint = false;
 
     // ------------------------------------------------------------------------
     // Constructors
@@ -154,7 +156,8 @@ public final class IntegerDeclaration extends Declaration implements ISimpleData
      * @param alignment
      *            The minimum alignment. Should be >= 1
      * @return the integer declaration
-     * @deprecated use {@link #createDeclaration(int, boolean, int, ByteOrder, Encoding, String, long, String)}
+     * @deprecated use
+     *             {@link #createDeclaration(int, boolean, int, ByteOrder, Encoding, String, long, String)}
      */
     @Deprecated
     public static IntegerDeclaration createDeclaration(int len, boolean signed, int base,
@@ -315,6 +318,28 @@ public final class IntegerDeclaration extends Declaration implements ISimpleData
         return new IntegerDeclaration(len, signed, base, byteOrder, encoding, clock, alignment, role);
     }
 
+    /**
+     * Create method for CTF2 varints
+     *
+     * @param signed
+     *            Is the integer signed? false == unsigned
+     * @param base
+     *            The base (10-16 are most common)
+     * @param role
+     *            The role of the integer declaration
+     * @param varint
+     *            A boolean indicating if the declaration is a varint
+     * @return IntegerDeclaration
+     *
+     * @since 4.5
+     */
+    public static IntegerDeclaration createVarintDeclaration(boolean signed, int base, @Nullable String role, boolean varint) {
+        IntegerDeclaration decl = new IntegerDeclaration(0, signed, base, null, Encoding.NONE, "", 0); //$NON-NLS-1$
+        decl.setRole(role);
+        decl.setVarint(varint);
+        return decl;
+    }
+
     private static boolean isBigEndian(@Nullable ByteOrder byteOrder) {
         return (byteOrder != null) && byteOrder.equals(ByteOrder.BIG_ENDIAN);
     }
@@ -336,6 +361,7 @@ public final class IntegerDeclaration extends Declaration implements ISimpleData
      *            The clock path, can be null
      * @param alignment
      *            The minimum alignment. Should be &ge; 1
+     *
      */
     private IntegerDeclaration(int len, boolean signed, int base,
             @Nullable ByteOrder byteOrder, Encoding encoding, String clock, long alignment) {
@@ -390,6 +416,26 @@ public final class IntegerDeclaration extends Declaration implements ISimpleData
      */
     public boolean isSigned() {
         return fSigned;
+    }
+
+    /**
+     * Is the integer a varint ?
+     *
+     * @return a boolean indicating varint status
+     * @since 4.5
+     */
+    public boolean isVarint() {
+        return fVarint;
+    }
+
+    /**
+     * Setter for fVarint
+     *
+     * @param varint
+     *            a boolean indicating varint status
+     */
+    private void setVarint(boolean varint) {
+        fVarint = varint;
     }
 
     /**
@@ -529,6 +575,12 @@ public final class IntegerDeclaration extends Declaration implements ISimpleData
     }
 
     private long read(BitBuffer input) throws CTFException {
+        if (isVarint()) {
+            if (isSigned()) {
+                return LEB128.readSignedLeb(input);
+            }
+            return LEB128.readUnsignedLeb(input);
+        }
         /* Offset the buffer position wrt the current alignment */
         alignRead(input);
 
