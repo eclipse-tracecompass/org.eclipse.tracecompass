@@ -49,6 +49,7 @@ import com.google.gson.JsonPrimitive;
 public final class TypeAliasParser extends AbstractScopedCommonTreeParser {
 
     private static final String SIGNED = "signed"; //$NON-NLS-1$
+    private static final String VARINT = "varint"; //$NON-NLS-1$
 
     /**
      * Parameters for the typealias parser
@@ -136,9 +137,19 @@ public final class TypeAliasParser extends AbstractScopedCommonTreeParser {
             if (fieldClass != null) {
                 if (JsonMetadataStrings.FIXED_UNSIGNED_INTEGER_FIELD.equals(type)) {
                     fieldClass.addProperty(SIGNED, false);
+                    fieldClass.addProperty(VARINT, false);
                     targetDeclaration = IntegerDeclarationParser.INSTANCE.parse(typealias, new IntegerDeclarationParser.Param(trace));
                 } else if (JsonMetadataStrings.FIXED_SIGNED_INTEGER_FIELD.equals(type)) {
                     fieldClass.addProperty(SIGNED, true);
+                    fieldClass.addProperty(VARINT, false);
+                    targetDeclaration = IntegerDeclarationParser.INSTANCE.parse(typealias, new IntegerDeclarationParser.Param(trace));
+                } else if (JsonMetadataStrings.VARIABLE_UNSIGNED_INTEGER_FIELD.equals(type)) {
+                    fieldClass.addProperty(SIGNED, false);
+                    fieldClass.addProperty(VARINT, true);
+                    targetDeclaration = IntegerDeclarationParser.INSTANCE.parse(typealias, new IntegerDeclarationParser.Param(trace));
+                } else if (JsonMetadataStrings.VARIABLE_SIGNED_INTEGER_FIELD.equals(type)) {
+                    fieldClass.addProperty(SIGNED, true);
+                    fieldClass.addProperty(VARINT, true);
                     targetDeclaration = IntegerDeclarationParser.INSTANCE.parse(typealias, new IntegerDeclarationParser.Param(trace));
                 } else if (JsonMetadataStrings.STATIC_LENGTH_BLOB.equals(type)) {
                     targetDeclaration = BlobDeclarationParser.INSTANCE.parse(typealias, null);

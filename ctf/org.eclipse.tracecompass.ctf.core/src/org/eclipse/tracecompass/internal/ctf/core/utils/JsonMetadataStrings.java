@@ -123,14 +123,24 @@ public final class JsonMetadataStrings {
     public static final String ALIAS = "alias"; //$NON-NLS-1$
 
     /**
-     * Type string for an unsigned integer field class
+     * Type string for an unsigned fixed integer field class
      */
     public static final String FIXED_UNSIGNED_INTEGER_FIELD = "fixed-length-unsigned-integer"; //$NON-NLS-1$
 
     /**
-     * Type string for a signed integer field class
+     * Type string for a signed fixed integer field class
      */
     public static final String FIXED_SIGNED_INTEGER_FIELD = "fixed-length-signed-integer"; //$NON-NLS-1$
+
+    /**
+     * Type string for an unsigned variable integer field class
+     */
+    public static final String VARIABLE_UNSIGNED_INTEGER_FIELD = "variable-length-unsigned-integer"; //$NON-NLS-1$
+
+    /**
+     * Type string for a signed variable integer field class
+     */
+    public static final String VARIABLE_SIGNED_INTEGER_FIELD = "variable-length-signed-integer"; //$NON-NLS-1$
 
     /**
      * Type string for a static length blob field class
