@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 École Polytechnique de Montréal
+ * Copyright (c) 2015, 2024 École Polytechnique de Montréal and others
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -96,8 +96,8 @@ public class OsWorker implements IGraphWorker {
             return Collections.emptyMap();
         }
         ImmutableMap.Builder<String, String> workerInfo = new Builder<>();
-        workerInfo.put(OsStrings.tid(), String.valueOf(tid)); //$NON-NLS-1$
-        Optional<@Nullable KernelAnalysisModule> kam = TmfTraceManager.getInstance().getActiveTraceSet()
+        workerInfo.put(OsStrings.tid(), String.valueOf(tid));
+        Optional<@NonNull KernelAnalysisModule> kam = TmfTraceManager.getInstance().getActiveTraceSet()
                 .stream()
                 .filter(trace -> trace.getHostId().equals(getHostId()))
                 .map(trace -> TmfTraceUtils.getAnalysisModuleOfClass(trace, KernelAnalysisModule.class, KernelAnalysisModule.ID))

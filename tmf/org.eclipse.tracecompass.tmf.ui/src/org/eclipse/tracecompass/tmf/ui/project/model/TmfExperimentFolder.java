@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
@@ -189,11 +190,11 @@ public class TmfExperimentFolder extends TmfProjectModelElement implements IProp
      * @since 2.0
      */
     public @Nullable TmfExperimentElement getExperiment(@NonNull String name) {
-        return getExperiments().stream()
+        Optional<@NonNull TmfExperimentElement> exp = getExperiments().stream()
                 .filter(Objects::nonNull)
                 .filter(experiment -> experiment.getName().equals(name))
-                .findFirst()
-                .orElse(null);
+                .findFirst();
+        return exp.isPresent() ? exp.get() : null;
     }
 
 

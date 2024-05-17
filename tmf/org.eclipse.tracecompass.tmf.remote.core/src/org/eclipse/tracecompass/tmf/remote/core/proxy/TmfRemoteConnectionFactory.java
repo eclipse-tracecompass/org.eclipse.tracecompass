@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Ericsson
+ * Copyright (c) 2015, 2024 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -21,6 +21,7 @@ import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -228,12 +229,12 @@ public class TmfRemoteConnectionFactory {
         if (manager == null) {
             return null;
         }
-        return manager.getAllRemoteConnections().stream()
+        Optional<IRemoteConnection> remoteConnection = manager.getAllRemoteConnections().stream()
                 .filter(Objects::nonNull)
                 .filter(connection -> connection.getName().equals(name))
                 .filter(connection -> connection.getConnectionType().getId().equals(remoteServicesId))
-                .findFirst()
-                .orElse(null);
+                .findFirst();
+        return remoteConnection.isPresent() ? remoteConnection.get() : null;
     }
 
     /**
