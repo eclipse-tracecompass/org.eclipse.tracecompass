@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2017 Ericsson
+ * Copyright (c) 2013, 2024 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -275,13 +275,13 @@ public class LttngTraceGenerator {
         file.mkdir();
 
         File metadataFile = new File(file.getPath() + File.separator + "metadata");
-        File[] streams = new File[fNbChans];
+        FileOutputStream[] streams = new FileOutputStream[fNbChans];
         FileChannel[] channels = new FileChannel[fNbChans];
 
         try {
             for (int i = 0; i < fNbChans; i++) {
-                streams[i] = new File(file.getPath() + File.separator + "channel" + i);
-                channels[i] = new FileOutputStream(streams[i]).getChannel();
+                streams[i] = new FileOutputStream(new File(file.getPath() + File.separator + "channel" + i));
+                channels[i] = streams[i].getChannel();
             }
         } catch (FileNotFoundException e) {
         }
@@ -371,7 +371,7 @@ public class LttngTraceGenerator {
             }
             writeToDisk(channels, chan, bb);
             try {
-                channels[chan].close();
+                streams[chan].close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
