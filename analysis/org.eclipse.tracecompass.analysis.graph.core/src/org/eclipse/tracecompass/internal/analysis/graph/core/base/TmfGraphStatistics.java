@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2022 École Polytechnique de Montréal
+ * Copyright (c) 2015, 2024 École Polytechnique de Montréal and others
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -20,10 +20,6 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.analysis.graph.core.base.IGraphWorker;
-import org.eclipse.tracecompass.analysis.graph.core.base.ITmfGraphVisitor;
-import org.eclipse.tracecompass.analysis.graph.core.base.TmfEdge;
-import org.eclipse.tracecompass.analysis.graph.core.base.TmfGraph;
-import org.eclipse.tracecompass.analysis.graph.core.base.TmfVertex;
 
 /**
  * Class that computes statistics on time spent in the elements (objects) of a
@@ -32,10 +28,8 @@ import org.eclipse.tracecompass.analysis.graph.core.base.TmfVertex;
  * @author Francis Giraldeau
  * @author Geneviève Bastien
  * @author Matthew Khouzam
- * @deprecated Use the one from o.e.t.internal.graph.core.graph
  */
-@Deprecated
-public class TmfGraphStatistics implements ITmfGraphVisitor {
+public class TmfGraphStatistics extends TmfGraphVisitor {
 
     private final Map<IGraphWorker, Long> fWorkerStats;
     private Long fTotal;

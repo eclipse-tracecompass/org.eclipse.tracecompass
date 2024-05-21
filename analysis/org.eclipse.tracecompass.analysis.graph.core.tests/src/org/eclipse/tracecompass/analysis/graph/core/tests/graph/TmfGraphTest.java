@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 École Polytechnique de Montréal
+ * Copyright (c) 2015, 2024 École Polytechnique de Montréal and others
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -27,14 +27,15 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.tracecompass.analysis.graph.core.base.CycleDetectedException;
 import org.eclipse.tracecompass.analysis.graph.core.base.IGraphWorker;
-import org.eclipse.tracecompass.analysis.graph.core.base.ITmfGraphVisitor;
-import org.eclipse.tracecompass.analysis.graph.core.base.TmfEdge;
-import org.eclipse.tracecompass.analysis.graph.core.base.TmfEdge.EdgeType;
-import org.eclipse.tracecompass.analysis.graph.core.base.TmfGraph;
-import org.eclipse.tracecompass.analysis.graph.core.base.TmfVertex;
-import org.eclipse.tracecompass.analysis.graph.core.base.TmfVertex.EdgeDirection;
+import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfGraphVisitor;
 import org.eclipse.tracecompass.analysis.graph.core.tests.stubs.TestGraphWorker;
+import org.eclipse.tracecompass.internal.analysis.graph.core.base.TmfEdge;
+import org.eclipse.tracecompass.internal.analysis.graph.core.base.TmfEdge.EdgeType;
+import org.eclipse.tracecompass.internal.analysis.graph.core.base.TmfGraph;
 import org.eclipse.tracecompass.internal.analysis.graph.core.base.TmfGraphStatistics;
+import org.eclipse.tracecompass.internal.analysis.graph.core.base.TmfGraphVisitor;
+import org.eclipse.tracecompass.internal.analysis.graph.core.base.TmfVertex;
+import org.eclipse.tracecompass.internal.analysis.graph.core.base.TmfVertex.EdgeDirection;
 import org.eclipse.tracecompass.tmf.core.timestamp.ITmfTimestamp;
 import org.eclipse.tracecompass.tmf.core.timestamp.TmfTimestamp;
 import org.junit.Test;
@@ -318,7 +319,7 @@ public class TmfGraphTest {
         n0.linkVertical(n1);
     }
 
-    private class ScanCountVertex implements ITmfGraphVisitor {
+    private class ScanCountVertex extends TmfGraphVisitor {
         public int nbVertex = 0;
         public int nbVLink = 0;
         public int nbHLink = 0;
@@ -433,7 +434,7 @@ public class TmfGraphTest {
      * @author Francis Giraldeau
      *
      */
-    private class DuplicateDetectorVisitor implements ITmfGraphVisitor {
+    private class DuplicateDetectorVisitor extends TmfGraphVisitor {
         private final Set<TmfVertex> set = new HashSet<>();
         @Override
         public void visitHead(TmfVertex vertex) {

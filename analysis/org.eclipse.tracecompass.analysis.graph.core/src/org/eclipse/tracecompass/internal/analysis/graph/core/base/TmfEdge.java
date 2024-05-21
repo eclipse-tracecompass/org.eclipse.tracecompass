@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2022 École Polytechnique de Montréal
+ * Copyright (c) 2015, 2024 École Polytechnique de Montréal and others
  *
  * All rights reserved. This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0 which
@@ -13,14 +13,11 @@
  *   Geneviève Bastien - Initial implementation and API
  *******************************************************************************/
 
-package org.eclipse.tracecompass.analysis.graph.core.base;
+package org.eclipse.tracecompass.internal.analysis.graph.core.base;
 
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfEdge;
-import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfGraph;
-import org.eclipse.tracecompass.internal.analysis.graph.core.base.Messages;
 import org.eclipse.tracecompass.tmf.core.dataprovider.X11ColorUtils;
 import org.eclipse.tracecompass.tmf.core.model.StyleProperties;
 
@@ -31,10 +28,7 @@ import com.google.common.collect.ImmutableMap;
  *
  * @author Francis Giraldeau
  * @author Geneviève Bastien
- * @deprecated Use the {@link ITmfEdge} instead and the {@link ITmfGraph}
- *             interface to create edges.
  */
-@Deprecated
 public class TmfEdge {
 
     /**

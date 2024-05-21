@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2022 École Polytechnique de Montréal
+ * Copyright (c) 2015, 2024 École Polytechnique de Montréal and others
  *
  * All rights reserved. This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0 which
@@ -8,17 +8,20 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
-package org.eclipse.tracecompass.analysis.graph.core.criticalpath;
+package org.eclipse.tracecompass.internal.analysis.graph.core.criticalpath;
 
 import java.util.Objects;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.analysis.graph.core.base.IGraphWorker;
-import org.eclipse.tracecompass.analysis.graph.core.base.TmfGraph;
 import org.eclipse.tracecompass.analysis.graph.core.building.AbstractTmfGraphBuilderModule;
+import org.eclipse.tracecompass.analysis.graph.core.criticalpath.ICriticalPathProvider;
+import org.eclipse.tracecompass.analysis.graph.core.criticalpath.OSCriticalPathModule;
+import org.eclipse.tracecompass.internal.analysis.graph.core.base.TmfGraph;
 import org.eclipse.tracecompass.tmf.core.analysis.TmfAbstractAnalysisModule;
 import org.eclipse.tracecompass.tmf.core.exceptions.TmfAnalysisException;
+
 import com.google.common.annotations.VisibleForTesting;
 
 /**
@@ -78,14 +81,16 @@ public class CriticalPathModule extends TmfAbstractAnalysisModule implements ICr
         }
         return Objects.requireNonNull(fCriticalPathModule);
     }
-    @Override
+
     public @Nullable TmfGraph getCriticalPath() {
         return getCriticalPathModule().getCriticalPath();
     }
+
     @Override
     protected boolean executeAnalysis(IProgressMonitor monitor) throws TmfAnalysisException {
         return getCriticalPathModule().executeAnalysis(monitor);
     }
+
     @Override
     protected void canceling() {
         getCriticalPathModule().canceling();

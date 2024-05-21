@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2022 École Polytechnique de Montréal
+ * Copyright (c) 2022, 2024 École Polytechnique de Montréal and others
  *
  * All rights reserved. This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0 which
@@ -13,8 +13,8 @@ package org.eclipse.tracecompass.analysis.graph.core.tests.graph;
 
 import java.io.IOException;
 
-import org.eclipse.tracecompass.analysis.graph.core.base.TmfGraph;
 import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfGraph;
+import org.eclipse.tracecompass.internal.analysis.graph.core.base.TmfGraph;
 import org.eclipse.tracecompass.internal.analysis.graph.core.graph.legacy.TmfGraphLegacyWrapper;
 
 /**

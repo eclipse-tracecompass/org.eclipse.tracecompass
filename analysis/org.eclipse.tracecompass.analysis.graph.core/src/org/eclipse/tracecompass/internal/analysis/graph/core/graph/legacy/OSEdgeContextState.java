@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2022 École Polytechnique de Montréal
+ * Copyright (c) 2022, 2024 École Polytechnique de Montréal and others
  *
  * All rights reserved. This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0 which
@@ -15,10 +15,10 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.tracecompass.internal.analysis.graph.core.base.Messages;
-import org.eclipse.tracecompass.analysis.graph.core.base.TmfEdge;
 import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfEdgeContextState;
 import org.eclipse.tracecompass.analysis.graph.core.graph.TmfEdgeState;
+import org.eclipse.tracecompass.internal.analysis.graph.core.base.Messages;
+import org.eclipse.tracecompass.internal.analysis.graph.core.base.TmfEdge;
 import org.eclipse.tracecompass.tmf.core.dataprovider.X11ColorUtils;
 import org.eclipse.tracecompass.tmf.core.model.StyleProperties;
 
@@ -212,7 +212,6 @@ public class OSEdgeContextState implements ITmfEdgeContextState {
      * Legacy constructor to instantiate the new object with the old enum.
      * @param type old edge type
      */
-    @SuppressWarnings("deprecation")
     public OSEdgeContextState(TmfEdge.EdgeType type) {
         switch (type) {
         case BLOCKED:
@@ -259,7 +258,6 @@ public class OSEdgeContextState implements ITmfEdgeContextState {
      * Getter that returns the old edge type from the context state enum
      * @return the old edge type from {@link TmfEdge}
      */
-    @SuppressWarnings({ "deprecation", "javadoc" })
     public TmfEdge.EdgeType getOldEdgeType() {
         switch (fContextState) {
         case BLOCKED:

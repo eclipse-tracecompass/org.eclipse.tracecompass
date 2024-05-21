@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2022 École Polytechnique de Montréal
+ * Copyright (c) 2015, 2024 École Polytechnique de Montréal and others
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -21,14 +21,11 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.analysis.graph.core.base.IGraphWorker;
-import org.eclipse.tracecompass.analysis.graph.core.base.TmfGraph;
-import org.eclipse.tracecompass.analysis.graph.core.base.TmfVertex;
 import org.eclipse.tracecompass.analysis.graph.core.criticalpath.CriticalPathAlgorithmException;
 import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfEdge;
 import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfGraph;
 import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfVertex;
 import org.eclipse.tracecompass.analysis.graph.core.graph.TmfEdgeState;
-import org.eclipse.tracecompass.internal.analysis.graph.core.graph.legacy.TmfGraphLegacyWrapper;
 
 /**
  * Critical path bounded algorithm: backward resolution of blocking limited to
@@ -51,17 +48,6 @@ public class CriticalPathAlgorithmBounded extends AbstractCriticalPathAlgorithm 
      */
     public CriticalPathAlgorithmBounded(ITmfGraph graph) {
         super(graph);
-    }
-
-    @Deprecated
-    public CriticalPathAlgorithmBounded(TmfGraph graph) {
-        super(new TmfGraphLegacyWrapper(graph));
-    }
-
-    @Deprecated
-    @Override
-    public TmfGraph compute(TmfVertex start, @Nullable TmfVertex end) throws CriticalPathAlgorithmException {
-        throw new UnsupportedOperationException("Old and new implementations are incompatible"); //$NON-NLS-1$
     }
 
     /**

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2022 École Polytechnique de Montréal
+ * Copyright (c) 2015, 2024 École Polytechnique de Montréal and others
  *
  * All rights reserved. This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0 which
@@ -13,7 +13,7 @@
  *   Geneviève Bastien - Initial implementation and API
  *******************************************************************************/
 
-package org.eclipse.tracecompass.analysis.graph.core.base;
+package org.eclipse.tracecompass.internal.analysis.graph.core.base;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -26,14 +26,16 @@ import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.tracecompass.analysis.graph.core.base.TmfEdge.EdgeType;
-import org.eclipse.tracecompass.analysis.graph.core.base.TmfVertex.EdgeDirection;
+import org.eclipse.tracecompass.analysis.graph.core.base.CycleDetectedException;
+import org.eclipse.tracecompass.analysis.graph.core.base.IGraphWorker;
 import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfEdge;
 import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfGraph;
+import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfGraphVisitor;
 import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfVertex;
 import org.eclipse.tracecompass.analysis.graph.core.graph.TmfGraphFactory;
 import org.eclipse.tracecompass.common.core.NonNullUtils;
-import org.eclipse.tracecompass.internal.analysis.graph.core.base.Messages;
+import org.eclipse.tracecompass.internal.analysis.graph.core.base.TmfEdge.EdgeType;
+import org.eclipse.tracecompass.internal.analysis.graph.core.base.TmfVertex.EdgeDirection;
 import org.eclipse.tracecompass.internal.analysis.graph.core.graph.legacy.OSEdgeContextState;
 import org.eclipse.tracecompass.tmf.core.timestamp.ITmfTimestamp;
 import org.eclipse.tracecompass.tmf.core.timestamp.TmfTimestamp;
@@ -474,7 +476,7 @@ public class TmfGraph {
      * @param visitor
      *            The visitor
      */
-    public void scanLineTraverse(final @Nullable TmfVertex start, final ITmfGraphVisitor visitor) {
+    public void scanLineTraverse(final @Nullable TmfVertex start, final TmfGraphVisitor visitor) {
         if (start == null) {
             return;
         }
@@ -523,7 +525,7 @@ public class TmfGraph {
      * @param visitor
      *            The visitor
      */
-    public void scanLineTraverse(@Nullable IGraphWorker start, final ITmfGraphVisitor visitor) {
+    public void scanLineTraverse(@Nullable IGraphWorker start, final TmfGraphVisitor visitor) {
         if (start == null) {
             return;
         }
