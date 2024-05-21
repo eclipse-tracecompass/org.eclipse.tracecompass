@@ -398,10 +398,6 @@
          version="0.0.0"/>
 
    <plugin
-         id="org.eclipse.osgi.services"
-         version="0.0.0"/>
-
-   <plugin
          id="org.eclipse.equinox.http.service.api"
          version="0.0.0"/>
 
@@ -427,6 +423,10 @@
 
    <plugin
          id="bcutil"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.osgi.service.component.annotations"
          version="0.0.0"/>
 
 </feature>
