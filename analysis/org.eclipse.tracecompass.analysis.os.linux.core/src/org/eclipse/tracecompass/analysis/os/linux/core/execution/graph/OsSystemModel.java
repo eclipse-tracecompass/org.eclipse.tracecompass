@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2022 École Polytechnique de Montréal
+ * Copyright (c) 2015, 2024 École Polytechnique de Montréal and others
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -79,19 +79,6 @@ public class OsSystemModel {
      *
      * @param ht
      *            The host thread associated with a worker
-     * @return The {@link OsWorker} associated with a host thread
-     * @deprecated Use the {@link #findWorker(HostThread, Integer)} instead with a null CPU
-     */
-    @Deprecated
-    public @Nullable OsWorker findWorker(HostThread ht) {
-        return fWorkerMap.get(ht);
-    }
-
-    /**
-     * Return the worker associated with this host TID
-     *
-     * @param ht
-     *            The host thread associated with a worker
      * @param cpu
      *            The CPU this worker is on (important for per-cpu threads, like
      *            swappers)
@@ -103,18 +90,6 @@ public class OsSystemModel {
             return fSwapperWorkers.get(cpu);
         }
         return fWorkerMap.get(ht);
-    }
-
-    /**
-     * Add a new worker to the system
-     *
-     * @param worker
-     *            The worker to add
-     * @deprecated Use the {@link #addWorker(OsWorker, Integer)} instead
-     */
-    @Deprecated
-    public void addWorker(OsWorker worker) {
-        fWorkerMap.put(worker.getHostThread(), worker);
     }
 
     /**
