@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Ericsson, Ecole Polytechnique de Montreal and others
+ * Copyright (c) 2011, 2024 Ericsson, Ecole Polytechnique de Montreal and others
  *
  * All rights reserved. This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0 which
@@ -41,6 +41,7 @@ public final class IntegerDefinition extends SimpleDatatypeDefinition {
     private static final int INT_BASE_8 = 8;
     private static final int INT_BASE_2 = 2;
     private final long fValue;
+    private final String fMapping;
 
     // ------------------------------------------------------------------------
     // Constructors
@@ -62,8 +63,30 @@ public final class IntegerDefinition extends SimpleDatatypeDefinition {
             IDefinitionScope definitionScope, @NonNull String fieldName, long value) {
         super(declaration, definitionScope, fieldName);
         fValue = value;
+        fMapping = null;
     }
 
+    /**
+     * Constructor with mappings
+     *
+     * @param declaration
+     *            the parent declaration
+     * @param definitionScope
+     *            the parent scope
+     * @param fieldName
+     *            the field name
+     * @param value
+     *            integer value
+     * @param mappings
+     *            mapping value
+     * @since 4.5
+     */
+    public IntegerDefinition(@NonNull IntegerDeclaration declaration,
+            IDefinitionScope definitionScope, @NonNull String fieldName, long value, String mappings) {
+        super(declaration, definitionScope, fieldName);
+        fMapping = mappings;
+        fValue = value;
+    }
     // ------------------------------------------------------------------------
     // Getters/Setters/Predicates
     // ------------------------------------------------------------------------
@@ -75,6 +98,16 @@ public final class IntegerDefinition extends SimpleDatatypeDefinition {
      */
     public long getValue() {
         return fValue;
+    }
+
+    /**
+     * Gets the value of the mappings
+     *
+     * @return A mapped range of integers
+     * @since 4.5
+     */
+    public String getMappings() {
+        return fMapping;
     }
 
     @Override
@@ -159,10 +192,11 @@ public final class IntegerDefinition extends SimpleDatatypeDefinition {
 
     @Override
     public byte[] getBytes() {
-        byte[] data = new byte[(int) Math.ceil(getDeclaration().getLength()/8.0)];
+        byte[] data = new byte[(int) Math.ceil(getDeclaration().getLength() / 8.0)];
         ByteBuffer bb = ByteBuffer.wrap(data);
         bb.order(getDeclaration().getByteOrder());
         bb.putLong(fValue);
         return data;
     }
+
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Ericsson, Ecole Polytechnique de Montreal and others
+ * Copyright (c) 2011, 2024 Ericsson, Ecole Polytechnique de Montreal and others
  *
  * All rights reserved. This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0 which
@@ -20,6 +20,10 @@ import static java.util.Objects.requireNonNull;
 
 import java.math.BigInteger;
 import java.nio.ByteOrder;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -129,6 +133,7 @@ public final class IntegerDeclaration extends Declaration implements ISimpleData
     private final long fAlignment;
     private final String fClock;
     private boolean fVarint = false;
+    private Map<String, List<IntegerRange>> fMappings = new HashMap<>();
 
     // ------------------------------------------------------------------------
     // Constructors
@@ -315,7 +320,38 @@ public final class IntegerDeclaration extends Declaration implements ISimpleData
                 }
             }
         }
-        return new IntegerDeclaration(len, signed, base, byteOrder, encoding, clock, alignment, role);
+        return new IntegerDeclaration(len, signed, base, byteOrder, encoding, clock, alignment, role, null);
+    }
+
+    /**
+     * Alternate create method for CTF2 integers which have roles and mappings
+     *
+     * @param len
+     *            The length in bits
+     * @param signed
+     *            Is the integer signed? false == unsigned
+     * @param base
+     *            The base (10-16 are most common)
+     * @param byteOrder
+     *            Big-endian little-endian or other
+     * @param encoding
+     *            ascii, utf8 or none.
+     * @param clock
+     *            The clock path, can be null
+     * @param alignment
+     *            The minimum alignment. Should be >= 1
+     * @param role
+     *            The role of the declaration
+     * @param mappings
+     *            A mapped range of integers
+     * @return The integer declaration
+     * @since 4.5
+     */
+    public static IntegerDeclaration createDeclaration(int len, boolean signed, int base,
+            @Nullable ByteOrder byteOrder, Encoding encoding, String clock, long alignment, @Nullable String role, Map<String, List<IntegerRange>> mappings) {
+        IntegerDeclaration decl = createDeclaration(len, signed, base, byteOrder, encoding, clock, alignment, role);
+        decl.setMappings(mappings);
+        return decl;
     }
 
     /**
@@ -337,6 +373,33 @@ public final class IntegerDeclaration extends Declaration implements ISimpleData
         IntegerDeclaration decl = new IntegerDeclaration(0, signed, base, null, Encoding.NONE, "", 0); //$NON-NLS-1$
         decl.setRole(role);
         decl.setVarint(varint);
+        return decl;
+    }
+
+    /**
+     * Create method for CTF2 varints with mappings
+     *
+     * @param signed
+     *            Is the integer signed? false == unsigned
+     * @param base
+     *            The base (10-16 are most common)
+     * @param role
+     *            The role of the integer declaration
+     * @param varint
+     *            A boolean indicating if the declaration is a varint
+     * @param mappings
+     *            A mapped range of integers
+     * @return IntegerDeclaration
+     *
+     * @since 4.5
+     */
+    public static IntegerDeclaration createVarintDeclaration(boolean signed, int base, @Nullable String role, boolean varint, @Nullable Map<String, List<IntegerRange>> mappings) {
+        IntegerDeclaration decl = new IntegerDeclaration(0, signed, base, null, Encoding.NONE, "", 0); //$NON-NLS-1$
+        decl.setRole(role);
+        decl.setVarint(varint);
+        if (mappings != null) {
+            decl.setMappings(mappings);
+        }
         return decl;
     }
 
@@ -396,13 +459,16 @@ public final class IntegerDeclaration extends Declaration implements ISimpleData
      *            The role of the integer declaration
      */
     private IntegerDeclaration(int len, boolean signed, int base,
-            @Nullable ByteOrder byteOrder, Encoding encoding, String clock, long alignment, @Nullable String role) {
+            @Nullable ByteOrder byteOrder, Encoding encoding, String clock, long alignment, @Nullable String role, @Nullable Map<String, List<IntegerRange>> mappings) {
         this(len, signed, base, byteOrder, encoding, clock, alignment);
         setRole(role);
+        if (mappings != null) {
+            setMappings(mappings);
+        }
     }
 
     private IntegerDeclaration(int len, boolean signed, @Nullable ByteOrder byteOrder) {
-        this(len, signed, BASE_10, byteOrder, Encoding.NONE, "", BYTE_ALIGN, null); //$NON-NLS-1$
+        this(len, signed, BASE_10, byteOrder, Encoding.NONE, "", BYTE_ALIGN, null, null); //$NON-NLS-1$
     }
 
     // ------------------------------------------------------------------------
@@ -436,6 +502,26 @@ public final class IntegerDeclaration extends Declaration implements ISimpleData
      */
     private void setVarint(boolean varint) {
         fVarint = varint;
+    }
+
+    /**
+     * Getter for mappings
+     *
+     * @return a mapped range of integers
+     * @since 4.5
+     */
+    public Map<String, List<IntegerRange>> getMappings() {
+        return fMappings;
+    }
+
+    /**
+     * Setter for mappings
+     *
+     * @param mappings
+     *            a mapped range of integers
+     */
+    private void setMappings(Map<String, List<IntegerRange>> mappings) {
+        fMappings = mappings;
     }
 
     /**
@@ -526,7 +612,11 @@ public final class IntegerDeclaration extends Declaration implements ISimpleData
         input.setByteOrder(fByteOrder);
         long value = read(input);
         input.setByteOrder(byteOrder);
-        return new IntegerDefinition(this, definitionScope, fieldName, value);
+        if (fMappings.size() == 0) {
+            return new IntegerDefinition(this, definitionScope, fieldName, value);
+        }
+        String mappingName = getMappingForValue(value);
+        return new IntegerDefinition(this, definitionScope, fieldName, value, mappingName);
     }
 
     @Override
@@ -687,4 +777,25 @@ public final class IntegerDeclaration extends Declaration implements ISimpleData
         return !((fLength != BYTE_ALIGN) && !fByteOrder.equals(other.fByteOrder));
     }
 
+    private String getMappingForValue(long value) {
+        String mapping = ""; //$NON-NLS-1$
+        int count = 0;
+        for (Map.Entry<String, List<IntegerRange>> entry : fMappings.entrySet()) {
+            String mappingName = entry.getKey();
+            List<IntegerRange> ranges = entry.getValue();
+
+            for (IntegerRange range : ranges) {
+                if (range.getStart() <= value && value <= range.getEnd()) {
+                    if (count != 0) {
+                        mapping += " " + mappingName; //$NON-NLS-1$
+                    } else {
+                        mapping += mappingName;
+                    }
+                    count++;
+
+                }
+            }
+        }
+        return mapping;
+    }
 }
