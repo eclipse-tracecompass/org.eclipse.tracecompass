@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2022 École Polytechnique de Montréal
+ * Copyright (c) 2022, 2024 École Polytechnique de Montréal and others
  *
  * All rights reserved. This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0 which
@@ -14,16 +14,15 @@ package org.eclipse.tracecompass.internal.analysis.graph.core.graph.legacy;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.tracecompass.analysis.graph.core.base.TmfEdge;
 import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfEdge;
 import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfVertex;
+import org.eclipse.tracecompass.internal.analysis.graph.core.base.TmfEdge;
 
 /**
  * Wrapper around the legacy {@link TmfEdge} class to make it an ITmfEdge
  *
  * @author Geneviève Bastien
  */
-@SuppressWarnings("deprecation")
 public class TmfEdgeLegacyWrapper implements ITmfEdge {
 
     private TmfEdge fLegacyEdge;

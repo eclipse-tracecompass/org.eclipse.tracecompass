@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2022 École Polytechnique de Montréal
+ * Copyright (c) 2022, 2024 École Polytechnique de Montréal and others
  *
  * All rights reserved. This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0 which
@@ -13,20 +13,19 @@ package org.eclipse.tracecompass.analysis.graph.core.criticalpath;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Objects;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.tracecompass.analysis.graph.core.base.IGraphWorker;
-import org.eclipse.tracecompass.analysis.graph.core.base.TmfGraph;
 import org.eclipse.tracecompass.analysis.graph.core.building.AbstractTmfGraphBuilderModule;
 import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfGraph;
 import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfVertex;
 import org.eclipse.tracecompass.analysis.graph.core.graph.WorkerSerializer;
 import org.eclipse.tracecompass.common.core.NonNullUtils;
 import org.eclipse.tracecompass.internal.analysis.graph.core.Activator;
+import org.eclipse.tracecompass.internal.analysis.graph.core.criticalpath.CriticalPathModule;
 import org.eclipse.tracecompass.internal.analysis.graph.core.criticalpath.Messages;
 import org.eclipse.tracecompass.internal.analysis.graph.core.criticalpath.OSCriticalPathAlgorithm;
 import org.eclipse.tracecompass.tmf.core.exceptions.TmfAnalysisException;
@@ -248,21 +247,6 @@ public abstract class AbstractCriticalPathModule extends CriticalPathModule {
          * be available for this trace
          */
         return true;
-    }
-
-    /**
-     * Gets the graph for the critical path
-     *
-     * @return The critical path graph
-     * @deprecated Use the {@link #getCriticalPathGraph()} method instead.
-     */
-    @Deprecated
-    @Override
-    public @Nullable TmfGraph getCriticalPath() {
-        if (fCriticalPath == null) {
-            return null;
-        }
-        return new TmfGraph(Objects.requireNonNull(fCriticalPath));
     }
 
     /**

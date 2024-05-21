@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2022 École Polytechnique de Montréal
+ * Copyright (c) 2015, 2024 École Polytechnique de Montréal and others
  *
  * All rights reserved. This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0 which
@@ -15,17 +15,12 @@
 
 package org.eclipse.tracecompass.internal.analysis.graph.core.base;
 
-import org.eclipse.tracecompass.analysis.graph.core.base.ITmfGraphVisitor;
-import org.eclipse.tracecompass.analysis.graph.core.base.TmfEdge;
-import org.eclipse.tracecompass.analysis.graph.core.base.TmfVertex;
-
 /**
  * An empty implementation of the graph visitor
  *
  * @author Geneviève Bastien
  * @author Francis Giraldeau
  */
-@Deprecated
 public class TmfGraphVisitor implements ITmfGraphVisitor {
 
     @Override

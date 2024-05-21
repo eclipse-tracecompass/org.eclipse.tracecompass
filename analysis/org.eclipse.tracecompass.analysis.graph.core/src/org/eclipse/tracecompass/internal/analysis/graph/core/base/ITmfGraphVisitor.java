@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2022 École Polytechnique de Montréal
+ * Copyright (c) 2015, 2024 École Polytechnique de Montréal and others
  *
  * All rights reserved. This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0 which
@@ -13,15 +13,12 @@
  *   Geneviève Bastien - Initial implementation and API
  *******************************************************************************/
 
-package org.eclipse.tracecompass.analysis.graph.core.base;
+package org.eclipse.tracecompass.internal.analysis.graph.core.base;
 
 /**
  * Interface for all graph visitors. Using on the graph exploration method, the
  * visit methods will be called for each vertex and edge visited
- *
- * @deprecated Use {@link org.eclipse.tracecompass.analysis.graph.core.graph.ITmfGraphVisitor} instead
  */
-@Deprecated
 public interface ITmfGraphVisitor {
 
     /**

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2022 École Polytechnique de Montréal
+ * Copyright (c) 2015, 2024 École Polytechnique de Montréal and others
  *
  * All rights reserved. This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0 which
@@ -13,30 +13,22 @@
  *   Geneviève Bastien - Initial implementation and API
  *******************************************************************************/
 
-package org.eclipse.tracecompass.analysis.graph.core.base;
+package org.eclipse.tracecompass.internal.analysis.graph.core.base;
 
 import java.util.Comparator;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.tracecompass.analysis.graph.core.base.TmfEdge.EdgeType;
-import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfGraph;
 import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfVertex;
-import org.eclipse.tracecompass.internal.analysis.graph.core.base.Messages;
+import org.eclipse.tracecompass.internal.analysis.graph.core.base.TmfEdge.EdgeType;
 
 /**
  * Timed vertex for TmfGraph
  *
  * @author Francis Giraldeau
  * @author Geneviève Bastien
- * @deprecated Use {@link ITmfVertex} instead and to create new vertices
- *             {@link ITmfGraph#createVertex(IGraphWorker, long)}. Getting edges
- *             to/from vertices can be done via the
- *             {@link ITmfGraph#getEdgeFrom(ITmfVertex, org.eclipse.tracecompass.analysis.graph.core.graph.ITmfGraph.EdgeDirection)}
- *             method
  */
-@Deprecated
-public class TmfVertex implements Comparable<TmfVertex> {
+public class TmfVertex implements ITmfVertex {
 
     private static final String UNKNOWN_EDGE_DIRECTION_TYPE = "Unknown edge direction type : "; //$NON-NLS-1$
 
@@ -140,6 +132,11 @@ public class TmfVertex implements Comparable<TmfVertex> {
      * @return the timstamp
      */
     public long getTs() {
+        return fTimestamp;
+    }
+
+    @Override
+    public long getTimestamp() {
         return fTimestamp;
     }
 
@@ -326,11 +323,11 @@ public class TmfVertex implements Comparable<TmfVertex> {
     }
 
     @Override
-    public int compareTo(@Nullable TmfVertex other) {
+    public int compareTo(@Nullable ITmfVertex other) {
         if (other == null) {
             return 1;
         }
-        return Long.compare(fTimestamp, other.fTimestamp);
+        return Long.compare(fTimestamp, other.getTimestamp());
     }
 
     @Override
