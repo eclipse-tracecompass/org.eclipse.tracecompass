@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Ericsson, École Polytechnique de Montréal
+ * Copyright (c) 2011, 2024 Ericsson, École Polytechnique de Montréal
  *
  * All rights reserved. This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0 which
@@ -106,7 +106,12 @@ public abstract class CtfTmfEventField extends TmfEventField {
         if (fieldDef instanceof IntegerDefinition) {
             IntegerDefinition intDef = (IntegerDefinition) fieldDef;
             int base = intDef.getDeclaration().getBase();
-            field = new CTFIntegerField(fieldName, intDef.getValue(), base, intDef.getDeclaration().isSigned());
+            String mappings = intDef.getMappings();
+            if (mappings != null) {
+                field = new CTFIntegerField(fieldName, intDef.getValue(), base, intDef.getDeclaration().isSigned(), mappings);
+            } else {
+                field = new CTFIntegerField(fieldName, intDef.getValue(), base, intDef.getDeclaration().isSigned());
+            }
 
         } else if (fieldDef instanceof EnumDefinition) {
             EnumDefinition enumDef = (EnumDefinition) fieldDef;
@@ -229,6 +234,7 @@ final class CTFIntegerField extends CtfTmfEventField {
 
     private final int fBase;
     private final boolean fSigned;
+    private final String fMappings;
 
     /**
      * A CTF "IntegerDefinition" can be an integer of any byte size, so in the
@@ -245,6 +251,31 @@ final class CTFIntegerField extends CtfTmfEventField {
         super(name, Long.valueOf(longValue), null);
         fSigned = signed;
         fBase = base;
+        fMappings = null;
+    }
+
+    /**
+     * A CTF "IntegerDefinition" can be an integer of any byte size, so in the
+     * Java parser this is interpreted as a long.
+     *
+     * @param name
+     *            The name of this field
+     * @param longValue
+     *            The integer value of this field
+     * @param signed
+     *            Is the value signed or not
+     * @param mapping
+     *            The mapping of the integer
+     */
+    CTFIntegerField(@NonNull String name, long longValue, int base, boolean signed, String mappings) {
+        super(name, Long.valueOf(longValue), null);
+        fSigned = signed;
+        fBase = base;
+        fMappings = mappings;
+    }
+
+    public String getMappings() {
+        return fMappings;
     }
 
     @Override
@@ -254,6 +285,9 @@ final class CTFIntegerField extends CtfTmfEventField {
 
     @Override
     public String getFormattedValue() {
+        if (fMappings != null && !fMappings.equals("")) { //$NON-NLS-1$
+            return fMappings;
+        }
         return IntegerDefinition.formatNumber(getValue(), fBase, fSigned);
     }
 
@@ -285,7 +319,7 @@ final class CTFStringField extends CtfTmfEventField {
 
     @Override
     public String getFormattedValue() {
-        return "\""+getValue()+"\"";  //$NON-NLS-1$//$NON-NLS-2$
+        return "\"" + getValue() + "\""; //$NON-NLS-1$//$NON-NLS-2$
     }
 }
 
@@ -522,8 +556,8 @@ final class CTFVariantField extends CtfTmfEventField {
     @Override
     public ITmfEventField getField(final String... path) {
         /*
-         * We use the == to make sure that this constant was used, otherwise, it could
-         * conflict with a field with the same name
+         * We use the == to make sure that this constant was used, otherwise, it
+         * could conflict with a field with the same name
          */
         if (path.length == 1 && path[0] == FIELD_VARIANT_SELECTED) {
             Iterator<ITmfEventField> it = getFields().iterator();

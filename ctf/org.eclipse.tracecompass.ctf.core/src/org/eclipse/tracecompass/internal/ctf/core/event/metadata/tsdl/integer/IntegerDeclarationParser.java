@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2023 Ericsson
+ * Copyright (c) 2015, 2024 Ericsson
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -16,12 +16,16 @@ import static org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.Tsd
 import static org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.TsdlUtils.isAnyUnaryString;
 
 import java.nio.ByteOrder;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.tracecompass.ctf.core.event.types.Encoding;
 import org.eclipse.tracecompass.ctf.core.event.types.IntegerDeclaration;
+import org.eclipse.tracecompass.ctf.core.event.types.IntegerRange;
 import org.eclipse.tracecompass.ctf.core.trace.CTFTrace;
 import org.eclipse.tracecompass.ctf.parser.CTFParser;
 import org.eclipse.tracecompass.internal.ctf.core.CtfCoreLoggerUtil;
@@ -37,6 +41,8 @@ import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.SizeParser
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.string.EncodingParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 /**
@@ -111,6 +117,7 @@ public final class IntegerDeclarationParser implements ICommonTreeParser {
     private static final @NonNull String SIGNED = "signed"; //$NON-NLS-1$
     private static final @NonNull String ALIGNMENT = "alignment"; //$NON-NLS-1$
     private static final @NonNull String VARINT = "varint"; //$NON-NLS-1$
+    private static final @NonNull String MAPPINGS = "mappings"; //$NON-NLS-1$
 
     private IntegerDeclarationParser() {
     }
@@ -133,6 +140,8 @@ public final class IntegerDeclarationParser implements ICommonTreeParser {
         /* The return value */
         boolean signed = false;
         boolean varint = false;
+        @NonNull
+        Map<@NonNull String, @NonNull List<@NonNull IntegerRange>> mappings = new HashMap<>();
         ByteOrder byteOrder = trace.getByteOrder();
         long size = 0;
         long alignment = 0;
@@ -157,7 +166,30 @@ public final class IntegerDeclarationParser implements ICommonTreeParser {
             if (fieldclass.has(VARINT)) {
                 varint = fieldclass.get(VARINT).getAsBoolean();
             }
+            if (fieldclass.has(MAPPINGS)) {
+                JsonObject mappingsJson = fieldclass.get(MAPPINGS).getAsJsonObject();
+
+                for (String mappingName : mappingsJson.keySet()) {
+                    if (mappingName != null) {
+                        JsonArray mappingRangesJson = mappingsJson.getAsJsonArray(mappingName);
+                        List<IntegerRange> mappingRanges = new ArrayList<>();
+
+                        for (JsonElement rangeElement : mappingRangesJson) {
+                            JsonArray rangeArray = rangeElement.getAsJsonArray();
+                            long start = rangeArray.get(0).getAsBigInteger().longValueExact();
+                            long end = rangeArray.get(1).getAsBigInteger().longValueExact();
+                            IntegerRange range = new IntegerRange(start, end);
+                            mappingRanges.add(range);
+                        }
+
+                        mappings.put(mappingName, mappingRanges);
+                    }
+                }
+            }
             if (varint) {
+                if (mappings.size() > 0) {
+                    return IntegerDeclaration.createVarintDeclaration(signed, base, role, true, mappings);
+                }
                 return IntegerDeclaration.createVarintDeclaration(signed, base, role, true);
             }
             if (fieldclass.has(ALIGNMENT)) {
@@ -227,6 +259,10 @@ public final class IntegerDeclarationParser implements ICommonTreeParser {
 
         if (alignment == 0) {
             alignment = 1;
+        }
+
+        if (mappings.size() > 0) {
+            return IntegerDeclaration.createDeclaration(base, signed, base, byteOrder, encoding, clock, alignment, role, mappings);
         }
 
         return IntegerDeclaration.createDeclaration((int) size, signed, base,
