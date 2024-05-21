@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016 Ericsson
+ * Copyright (c) 2016, 2024 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -108,9 +108,8 @@ public class StubSegmentStatisticsAnalysis extends AbstractSegmentStatisticsAnal
         return segment.getLength() % 2 == 0 ? "even" : "odd";
     }
 
-    @Deprecated
     @Override
-    protected @Nullable ISegmentStoreProvider getSegmentProviderAnalysis(@NonNull ITmfTrace trace) {
+    protected @Nullable ISegmentStoreProvider getSegmentStoreProvider(@NonNull ITmfTrace trace) {
         return fSegmentStoreProvider;
     }
 
