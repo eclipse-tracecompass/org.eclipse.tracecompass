@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017 Ericsson
+ * Copyright (c) 2017, 2024 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -13,7 +13,6 @@ package org.eclipse.tracecompass.internal.analysis.profiling.core.callgraph;
 
 import java.util.Iterator;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.analysis.profiling.core.callstack.CallStackAnalysis;
 import org.eclipse.tracecompass.analysis.timing.core.segmentstore.ISegmentStoreProvider;
@@ -32,9 +31,8 @@ public class CallGraphStatisticsAnalysis extends AbstractSegmentStatisticsAnalys
     /** The analysis module ID */
     public static final String ID = CallGraphAnalysis.ID + ".statistics"; //$NON-NLS-1$
 
-    @Deprecated
     @Override
-    protected @Nullable ISegmentStoreProvider getSegmentProviderAnalysis(@NonNull ITmfTrace trace) {
+    protected @Nullable ISegmentStoreProvider getSegmentStoreProvider(ITmfTrace trace) {
         // FIXME: Return the CallStackAnalysis when the segment store comes from there
         // and not the CallGraph. Now, we return the CallGraphAnalysis, just so we can
         // wait for this analysis to finish to get the full segment store
@@ -48,7 +46,7 @@ public class CallGraphStatisticsAnalysis extends AbstractSegmentStatisticsAnalys
     }
 
     @Override
-    protected @Nullable String getSegmentType(@NonNull ISegment segment) {
+    protected @Nullable String getSegmentType(ISegment segment) {
         if (segment instanceof ICalledFunction) {
             ICalledFunction calledFunction = (ICalledFunction) segment;
             StringBuilder builder = new StringBuilder(calledFunction.getName());

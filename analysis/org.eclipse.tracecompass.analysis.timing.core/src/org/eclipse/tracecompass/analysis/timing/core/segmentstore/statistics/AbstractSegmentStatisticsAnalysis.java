@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016 Ericsson
+ * Copyright (c) 2016, 2024 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0 which
@@ -232,24 +232,9 @@ public abstract class AbstractSegmentStatisticsAnalysis extends TmfAbstractAnaly
      *            The active trace
      *
      * @return The segment store provider
-     * @deprecated use {@link #getSegmentStoreProvider(ITmfTrace)} instead
-     */
-    @Deprecated
-    protected abstract @Nullable ISegmentStoreProvider getSegmentProviderAnalysis(ITmfTrace trace);
-
-    /**
-     * Find the segment store provider used for this analysis
-     *
-     * @param trace
-     *            The active trace
-     *
-     * @return The segment store provider
      * @since 5.3
      */
-    protected @Nullable ISegmentStoreProvider getSegmentStoreProvider(ITmfTrace trace) {
-        // TODO: make getSegmentStoreProvider abstract when removing the following:
-        return getSegmentProviderAnalysis(trace);
-    }
+    protected abstract @Nullable ISegmentStoreProvider getSegmentStoreProvider(ITmfTrace trace);
 
     @Override
     protected void canceling() {
