@@ -1,5 +1,5 @@
 /**********************************************************************
- * Copyright (c) 2018, 2022 Ericsson
+ * Copyright (c) 2018, 2024 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -151,7 +151,7 @@ public class CriticalPathDataProvider extends AbstractTmfTraceDataProvider imple
     }
 
     /**
-     * Get the current {@link IGraphWorker} from the {@link CriticalPathModule}
+     * Get the current {@link IGraphWorker} from the critical path module
      *
      * @return the current graph worker if it is set, else null.
      */

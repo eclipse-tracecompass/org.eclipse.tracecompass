@@ -25,9 +25,9 @@ import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfVertex;
 import org.eclipse.tracecompass.analysis.graph.core.graph.WorkerSerializer;
 import org.eclipse.tracecompass.common.core.NonNullUtils;
 import org.eclipse.tracecompass.internal.analysis.graph.core.Activator;
-import org.eclipse.tracecompass.internal.analysis.graph.core.criticalpath.CriticalPathModule;
 import org.eclipse.tracecompass.internal.analysis.graph.core.criticalpath.Messages;
 import org.eclipse.tracecompass.internal.analysis.graph.core.criticalpath.OSCriticalPathAlgorithm;
+import org.eclipse.tracecompass.tmf.core.analysis.TmfAbstractAnalysisModule;
 import org.eclipse.tracecompass.tmf.core.exceptions.TmfAnalysisException;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
 import org.eclipse.tracecompass.tmf.core.trace.TmfTraceManager;
@@ -41,7 +41,13 @@ import com.google.common.annotations.VisibleForTesting;
  * @author Geneviève Bastien
  * @since 4.0
  */
-public abstract class AbstractCriticalPathModule extends CriticalPathModule {
+public abstract class AbstractCriticalPathModule extends TmfAbstractAnalysisModule implements ICriticalPathProvider {
+
+    /**
+     * Analysis ID for this module
+     * @since 5.0
+     */
+    public static final String ANALYSIS_ID = "org.eclipse.tracecompass.analysis.graph.core.criticalpath"; //$NON-NLS-1$
 
     /** Worker_id parameter name */
     public static final String PARAM_WORKER = "workerid"; //$NON-NLS-1$
@@ -62,7 +68,6 @@ public abstract class AbstractCriticalPathModule extends CriticalPathModule {
      * @since 1.1
      */
     public AbstractCriticalPathModule(AbstractTmfGraphBuilderModule graph) {
-        super(graph);
         addParameter(PARAM_WORKER);
         setId(ANALYSIS_ID);
         fGraphModule = graph;
