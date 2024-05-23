@@ -32,7 +32,6 @@ import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfEdge;
 import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfGraph;
 import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfGraphVisitor;
 import org.eclipse.tracecompass.analysis.graph.core.graph.ITmfVertex;
-import org.eclipse.tracecompass.analysis.graph.core.graph.TmfGraphFactory;
 import org.eclipse.tracecompass.common.core.NonNullUtils;
 import org.eclipse.tracecompass.internal.analysis.graph.core.base.TmfEdge.EdgeType;
 import org.eclipse.tracecompass.internal.analysis.graph.core.base.TmfVertex.EdgeDirection;
@@ -55,10 +54,7 @@ import com.google.common.collect.ListMultimap;
  *
  * @author Francis Giraldeau
  * @author Geneviève Bastien
- * @deprecated Use the {@link ITmfGraph} API instead, and the
- *             {@link TmfGraphFactory} to create new graphs.
  */
-@Deprecated
 public class TmfGraph {
 
     private final ListMultimap<IGraphWorker, TmfVertex> fNodeMap;
