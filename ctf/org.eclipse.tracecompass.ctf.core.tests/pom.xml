@@ -18,12 +18,12 @@
   <parent>
     <artifactId>org.eclipse.tracecompass.ctf-parent</artifactId>
     <groupId>org.eclipse.tracecompass</groupId>
-    <version>9.3.0-SNAPSHOT</version>
+    <version>10.0.0-SNAPSHOT</version>
   </parent>
 
   <name>Trace Compass CTF Core Tests Plug-in</name>
   <artifactId>org.eclipse.tracecompass.ctf.core.tests</artifactId>
-  <version>1.0.15-SNAPSHOT</version>
+  <version>1.0.16-SNAPSHOT</version>
   <packaging>eclipse-test-plugin</packaging>
 
   <properties>
