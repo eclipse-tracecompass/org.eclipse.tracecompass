@@ -86,10 +86,10 @@ git clone https://github.com/eclipse-tracecompass/tracecompass-test-traces.git
 
 Extra functionalities are developed in the `Trace Compass Incubator` sub-project. If interested in any of those feature, the following repository can be cloned
 
-* https://git.eclipse.org/c/tracecompass.incubator/org.eclipse.tracecompass.incubator.git/
+* https://github.com/eclipse-tracecompass-incubator/org.eclipse.tracecompass.incubator.git
 
 ```bash
-git clone https://git.eclipse.org/r/tracecompass.incubator/org.eclipse.tracecompass.incubator.git
+git clone https://github.com/eclipse-tracecompass-incubator/org.eclipse.tracecompass.incubator.git
 ```
 
 ### Import the `Trace Compass` projects into the workspace
@@ -106,6 +106,7 @@ You will probably get a bunch of build errors at this point. DON'T PANIC! This i
 ### Setting the Target Platform
 
 Eclipse offers the ability to set target platforms, which will download a specific environment to run your plugins, without having to "pollute" your Eclipse install. `Trace Compass` ships target definition files, which is the recommended way of installing its dependencies.
+**If you have downloaded the `Trace Compass Incubator` sub-project you should use the org.eclipse.tracecompass.incubator.target project instead.**
 
 To set the target platform for the `Trace Compass` plugins:
 
