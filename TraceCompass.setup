@@ -123,17 +123,17 @@
     <setupTask
         xsi:type="git:GitCloneTask"
         id="git.clone.tracecompass"
-        remoteURI="tracecompass/org.eclipse.tracecompass"
+        remoteURI="eclipse-tracecompass/org.eclipse.tracecompass"
         checkoutBranch="master">
       <annotation
           source="http://www.eclipse.org/oomph/setup/InducedChoices">
         <detail
             key="inherit">
-          <value>eclipse.git.gerrit.remoteURIs</value>
+          <value>github.remoteURIs</value>
         </detail>
         <detail
             key="label">
-          <value>${scope.project.label} Git or Gerrit Repository</value>
+          <value>${scope.project.label} GitHub Repository</value>
         </detail>
         <detail
             key="target">
