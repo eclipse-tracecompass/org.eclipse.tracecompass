@@ -63,5 +63,8 @@ Export-Package: org.eclipse.tracecompass.tmf.core.tests,
  org.eclipse.tracecompass.tmf.tests.stubs.trace.xml
 Import-Package: com.google.common.base,
  com.google.common.collect,
- com.google.common.primitives
+ com.google.common.primitives,
+ com.google.gson,
+ com.google.gson.annotations,
+ com.google.gson.reflect
 Automatic-Module-Name: org.eclipse.tracecompass.tmf.core.tests

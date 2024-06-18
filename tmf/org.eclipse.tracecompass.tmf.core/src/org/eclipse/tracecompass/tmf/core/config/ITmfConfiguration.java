@@ -43,5 +43,5 @@ public interface ITmfConfiguration {
      * @return optional informational parameters to return. Can be used to show
      *         more details to users of the configuration instance.
      */
-    Map<String, Object> getParameters();
+    Map<String, String> getParameters();
 }
