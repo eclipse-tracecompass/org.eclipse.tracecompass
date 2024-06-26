@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><?pde version="3.8"?><target name="tracecompass-e4.32" sequenceNumber="5">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><?pde version="3.8"?><target name="tracecompass-e4.32" sequenceNumber="6">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.cdt.gnu.dsf.feature.group" version="0.0.0"/>
@@ -37,10 +37,14 @@
 <unit id="org.apache.commons.lang3" version="0.0.0"/>
 <unit id="org.apache.xml.serializer" version="0.0.0"/>
 <unit id="org.mortbay.jasper.apache-jsp" version="0.0.0"/>
-<unit id="org.mozilla.rhino" version="1.7.15"/>
+<unit id="org.osgi.service.component.annotations" version="0.0.0"/>
 <unit id="slf4j.api" version="0.0.0"/>
 <unit id="slf4j.simple" version="0.0.0"/>
 <repository location="https://download.eclipse.org/tools/orbit/simrel/orbit-aggregation/release/4.32.0/"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.mozilla.javascript" version="0.0.0"/>
+<repository location="https://download.eclipse.org/tools/orbit/simrel/orbit-aggregation/release/4.29.0/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.license.feature.group" version="0.0.0"/>
@@ -63,6 +67,7 @@
 <unit id="org.eclipse.ui.views.log" version="0.0.0"/>
 <unit id="org.eclipse.jdt.junit4.runtime" version="0.0.0"/>
 <unit id="org.eclipse.e4.ui.progress" version="0.0.0"/>
+<unit id="org.eclipse.osgi.services" version="0.0.0"/>
 <repository location="https://download.eclipse.org/eclipse/updates/4.32/R-4.32-202406010610/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
