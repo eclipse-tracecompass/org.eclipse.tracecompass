@@ -67,6 +67,7 @@ public class CtfTmfTraceTest {
     @BeforeClass
     public static void setUp() {
         fixture = CtfTmfTestTraceUtils.getTrace(testTrace);
+        fixture.seekEvent(fixture.readEnd());
     }
 
     /**
@@ -213,18 +214,20 @@ public class CtfTmfTraceTest {
     public void testGetLocationRatio() {
         ITmfContext context = fixture.seekEvent(0);
         long t1 = ((CtfLocationInfo) context.getLocation().getLocationInfo()).getTimestamp();
-        fixture.getNext(context);
+        double ratio1 = 0.4;
+        context = fixture.seekEvent(ratio1);
         long t2 = ((CtfLocationInfo) context.getLocation().getLocationInfo()).getTimestamp();
-        fixture.getNext(context);
+        long tMid = (fixture.getEndTime().getValue() - fixture.getStartTime().getValue()) / 2 + fixture.getStartTime().getValue();
+        double ratio2 = 0.7;
+        context = fixture.seekEvent(ratio2);
         long t3 = ((CtfLocationInfo) context.getLocation().getLocationInfo()).getTimestamp();
-        fixture.getNext(context);
         context.dispose();
-        double ratio1 = fixture.getLocationRatio(new CtfLocation(t1, 0));
-        assertEquals(0.0, ratio1, 0.01);
-        double ratio2 = fixture.getLocationRatio(new CtfLocation(t2, 0));
-        assertEquals((double) (t2 - t1) / (t3 - t1), ratio2, 0.01);
-        double ratio3 = fixture.getLocationRatio(new CtfLocation(t3, 0));
-        assertEquals(1.0, ratio3, 0.01);
+
+        assertEquals(0.0, fixture.getLocationRatio(new CtfLocation(t1, 0)), 0.01);
+        assertEquals(ratio1, fixture.getLocationRatio(new CtfLocation(t2, 0)), 0.01);
+        assertEquals(0.5, fixture.getLocationRatio(new CtfLocation(tMid, 0)), 0.01);
+        assertEquals(ratio2, fixture.getLocationRatio(new CtfLocation(t3, 0)), 0.01);
+        assertEquals(1.0, fixture.getLocationRatio(new CtfLocation(fixture.getEndTime(), 0)), 0.01);
     }
 
     /**
@@ -252,7 +255,7 @@ public class CtfTmfTraceTest {
     @Test
     public void testGetNbEvents() {
         long result = fixture.getNbEvents();
-        assertEquals(1L, result);
+        assertEquals(695319L, result);
     }
 
     /**
@@ -328,21 +331,26 @@ public class CtfTmfTraceTest {
     @Test
     public void testSeekEvent_ratio() {
         ITmfContext context = fixture.seekEvent(0);
-        long t1 = ((CtfLocationInfo) context.getLocation().getLocationInfo()).getTimestamp();
-        fixture.getNext(context);
-        long t2 = ((CtfLocationInfo) context.getLocation().getLocationInfo()).getTimestamp();
-        fixture.getNext(context);
-        long t3 = ((CtfLocationInfo) context.getLocation().getLocationInfo()).getTimestamp();
-        fixture.getNext(context);
+        assertEquals(fixture.getStartTime().getValue(), ((CtfLocationInfo) context.getLocation().getLocationInfo()).getTimestamp());
         context.dispose();
-        context = fixture.seekEvent(0.0);
-        assertEquals(t1, ((CtfLocationInfo) context.getLocation().getLocationInfo()).getTimestamp());
+
+        double ratio1 = 0.3;
+        context = fixture.seekEvent(ratio1);
+        assertEquals(ratio1, fixture.getLocationRatio(context.getLocation()), 0.01);
         context.dispose();
+
         context = fixture.seekEvent(0.5);
-        assertEquals(t2, ((CtfLocationInfo) context.getLocation().getLocationInfo()).getTimestamp());
+        long tMid = (fixture.getEndTime().getValue() - fixture.getStartTime().getValue()) / 2 + fixture.getStartTime().getValue();
+        assertEquals(tMid, ((CtfLocationInfo) context.getLocation().getLocationInfo()).getTimestamp(), 1000);
         context.dispose();
+
+        double ratio2 = 0.7;
+        context = fixture.seekEvent(ratio2);
+        assertEquals(ratio2, fixture.getLocationRatio(context.getLocation()), 0.01);
+        context.dispose();
+
         context = fixture.seekEvent(1.0);
-        assertEquals(t3, ((CtfLocationInfo) context.getLocation().getLocationInfo()).getTimestamp());
+        assertEquals(fixture.getEndTime().getValue(), ((CtfLocationInfo) context.getLocation().getLocationInfo()).getTimestamp());
         context.dispose();
     }
 
