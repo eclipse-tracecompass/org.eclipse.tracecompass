@@ -30,6 +30,8 @@ import org.eclipse.tracecompass.analysis.timing.core.segmentstore.SegmentStoreSt
 import org.eclipse.tracecompass.analysis.timing.core.segmentstore.statistics.AbstractSegmentStatisticsAnalysis;
 import org.eclipse.tracecompass.analysis.timing.core.statistics.IStatistics;
 import org.eclipse.tracecompass.analysis.timing.core.statistics.IStatisticsAnalysis;
+import org.eclipse.tracecompass.analysis.timing.core.statistics.ITreeStatistics;
+import org.eclipse.tracecompass.analysis.timing.core.statistics.ITreeStatisticsAnalysis;
 import org.eclipse.tracecompass.common.core.NonNullUtils;
 import org.eclipse.tracecompass.internal.analysis.timing.core.segmentstore.SegmentStoreStatisticsAspects.NamedStatistics;
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.TableColumnDescriptor;
@@ -52,9 +54,9 @@ import com.google.common.collect.ImmutableList;
 
 /**
  * This data provider will supply a statistics tree for an
- * {@link AbstractSegmentStatisticsAnalysis}. Passing a
- * {@link FilterTimeQueryFilter} will also return the statistics from the
- * selected range.
+ * {@link AbstractSegmentStatisticsAnalysis} or an analysis module implementing
+ * {@link ITreeStatisticsAnalysis}. Passing a {@link FilterTimeQueryFilter} will
+ * also return the statistics from the selected range.
  *
  * @author Loic Prieur-Drevon
  * @since 4.0
@@ -73,7 +75,8 @@ public class SegmentStoreStatisticsDataProvider extends AbstractTmfTraceDataProv
     private static final Map<IStatisticsAnalysis, SegmentStoreStatisticsDataProvider> PROVIDER_MAP = new WeakHashMap<>();
     private static final AtomicLong ENTRY_ID = new AtomicLong();
 
-    private final IStatisticsAnalysis fProvider;
+    // Can be either IStatisticsAnalysis or ITreeStatisticsAnalysis
+    private final Object fProvider;
     private final String fId;
     private @Nullable String fRootEntryName;
 
@@ -132,6 +135,41 @@ public class SegmentStoreStatisticsDataProvider extends AbstractTmfTraceDataProv
      *            a list of user defined aspects that will be added to the
      *            default ones
      */
+    public SegmentStoreStatisticsDataProvider(ITmfTrace trace, ITreeStatisticsAnalysis provider, String id, List<IDataAspect<NamedStatistics>> userDefinedAspects) {
+        this(trace, provider, id);
+        fAspects = new SegmentStoreStatisticsAspects(userDefinedAspects);
+    }
+
+    /**
+     * Constructor
+     *
+     * @param trace
+     *            the trace for which this provider will supply info
+     * @param provider
+     *            the segment statistics module from which to get data
+     * @param id
+     *            the extension point ID
+     */
+    public SegmentStoreStatisticsDataProvider(ITmfTrace trace, ITreeStatisticsAnalysis provider, String id) {
+        super(trace);
+        fId = id;
+        fProvider = provider;
+        fModule = provider instanceof IAnalysisModule ? (IAnalysisModule) provider : null;
+    }
+
+    /**
+     * Constructor
+     *
+     * @param trace
+     *            the trace for which this provider will supply info
+     * @param provider
+     *            the segment statistics module from which to get data
+     * @param id
+     *            the extension point ID
+     * @param userDefinedAspects
+     *            a list of user defined aspects that will be added to the
+     *            default ones
+     */
     public SegmentStoreStatisticsDataProvider(ITmfTrace trace, IStatisticsAnalysis provider, String id, List<IDataAspect<NamedStatistics>> userDefinedAspects) {
         this(trace, provider, id);
         fAspects = new SegmentStoreStatisticsAspects(userDefinedAspects);
@@ -151,7 +189,84 @@ public class SegmentStoreStatisticsDataProvider extends AbstractTmfTraceDataProv
             }
         }
 
-        IStatistics<ISegment> statsTotal = fProvider.getStatsTotal();
+        if(fProvider instanceof IStatisticsAnalysis) {
+            return fetchTreeFromAnalysis(fetchParameters, (IStatisticsAnalysis)fProvider, monitor);
+        } else if (fProvider instanceof ITreeStatisticsAnalysis) {
+            return fetchTreeFromAnalysis(fetchParameters, (ITreeStatisticsAnalysis)fProvider, monitor);
+        } else {
+            return new TmfModelResponse<>(null, Status.FAILED, CommonStatusMessage.ANALYSIS_INITIALIZATION_FAILED);
+        }
+    }
+
+    /**
+     * Build tree using {@link ITreeStatisticsAnalysis}, which offers a
+     * hierarchical structure of statistics across multiple levels.
+     */
+    private TmfModelResponse<TmfTreeModel<SegmentStoreStatisticsModel>> fetchTreeFromAnalysis(Map<String, Object> fetchParameters, ITreeStatisticsAnalysis provider, @Nullable IProgressMonitor monitor) {
+        /*
+         * Add statistics for full duration, the total would be the first layer
+         */
+        ITreeStatistics<ISegment> statsRoot = provider.getStatsRoot();
+        if (statsRoot == null) {
+            return new TmfModelResponse<>(null, Status.FAILED, CommonStatusMessage.ANALYSIS_INITIALIZATION_FAILED);
+        }
+        /*
+         * Add the entry for the trace name
+         */
+        List<SegmentStoreStatisticsModel> list = new ArrayList<>();
+        String rootName = getRootEntryName();
+        if (rootName == null) {
+            rootName = getTrace().getName();
+        }
+        list.add(new SegmentStoreStatisticsModel(fTraceId, -1, getCellLabels(NonNullUtils.nullToEmptyString(rootName), statsRoot), statsRoot));
+        /*
+         * Add the entries for the rest of the layers
+         */
+        AddModelsRecursively(statsRoot, list, getUniqueId(TOTAL_PREFIX), fTraceId, TOTAL_PREFIX);
+
+
+        /*
+         * Add statistics for selection if any
+         */
+        TimeQueryFilter filter = FetchParametersUtils.createTimeQuery(fetchParameters);
+        Boolean isFiltered = DataProviderParameterUtils.extractIsFiltered(fetchParameters);
+        if (filter != null && isFiltered != null && isFiltered) {
+            long start = filter.getStart();
+            long end = filter.getEnd();
+
+            IProgressMonitor nonNullMonitor = monitor != null ? monitor : new NullProgressMonitor();
+            ITreeStatistics<ISegment> statsRootForRange = provider.getStatsRootForRange(start, end, nonNullMonitor);
+            if (statsRootForRange == null) {
+                return new TmfModelResponse<>(null, Status.CANCELLED, CommonStatusMessage.TASK_CANCELLED);
+            }
+            /*
+             * Add the entries for the rest of the layers for selection
+             */
+            AddModelsRecursively(statsRootForRange, list, getUniqueId(SELECTION_PREFIX), fTraceId, SELECTION_PREFIX);
+        }
+        TmfTreeModel.Builder<SegmentStoreStatisticsModel> treeModelBuilder = new TmfTreeModel.Builder();
+        treeModelBuilder.setColumnDescriptors(getColumnDescriptors());
+        treeModelBuilder.setEntries(Collections.unmodifiableList(list));
+        return new TmfModelResponse<>(treeModelBuilder.build(), Status.COMPLETED, CommonStatusMessage.COMPLETED);
+    }
+
+    private void AddModelsRecursively(ITreeStatistics<ISegment> rootStats, List<SegmentStoreStatisticsModel> list, long currentId, long parentId, String prefix) {
+        list.add(new SegmentStoreStatisticsModel(currentId, parentId, getCellLabels(rootStats.getName(), rootStats), rootStats));
+        for(ITreeStatistics<ISegment> childStats : rootStats.getChilds()) {
+            /*
+             * Use both parent's and child's name to generate the unique id, as
+             * different children might have the same name
+             */
+            AddModelsRecursively(childStats, list, getUniqueId(prefix + rootStats.getName() + childStats.getName()), currentId, prefix);
+        }
+    }
+
+    /**
+     * Build tree using {@link IStatisticsAnalysis}, which provides a fixed
+     * 2-level architecture.
+     */
+    private TmfModelResponse<TmfTreeModel<SegmentStoreStatisticsModel>> fetchTreeFromAnalysis(Map<String, Object> fetchParameters, IStatisticsAnalysis provider, @Nullable IProgressMonitor monitor) {
+        IStatistics<ISegment> statsTotal = provider.getStatsTotal();
         if (statsTotal == null) {
             return new TmfModelResponse<>(null, Status.FAILED, CommonStatusMessage.ANALYSIS_INITIALIZATION_FAILED);
         }
@@ -168,7 +283,7 @@ public class SegmentStoreStatisticsDataProvider extends AbstractTmfTraceDataProv
          */
         long totalId = getUniqueId(TOTAL_PREFIX);
         list.add(new SegmentStoreStatisticsModel(totalId, fTraceId, getCellLabels(Objects.requireNonNull(Messages.SegmentStoreStatisticsDataProvider_Total), statsTotal), statsTotal));
-        Map<String, IStatistics<ISegment>> totalStats = fProvider.getStatsPerType();
+        Map<String, IStatistics<ISegment>> totalStats = provider.getStatsPerType();
         for (Entry<String, IStatistics<ISegment>> entry : totalStats.entrySet()) {
             IStatistics<ISegment> statistics = entry.getValue();
             list.add(new SegmentStoreStatisticsModel(getUniqueId(TOTAL_PREFIX + entry.getKey()), totalId, getCellLabels(entry.getKey(), statistics), statistics));
@@ -184,7 +299,7 @@ public class SegmentStoreStatisticsDataProvider extends AbstractTmfTraceDataProv
             long end = filter.getEnd();
 
             IProgressMonitor nonNullMonitor = monitor != null ? monitor : new NullProgressMonitor();
-            IStatistics<ISegment> statsForRange = fProvider.getStatsForRange(start, end, nonNullMonitor);
+            IStatistics<ISegment> statsForRange = provider.getStatsForRange(start, end, nonNullMonitor);
             if (statsForRange == null) {
                 return new TmfModelResponse<>(null, Status.CANCELLED, CommonStatusMessage.TASK_CANCELLED);
             }
@@ -192,7 +307,7 @@ public class SegmentStoreStatisticsDataProvider extends AbstractTmfTraceDataProv
             long selectionId = getUniqueId(SELECTION_PREFIX);
             if (statsForRange.getNbElements() > 0) {
                 list.add(new SegmentStoreStatisticsModel(selectionId, fTraceId, getCellLabels(Objects.requireNonNull(Messages.SegmentStoreStatisticsDataProvider_Selection), statsForRange), statsForRange));
-                Map<String, IStatistics<ISegment>> selectionStats = fProvider.getStatsPerTypeForRange(start, end, nonNullMonitor);
+                Map<String, IStatistics<ISegment>> selectionStats = provider.getStatsPerTypeForRange(start, end, nonNullMonitor);
                 for (Entry<String, IStatistics<ISegment>> entry : selectionStats.entrySet()) {
                     IStatistics<ISegment> statistics = entry.getValue();
                     list.add(new SegmentStoreStatisticsModel(getUniqueId(SELECTION_PREFIX + entry.getKey()), selectionId, getCellLabels(entry.getKey(), statistics), statistics));
