@@ -11,15 +11,21 @@
 
 package org.eclipse.tracecompass.integration.core.tests.dataproviders;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.tracecompass.analysis.os.linux.core.kernel.KernelAnalysisModule;
+import org.eclipse.tracecompass.internal.analysis.os.linux.core.threadstatus.ThreadStatusDataProvider;
 import org.eclipse.tracecompass.lttng2.kernel.core.trace.LttngKernelTrace;
 import org.eclipse.tracecompass.lttng2.lttng.kernel.core.tests.shared.LttngKernelTestTraceUtils;
 import org.eclipse.tracecompass.lttng2.ust.core.tests.shared.LttngUstTestTraceUtils;
@@ -28,18 +34,24 @@ import org.eclipse.tracecompass.testtraces.ctf.CtfTestTrace;
 import org.eclipse.tracecompass.tmf.core.dataprovider.DataProviderManager;
 import org.eclipse.tracecompass.tmf.core.dataprovider.IDataProviderDescriptor;
 import org.eclipse.tracecompass.tmf.core.dataprovider.IDataProviderDescriptor.ProviderType;
+import org.eclipse.tracecompass.tmf.core.dataprovider.IDataProviderFactory;
 import org.eclipse.tracecompass.tmf.core.event.ITmfEvent;
 import org.eclipse.tracecompass.tmf.core.model.DataProviderDescriptor;
+import org.eclipse.tracecompass.tmf.core.model.timegraph.ITimeGraphDataProvider;
 import org.eclipse.tracecompass.tmf.core.model.tree.ITmfTreeDataModel;
+import org.eclipse.tracecompass.tmf.core.model.tree.ITmfTreeDataProvider;
 import org.eclipse.tracecompass.tmf.core.model.xy.ITmfTreeXYDataProvider;
 import org.eclipse.tracecompass.tmf.core.signal.TmfSignalManager;
 import org.eclipse.tracecompass.tmf.core.signal.TmfTraceClosedSignal;
 import org.eclipse.tracecompass.tmf.core.signal.TmfTraceOpenedSignal;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
+import org.eclipse.tracecompass.tmf.core.trace.TmfTraceUtils;
 import org.eclipse.tracecompass.tmf.core.trace.experiment.TmfExperiment;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import com.google.common.collect.ImmutableList;
 
 /**
  * Unit test for testing the data provider manager.
@@ -51,6 +63,7 @@ public class DataProviderManagerTest {
     private static TmfExperiment fExperiment;
     private static final Set<IDataProviderDescriptor> EXPECTED_KERNEL_DP_DESCRIPTORS = new HashSet<>();
     private static final Set<IDataProviderDescriptor> EXPECTED_UST_DP_DESCRIPTORS = new HashSet<>();
+    private static final String SEGMENTSTORE_SCATTER_FUTEX_DP_ID = "org.eclipse.tracecompass.internal.analysis.timing.core.segmentstore.scatter.dataprovider:lttng.analysis.futex";
 
     private static final String CPU_USAGE_DP_ID = "org.eclipse.tracecompass.analysis.os.linux.core.cpuusage.CpuUsageDataProvider";
 
@@ -96,7 +109,7 @@ public class DataProviderManagerTest {
         builder.setName("Futex Contention Analysis - Latency vs Time")
                 .setDescription("Show latencies provided by Analysis module: Futex Contention Analysis")
                 .setProviderType(ProviderType.TREE_TIME_XY)
-                .setId("org.eclipse.tracecompass.internal.analysis.timing.core.segmentstore.scatter.dataprovider:lttng.analysis.futex");
+                .setId(SEGMENTSTORE_SCATTER_FUTEX_DP_ID);
         EXPECTED_KERNEL_DP_DESCRIPTORS.add(builder.build());
         builder = new DataProviderDescriptor.Builder();
         builder.setName("Futex Contention Analysis - Priority/Thread name Statistics Table")
@@ -395,4 +408,74 @@ public class DataProviderManagerTest {
         assertTrue(dp == dp3);
         assertTrue(dp == dp2);
     }
+
+    /**
+     * Test different factory get methods
+     */
+   @Test
+   public void testFactoryMethods() {
+       ITmfTrace trace = fKernelTrace;
+       assertNotNull(trace);
+       Collection<IDataProviderFactory> factories = DataProviderManager.getInstance().getFactories();
+       assertNotNull(factories);
+       for (IDataProviderFactory factory : factories) {
+           Collection<IDataProviderDescriptor> descs = factory.getDescriptors(trace);
+           for (IDataProviderDescriptor descriptor : descs) {
+               assertTrue(descriptor.getName(), EXPECTED_KERNEL_DP_DESCRIPTORS.contains(descriptor));
+           }
+       }
+       IDataProviderFactory factory =  DataProviderManager.getInstance().getFactory(SEGMENTSTORE_SCATTER_FUTEX_DP_ID);
+       assertNotNull(factory);
+       Collection<IDataProviderDescriptor> descs = factory.getDescriptors(trace);
+       long count = descs.stream().filter(desc -> desc.getId().equals(SEGMENTSTORE_SCATTER_FUTEX_DP_ID)).count();
+       assertEquals(1, count);
+   }
+
+   /**
+    * Test different add/remove methods
+    */
+   @Test
+  public void testAddRemoveFactoryMethods() {
+      String myId = "my-id";
+      IDataProviderFactory testFactory = new IDataProviderFactory() {
+          @Override
+          public @Nullable ITmfTreeDataProvider<? extends ITmfTreeDataModel> createProvider(@NonNull ITmfTrace trace) {
+
+              KernelAnalysisModule module = TmfTraceUtils.getAnalysisModuleOfClass(trace, KernelAnalysisModule.class, KernelAnalysisModule.ID);
+              if (module != null) {
+                  return new ThreadStatusDataProvider(trace, module) {
+                      @Override
+                      public @NonNull String getId() {
+                          return myId;
+                      }
+                  };
+              }
+
+              return null;
+          }
+          @Override
+          public @NonNull Collection<IDataProviderDescriptor> getDescriptors(@NonNull ITmfTrace trace) {
+              return ImmutableList.of(new DataProviderDescriptor.Builder()
+                      .setId(myId)
+                      .setName(Objects.requireNonNull(""))
+                      .setDescription(Objects.requireNonNull(""))
+                      .setProviderType(ProviderType.TIME_GRAPH)
+                      .build());
+          }
+      };
+      ITmfTrace trace = fKernelTrace;
+      assertNotNull(trace);
+      DataProviderManager.getInstance().addDataProviderFactory(myId, testFactory);
+      List<IDataProviderDescriptor> kernelDescriptors = DataProviderManager.getInstance().getAvailableProviders(trace);
+      assertEquals(1, kernelDescriptors.stream().filter(desc -> desc.getId().equals(myId)).count());
+
+      @SuppressWarnings("unchecked")
+      ITimeGraphDataProvider<?> dp = DataProviderManager.getInstance().getOrCreateDataProvider(trace, myId, ITimeGraphDataProvider.class);
+      assertNotNull(dp);
+      assertTrue(DataProviderManager.getInstance().removeDataProvider(trace, myId));
+      dp.dispose();
+
+      IDataProviderFactory removedFactory = DataProviderManager.getInstance().removeDataProviderFactory(myId);
+      assertEquals(testFactory, removedFactory);
+  }
 }
