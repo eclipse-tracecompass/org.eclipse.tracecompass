@@ -27,6 +27,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.common.core.math.SaturatedArithmetic;
@@ -271,6 +272,17 @@ public interface ITmfTrace extends ITmfEventProvider {
      * @return An iterable view of the analysis modules
      */
     @NonNull Iterable<@NonNull IAnalysisModule> getAnalysisModules();
+
+    /**
+     * Refresh the analysis modules for this traces
+     *
+     * @return An IStatus indicating whether the analysis could be run
+     *         successfully or not
+     * @since 9.4
+     */
+    default IStatus refreshAnalysisModules() {
+        return Status.OK_STATUS;
+    }
 
     // ------------------------------------------------------------------------
     // Aspect getters
