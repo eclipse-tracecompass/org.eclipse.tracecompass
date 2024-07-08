@@ -14,7 +14,7 @@ package org.eclipse.tracecompass.ctf.core.event.types;
  * A simple range class
  *
  * @author Vlad Arama
- * @since 4.5
+ * @since 4.6
  */
 public class IntegerRange {
     private final long startRange;

@@ -79,7 +79,7 @@ public final class IntegerDefinition extends SimpleDatatypeDefinition {
      *            integer value
      * @param mappings
      *            mapping value
-     * @since 4.5
+     * @since 4.6
      */
     public IntegerDefinition(@NonNull IntegerDeclaration declaration,
             IDefinitionScope definitionScope, @NonNull String fieldName, long value, String mappings) {
@@ -104,7 +104,7 @@ public final class IntegerDefinition extends SimpleDatatypeDefinition {
      * Gets the value of the mappings
      *
      * @return A mapped range of integers
-     * @since 4.5
+     * @since 4.6
      */
     public String getMappings() {
         return fMapping;
