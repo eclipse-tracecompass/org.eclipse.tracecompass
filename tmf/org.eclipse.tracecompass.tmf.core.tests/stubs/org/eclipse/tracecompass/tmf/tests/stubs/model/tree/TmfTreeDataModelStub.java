@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.tracecompass.tmf.core.dataprovider.DataType;
 import org.eclipse.tracecompass.tmf.core.model.tree.ITmfTreeDataModel;
 
 /**
@@ -24,6 +25,7 @@ public class TmfTreeDataModelStub implements ITmfTreeDataModel {
     private final long fId;
     private final long fParentId;
     private final List<String> fLabels;
+    private final DataType fDataType;
 
     /**
      * Constructor
@@ -35,10 +37,11 @@ public class TmfTreeDataModelStub implements ITmfTreeDataModel {
      * @param labels
      *            the labels
      */
-    public TmfTreeDataModelStub(long id, long parentId, List<String> labels) {
+    public TmfTreeDataModelStub(long id, long parentId, List<String> labels, DataType dataType) {
         fId = id;
         fParentId = parentId;
         fLabels = labels;
+        fDataType = dataType;
 }
     @Override
     public long getId() {
@@ -58,6 +61,11 @@ public class TmfTreeDataModelStub implements ITmfTreeDataModel {
     @Override
     public List<String> getLabels() {
         return fLabels;
+    }
+
+    @Override
+    public DataType getDataType() {
+        return fDataType;
     }
 
     @Override
