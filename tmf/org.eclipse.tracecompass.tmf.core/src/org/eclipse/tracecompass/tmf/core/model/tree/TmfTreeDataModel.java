@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.tracecompass.tmf.core.dataprovider.DataType;
 import org.eclipse.tracecompass.tmf.core.model.OutputElementStyle;
 
 /**
@@ -31,6 +32,7 @@ public class TmfTreeDataModel implements ITmfTreeDataModel {
     private final List<String> fLabels;
     private final boolean fHasRowModel;
     private final @Nullable OutputElementStyle fStyle;
+    private final DataType fDataType;
 
     /**
      * Constructor
@@ -43,7 +45,7 @@ public class TmfTreeDataModel implements ITmfTreeDataModel {
      *            The name of this model
      */
     public TmfTreeDataModel(long id, long parentId, String name) {
-        this(id, parentId, Collections.singletonList(name), true, null);
+        this(id, parentId, Collections.singletonList(name), true, null, null);
     }
 
     /**
@@ -58,7 +60,41 @@ public class TmfTreeDataModel implements ITmfTreeDataModel {
      * @since 5.0
      */
     public TmfTreeDataModel(long id, long parentId, List<String> labels) {
-        this(id, parentId, labels, true, null);
+        this(id, parentId, labels, true, null, null);
+    }
+
+    /**
+     * Constructor
+     *
+     * @param id
+     *            The id of the model
+     * @param parentId
+     *            The parent id of this model. If it has none, give <code>-1</code>.
+     * @param labels
+     *            The labels of this model
+     * @param dataType
+     *            The data type of this model
+     * @since 9.3
+     */
+    public TmfTreeDataModel(long id, long parentId, List<String> labels, DataType dataType) {
+        this(id, parentId, labels, true, null, dataType);
+    }
+
+    /**
+     * Constructor
+     *
+     * @param id
+     *            The id of the model
+     * @param parentId
+     *            The parent id of this model. If it has none, give <code>-1</code>.
+     * @param labels
+     *            The labels of this model
+     * @param hasRowModel
+     *            Whether this entry has data or not
+     * @since 9.3
+     */
+    public TmfTreeDataModel(long id, long parentId, List<String> labels, boolean hasRowModel) {
+        this(id, parentId, labels, hasRowModel, null, null);
     }
 
     /**
@@ -75,14 +111,37 @@ public class TmfTreeDataModel implements ITmfTreeDataModel {
      *            Whether this entry has data or not
      * @param style
      *            The style of this entry
-     * @since 6.0
+     * @since 9.3
      */
     public TmfTreeDataModel(long id, long parentId, List<String> labels, boolean hasRowModel, @Nullable OutputElementStyle style) {
+        this(id, parentId, labels, hasRowModel, style, null);
+    }
+
+    /**
+     * Constructor
+     *
+     * @param id
+     *            The id of the model
+     * @param parentId
+     *            The parent id of this model. If it has none, give
+     *            <code>-1</code>.
+     * @param labels
+     *            The labels of this model
+     * @param hasRowModel
+     *            Whether this entry has data or not
+     * @param style
+     *            The style of this entry
+     * @param dataType
+     *            The data type of this entry
+     * @since 9.3
+     */
+    public TmfTreeDataModel(long id, long parentId, List<String> labels, boolean hasRowModel, @Nullable OutputElementStyle style, @Nullable DataType dataType) {
         fId = id;
         fParentId = parentId;
         fLabels = labels;
         fHasRowModel = hasRowModel;
         fStyle = style;
+        fDataType = dataType == null ? DataType.STRING : dataType;
     }
 
     @Override
@@ -113,6 +172,11 @@ public class TmfTreeDataModel implements ITmfTreeDataModel {
     @Override
     public @Nullable OutputElementStyle getStyle() {
         return fStyle;
+    }
+
+    @Override
+    public DataType getDataType() {
+        return fDataType;
     }
 
     @Override

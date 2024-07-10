@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.tracecompass.tmf.core.dataprovider.DataType;
 import org.eclipse.tracecompass.tmf.core.model.tree.TmfTreeDataModel;
 
 /**
@@ -48,9 +49,11 @@ public class TmfEventTableColumnDataModel extends TmfTreeDataModel {
      *            Header tooltip
      * @param isHiddenByDefault
      *            If the column should be hidden by default
+     * @param dataType
+     *            Data type, String by default
      */
-    public TmfEventTableColumnDataModel(long id, long parentId, List<String> columnLabels, String headerTooltip, boolean isHiddenByDefault) {
-        super(id, parentId, columnLabels);
+    public TmfEventTableColumnDataModel(long id, long parentId, List<String> columnLabels, String headerTooltip, boolean isHiddenByDefault, DataType dataType) {
+        super(id, parentId, columnLabels, dataType);
         fHeaderTooltip = headerTooltip;
         fHiddenByDefault = isHiddenByDefault;
     }

@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.tracecompass.tmf.core.dataprovider.DataType;
 import org.eclipse.tracecompass.tmf.core.model.OutputElementStyle;
 
 /**
@@ -81,6 +82,17 @@ public interface ITmfTreeDataModel {
      */
     default boolean hasRowModel() {
         return true;
+    }
+
+
+    /**
+     * Get the type of the data tree
+     *
+     * @return the corresponding data type of the data tree
+     * @since 9.3
+     */
+    default DataType getDataType() {
+        return DataType.STRING;
     }
 
 }
