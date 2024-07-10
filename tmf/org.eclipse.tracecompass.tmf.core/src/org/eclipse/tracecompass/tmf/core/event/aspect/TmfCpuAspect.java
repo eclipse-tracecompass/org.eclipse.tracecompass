@@ -15,6 +15,7 @@
 package org.eclipse.tracecompass.tmf.core.event.aspect;
 
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.tracecompass.tmf.core.dataprovider.DataType;
 import org.eclipse.tracecompass.tmf.core.event.ITmfEvent;
 
 /**
@@ -33,6 +34,14 @@ public abstract class TmfCpuAspect extends TmfDeviceAspect {
     @Override
     public final String getHelpText() {
         return Messages.getMessage(Messages.AspectHelpText_CPU);
+    }
+
+    /**
+     * @since 9.3
+     */
+    @Override
+    public DataType getDataType() {
+        return DataType.NUMBER;
     }
 
     /**

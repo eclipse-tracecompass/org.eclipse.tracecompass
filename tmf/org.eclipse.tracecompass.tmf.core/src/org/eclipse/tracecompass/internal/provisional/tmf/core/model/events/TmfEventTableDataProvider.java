@@ -152,7 +152,7 @@ public class TmfEventTableDataProvider extends AbstractTmfTableDataProvider impl
         for (ITmfEventAspect<?> aspect : aspects.values()) {
             synchronized (fAspectToIdMap) {
                 long id = fAspectToIdMap.computeIfAbsent(aspect, a -> createColumnId());
-                model.add(new TmfEventTableColumnDataModel(id, -1, Collections.singletonList(aspect.getName()), aspect.getHelpText(), aspect.isHiddenByDefault()));
+                model.add(new TmfEventTableColumnDataModel(id, -1, Collections.singletonList(aspect.getName()), aspect.getHelpText(), aspect.isHiddenByDefault(), aspect.getDataType()));
                 hasTs |= (aspect == TmfBaseAspects.getTimestampAspect());
             }
         }
@@ -160,7 +160,7 @@ public class TmfEventTableDataProvider extends AbstractTmfTableDataProvider impl
             synchronized (fAspectToIdMap) {
                 ITmfEventAspect<Long> aspect = TmfBaseAspects.getTimestampNsAspect();
                 long id = fAspectToIdMap.computeIfAbsent(aspect, a -> createColumnId());
-                model.add(new TmfEventTableColumnDataModel(id, -1, Collections.singletonList(aspect.getName()), aspect.getHelpText(), aspect.isHiddenByDefault()));
+                model.add(new TmfEventTableColumnDataModel(id, -1, Collections.singletonList(aspect.getName()), aspect.getHelpText(), aspect.isHiddenByDefault(), aspect.getDataType()));
             }
         }
         return new TmfModelResponse<>(new TmfTreeModel<>(Collections.emptyList(), model), ITmfResponse.Status.COMPLETED, CommonStatusMessage.COMPLETED);

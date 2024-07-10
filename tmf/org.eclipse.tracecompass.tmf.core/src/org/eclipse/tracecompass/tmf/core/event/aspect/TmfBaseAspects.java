@@ -14,6 +14,7 @@ package org.eclipse.tracecompass.tmf.core.event.aspect;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.tracecompass.tmf.core.dataprovider.DataType;
 import org.eclipse.tracecompass.tmf.core.event.ITmfEvent;
 import org.eclipse.tracecompass.tmf.core.event.ITmfEventType;
 import org.eclipse.tracecompass.tmf.core.timestamp.ITmfTimestamp;
@@ -45,6 +46,11 @@ public final class TmfBaseAspects {
         public @Nullable ITmfTimestamp resolve(ITmfEvent event) {
             return event.getTimestamp();
         }
+
+        @Override
+        public DataType getDataType() {
+            return DataType.TIMESTAMP;
+        }
     };
 
     private static final ITmfEventAspect<Long> TIMESTAMP_NANOSECOND_ASPECT = new ITmfEventAspect<Long>() {
@@ -63,6 +69,11 @@ public final class TmfBaseAspects {
         @Override
         public boolean isHiddenByDefault() {
             return true;
+        }
+
+        @Override
+        public DataType getDataType() {
+            return DataType.NUMBER;
         }
     };
 

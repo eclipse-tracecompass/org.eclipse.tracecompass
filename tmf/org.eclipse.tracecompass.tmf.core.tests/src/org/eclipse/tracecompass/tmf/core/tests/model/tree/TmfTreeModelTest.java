@@ -20,6 +20,7 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.TableColumnDescriptor;
+import org.eclipse.tracecompass.tmf.core.dataprovider.DataType;
 import org.eclipse.tracecompass.tmf.core.model.ITableColumnDescriptor;
 import org.eclipse.tracecompass.tmf.core.model.tree.ITmfTreeDataModel;
 import org.eclipse.tracecompass.tmf.core.model.tree.TmfTreeModel;
@@ -36,6 +37,7 @@ public class TmfTreeModelTest {
     private static final int NB_COLUMNS = 4;
     private static final int NB_ROWS = 5;
     private static final long PARENT_ID = 100;
+    private static final DataType DATA_TYPE = DataType.STRING;
     private static final String HEADER_PREFIX = "header";
     private static final String TOOLTIP_PREFIX = "tooltip";
     private static final String LABEL_PREFIX = "label";
@@ -69,7 +71,7 @@ public class TmfTreeModelTest {
             for (int i = 0; i < NB_COLUMNS; i++) {
                 labels.add(LABEL_PREFIX + String.valueOf(i));
             }
-            ITmfTreeDataModel dataModel = new TmfTreeDataModelStub(k, PARENT_ID, labels);
+            ITmfTreeDataModel dataModel = new TmfTreeDataModelStub(k, PARENT_ID, labels, DATA_TYPE);
             fTestEntries.add(dataModel);
         }
     }

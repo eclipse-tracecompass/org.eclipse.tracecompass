@@ -17,6 +17,7 @@ package org.eclipse.tracecompass.tmf.core.event.aspect;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.tracecompass.tmf.core.dataprovider.DataType;
 import org.eclipse.tracecompass.tmf.core.event.ITmfEvent;
 
 /**
@@ -106,5 +107,17 @@ public interface ITmfEventAspect<T> {
      */
     default boolean isHiddenByDefault() {
         return false;
+    }
+
+
+    /**
+     * This method will return the data type of the aspect.
+     * The data type is considered as String by default
+     *
+     * @return the data type of the aspect
+     * @since 9.3
+     */
+    default DataType getDataType() {
+        return DataType.STRING;
     }
 }
