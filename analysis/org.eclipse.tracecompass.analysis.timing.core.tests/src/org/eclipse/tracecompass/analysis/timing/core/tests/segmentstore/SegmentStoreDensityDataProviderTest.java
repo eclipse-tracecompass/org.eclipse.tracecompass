@@ -17,6 +17,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.Arrays;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.tracecompass.analysis.timing.core.tests.stubs.segmentstore.StubSegmentStoreProvider;
 import org.eclipse.tracecompass.internal.analysis.timing.core.segmentstore.SegmentStoreDensityDataProvider;
 import org.eclipse.tracecompass.internal.analysis.timing.core.segmentstore.SegmentStoreDensityDataProviderFactory;
 import org.eclipse.tracecompass.internal.tmf.core.model.filters.FetchParametersUtils;

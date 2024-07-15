@@ -9,7 +9,7 @@
  * SPDX-License-Identifier: EPL-2.0
  **********************************************************************/
 
-package org.eclipse.tracecompass.analysis.timing.core.tests.segmentstore;
+package org.eclipse.tracecompass.analysis.timing.core.tests.stubs.segmentstore;
 
 import java.util.Comparator;
 import java.util.List;
@@ -37,14 +37,14 @@ import com.google.common.collect.ImmutableList.Builder;
 public class StubSegmentStoreProvider extends AbstractSegmentStoreAnalysisModule {
 
     /** Stub column name */
-    static final String STUB_COLUMN_NAME = "Stub Column";
+    public static final String STUB_COLUMN_NAME = "Stub Column";
 
     /** Stub column content */
-    static final String STUB_COLUMN_CONTENT = "Stub Content";
+    public static final String STUB_COLUMN_CONTENT = "Stub Content";
 
     /** Search direction values to reuse */
-    static final String NEXT_DIR_UNDER_TEST = "NEXT";
-    static final String PREV_DIR_UNDER_TEST = "PREVIOUS";
+    public static final String NEXT_DIR_UNDER_TEST = "NEXT";
+    public static final String PREV_DIR_UNDER_TEST = "PREVIOUS";
 
     private static final int SIZE = 65535;
 
