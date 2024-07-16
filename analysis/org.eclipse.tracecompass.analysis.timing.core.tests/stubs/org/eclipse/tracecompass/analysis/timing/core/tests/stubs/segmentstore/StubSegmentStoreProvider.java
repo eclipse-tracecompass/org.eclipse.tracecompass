@@ -113,7 +113,9 @@ public class StubSegmentStoreProvider extends AbstractSegmentStoreAnalysisModule
 
     @Override
     protected boolean buildAnalysisSegments(@NonNull ISegmentStore<@NonNull ISegment> segmentStore, @NonNull IProgressMonitor monitor) throws TmfAnalysisException {
-        return segmentStore.addAll(fPreFixture);
+        boolean retVal = segmentStore.addAll(fPreFixture);
+        segmentStore.close(false);
+        return retVal;
     }
 
     @Override
