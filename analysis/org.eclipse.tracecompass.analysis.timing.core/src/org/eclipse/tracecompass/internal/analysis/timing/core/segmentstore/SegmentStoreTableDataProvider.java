@@ -340,7 +340,7 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTableDataProvider 
                 if (comparator != null) {
                     buildIndex(id, comparator, aspect.getName());
                 }
-                model.add(new TmfTreeDataModel(id, -1, Collections.singletonList(aspect.getName())));
+                model.add(new TmfTreeDataModel(id, -1, Collections.singletonList(aspect.getName()), aspect.getType().name()));
             }
         }
         for (ISegmentAspect aspect : fSegmentProvider.getSegmentAspects()) {
@@ -350,7 +350,7 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTableDataProvider 
                 if (comparator != null) {
                     buildIndex(id, comparator, aspect.getName());
                 }
-                model.add(new TmfTreeDataModel(id, -1, Collections.singletonList(aspect.getName())));
+                model.add(new TmfTreeDataModel(id, -1, Collections.singletonList(aspect.getName()), aspect.getType().name()));
             }
         }
         return new TmfModelResponse<>(new TmfTreeModel<>(Collections.emptyList(), model), ITmfResponse.Status.COMPLETED, CommonStatusMessage.COMPLETED);
