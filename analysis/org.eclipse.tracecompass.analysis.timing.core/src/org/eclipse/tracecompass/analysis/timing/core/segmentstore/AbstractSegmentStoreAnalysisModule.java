@@ -40,6 +40,8 @@ import org.eclipse.tracecompass.tmf.core.segment.ISegmentAspect;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
 import org.eclipse.tracecompass.tmf.core.trace.TmfTraceManager;
 
+import com.google.common.annotations.VisibleForTesting;
+
 /**
  * Abstract analysis module to generate a segment store. It is a base class that
  * can be used as a shortcut by analysis who just need to build a single segment
@@ -93,6 +95,27 @@ public abstract class AbstractSegmentStoreAnalysisModule extends TmfAbstractAnal
      */
     protected String getDataFileName() {
         return getId() + EXTENSION;
+    }
+
+    /**
+     * Get the file where to save the results of the analysis
+     *
+     * @return The file to save the results in
+     * @since 6.1
+     */
+    @VisibleForTesting
+    protected @Nullable Path getDataFilePath() {
+        ITmfTrace trace = getTrace();
+        if (trace == null) {
+            return null;
+        }
+        String fileName = getDataFileName();
+        if (fileName == null) {
+            fileName = getId() + ".ss"; //$NON-NLS-1$
+        }
+        /* See if the data file already exists on disk */
+        String dir = TmfTraceManager.getSupplementaryFileDir(trace);
+        return Paths.get(dir, fileName);
     }
 
     /**
@@ -178,8 +201,7 @@ public abstract class AbstractSegmentStoreAnalysisModule extends TmfAbstractAnal
             store = buildInMemorySegmentStore(type, monitor);
             break;
         case OnDisk:
-            final @Nullable String dataFileName = getDataFileName();
-            store = buildOnDiskSegmentStore(dataFileName, monitor);
+            store = buildOnDiskSegmentStore(monitor);
             break;
         default:
             Activator.getInstance().logError("Unknown segment store type: " + type); //$NON-NLS-1$
@@ -195,17 +217,9 @@ public abstract class AbstractSegmentStoreAnalysisModule extends TmfAbstractAnal
         return true;
     }
 
-    private @Nullable ISegmentStore<@NonNull ISegment> buildOnDiskSegmentStore(@Nullable String dataFileName, IProgressMonitor monitor) throws TmfAnalysisException {
-        ITmfTrace trace = Objects.requireNonNull((getTrace()));
-
-        String fileName = dataFileName;
-        if (fileName == null) {
-            fileName = getId() + ".ss"; //$NON-NLS-1$
-        }
+    private @Nullable ISegmentStore<@NonNull ISegment> buildOnDiskSegmentStore(IProgressMonitor monitor) throws TmfAnalysisException {
         /* See if the data file already exists on disk */
-        String dir = TmfTraceManager.getSupplementaryFileDir(trace);
-        final Path file = Paths.get(dir, fileName);
-
+        final Path file = getDataFilePath();
         boolean built = false;
         ISegmentStore<ISegment> segmentStore;
         try {
@@ -291,6 +305,31 @@ public abstract class AbstractSegmentStoreAnalysisModule extends TmfAbstractAnal
         }
 
         return properties;
+    }
+    @Override
+    public void clearPersistentData() {
+        super.clearPersistentData();
+        ISegmentStore<?> store = getSegmentStore();
+        if (store != null) {
+            // Segment Store is open
+            store.close(true);
+        } else {
+            // Segment Store is closed... delete directly
+            SegmentStoreType type = getSegmentStoreType();
+            if (type == SegmentStoreType.OnDisk) {
+                Path htFile = getDataFilePath();
+                if (htFile != null) {
+                    try {
+                        Files.deleteIfExists(htFile);
+                    } catch (IOException e) {
+                        Activator.getInstance().logError("Error deleting segment store on disk", e); //$NON-NLS-1$
+                    }
+                }
+            }
+        }
+
+        // Reset analysis so that it can be scheduled again
+        resetAnalysis();
     }
 
 }
