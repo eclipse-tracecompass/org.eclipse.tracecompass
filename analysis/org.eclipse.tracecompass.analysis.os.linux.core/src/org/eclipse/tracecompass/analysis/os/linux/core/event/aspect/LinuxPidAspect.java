@@ -12,6 +12,7 @@
 package org.eclipse.tracecompass.analysis.os.linux.core.event.aspect;
 
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.tracecompass.tmf.core.dataprovider.DataType;
 import org.eclipse.tracecompass.tmf.core.event.ITmfEvent;
 import org.eclipse.tracecompass.tmf.core.event.aspect.ITmfEventAspect;
 
@@ -36,5 +37,10 @@ public abstract class LinuxPidAspect implements ITmfEventAspect<Integer> {
 
     @Override
     public abstract @Nullable Integer resolve(ITmfEvent event);
+
+    @Override
+    public DataType getDataType() {
+        return DataType.NUMBER;
+    }
 
 }

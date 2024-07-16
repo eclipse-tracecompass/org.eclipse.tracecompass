@@ -11,6 +11,8 @@
 
 package org.eclipse.tracecompass.tmf.core.event.aspect;
 
+import org.eclipse.tracecompass.tmf.core.dataprovider.DataType;
+
 /**
  * Device aspect, a category that could be an ASIC, CPU, DSP, GPU. Basically any
  * hardware context. Typically an event will only resolve by one device aspect.
@@ -28,4 +30,9 @@ public abstract class TmfDeviceAspect implements ITmfEventAspect<Integer> {
      * @return the machine readable (non-externalized) category of the device.
      */
     public abstract String getDeviceType();
+
+    @Override
+    public DataType getDataType() {
+        return DataType.NUMBER;
+    }
 }

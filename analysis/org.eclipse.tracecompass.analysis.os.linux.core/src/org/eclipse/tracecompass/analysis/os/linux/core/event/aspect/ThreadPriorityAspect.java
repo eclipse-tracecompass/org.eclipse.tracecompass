@@ -26,6 +26,7 @@ import org.eclipse.tracecompass.statesystem.core.exceptions.StateSystemDisposedE
 import org.eclipse.tracecompass.statesystem.core.exceptions.TimeRangeException;
 import org.eclipse.tracecompass.statesystem.core.interval.ITmfStateInterval;
 import org.eclipse.tracecompass.statesystem.core.statevalue.ITmfStateValue;
+import org.eclipse.tracecompass.tmf.core.dataprovider.DataType;
 import org.eclipse.tracecompass.tmf.core.event.ITmfEvent;
 import org.eclipse.tracecompass.tmf.core.event.aspect.ITmfEventAspect;
 import org.eclipse.tracecompass.tmf.core.event.aspect.TmfCpuAspect;
@@ -91,5 +92,10 @@ public final class ThreadPriorityAspect implements ITmfEventAspect<Integer> {
         } catch (AttributeNotFoundException | StateSystemDisposedException | TimeRangeException e) {
         }
         return execPrio;
+    }
+
+    @Override
+    public DataType getDataType() {
+        return DataType.NUMBER;
     }
 }

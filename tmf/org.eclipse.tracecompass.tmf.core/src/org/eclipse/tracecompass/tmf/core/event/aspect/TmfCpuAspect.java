@@ -37,14 +37,6 @@ public abstract class TmfCpuAspect extends TmfDeviceAspect {
     }
 
     /**
-     * @since 9.3
-     */
-    @Override
-    public DataType getDataType() {
-        return DataType.NUMBER;
-    }
-
-    /**
      * Returns the CPU number of the CPU on which this event was executed or
      * {@code null} if the CPU is not available for an event.
      */
