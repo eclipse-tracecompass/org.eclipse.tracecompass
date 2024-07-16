@@ -37,7 +37,7 @@ public class TmfTreeModelTest {
     private static final int NB_COLUMNS = 4;
     private static final int NB_ROWS = 5;
     private static final long PARENT_ID = 100;
-    private static final DataType DATA_TYPE = DataType.STRING;
+    private static final String DATA_TYPE = DataType.STRING.name();
     private static final String HEADER_PREFIX = "header";
     private static final String TOOLTIP_PREFIX = "tooltip";
     private static final String LABEL_PREFIX = "label";
