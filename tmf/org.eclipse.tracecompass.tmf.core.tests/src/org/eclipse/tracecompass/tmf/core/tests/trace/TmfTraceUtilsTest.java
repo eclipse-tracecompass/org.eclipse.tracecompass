@@ -26,6 +26,7 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.analysis.counters.core.aspects.CounterAspect;
 import org.eclipse.tracecompass.tmf.core.analysis.IAnalysisModule;
+import org.eclipse.tracecompass.tmf.core.dataprovider.DataType;
 import org.eclipse.tracecompass.tmf.core.event.ITmfEvent;
 import org.eclipse.tracecompass.tmf.core.event.aspect.ITmfEventAspect;
 import org.eclipse.tracecompass.tmf.core.event.aspect.TmfCpuAspect;
@@ -106,6 +107,11 @@ public class TmfTraceUtilsTest {
         @Override
         public @Nullable Integer resolve(@NonNull ITmfEvent event) {
             return RESOLVED_VALUE;
+        }
+
+        @Override
+        public DataType getDataType() {
+            return DataType.NUMBER;
         }
 
     }
