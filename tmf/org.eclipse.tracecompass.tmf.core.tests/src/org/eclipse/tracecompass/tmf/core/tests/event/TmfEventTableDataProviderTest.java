@@ -157,10 +157,10 @@ public class TmfEventTableDataProviderTest {
         assertNotNull(contentsColumnId);
         assertNotNull(timestampNsColumnId);
         List<TmfEventTableColumnDataModel> expectedColumnEntries = Arrays.asList(
-                new TmfEventTableColumnDataModel(timestampColumnId, -1, Collections.singletonList(TIMESTAMP_COLUMN_NAME), "", false, DataType.TIMESTAMP),
-                new TmfEventTableColumnDataModel(eventTypeColumnId, -1, Collections.singletonList(EVENT_TYPE_COLUMN_NAME), "The type of this event. This normally determines the field layout.", false, DataType.STRING),
-                new TmfEventTableColumnDataModel(contentsColumnId, -1, Collections.singletonList(CONTENTS_COLUMN_NAME), "The fields (or payload) of this event", false, DataType.STRING),
-                new TmfEventTableColumnDataModel(timestampNsColumnId, -1, Collections.singletonList(TIMESTAMP_NS_COLUMN_NAME), "Timestamp in nanoseconds, normalized and useful for calculations", true, DataType.STRING));
+                new TmfEventTableColumnDataModel(timestampColumnId, -1, Collections.singletonList(TIMESTAMP_COLUMN_NAME), "", false, DataType.TIMESTAMP.name()),
+                new TmfEventTableColumnDataModel(eventTypeColumnId, -1, Collections.singletonList(EVENT_TYPE_COLUMN_NAME), "The type of this event. This normally determines the field layout.", false, DataType.STRING.name()),
+                new TmfEventTableColumnDataModel(contentsColumnId, -1, Collections.singletonList(CONTENTS_COLUMN_NAME), "The fields (or payload) of this event", false, DataType.STRING.name()),
+                new TmfEventTableColumnDataModel(timestampNsColumnId, -1, Collections.singletonList(TIMESTAMP_NS_COLUMN_NAME), "Timestamp in nanoseconds, normalized and useful for calculations", true, DataType.STRING.name()));
 
         TmfModelResponse<TmfTreeModel<TmfEventTableColumnDataModel>> response = fProvider.fetchTree(FetchParametersUtils.timeQueryToMap(new TimeQueryFilter(0, 0, 1)), null);
         TmfTreeModel<TmfEventTableColumnDataModel> currentColumnModel = response.getModel();

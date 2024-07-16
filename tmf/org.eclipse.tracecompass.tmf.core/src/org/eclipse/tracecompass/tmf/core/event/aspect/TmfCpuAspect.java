@@ -15,7 +15,6 @@
 package org.eclipse.tracecompass.tmf.core.event.aspect;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.tracecompass.tmf.core.dataprovider.DataType;
 import org.eclipse.tracecompass.tmf.core.event.ITmfEvent;
 
 /**

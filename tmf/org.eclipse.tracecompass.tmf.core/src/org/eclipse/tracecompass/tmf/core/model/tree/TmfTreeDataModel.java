@@ -32,7 +32,7 @@ public class TmfTreeDataModel implements ITmfTreeDataModel {
     private final List<String> fLabels;
     private final boolean fHasRowModel;
     private final @Nullable OutputElementStyle fStyle;
-    private final DataType fDataType;
+    private final String fDataType;
 
     /**
      * Constructor
@@ -76,7 +76,7 @@ public class TmfTreeDataModel implements ITmfTreeDataModel {
      *            The data type of this model
      * @since 9.3
      */
-    public TmfTreeDataModel(long id, long parentId, List<String> labels, DataType dataType) {
+    public TmfTreeDataModel(long id, long parentId, List<String> labels, String dataType) {
         this(id, parentId, labels, true, null, dataType);
     }
 
@@ -135,13 +135,13 @@ public class TmfTreeDataModel implements ITmfTreeDataModel {
      *            The data type of this entry
      * @since 9.3
      */
-    public TmfTreeDataModel(long id, long parentId, List<String> labels, boolean hasRowModel, @Nullable OutputElementStyle style, @Nullable DataType dataType) {
+    public TmfTreeDataModel(long id, long parentId, List<String> labels, boolean hasRowModel, @Nullable OutputElementStyle style, @Nullable String dataType) {
         fId = id;
         fParentId = parentId;
         fLabels = labels;
         fHasRowModel = hasRowModel;
         fStyle = style;
-        fDataType = dataType == null ? DataType.STRING : dataType;
+        fDataType = dataType == null ? DataType.STRING.name() : dataType;
     }
 
     @Override
@@ -174,8 +174,13 @@ public class TmfTreeDataModel implements ITmfTreeDataModel {
         return fStyle;
     }
 
+    /**
+     * Returns the data type of the model
+     *
+     * @since 9.3
+     */
     @Override
-    public DataType getDataType() {
+    public String getDataType() {
         return fDataType;
     }
 
