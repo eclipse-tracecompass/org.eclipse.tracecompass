@@ -1,5 +1,5 @@
 /**********************************************************************
- * Copyright (c) 2020, 2024 Ericsson
+ * Copyright (c) 2024 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -26,14 +26,13 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.analysis.timing.core.segmentstore.SegmentStoreStatisticsModel;
-import org.eclipse.tracecompass.analysis.timing.core.tests.segmentstore.statistics.StubSegmentStatisticsAnalysis;
+import org.eclipse.tracecompass.analysis.timing.core.tests.segmentstore.statistics.StubTreeStatisticsAnalysis;
 import org.eclipse.tracecompass.internal.analysis.timing.core.segmentstore.IDataAspect;
 import org.eclipse.tracecompass.internal.analysis.timing.core.segmentstore.SegmentStoreStatisticsAspects.NamedStatistics;
-import org.eclipse.tracecompass.internal.analysis.timing.core.segmentstore.SegmentStoreStatisticsDataProvider;
+import org.eclipse.tracecompass.internal.analysis.timing.core.segmentstore.SegmentStoreTreeStatisticsDataProvider;
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.TableColumnDescriptor;
 import org.eclipse.tracecompass.internal.tmf.core.model.filters.FetchParametersUtils;
 import org.eclipse.tracecompass.tmf.core.dataprovider.DataType;
-import org.eclipse.tracecompass.tmf.core.exceptions.TmfAnalysisException;
 import org.eclipse.tracecompass.tmf.core.model.ITableColumnDescriptor;
 import org.eclipse.tracecompass.tmf.core.model.filters.FilterTimeQueryFilter;
 import org.eclipse.tracecompass.tmf.core.model.tree.TmfTreeModel;
@@ -46,12 +45,11 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
- * Test class to verify {@link SegmentStoreStatisticsDataProvider}
+ * Test class to verify {@link SegmentStoreTreeStatisticsDataProvider}
  *
- * @author Bernd Hufmann
  * @author Siwei Zhang
  */
-public class SegmentStoreStatisticsDataProviderTest extends AbstractSegmentStoreStatisticsDataProviderTest {
+public class SegmentStoreTreeStatisticsDataProviderTest extends AbstractSegmentStoreStatisticsDataProviderTest{
 
     // ------------------------------------------------------------------------
     // Test data
@@ -62,42 +60,66 @@ public class SegmentStoreStatisticsDataProviderTest extends AbstractSegmentStore
     private static final @NonNull List<@NonNull String> EXPECTED_TOOLTIP_LIST = Arrays.asList("", "", "", "", "", "", "", "", "");
 
     private static final List<@NonNull List<@NonNull String>> LIST_OF_EXPECTED_LABELS_FULL = Arrays.asList(
-            Arrays.asList("", "0", "65.534 µs", "32.767 µs", "18.918 µs", "65535", "2.147 s", "[0,0]", "[65534,131068]"),
-            Arrays.asList("Total", "0", "65.534 µs", "32.767 µs", "18.918 µs", "65535", "2.147 s", "[0,0]", "[65534,131068]"),
-            Arrays.asList("even", "0", "65.534 µs", "32.767 µs", "18.919 µs", "32768", "1.074 s", "[0,0]", "[65534,131068]"),
-            Arrays.asList("odd", "1 ns", "65.533 µs", "32.767 µs", "18.918 µs", "32767", "1.074 s", "[1,2]", "[65533,131066]"));
+            Arrays.asList("", "0", "2 ns", "1 ns", "1 ns", "3", "3 ns", "[1000,1000]", "[1000,1002]"),
+            Arrays.asList("Total", "0", "2 ns", "1 ns", "1 ns", "3", "3 ns", "[1000,1000]", "[1000,1002]"),
+            Arrays.asList("child1", "0", "2 ns", "1 ns", "1 ns", "3", "3 ns", "[2000,2000]", "[2000,2002]"),
+            Arrays.asList("grandChild11", "0", "2 ns", "1 ns", "1 ns", "3", "3 ns", "[4000,4000]", "[4000,4002]"),
+            Arrays.asList("grandChild12", "0", "2 ns", "1 ns", "1 ns", "3", "3 ns", "[5000,5000]", "[5000,5002]"),
+            Arrays.asList("child2", "0", "2 ns", "1 ns", "1 ns", "3", "3 ns", "[3000,3000]", "[3000,3002]"),
+            Arrays.asList("grandChild21", "0", "2 ns", "1 ns", "1 ns", "3", "3 ns", "[6000,6000]", "[6000,6002]"),
+            Arrays.asList("grandChild22", "0", "2 ns", "1 ns", "1 ns", "3", "3 ns", "[7000,7000]", "[7000,7002]"));
 
     private static final @NonNull List<@NonNull List<@NonNull String>> LIST_OF_EXPECTED_LABELS_SELECTION = Arrays.asList(
-            Arrays.asList("Selection", "512 ns", "4.096 µs", "2.304 µs", "1.035 µs", "3585", "8.26 ms", "[512,1024]", "[4096,8192]"),
-            Arrays.asList("even", "512 ns", "4.096 µs", "2.304 µs", "1.035 µs", "1793", "4.131 ms", "[512,1024]", "[4096,8192]"),
-            Arrays.asList("odd", "513 ns", "4.095 µs", "2.304 µs", "1.035 µs", "1792", "4.129 ms", "[513,1026]", "[4095,8190]"));
+            Arrays.asList("Selection", "0", "2 ns", "1 ns", "1 ns", "3", "3 ns", "[1000,1000]", "[1000,1002]"),
+            Arrays.asList("child1", "0", "2 ns", "1 ns", "1 ns", "3", "3 ns", "[2000,2000]", "[2000,2002]"),
+            Arrays.asList("grandChild11", "0", "2 ns", "1 ns", "1 ns", "3", "3 ns", "[4000,4000]", "[4000,4002]"),
+            Arrays.asList("grandChild12", "0", "2 ns", "1 ns", "1 ns", "3", "3 ns", "[5000,5000]", "[5000,5002]"),
+            Arrays.asList("child2", "0", "2 ns", "1 ns", "1 ns", "3", "3 ns", "[3000,3000]", "[3000,3002]"),
+            Arrays.asList("grandChild21", "0", "2 ns", "1 ns", "1 ns", "3", "3 ns", "[6000,6000]", "[6000,6002]"),
+            Arrays.asList("grandChild22", "0", "2 ns", "1 ns", "1 ns", "3", "3 ns", "[7000,7000]", "[7000,7002]"));
 
     private static final @NonNull List<@NonNull StatisticsHolder> EXPECTED_STATS_FULL = Arrays.asList(
-            new StatisticsHolder("", 0, -1, 0, 65534, 32767.0, 18918.46, 65535, 2147385345.0, 0, 0, 65534, 131068),
-            new StatisticsHolder("Total", 3, 0, 0, 65534, 32767.0, 18918.46, 65535, 2147385345.0, 0, 0, 65534, 131068),
-            new StatisticsHolder("even", 4, 3, 0, 65534, 32767.0, 18918.90, 32768, 1073709056.0, 0, 0, 65534, 131068),
-            new StatisticsHolder("odd", 5, 3, 1, 65533, 32767.0, 18918.32, 32767, 1073676289.0, 1, 2, 65533, 131066));
+            new StatisticsHolder("", 0, -1, 0, 2, 1.0, 1.0, 3, 3.0, 1000, 1000, 1000, 1002),
+            new StatisticsHolder("Total", 3, 0, 0, 2, 1.0, 1.0, 3, 3.0, 1000, 1000, 1000, 1002),
+            new StatisticsHolder("child1", 4, 3, 0, 2, 1.0, 1.0, 3, 3.0, 2000, 2000, 2000, 2002),
+            new StatisticsHolder("grandChild11", 5, 4, 0, 2, 1.0, 1.0, 3, 3.0, 4000, 4000, 4000, 4002),
+            new StatisticsHolder("grandChild12", 6, 4, 0, 2, 1.0, 1.0, 3, 3.0, 5000, 5000, 5000, 5002),
+            new StatisticsHolder("child2", 7, 3, 0, 2, 1.0, 1.0, 3, 3.0, 3000, 3000, 3000, 3002),
+            new StatisticsHolder("grandChild21", 8, 7, 0, 2, 1.0, 1.0, 3, 3.0, 6000, 6000, 6000, 6002),
+            new StatisticsHolder("grandChild22", 9, 7, 0, 2, 1.0, 1.0, 3, 3.0, 7000, 7000, 7000, 7002));
 
     private static final @NonNull List<@NonNull StatisticsHolder> EXPECTED_STATS_SELECTION = Arrays.asList(
-            new StatisticsHolder("Selection", 6, 0, 512, 4096, 2304.0, 1035.04, 3585, 8259840.0, 512, 1024, 4096, 8192),
-            new StatisticsHolder("even", 7, 6, 512, 4096, 2304.0, 1035.48, 1793, 4131072.0, 512, 1024, 4096, 8192),
-            new StatisticsHolder("odd", 8, 6, 513, 4095, 2304.0, 1034.9, 1792, 4128768.0, 513, 1026, 4095, 8190));
+            new StatisticsHolder("Selection", 10, 0, 0, 2, 1.0, 1.0, 3, 3.0, 1000, 1000, 1000, 1002),
+            new StatisticsHolder("child1", 11, 10, 0, 2, 1.0, 1.0, 3, 3.0, 2000, 2000, 2000, 2002),
+            new StatisticsHolder("grandChild11", 12, 11, 0, 2, 1.0, 1.0, 3, 3.0, 4000, 4000, 4000, 4002),
+            new StatisticsHolder("grandChild12", 13, 11, 0, 2, 1.0, 1.0, 3, 3.0, 5000, 5000, 5000, 5002),
+            new StatisticsHolder("child2", 14, 10, 0, 2, 1.0, 1.0, 3, 3.0, 3000, 3000, 3000, 3002),
+            new StatisticsHolder("grandChild21", 15, 14, 0, 2, 1.0, 1.0, 3, 3.0, 6000, 6000, 6000, 6002),
+            new StatisticsHolder("grandChild22", 16, 14, 0, 2, 1.0, 1.0, 3, 3.0, 7000, 7000, 7000, 7002));
 
     private static final List<@NonNull List<@NonNull String>> LIST_OF_EXPECTED_LABELS_WITH_MAPPER_FULL = Arrays.asList(
-            Arrays.asList("My", "0", "65534", "32767.0", "18918.46928268775", "65535", "2.147385345E9", "[0,0]", "[65534,131068]"),
-            Arrays.asList("MyTotal", "0", "65534", "32767.0", "18918.46928268775", "65535", "2.147385345E9", "[0,0]", "[65534,131068]"),
-            Arrays.asList("Myeven", "0", "65534", "32767.0", "18918.90229373787", "32768", "1.073709056E9", "[0,0]", "[65534,131068]"),
-            Arrays.asList("Myodd", "1", "65533", "32767.0", "18918.32494346861", "32767", "1.073676289E9", "[1,2]", "[65533,131066]"));
+            Arrays.asList("My", "0", "2", "1.0", "1.0", "3", "3.0", "[1000,1000]", "[1000,1002]"),
+            Arrays.asList("MyTotal", "0", "2", "1.0", "1.0", "3", "3.0", "[1000,1000]", "[1000,1002]"),
+            Arrays.asList("Mychild1", "0", "2", "1.0", "1.0", "3", "3.0", "[2000,2000]", "[2000,2002]"),
+            Arrays.asList("MygrandChild11", "0", "2", "1.0", "1.0", "3", "3.0", "[4000,4000]", "[4000,4002]"),
+            Arrays.asList("MygrandChild12", "0", "2", "1.0", "1.0", "3", "3.0", "[5000,5000]", "[5000,5002]"),
+            Arrays.asList("Mychild2", "0", "2", "1.0", "1.0", "3", "3.0", "[3000,3000]", "[3000,3002]"),
+            Arrays.asList("MygrandChild21", "0", "2", "1.0", "1.0", "3", "3.0", "[6000,6000]", "[6000,6002]"),
+            Arrays.asList("MygrandChild22", "0", "2", "1.0", "1.0", "3", "3.0", "[7000,7000]", "[7000,7002]"));
 
     private static final @NonNull List<@NonNull StatisticsHolder> EXPECTED_STATS_WITH_MAPPER_FULL = Arrays.asList(
-            new StatisticsHolder("My", 1, -1, 0, 65534, 32767.0, 18918.46, 65535, 2147385345.0, 0, 0, 65534, 131068),
-            new StatisticsHolder("MyTotal", 9, 1, 0, 65534, 32767.0, 18918.46, 65535, 2147385345.0, 0, 0, 65534, 131068),
-            new StatisticsHolder("Myeven", 10, 9, 0, 65534, 32767.0, 18918.90, 32768, 1073709056.0, 0, 0, 65534, 131068),
-            new StatisticsHolder("Myodd", 11, 9, 1, 65533, 32767.0, 18918.32, 32767, 1073676289.0, 1, 2, 65533, 131066));
+            new StatisticsHolder("My", 1, -1, 0, 2, 1.0, 1.0, 3, 3.0, 1000, 1000, 1000, 1002),
+            new StatisticsHolder("MyTotal", 17, 1, 0, 2, 1.0, 1.0, 3, 3.0, 1000, 1000, 1000, 1002),
+            new StatisticsHolder("Mychild1", 18, 17, 0, 2, 1.0, 1.0, 3, 3.0, 2000, 2000, 2000, 2002),
+            new StatisticsHolder("MygrandChild11", 19, 18, 0, 2, 1.0, 1.0, 3, 3.0, 4000, 4000, 4000, 4002),
+            new StatisticsHolder("MygrandChild12", 20, 18, 0, 2, 1.0, 1.0, 3, 3.0, 5000, 5000, 5000, 5002),
+            new StatisticsHolder("Mychild2", 21, 17, 0, 2, 1.0, 1.0, 3, 3.0, 3000, 3000, 3000, 3002),
+            new StatisticsHolder("MygrandChild21", 22, 21, 0, 2, 1.0, 1.0, 3, 3.0, 6000, 6000, 6000, 6002),
+            new StatisticsHolder("MygrandChild22", 23, 21, 0, 2, 1.0, 1.0, 3, 3.0, 7000, 7000, 7000, 7002));
 
     private static final String USER_DEFINED_EXTRA_HEADER = "userDefinedHeader";
     private static final String USER_DEFINED_EXTRA_VALUE = "userDefinedValue";
-    private static final DataType USER_DEFINED_DATATYPE = DataType.STRING;
+    private static final @NonNull DataType USER_DEFINED_DATATYPE = DataType.STRING;
     private static final @NonNull List<@NonNull String> EXPECTED_HEADER_LIST_USER_DEFINED = Stream.concat(EXPECTED_HEADER_LIST.stream(), Stream.of(USER_DEFINED_EXTRA_HEADER)).collect(Collectors.toList());
     private static final @NonNull List<@NonNull DataType> EXPECTED_DATATYPE_LIST_USER_DEFINED = Stream.concat(EXPECTED_DATATYPE_LIST.stream(), Stream.of(USER_DEFINED_DATATYPE)).collect(Collectors.toList());
     private static final @NonNull List<@NonNull String> EXPECTED_TOOLTIP_LIST_USER_DEFINED = Stream.concat(EXPECTED_TOOLTIP_LIST.stream(), Stream.of("")).collect(Collectors.toList());
@@ -106,17 +128,21 @@ public class SegmentStoreStatisticsDataProviderTest extends AbstractSegmentStore
                     .collect(Collectors.toList()))
             .collect(Collectors.toList());
     private static final @NonNull List<@NonNull StatisticsHolderUserDefined> EXPECTED_STATS_FULL_USER_DEFINED = Arrays.asList(
-            new StatisticsHolderUserDefined("", 2, -1, 0, 65534, 32767.0, 18918.46, 65535, 2147385345.0, 0, 0, 65534, 131068, USER_DEFINED_EXTRA_VALUE),
-            new StatisticsHolderUserDefined("Total", 12, 2, 0, 65534, 32767.0, 18918.46, 65535, 2147385345.0, 0, 0, 65534, 131068, USER_DEFINED_EXTRA_VALUE),
-            new StatisticsHolderUserDefined("even", 13, 12, 0, 65534, 32767.0, 18918.90, 32768, 1073709056.0, 0, 0, 65534, 131068, USER_DEFINED_EXTRA_VALUE),
-            new StatisticsHolderUserDefined("odd", 14, 12, 1, 65533, 32767.0, 18918.32, 32767, 1073676289.0, 1, 2, 65533, 131066, USER_DEFINED_EXTRA_VALUE));
+            new StatisticsHolderUserDefined("", 2, -1, 0, 2, 1.0, 1.0, 3, 3.0, 1000, 1000, 1000, 1002, USER_DEFINED_EXTRA_VALUE),
+            new StatisticsHolderUserDefined("Total", 24, 2, 0, 2, 1.0, 1.0, 3, 3.0, 1000, 1000, 1000, 1002, USER_DEFINED_EXTRA_VALUE),
+            new StatisticsHolderUserDefined("child1", 25, 24, 0, 2, 1.0, 1.0, 3, 3.0, 2000, 2000, 2000, 2002, USER_DEFINED_EXTRA_VALUE),
+            new StatisticsHolderUserDefined("grandChild11", 26, 25, 0, 2, 1.0, 1.0, 3, 3.0, 4000, 4000, 4000, 4002, USER_DEFINED_EXTRA_VALUE),
+            new StatisticsHolderUserDefined("grandChild12", 27, 25, 0, 2, 1.0, 1.0, 3, 3.0, 5000, 5000, 5000, 5002, USER_DEFINED_EXTRA_VALUE),
+            new StatisticsHolderUserDefined("child2", 28, 24, 0, 2, 1.0, 1.0, 3, 3.0, 3000, 3000, 3000, 3002, USER_DEFINED_EXTRA_VALUE),
+            new StatisticsHolderUserDefined("grandChild21", 29, 28, 0, 2, 1.0, 1.0, 3, 3.0, 6000, 6000, 6000, 6002, USER_DEFINED_EXTRA_VALUE),
+            new StatisticsHolderUserDefined("grandChild22", 30, 28, 0, 2, 1.0, 1.0, 3, 3.0, 7000, 7000, 7000, 7002, USER_DEFINED_EXTRA_VALUE));
 
     private static List<ITableColumnDescriptor> fExpectedDescriptors;
     private static List<ITableColumnDescriptor> fExpectedDescriptorsUserDefined;
 
-    private static SegmentStoreStatisticsDataProvider fTestDataProvider;
-    private static SegmentStoreStatisticsDataProvider fTestDataProvider2;
-    private static SegmentStoreStatisticsDataProvider fTestDataProviderWithUserDefinedAspect;
+    private static SegmentStoreTreeStatisticsDataProvider fTestDataProvider;
+    private static SegmentStoreTreeStatisticsDataProvider fTestDataProvider2;
+    private static SegmentStoreTreeStatisticsDataProvider fTestDataProviderWithUserDefinedAspect;
 
     private static TmfXmlTraceStub fTrace;
 
@@ -125,12 +151,9 @@ public class SegmentStoreStatisticsDataProviderTest extends AbstractSegmentStore
     // ------------------------------------------------------------------------
     /**
      * Test class setup
-     *
-     * @throws TmfAnalysisException
-     *             thrown when analysis fails
      */
     @BeforeClass
-    public static void init() throws TmfAnalysisException {
+    public static void init() {
         resetIds();
         fExpectedDescriptors = new ArrayList<>();
         for (int i = 0; i < EXPECTED_HEADER_LIST.size(); i++) {
@@ -150,15 +173,14 @@ public class SegmentStoreStatisticsDataProviderTest extends AbstractSegmentStore
         }
 
         fTrace = new TmfXmlTraceStubNs();
-        @NonNull
-        StubSegmentStatisticsAnalysis fixture = getValidSegmentStats(fTrace);
+        StubTreeStatisticsAnalysis analysis = new StubTreeStatisticsAnalysis();
         ITmfTrace trace = fTrace;
         assertNotNull(trace);
-        fTestDataProvider = new SegmentStoreStatisticsDataProvider(trace, fixture, "org.eclipse.tracecompass.analysis.timing.core.tests.segmentstore");
-        fTestDataProvider2 = new SegmentStoreStatisticsDataProvider(trace, fixture, "org.eclipse.tracecompass.analysis.timing.core.tests.segmentstore");
+        fTestDataProvider = new SegmentStoreTreeStatisticsDataProvider(trace, analysis, "org.eclipse.tracecompass.analysis.timing.core.tests.segmentstore");
+        fTestDataProvider2 = new SegmentStoreTreeStatisticsDataProvider(trace, analysis, "org.eclipse.tracecompass.analysis.timing.core.tests.segmentstore");
         fTestDataProvider2.setLabelMapper(e -> "My" + e);
         fTestDataProvider2.setMapper(String::valueOf);
-        @NonNull IDataAspect<@NonNull NamedStatistics> userDefinedAspect = new IDataAspect<@NonNull NamedStatistics>() {
+        @NonNull IDataAspect<@NonNull NamedStatistics> userDefinedAspect = new IDataAspect<>() {
             @Override
             public String getName() {
                 return USER_DEFINED_EXTRA_HEADER;
@@ -169,7 +191,7 @@ public class SegmentStoreStatisticsDataProviderTest extends AbstractSegmentStore
                 return USER_DEFINED_EXTRA_VALUE;
             }
         };
-        fTestDataProviderWithUserDefinedAspect = new SegmentStoreStatisticsDataProvider(trace, fixture, "org.eclipse.tracecompass.analysis.timing.core.tests.segmentstore", Arrays.asList(userDefinedAspect));
+        fTestDataProviderWithUserDefinedAspect = new SegmentStoreTreeStatisticsDataProvider(trace, analysis, "org.eclipse.tracecompass.analysis.timing.core.tests.segmentstore", Arrays.asList(userDefinedAspect));
     }
 
     /**
@@ -200,7 +222,7 @@ public class SegmentStoreStatisticsDataProviderTest extends AbstractSegmentStore
 
     /**
      * Test to verify
-     * {@link SegmentStoreStatisticsDataProvider#fetchTree(Map, org.eclipse.core.runtime.IProgressMonitor)}
+     * {@link SegmentStoreTreeStatisticsDataProvider#fetchTree(Map, org.eclipse.core.runtime.IProgressMonitor)}
      * for the full trace
      */
     @Test
@@ -234,7 +256,7 @@ public class SegmentStoreStatisticsDataProviderTest extends AbstractSegmentStore
 
     /**
      * Test to verify
-     * {@link SegmentStoreStatisticsDataProvider#fetchTree(Map, org.eclipse.core.runtime.IProgressMonitor)}
+     * {@link SegmentStoreTreeStatisticsDataProvider#fetchTree(Map, org.eclipse.core.runtime.IProgressMonitor)}
      * for a specific time range
      */
     @Test
@@ -276,8 +298,8 @@ public class SegmentStoreStatisticsDataProviderTest extends AbstractSegmentStore
 
     /**
      * Test to verify
-     * {@link SegmentStoreStatisticsDataProvider#fetchTree(Map, org.eclipse.core.runtime.IProgressMonitor)}
-     * for the full trace
+     * {@link SegmentStoreTreeStatisticsDataProvider#fetchTree(Map, org.eclipse.core.runtime.IProgressMonitor)}
+     * for the full trace with mappers
      */
     @Test
     public void testFetchTreeWithMapperFullRange() {
@@ -309,7 +331,7 @@ public class SegmentStoreStatisticsDataProviderTest extends AbstractSegmentStore
     }
 
     /**
-     * Test to verify {@link SegmentStoreStatisticsDataProvider} with user
+     * Test to verify {@link SegmentStoreTreeStatisticsDataProvider} with user
      * defined aspects for the full trace
      */
     @Test
@@ -339,17 +361,5 @@ public class SegmentStoreStatisticsDataProviderTest extends AbstractSegmentStore
                 entries,
                 0,
                 EXPECTED_STATS_FULL_USER_DEFINED.size());
-    }
-
-    // ------------------------------------------------------------------------
-    // Helpers
-    // ------------------------------------------------------------------------
-    private static @NonNull StubSegmentStatisticsAnalysis getValidSegmentStats(@NonNull ITmfTrace trace) throws TmfAnalysisException {
-        StubSegmentStatisticsAnalysis fixture = new StubSegmentStatisticsAnalysis();
-        fixture.setTrace(trace);
-        fixture.getDependentAnalyses();
-        fixture.schedule();
-        fixture.waitForCompletion();
-        return fixture;
     }
 }
