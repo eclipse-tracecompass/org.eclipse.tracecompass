@@ -1,5 +1,5 @@
 /**********************************************************************
- * Copyright (c) 2018, 2024 Ericsson
+ * Copyright (c) 2024 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -14,17 +14,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.WeakHashMap;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.analysis.timing.core.segmentstore.SegmentStoreStatisticsModel;
-import org.eclipse.tracecompass.analysis.timing.core.segmentstore.statistics.AbstractSegmentStatisticsAnalysis;
-import org.eclipse.tracecompass.analysis.timing.core.statistics.IStatistics;
-import org.eclipse.tracecompass.analysis.timing.core.statistics.IStatisticsAnalysis;
+import org.eclipse.tracecompass.analysis.timing.core.statistics.ITreeStatistics;
+import org.eclipse.tracecompass.analysis.timing.core.statistics.ITreeStatisticsAnalysis;
 import org.eclipse.tracecompass.common.core.NonNullUtils;
 import org.eclipse.tracecompass.internal.analysis.timing.core.segmentstore.SegmentStoreStatisticsAspects.NamedStatistics;
 import org.eclipse.tracecompass.internal.tmf.core.model.filters.FetchParametersUtils;
@@ -40,46 +36,24 @@ import org.eclipse.tracecompass.tmf.core.response.TmfModelResponse;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
 
 /**
- * This data provider delivers a statistics tree for an
- * {@link AbstractSegmentStatisticsAnalysis} or any analysis module implementing
- * {@link IStatisticsAnalysis}, featuring a fixed two-level structure. By
- * passing a {@link FilterTimeQueryFilter}, it also returns statistics for the
+ * This data provider supplies a statistics tree for analysis modules
+ * implementing {@link ITreeStatisticsAnalysis}, offering a hierarchical
+ * structure of statistics across multiple levels. By passing a
+ * {@link FilterTimeQueryFilter}, it also returns statistics for the
  * specified range.
  *
- * @author Loic Prieur-Drevon
  * @author Siwei Zhang
  * @since 6.1
  */
-public class SegmentStoreStatisticsDataProvider extends AbstractSegmentStoreStatisticsDataProvider {
+public class SegmentStoreTreeStatisticsDataProvider extends AbstractSegmentStoreStatisticsDataProvider {
 
     /**
-     * Base {@link SegmentStoreStatisticsDataProvider} prefix
+     * Base prefix for {@link SegmentStoreTreeStatisticsDataProvider}
      */
-    public static final String ID = "org.eclipse.tracecompass.analysis.timing.core.segmentstore.SegmentStoreStatisticsDataProvider"; //$NON-NLS-1$
+    public static final String ID = "org.eclipse.tracecompass.analysis.timing.core.segmentstore.SegmentStoreTreeStatisticsDataProvider"; //$NON-NLS-1$
 
-    private static final String STATISTICS_SUFFIX = ".statistics"; //$NON-NLS-1$
-    private static final Map<IStatisticsAnalysis, SegmentStoreStatisticsDataProvider> PROVIDER_MAP = new WeakHashMap<>();
-
-    private final IStatisticsAnalysis fProvider;
+    private final ITreeStatisticsAnalysis fProvider;
     private final @Nullable IAnalysisModule fModule;
-
-    /**
-     * Get an instance of {@link SegmentStoreStatisticsDataProvider} for a trace and
-     * provider. Returns a null instance if the ISegmentStoreProvider is null. If
-     * the provider is an instance of {@link IAnalysisModule}, the analysis is also
-     * scheduled.
-     *
-     * @param trace
-     *            A trace on which we are interested to fetch a model
-     * @param module
-     *            the ID of the analysis to generate this provider from.
-     * @return An instance of SegmentStoreDataProvider. Returns a null if the
-     *         ISegmentStoreProvider is null.
-     */
-    public static synchronized @Nullable SegmentStoreStatisticsDataProvider getOrCreate(ITmfTrace trace, AbstractSegmentStatisticsAnalysis module) {
-        // TODO experiment support.
-        return PROVIDER_MAP.computeIfAbsent(module, p -> new SegmentStoreStatisticsDataProvider(trace, p, module.getId() + STATISTICS_SUFFIX));
-    }
 
     /**
      * Constructor
@@ -91,7 +65,7 @@ public class SegmentStoreStatisticsDataProvider extends AbstractSegmentStoreStat
      * @param id
      *            the extension point ID
      */
-    public SegmentStoreStatisticsDataProvider(ITmfTrace trace, IStatisticsAnalysis provider, String id) {
+    public SegmentStoreTreeStatisticsDataProvider(ITmfTrace trace, ITreeStatisticsAnalysis provider, String id) {
         super(trace, id);
         fProvider = provider;
         fModule = provider instanceof IAnalysisModule ? (IAnalysisModule) provider : null;
@@ -107,10 +81,10 @@ public class SegmentStoreStatisticsDataProvider extends AbstractSegmentStoreStat
      * @param id
      *            the extension point ID
      * @param userDefinedAspects
-     *            a list of user defined aspects that will be added to the
+     *            a list of user-defined aspects that will be added to the
      *            default ones
      */
-    public SegmentStoreStatisticsDataProvider(ITmfTrace trace, IStatisticsAnalysis provider, String id, List<IDataAspect<NamedStatistics>> userDefinedAspects) {
+    public SegmentStoreTreeStatisticsDataProvider(ITmfTrace trace, ITreeStatisticsAnalysis provider, String id, List<IDataAspect<NamedStatistics>> userDefinedAspects) {
         super(trace, id, userDefinedAspects);
         fProvider = provider;
         fModule = provider instanceof IAnalysisModule ? (IAnalysisModule) provider : null;
@@ -130,8 +104,8 @@ public class SegmentStoreStatisticsDataProvider extends AbstractSegmentStoreStat
             }
         }
 
-        IStatistics<ISegment> statsTotal = fProvider.getStatsTotal();
-        if (statsTotal == null) {
+        ITreeStatistics<ISegment> statsRoot = fProvider.getStatsRoot();
+        if (statsRoot == null) {
             return new TmfModelResponse<>(null, Status.FAILED, CommonStatusMessage.ANALYSIS_INITIALIZATION_FAILED);
         }
 
@@ -140,18 +114,15 @@ public class SegmentStoreStatisticsDataProvider extends AbstractSegmentStoreStat
         if (rootName == null) {
             rootName = getTrace().getName();
         }
-        list.add(new SegmentStoreStatisticsModel(fTraceId, -1, getCellLabels(NonNullUtils.nullToEmptyString(rootName), statsTotal), statsTotal));
-
         /*
-         * Add statistics for the full duration.
+         * Add statistics for the full duration, the total would be the first layer.
          */
-        long totalId = getUniqueId(TOTAL_PREFIX);
-        list.add(new SegmentStoreStatisticsModel(totalId, fTraceId, getCellLabels(Objects.requireNonNull(Messages.SegmentStoreStatisticsDataProvider_Total), statsTotal), statsTotal));
-        Map<String, IStatistics<ISegment>> totalStats = fProvider.getStatsPerType();
-        for (Entry<String, IStatistics<ISegment>> entry : totalStats.entrySet()) {
-            IStatistics<ISegment> statistics = entry.getValue();
-            list.add(new SegmentStoreStatisticsModel(getUniqueId(TOTAL_PREFIX + entry.getKey()), totalId, getCellLabels(entry.getKey(), statistics), statistics));
-        }
+        list.add(new SegmentStoreStatisticsModel(fTraceId, -1, getCellLabels(NonNullUtils.nullToEmptyString(rootName), statsRoot), statsRoot));
+        /*
+         * Add entries for the remaining layers.
+         */
+        addModelsRecursively(statsRoot, list, getUniqueId(TOTAL_PREFIX), fTraceId, TOTAL_PREFIX);
+
 
         /*
          * Add statistics for selection, if any.
@@ -163,25 +134,34 @@ public class SegmentStoreStatisticsDataProvider extends AbstractSegmentStoreStat
             long end = filter.getEnd();
 
             IProgressMonitor nonNullMonitor = monitor != null ? monitor : new NullProgressMonitor();
-            IStatistics<ISegment> statsForRange = fProvider.getStatsForRange(start, end, nonNullMonitor);
-            if (statsForRange == null) {
+            ITreeStatistics<ISegment> statsRootForRange = fProvider.getStatsRootForRange(start, end, nonNullMonitor);
+            if (statsRootForRange == null) {
                 return new TmfModelResponse<>(null, Status.CANCELLED, CommonStatusMessage.TASK_CANCELLED);
             }
-
-            long selectionId = getUniqueId(SELECTION_PREFIX);
-            if (statsForRange.getNbElements() > 0) {
-                list.add(new SegmentStoreStatisticsModel(selectionId, fTraceId, getCellLabels(Objects.requireNonNull(Messages.SegmentStoreStatisticsDataProvider_Selection), statsForRange), statsForRange));
-                Map<String, IStatistics<ISegment>> selectionStats = fProvider.getStatsPerTypeForRange(start, end, nonNullMonitor);
-                for (Entry<String, IStatistics<ISegment>> entry : selectionStats.entrySet()) {
-                    IStatistics<ISegment> statistics = entry.getValue();
-                    list.add(new SegmentStoreStatisticsModel(getUniqueId(SELECTION_PREFIX + entry.getKey()), selectionId, getCellLabels(entry.getKey(), statistics), statistics));
-                }
-            }
+            /*
+             * Add entries for the remaining layers for selection.
+             */
+            addModelsRecursively(statsRootForRange, list, getUniqueId(SELECTION_PREFIX), fTraceId, SELECTION_PREFIX);
         }
         TmfTreeModel.Builder<SegmentStoreStatisticsModel> treeModelBuilder = new TmfTreeModel.Builder();
         treeModelBuilder.setColumnDescriptors(getColumnDescriptors());
         treeModelBuilder.setEntries(Collections.unmodifiableList(list));
         return new TmfModelResponse<>(treeModelBuilder.build(), Status.COMPLETED, CommonStatusMessage.COMPLETED);
+    }
+
+    /*
+     * Add entries recursively from the root.
+     */
+    private void addModelsRecursively(ITreeStatistics<ISegment> rootStats, List<SegmentStoreStatisticsModel> list, long currentId, long parentId, String prefix) {
+        list.add(new SegmentStoreStatisticsModel(currentId, parentId, getCellLabels(rootStats.getName(), rootStats), rootStats));
+        for (ITreeStatistics<ISegment> childStats : rootStats.getChildren()) {
+            /*
+             * Use both parent's and child's name to generate the unique id, as
+             * different children might have the same name.
+             */
+            long uniqueIdForChild = getUniqueId(prefix + rootStats.getName() + childStats.getName());
+            addModelsRecursively(childStats, list, uniqueIdForChild, currentId, prefix);
+        }
     }
 
     @Override
