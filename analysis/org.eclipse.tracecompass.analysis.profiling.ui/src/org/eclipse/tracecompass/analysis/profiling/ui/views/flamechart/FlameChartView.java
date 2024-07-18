@@ -28,9 +28,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jface.action.Action;
@@ -44,6 +49,8 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils.FlowScopeLog;
+import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils.FlowScopeLogBuilder;
 import org.eclipse.tracecompass.internal.analysis.profiling.core.callstack.provider.CallStackDataProvider;
 import org.eclipse.tracecompass.internal.analysis.profiling.core.callstack.provider.CallStackEntryModel;
 import org.eclipse.tracecompass.internal.analysis.profiling.ui.Activator;
@@ -105,6 +112,7 @@ public class FlameChartView extends BaseDataProviderTimeGraphView {
 
     /** View ID. */
     public static final String ID = "org.eclipse.linuxtools.tmf.ui.views.callstack"; //$NON-NLS-1$
+    private static final Logger LOGGER = Logger.getLogger(FlameChartView.class.getName());
 
     private static final String[] COLUMN_NAMES = new String[] {
             Messages.CallStackView_FunctionColumn,
@@ -741,28 +749,38 @@ public class FlameChartView extends BaseDataProviderTimeGraphView {
     }
 
     private void resetSymbols() {
-        List<TimeGraphEntry> traceEntries = getEntryList(getTrace());
-        if (traceEntries != null) {
-            for (TraceEntry traceEntry : Iterables.filter(traceEntries, TraceEntry.class)) {
-                ITimeGraphDataProvider<? extends TimeGraphEntryModel> provider = traceEntry.getProvider();
-                if (provider instanceof CallStackDataProvider) {
-                    ((CallStackDataProvider) provider).resetFunctionNames(new NullProgressMonitor());
+        try (FlowScopeLog fsl = new FlowScopeLogBuilder(LOGGER, Level.FINE, "Reseting Symbols").setCategory("Flame Chart").build();) { //$NON-NLS-1$ //$NON-NLS-2$
+            new Job("Reseting Symbols") { //$NON-NLS-1$
+                @Override
+                protected IStatus run(@Nullable IProgressMonitor monitor) {
+                    try (FlowScopeLog fsl2 = new FlowScopeLogBuilder(LOGGER, Level.FINE, "Reseting Symbols - inner").setParentScope(fsl).build()) { //$NON-NLS-1$
+                        List<TimeGraphEntry> traceEntries = getEntryList(getTrace());
+                        if (traceEntries != null) {
+                            for (TraceEntry traceEntry : Iterables.filter(traceEntries, TraceEntry.class)) {
+                                ITimeGraphDataProvider<? extends TimeGraphEntryModel> provider = traceEntry.getProvider();
+                                if (provider instanceof CallStackDataProvider) {
+                                    ((CallStackDataProvider) provider).resetFunctionNames(new NullProgressMonitor());
+                                }
+
+                                // reset full and zoomed events here
+                                Iterable<TimeGraphEntry> flatten = Utils.flatten(traceEntry);
+                                flatten.forEach(e -> e.setSampling(null));
+
+                                // recompute full events
+                                long start = traceEntry.getStartTime();
+                                long end = traceEntry.getEndTime();
+                                final long resolution = Long.max(1, (end - start) / getDisplayWidth());
+                                zoomEntries(flatten, start, end, resolution, new NullProgressMonitor());
+                            }
+                            // zoomed events will be retriggered by refreshing
+                            refresh();
+                        }
+                        synchingToTime(getTimeGraphViewer().getSelectionBegin());
+                        return Status.OK_STATUS;
+                    }
                 }
-
-                // reset full and zoomed events here
-                Iterable<TimeGraphEntry> flatten = Utils.flatten(traceEntry);
-                flatten.forEach(e -> e.setSampling(null));
-
-                // recompute full events
-                long start = traceEntry.getStartTime();
-                long end = traceEntry.getEndTime();
-                final long resolution = Long.max(1, (end - start) / getDisplayWidth());
-                zoomEntries(flatten, start, end, resolution, new NullProgressMonitor());
-            }
-            // zoomed events will be retriggered by refreshing
-            refresh();
+            }.schedule();
         }
-        synchingToTime(getTimeGraphViewer().getSelectionBegin());
     }
     @TmfSignalHandler
     @Override
