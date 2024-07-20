@@ -10,11 +10,17 @@
  *******************************************************************************/
 package org.eclipse.tracecompass.tmf.core.config;
 
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.UUID;
 
 import org.eclipse.jdt.annotation.Nullable;
+
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * Implementation of {@link ITmfConfiguration} interface. It provides a builder
@@ -25,16 +31,38 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 public class TmfConfiguration implements ITmfConfiguration {
 
+    @Expose
+    @SerializedName(value = "id")
     private final String fId;
+    @Expose
+    @SerializedName(value = "name")
     private final String fName;
+    @Expose
+    @SerializedName(value = "description")
     private final String fDescription;
+    @Expose
+    @SerializedName(value = "sourceTypeId")
     private final String fSourceTypeId;
-    private final Map<String, Object> fParameters;
+    @Expose
+    @SerializedName(value = "parameters")
+    private final Map<String, String> fParameters;
+
+    /**
+     * Default constructor. Needed for deserialization from file.
+     * @since 9.4
+     */
+    public TmfConfiguration() {
+        fId = ""; //$NON-NLS-1$
+        fName = ""; //$NON-NLS-1$
+        fDescription = ""; //$NON-NLS-1$
+        fSourceTypeId = ""; //$NON-NLS-1$
+        fParameters = new HashMap<>();
+    }
 
     /**
      * Constructor
      *
-     * @param bulider
+     * @param builder
      *            the builder object to create the descriptor
      */
     private TmfConfiguration(Builder builder) {
@@ -66,7 +94,7 @@ public class TmfConfiguration implements ITmfConfiguration {
     }
 
     @Override
-    public Map<String, Object> getParameters() {
+    public Map<String, String> getParameters() {
         return fParameters;
     }
 
@@ -90,13 +118,28 @@ public class TmfConfiguration implements ITmfConfiguration {
         }
         TmfConfiguration other = (TmfConfiguration) arg0;
         return Objects.equals(fName, other.fName) && Objects.equals(fId, other.fId)
-                && Objects.equals(fSourceTypeId, other.fSourceTypeId) && Objects.equals(fDescription, other.fDescription) && Objects.equals(fParameters, other.fParameters);
+                && Objects.equals(fSourceTypeId, other.fSourceTypeId) && Objects.equals(fDescription, other.fDescription)
+                && Objects.equals(fParameters, other.fParameters);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(fName, fId, fSourceTypeId, fDescription, fParameters);
     }
+
+    static String toUuidString(String name, Map<String, String> params) {
+        StringBuilder paramBuilder = new StringBuilder();
+        for (Entry<String, String> entry : params.entrySet()) {
+            paramBuilder.append(entry.getKey())
+            .append("=") //$NON-NLS-1$
+            .append(entry.getValue());
+        }
+        String inputStr = new StringBuilder()
+                .append("fName=").append(name) //$NON-NLS-1$
+                .append("fParameters=").append(paramBuilder.toString()).toString(); //$NON-NLS-1$
+        return UUID.nameUUIDFromBytes(Objects.requireNonNull(inputStr.getBytes(Charset.defaultCharset()))).toString();
+    }
+
 
     /**
      * A builder class to build instances implementing interface
@@ -107,7 +150,7 @@ public class TmfConfiguration implements ITmfConfiguration {
         private String fName = ""; //$NON-NLS-1$
         private String fDescription = ""; //$NON-NLS-1$
         private String fSourceTypeId = ""; //$NON-NLS-1$
-        private Map<String, Object> fParameters = new HashMap<>();
+        private Map<String, String> fParameters = new HashMap<>();
 
         /**
          * Constructor
@@ -173,7 +216,7 @@ public class TmfConfiguration implements ITmfConfiguration {
          *            instance
          * @return the builder instance
          */
-        public Builder setParameters(Map<String, Object> parameters) {
+        public Builder setParameters(Map<String, String> parameters) {
             fParameters = parameters;
             return this;
         }
@@ -190,7 +233,7 @@ public class TmfConfiguration implements ITmfConfiguration {
             }
             String id = fId;
             if (id.isBlank()) {
-                throw new IllegalStateException("Configuration ID not set"); //$NON-NLS-1$
+                fId = toUuidString(fName, fParameters);
             }
             return new TmfConfiguration(this);
         }
