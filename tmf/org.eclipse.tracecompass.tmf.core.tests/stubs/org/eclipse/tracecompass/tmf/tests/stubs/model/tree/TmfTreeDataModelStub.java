@@ -24,6 +24,7 @@ public class TmfTreeDataModelStub implements ITmfTreeDataModel {
     private final long fId;
     private final long fParentId;
     private final List<String> fLabels;
+    private final String fDataType;
 
     /**
      * Constructor
@@ -35,10 +36,11 @@ public class TmfTreeDataModelStub implements ITmfTreeDataModel {
      * @param labels
      *            the labels
      */
-    public TmfTreeDataModelStub(long id, long parentId, List<String> labels) {
+    public TmfTreeDataModelStub(long id, long parentId, List<String> labels, String dataType) {
         fId = id;
         fParentId = parentId;
         fLabels = labels;
+        fDataType = dataType;
 }
     @Override
     public long getId() {
@@ -58,6 +60,11 @@ public class TmfTreeDataModelStub implements ITmfTreeDataModel {
     @Override
     public List<String> getLabels() {
         return fLabels;
+    }
+
+    @Override
+    public String getDataType() {
+        return fDataType;
     }
 
     @Override

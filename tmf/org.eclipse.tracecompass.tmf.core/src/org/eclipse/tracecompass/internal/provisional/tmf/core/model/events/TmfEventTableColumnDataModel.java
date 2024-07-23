@@ -48,9 +48,11 @@ public class TmfEventTableColumnDataModel extends TmfTreeDataModel {
      *            Header tooltip
      * @param isHiddenByDefault
      *            If the column should be hidden by default
+     * @param dataType
+     *            Data type, String by default
      */
-    public TmfEventTableColumnDataModel(long id, long parentId, List<String> columnLabels, String headerTooltip, boolean isHiddenByDefault) {
-        super(id, parentId, columnLabels);
+    public TmfEventTableColumnDataModel(long id, long parentId, List<String> columnLabels, String headerTooltip, boolean isHiddenByDefault, String dataType) {
+        super(id, parentId, columnLabels, dataType);
         fHeaderTooltip = headerTooltip;
         fHiddenByDefault = isHiddenByDefault;
     }

@@ -11,6 +11,7 @@
 
 package org.eclipse.tracecompass.analysis.counters.core.aspects;
 
+import org.eclipse.tracecompass.tmf.core.dataprovider.DataType;
 import org.eclipse.tracecompass.tmf.core.event.aspect.ITmfEventAspect;
 
 /**
@@ -31,6 +32,16 @@ public interface ITmfCounterAspect extends ITmfEventAspect<Number> {
     @Override
     default boolean isHiddenByDefault() {
         return true;
+    }
+
+     /**
+      * Return the data type of the aspect.
+      *
+      * @since 9.3
+      */
+    @Override
+    default DataType getDataType() {
+        return DataType.NUMBER;
     }
 
     /**
