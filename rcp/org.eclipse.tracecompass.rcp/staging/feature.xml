@@ -1,0 +1,436 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="org.eclipse.tracecompass.rcp"
+      label="%featureName"
+      version="10.0.0.qualifier"
+      provider-name="%featureProvider"
+      plugin="org.eclipse.tracecompass.rcp.branding"
+      license-feature="org.eclipse.license"
+      license-feature-version="0.0.0">
+
+   <description>
+      %description
+   </description>
+
+   <copyright>
+      %copyright
+   </copyright>
+
+   <license url="%licenseURL">
+      %license
+   </license>
+
+   <requires>
+      <import feature="org.eclipse.e4.rcp" version="0.0.0" match="greaterOrEqual"/>
+      <import feature="org.eclipse.equinox.p2.core.feature" version="0.0.0" match="greaterOrEqual"/>
+      <import feature="org.eclipse.equinox.p2.extras.feature" version="0.0.0" match="greaterOrEqual"/>
+      <import feature="org.eclipse.help" version="0.0.0" match="greaterOrEqual"/>
+      <import feature="org.eclipse.tracecompass.tmf" version="0.0.0" match="greaterOrEqual"/>
+      <import feature="org.eclipse.platform" version="0.0.0" match="greaterOrEqual"/>
+   </requires>
+
+   <plugin
+         id="org.eclipse.orbit.xml-apis-ext"
+         version="0.0.0"/>
+
+   <plugin
+         id="jakarta.activation-api"
+         version="0.0.0"/>
+
+   <plugin
+         id="json"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.antlr.runtime"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipse.tracecompass.rcp.ui"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipse.tracecompass.rcp.doc.user"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipse.swtchart"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipse.swtchart.extensions"
+         version="0.0.0"/>
+
+   <plugin
+         id="com.google.gson"
+         version="0.0.0"/>
+
+   <plugin
+         id="com.google.guava"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipse.cdt.core"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipse.cdt.core.native"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipse.ui.trace"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipse.equinox.concurrent"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipse.ui.views.log"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.apache.commons.commons-io"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipse.e4.ui.progress"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipse.jdt.core"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipse.jdt.core.compiler.batch"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipse.remote.core"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipse.remote.ui"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipse.remote.jsch.core"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipse.remote.jsch.ui"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipse.wst.common.core"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipse.wst.common.environment"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipse.wst.common.frameworks"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipse.wst.common.frameworks.ui"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipse.wst.common.project.facet.core"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipse.wst.common.ui"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipse.wst.common.uriresolver"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipse.wst.sse.core"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipse.wst.sse.ui"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipse.wst.validation"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipse.wst.validation.ui"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipse.wst.xml.core"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipse.wst.xml.ui"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.apache.xerces"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.apache.xml.resolver"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.apache.xml.serializer"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.apache.commons.commons-compress"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.apache.commons.lang"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.apache.commons.lang3"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipse.wst.xsd.core"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipse.xsd"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.apache.commons.cli"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipse.swtchart"
+         version="0.0.0"/>
+
+   <plugin
+         id="jakarta.xml.bind-api"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.sat4j.core"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.sat4j.pb"
+         version="0.0.0"/>
+
+   <plugin
+         id="slf4j.api"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.mozilla.javascript"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.apache.felix.scr"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.apache.commons.jxpath"
+         version="0.0.0"/>
+
+   <plugin
+         id="com.sun.jna"
+         version="0.0.0"/>
+
+   <plugin
+         id="com.sun.jna.platform"
+         version="0.0.0"/>
+
+   <plugin
+         id="jakarta.annotation-api"
+         version="1.3.5"/>
+
+   <plugin
+         id="jakarta.annotation-api"
+         version="2.1.1"/>
+
+   <plugin
+         id="jakarta.inject.jakarta.inject-api"
+         version="1.0.5"/>
+
+   <plugin
+         id="jakarta.inject.jakarta.inject-api"
+         version="2.0.1"/>
+
+   <plugin
+         id="org.apache.lucene.analysis-common"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.apache.lucene.core"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.apache.lucene.analysis-smartcn"
+         version="0.0.0"/>
+
+   <plugin
+         id="bcpg"
+         version="0.0.0"/>
+
+   <plugin
+         id="bcprov"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.mortbay.jasper.apache-jsp"
+         version="9.0.90"/>
+
+   <plugin
+         id="com.google.guava.failureaccess"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.apache.commons.logging"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipse.search.core"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipse.jetty.servlet-api"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.apache.aries.spifly.dynamic.bundle"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.objectweb.asm"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.objectweb.asm.commons"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.objectweb.asm.util"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.objectweb.asm.tree"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.objectweb.asm.tree.analysis"
+         version="0.0.0"/>
+
+   <plugin
+         id="ch.qos.logback.classic"
+         version="0.0.0"/>
+
+   <plugin
+         id="ch.qos.logback.core"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.apache.batik.css"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.apache.batik.i18n"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.apache.batik.util"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.apache.batik.constants"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipse.jetty.http"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipse.jetty.server"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipse.jetty.session"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipse.jetty.ee8.servlet"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipse.jetty.ee8.server"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipse.jetty.util"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipse.jetty.io"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipse.jetty.security"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipse.jetty.ee8.security"
+         version="0.0.0"/>
+
+   <plugin
+         id="com.sun.el.javax.el"
+         version="0.0.0"/>
+
+   <plugin
+         id="com.ibm.icu"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipse.equinox.http.service.api"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.osgi.service.http.whiteboard"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.mortbay.jasper.apache-el"
+         version="9.0.90"/>
+
+   <plugin
+         id="jakarta.el-api"
+         version="0.0.0"/>
+
+   <plugin
+         id="jakarta.servlet.jsp-api"
+         version="0.0.0"/>
+
+   <plugin
+         id="jakarta.servlet-api"
+         version="0.0.0"/>
+
+   <plugin
+         id="bcutil"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.osgi.service.component.annotations"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipse.osgi.services"
+         version="0.0.0"/>
+
+</feature>
