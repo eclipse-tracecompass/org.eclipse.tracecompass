@@ -43,7 +43,6 @@ import org.eclipse.tracecompass.tmf.core.event.ITmfEvent;
 import org.eclipse.tracecompass.tmf.core.event.aspect.ITmfEventAspect;
 import org.eclipse.tracecompass.tmf.core.exceptions.TmfTraceException;
 import org.eclipse.tracecompass.tmf.core.trace.TmfEventTypeCollectionHelper;
-import org.eclipse.tracecompass.tmf.core.trace.TraceValidationStatus;
 import org.eclipse.tracecompass.tmf.ctf.core.event.CtfTmfEventFactory;
 import org.eclipse.tracecompass.tmf.ctf.core.trace.CtfTmfTrace;
 import org.eclipse.tracecompass.tmf.ctf.core.trace.CtfTraceValidationStatus;
@@ -187,13 +186,14 @@ public class LttngUstTrace extends CtfTmfTrace implements ILttngTrace{
     public IStatus validate(final IProject project, final String path) {
         IStatus status = super.validate(project, path);
         if (status instanceof CtfTraceValidationStatus) {
-            Map<String, String> environment = ((CtfTraceValidationStatus) status).getEnvironment();
+            CtfTraceValidationStatus ctfTraceValidationStatus = (CtfTraceValidationStatus) status;
+            Map<String, String> environment = ctfTraceValidationStatus.getEnvironment();
             /* Make sure the domain is "ust" in the trace's env vars */
             String domain = environment.get("domain"); //$NON-NLS-1$
             if (domain == null || !domain.equals("\"ust\"")) { //$NON-NLS-1$
-                return new Status(IStatus.ERROR, Activator.PLUGIN_ID, Messages.LttngUstTrace_DomainError);
+                return Status.error(Messages.LttngUstTrace_DomainError);
             }
-            return new TraceValidationStatus(CONFIDENCE, Activator.PLUGIN_ID);
+            return new CtfTraceValidationStatus(CONFIDENCE, Activator.PLUGIN_ID, environment, ctfTraceValidationStatus.getEventNames() );
         }
         return status;
     }
