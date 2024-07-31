@@ -21,6 +21,7 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.statesystem.core.exceptions.AttributeNotFoundException;
 import org.eclipse.tracecompass.statesystem.core.exceptions.StateSystemDisposedException;
+import org.eclipse.tracecompass.statesystem.core.exceptions.StateValueTypeException;
 import org.eclipse.tracecompass.statesystem.core.exceptions.TimeRangeException;
 import org.eclipse.tracecompass.statesystem.core.interval.ITmfStateInterval;
 import org.eclipse.tracecompass.statesystem.core.statevalue.ITmfStateValue;
@@ -540,4 +541,15 @@ public interface ITmfStateSystem {
      */
     Iterable<@NonNull ITmfStateInterval> query2D(@NonNull Collection<Integer> quarks,
             long start, long end) throws StateSystemDisposedException, IndexOutOfBoundsException, TimeRangeException;
+
+    /**
+     * @param t
+     * @param value
+     * @param attributeQuark
+     * @param spanQuark
+     * @throws TimeRangeException
+     * @throws StateValueTypeException
+     * @since 5.4
+     */
+    void modifySpanAttribute(long t, Object value, int attributeQuark, int spanQuark) throws TimeRangeException, StateValueTypeException;
 }
