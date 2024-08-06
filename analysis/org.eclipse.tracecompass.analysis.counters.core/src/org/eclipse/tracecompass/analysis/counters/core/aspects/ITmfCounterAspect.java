@@ -11,6 +11,7 @@
 
 package org.eclipse.tracecompass.analysis.counters.core.aspects;
 
+import org.eclipse.tracecompass.analysis.counters.core.CounterType;
 import org.eclipse.tracecompass.tmf.core.event.aspect.ITmfEventAspect;
 
 /**
@@ -51,5 +52,25 @@ public interface ITmfCounterAspect extends ITmfEventAspect<Number> {
      */
     default boolean isCumulative() {
         return true;
+    }
+
+    /**
+     * Get the groups
+     *
+     * @return the groups
+     * @since 2.3
+     */
+    default Class<? extends ITmfEventAspect<?>>[] getGroups() {
+        return new Class[0];
+    }
+
+    /**
+     * Gets the type of this counter
+     *
+     * @return the groups
+     * @since 2.3
+     */
+    default CounterType getType() {
+        return CounterType.LONG;
     }
 }

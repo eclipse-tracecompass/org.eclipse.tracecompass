@@ -76,8 +76,8 @@ public class CounterStateProvider extends AbstractTmfStateProvider {
         Iterable<ITmfEventAspect<?>> counterAspects = TmfTraceUtils.getEventAspects(trace, ITmfCounterAspect.class);
         for (ITmfEventAspect<?> counter : counterAspects) {
 
-            if (counter instanceof CounterAspect) {
-                CounterAspect counterAspect = (CounterAspect) counter;
+            if (counter instanceof ITmfCounterAspect) {
+                ITmfCounterAspect counterAspect = (ITmfCounterAspect) counter;
                 for (Class<? extends ITmfEventAspect<?>> parentAspectClass : counterAspect.getGroups()) {
 
                     // Avoid creating the same aggregated aspect multiple times
@@ -122,14 +122,14 @@ public class CounterStateProvider extends AbstractTmfStateProvider {
         }
 
         for (ITmfEventAspect<?> aspect : fCounterAspects) {
-            if (aspect instanceof CounterAspect) {
-                CounterAspect counterAspect = (CounterAspect) aspect;
+            if (aspect instanceof ITmfCounterAspect) {
+                ITmfCounterAspect counterAspect = (ITmfCounterAspect) aspect;
                 if (counterAspect.getGroups().length > 0) {
                     int rootQuark = ss.getQuarkAbsoluteAndAdd(CounterAnalysis.GROUPED_COUNTER_ASPECTS_ATTRIB);
-                    handleGroupedCounterAspect(event, ss, counterAspect, rootQuark);
+                    handleGroupedCounterAspect(event, ss, rootQuark, counterAspect);
                 } else {
                     int rootQuark = ss.getQuarkAbsoluteAndAdd(CounterAnalysis.UNGROUPED_COUNTER_ASPECTS_ATTRIB);
-                    handleCounterAspect(event, ss, counterAspect, rootQuark);
+                    handleCounterAspect(event, ss, rootQuark, counterAspect);
                 }
             }
         }
@@ -147,8 +147,29 @@ public class CounterStateProvider extends AbstractTmfStateProvider {
      *            Grouped counter aspect
      * @param rootQuark
      *            Key to a relative root of the state system
+     * @deprecated use
+     *             {@link #handleGroupedCounterAspect(ITmfEvent, ITmfStateSystemBuilder, int, ITfmCounterAspect)}
      */
+    @Deprecated
     protected void handleGroupedCounterAspect(ITmfEvent event, ITmfStateSystemBuilder ss, CounterAspect aspect, int rootQuark) {
+        handleGroupedCounterAspect(event, ss, rootQuark, aspect);
+    }
+
+    /**
+     * Add the field value of a grouped counter aspect to the state system
+     * (override in specific implementations)
+     *
+     * @param event
+     *            Event to process
+     * @param ss
+     *            State system object to fill
+     * @param rootQuark
+     *            Key to a relative root of the state system
+     * @param aspect
+     *            Grouped counter aspect
+     * @since 2.3
+     */
+    protected void handleGroupedCounterAspect(ITmfEvent event, ITmfStateSystemBuilder ss, int rootQuark, ITmfCounterAspect aspect) {
         /*
          * Retrieve the child quark of the counter aspect by going through its
          * attribute tree in the state system. The concatenation of the aspect's
@@ -170,10 +191,10 @@ public class CounterStateProvider extends AbstractTmfStateProvider {
             }
         }
 
-        handleCounterAspect(event, ss, aspect, quark);
+        handleCounterAspect(event, ss, quark, aspect);
     }
 
-    private static void handleCounterAspect(ITmfEvent event, ITmfStateSystemBuilder ss, CounterAspect aspect, int rootQuark) {
+    private static void handleCounterAspect(ITmfEvent event, ITmfStateSystemBuilder ss, int rootQuark, ITmfCounterAspect aspect) {
         int quark = ss.getQuarkRelativeAndAdd(rootQuark, aspect.getName());
         Number eventContent = aspect.resolve(event);
         if (eventContent != null) {

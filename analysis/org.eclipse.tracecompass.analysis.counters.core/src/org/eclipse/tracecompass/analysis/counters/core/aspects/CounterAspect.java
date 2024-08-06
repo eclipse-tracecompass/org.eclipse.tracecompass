@@ -76,11 +76,7 @@ public class CounterAspect extends AbstractCounterAspect {
         fGroups = Arrays.copyOf(groups, groups.length);
     }
 
-    /**
-     * Get the groups
-     *
-     * @return the groups
-     */
+    @Override
     public Class<? extends ITmfEventAspect<?>>[] getGroups() {
         return fGroups;
     }

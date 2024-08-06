@@ -124,12 +124,7 @@ public abstract class AbstractCounterAspect implements ITmfCounterAspect {
         return Objects.equals(fFieldName, other.fFieldName) && Objects.equals(fLabel, other.fLabel);
     }
 
-    /**
-     * Gets the type of this counter
-     *
-     * @return the type of this counter
-     * @since 2.1
-     */
+    @Override
     public CounterType getType() {
         return fType;
     }
