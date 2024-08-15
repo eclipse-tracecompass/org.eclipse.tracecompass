@@ -39,6 +39,7 @@ import com.google.common.collect.Multimap;
 public class ElementResolverFilterTest {
 
     private static final ElementResolverStub ELEMENT = new ElementResolverStub(ImmutableMultimap.of("label", "elementLabel", "key0", "value0", "key0", "some other", "key 2", "value2", "key3", "10"));
+    private static final ElementResolverStub ELEMENT2 = new ElementResolverStub(ImmutableMultimap.of("CPU", "1", "CPU", "2", "CPU", "3", "CPU", "4", "CPU", "55"));
 
     @Test
     public void testRegex() {
@@ -205,6 +206,19 @@ public class ElementResolverFilterTest {
         assertNotNull(cu);
         predicate = cu.generate();
         assertTrue(predicate.test(ELEMENT.getMetadata()));
+    }
+
+    @Test
+    public void testMatchesOperator2() {
+        FilterCu cu = FilterCu.compile("CPU matches [13]");
+        assertNotNull(cu);
+        Predicate<Multimap<String, Object>> predicate = cu.generate();
+        assertTrue(predicate.test(ELEMENT2.getMetadata()));
+
+        cu = FilterCu.compile("CPU matches 5{0,1}");
+        assertNotNull(cu);
+        predicate = cu.generate();
+        assertTrue(predicate.test(ELEMENT2.getMetadata()));
     }
 
     @Test

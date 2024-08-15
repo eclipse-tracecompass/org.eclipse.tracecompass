@@ -1,4 +1,4 @@
-// $ANTLR 3.5.2 org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g 2019-07-05 11:56:36
+// $ANTLR 3.5.3 org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g 2024-08-15 13:29:33
 
 /*******************************************************************************
  * Copyright (c) 2018 Ericsson
@@ -104,7 +104,7 @@ public class FilterParserParser extends Parser {
 
 
 	// $ANTLR start "parse"
-	// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:84:1: parse : ( parseRoot )+ ;
+	// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:88:1: parse : ( parseRoot )+ ;
 	public final FilterParserParser.parse_return parse() throws RecognitionException {
 		FilterParserParser.parse_return retval = new FilterParserParser.parse_return();
 		retval.start = input.LT(1);
@@ -115,13 +115,13 @@ public class FilterParserParser extends Parser {
 
 
 		try {
-			// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:84:6: ( ( parseRoot )+ )
-			// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:84:8: ( parseRoot )+
+			// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:88:6: ( ( parseRoot )+ )
+			// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:88:8: ( parseRoot )+
 			{
 			root_0 = (CommonTree)adaptor.nil();
 
 
-			// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:84:8: ( parseRoot )+
+			// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:88:8: ( parseRoot )+
 			int cnt1=0;
 			loop1:
 			while (true) {
@@ -133,7 +133,7 @@ public class FilterParserParser extends Parser {
 
 				switch (alt1) {
 				case 1 :
-					// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:84:9: parseRoot
+					// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:88:9: parseRoot
 					{
 					pushFollow(FOLLOW_parseRoot_in_parse143);
 					parseRoot1=parseRoot();
@@ -181,7 +181,7 @@ public class FilterParserParser extends Parser {
 
 
 	// $ANTLR start "parseRoot"
-	// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:86:1: parseRoot : root ( SEPARATOR root )* -> ^( LOGICAL root ( SEPARATOR root )* ) ;
+	// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:90:1: parseRoot : root ( SEPARATOR root )* -> ^( LOGICAL root ( SEPARATOR root )* ) ;
 	public final FilterParserParser.parseRoot_return parseRoot() throws RecognitionException {
 		FilterParserParser.parseRoot_return retval = new FilterParserParser.parseRoot_return();
 		retval.start = input.LT(1);
@@ -197,15 +197,15 @@ public class FilterParserParser extends Parser {
 		RewriteRuleSubtreeStream stream_root=new RewriteRuleSubtreeStream(adaptor,"rule root");
 
 		try {
-			// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:86:10: ( root ( SEPARATOR root )* -> ^( LOGICAL root ( SEPARATOR root )* ) )
-			// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:86:12: root ( SEPARATOR root )*
+			// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:90:10: ( root ( SEPARATOR root )* -> ^( LOGICAL root ( SEPARATOR root )* ) )
+			// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:90:12: root ( SEPARATOR root )*
 			{
 			pushFollow(FOLLOW_root_in_parseRoot152);
 			root2=root();
 			state._fsp--;
 
 			stream_root.add(root2.getTree());
-			// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:86:17: ( SEPARATOR root )*
+			// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:90:17: ( SEPARATOR root )*
 			loop2:
 			while (true) {
 				int alt2=2;
@@ -216,7 +216,7 @@ public class FilterParserParser extends Parser {
 
 				switch (alt2) {
 				case 1 :
-					// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:86:18: SEPARATOR root
+					// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:90:18: SEPARATOR root
 					{
 					SEPARATOR3=(Token)match(input,SEPARATOR,FOLLOW_SEPARATOR_in_parseRoot155);  
 					stream_SEPARATOR.add(SEPARATOR3);
@@ -234,6 +234,7 @@ public class FilterParserParser extends Parser {
 				}
 			}
 
+
 			// AST REWRITE
 			// elements: SEPARATOR, root, root
 			// token labels: 
@@ -245,14 +246,14 @@ public class FilterParserParser extends Parser {
 			RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.getTree():null);
 
 			root_0 = (CommonTree)adaptor.nil();
-			// 86:35: -> ^( LOGICAL root ( SEPARATOR root )* )
+			// 90:35: -> ^( LOGICAL root ( SEPARATOR root )* )
 			{
-				// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:86:38: ^( LOGICAL root ( SEPARATOR root )* )
+				// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:90:38: ^( LOGICAL root ( SEPARATOR root )* )
 				{
 				CommonTree root_1 = (CommonTree)adaptor.nil();
 				root_1 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(LOGICAL, "LOGICAL"), root_1);
 				adaptor.addChild(root_1, stream_root.nextTree());
-				// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:86:53: ( SEPARATOR root )*
+				// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:90:53: ( SEPARATOR root )*
 				while ( stream_SEPARATOR.hasNext()||stream_root.hasNext() ) {
 					adaptor.addChild(root_1, stream_SEPARATOR.nextNode());
 					adaptor.addChild(root_1, stream_root.nextTree());
@@ -297,7 +298,7 @@ public class FilterParserParser extends Parser {
 
 
 	// $ANTLR start "root"
-	// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:88:1: root : ( ( OP_NEGATE )? start= '(' parseRoot close= ')' -> ^( ROOT1 ( OP_NEGATE )? $start parseRoot $close) | ( OP_NEGATE )? ( expression ) -> ^( ROOT2 ( OP_NEGATE )? expression ) );
+	// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:92:1: root : ( ( OP_NEGATE )? start= '(' parseRoot close= ')' -> ^( ROOT1 ( OP_NEGATE )? $start parseRoot $close) | ( OP_NEGATE )? ( expression ) -> ^( ROOT2 ( OP_NEGATE )? expression ) );
 	public final FilterParserParser.root_return root() throws RecognitionException {
 		FilterParserParser.root_return retval = new FilterParserParser.root_return();
 		retval.start = input.LT(1);
@@ -322,7 +323,7 @@ public class FilterParserParser extends Parser {
 		RewriteRuleSubtreeStream stream_parseRoot=new RewriteRuleSubtreeStream(adaptor,"rule parseRoot");
 
 		try {
-			// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:88:6: ( ( OP_NEGATE )? start= '(' parseRoot close= ')' -> ^( ROOT1 ( OP_NEGATE )? $start parseRoot $close) | ( OP_NEGATE )? ( expression ) -> ^( ROOT2 ( OP_NEGATE )? expression ) )
+			// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:92:6: ( ( OP_NEGATE )? start= '(' parseRoot close= ')' -> ^( ROOT1 ( OP_NEGATE )? $start parseRoot $close) | ( OP_NEGATE )? ( expression ) -> ^( ROOT2 ( OP_NEGATE )? expression ) )
 			int alt5=2;
 			switch ( input.LA(1) ) {
 			case OP_NEGATE:
@@ -367,9 +368,9 @@ public class FilterParserParser extends Parser {
 			}
 			switch (alt5) {
 				case 1 :
-					// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:88:8: ( OP_NEGATE )? start= '(' parseRoot close= ')'
+					// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:92:8: ( OP_NEGATE )? start= '(' parseRoot close= ')'
 					{
-					// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:88:8: ( OP_NEGATE )?
+					// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:92:8: ( OP_NEGATE )?
 					int alt3=2;
 					int LA3_0 = input.LA(1);
 					if ( (LA3_0==OP_NEGATE) ) {
@@ -377,7 +378,7 @@ public class FilterParserParser extends Parser {
 					}
 					switch (alt3) {
 						case 1 :
-							// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:88:9: OP_NEGATE
+							// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:92:9: OP_NEGATE
 							{
 							OP_NEGATE5=(Token)match(input,OP_NEGATE,FOLLOW_OP_NEGATE_in_root183);  
 							stream_OP_NEGATE.add(OP_NEGATE5);
@@ -398,8 +399,9 @@ public class FilterParserParser extends Parser {
 					close=(Token)match(input,23,FOLLOW_23_in_root199);  
 					stream_23.add(close);
 
+
 					// AST REWRITE
-					// elements: OP_NEGATE, parseRoot, start, close
+					// elements: start, parseRoot, OP_NEGATE, close
 					// token labels: start, close
 					// rule labels: retval
 					// token list labels: 
@@ -411,13 +413,13 @@ public class FilterParserParser extends Parser {
 					RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.getTree():null);
 
 					root_0 = (CommonTree)adaptor.nil();
-					// 88:55: -> ^( ROOT1 ( OP_NEGATE )? $start parseRoot $close)
+					// 92:55: -> ^( ROOT1 ( OP_NEGATE )? $start parseRoot $close)
 					{
-						// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:88:58: ^( ROOT1 ( OP_NEGATE )? $start parseRoot $close)
+						// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:92:58: ^( ROOT1 ( OP_NEGATE )? $start parseRoot $close)
 						{
 						CommonTree root_1 = (CommonTree)adaptor.nil();
 						root_1 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(ROOT1, "ROOT1"), root_1);
-						// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:88:66: ( OP_NEGATE )?
+						// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:92:66: ( OP_NEGATE )?
 						if ( stream_OP_NEGATE.hasNext() ) {
 							adaptor.addChild(root_1, stream_OP_NEGATE.nextNode());
 						}
@@ -437,9 +439,9 @@ public class FilterParserParser extends Parser {
 					}
 					break;
 				case 2 :
-					// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:89:9: ( OP_NEGATE )? ( expression )
+					// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:93:9: ( OP_NEGATE )? ( expression )
 					{
-					// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:89:9: ( OP_NEGATE )?
+					// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:93:9: ( OP_NEGATE )?
 					int alt4=2;
 					int LA4_0 = input.LA(1);
 					if ( (LA4_0==OP_NEGATE) ) {
@@ -447,7 +449,7 @@ public class FilterParserParser extends Parser {
 					}
 					switch (alt4) {
 						case 1 :
-							// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:89:10: OP_NEGATE
+							// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:93:10: OP_NEGATE
 							{
 							OP_NEGATE7=(Token)match(input,OP_NEGATE,FOLLOW_OP_NEGATE_in_root229);  
 							stream_OP_NEGATE.add(OP_NEGATE7);
@@ -457,8 +459,8 @@ public class FilterParserParser extends Parser {
 
 					}
 
-					// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:89:22: ( expression )
-					// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:89:23: expression
+					// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:93:22: ( expression )
+					// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:93:23: expression
 					{
 					pushFollow(FOLLOW_expression_in_root234);
 					expression8=expression();
@@ -466,6 +468,7 @@ public class FilterParserParser extends Parser {
 
 					stream_expression.add(expression8.getTree());
 					}
+
 
 					// AST REWRITE
 					// elements: expression, OP_NEGATE
@@ -478,13 +481,13 @@ public class FilterParserParser extends Parser {
 					RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.getTree():null);
 
 					root_0 = (CommonTree)adaptor.nil();
-					// 89:35: -> ^( ROOT2 ( OP_NEGATE )? expression )
+					// 93:35: -> ^( ROOT2 ( OP_NEGATE )? expression )
 					{
-						// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:89:38: ^( ROOT2 ( OP_NEGATE )? expression )
+						// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:93:38: ^( ROOT2 ( OP_NEGATE )? expression )
 						{
 						CommonTree root_1 = (CommonTree)adaptor.nil();
 						root_1 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(ROOT2, "ROOT2"), root_1);
-						// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:89:46: ( OP_NEGATE )?
+						// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:93:46: ( OP_NEGATE )?
 						if ( stream_OP_NEGATE.hasNext() ) {
 							adaptor.addChild(root_1, stream_OP_NEGATE.nextNode());
 						}
@@ -530,7 +533,7 @@ public class FilterParserParser extends Parser {
 
 
 	// $ANTLR start "paragraph"
-	// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:93:1: paragraph : ( TEXT )+ ;
+	// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:97:1: paragraph : ( TEXT )+ ;
 	public final FilterParserParser.paragraph_return paragraph() throws RecognitionException {
 		FilterParserParser.paragraph_return retval = new FilterParserParser.paragraph_return();
 		retval.start = input.LT(1);
@@ -542,13 +545,13 @@ public class FilterParserParser extends Parser {
 		CommonTree TEXT9_tree=null;
 
 		try {
-			// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:93:11: ( ( TEXT )+ )
-			// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:93:13: ( TEXT )+
+			// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:97:11: ( ( TEXT )+ )
+			// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:97:13: ( TEXT )+
 			{
 			root_0 = (CommonTree)adaptor.nil();
 
 
-			// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:93:13: ( TEXT )+
+			// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:97:13: ( TEXT )+
 			int cnt6=0;
 			loop6:
 			while (true) {
@@ -560,7 +563,7 @@ public class FilterParserParser extends Parser {
 
 				switch (alt6) {
 				case 1 :
-					// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:93:13: TEXT
+					// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:97:13: TEXT
 					{
 					TEXT9=(Token)match(input,TEXT,FOLLOW_TEXT_in_paragraph268); 
 					TEXT9_tree = (CommonTree)adaptor.create(TEXT9);
@@ -606,7 +609,7 @@ public class FilterParserParser extends Parser {
 
 
 	// $ANTLR start "expression"
-	// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:95:1: expression : ( TEXT OP TEXT -> ^( OPERATION TEXT OP TEXT ) | TEXT OP_PRESENT -> ^( OPERATION1 TEXT OP_PRESENT ) | '\"' key0= paragraph '\"' op= OP text= TEXT -> ^( OPERATION2 $key0 $op $text) | '\"' key1= paragraph '\"' op_present= OP_PRESENT -> ^( OPERATION3 $key1 $op_present) | TEXT OP '\"' paragraph '\"' -> ^( OPERATION4 TEXT OP paragraph ) | '\"' key3= paragraph '\"' OP '\"' key4= paragraph '\"' -> ^( OPERATION5 $key3 OP $key4) | TEXT -> ^( CONSTANT TEXT ) | '\"' paragraph '\"' -> ^( PAR_CONSTANT paragraph ) );
+	// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:99:1: expression : ( TEXT OP TEXT -> ^( OPERATION TEXT OP TEXT ) | TEXT OP_PRESENT -> ^( OPERATION1 TEXT OP_PRESENT ) | '\"' key0= paragraph '\"' op= OP text= TEXT -> ^( OPERATION2 $key0 $op $text) | '\"' key1= paragraph '\"' op_present= OP_PRESENT -> ^( OPERATION3 $key1 $op_present) | TEXT OP '\"' paragraph '\"' -> ^( OPERATION4 TEXT OP paragraph ) | '\"' key3= paragraph '\"' OP '\"' key4= paragraph '\"' -> ^( OPERATION5 $key3 OP $key4) | TEXT -> ^( CONSTANT TEXT ) | '\"' paragraph '\"' -> ^( PAR_CONSTANT paragraph ) );
 	public final FilterParserParser.expression_return expression() throws RecognitionException {
 		FilterParserParser.expression_return retval = new FilterParserParser.expression_return();
 		retval.start = input.LT(1);
@@ -675,12 +678,12 @@ public class FilterParserParser extends Parser {
 		RewriteRuleSubtreeStream stream_paragraph=new RewriteRuleSubtreeStream(adaptor,"rule paragraph");
 
 		try {
-			// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:95:12: ( TEXT OP TEXT -> ^( OPERATION TEXT OP TEXT ) | TEXT OP_PRESENT -> ^( OPERATION1 TEXT OP_PRESENT ) | '\"' key0= paragraph '\"' op= OP text= TEXT -> ^( OPERATION2 $key0 $op $text) | '\"' key1= paragraph '\"' op_present= OP_PRESENT -> ^( OPERATION3 $key1 $op_present) | TEXT OP '\"' paragraph '\"' -> ^( OPERATION4 TEXT OP paragraph ) | '\"' key3= paragraph '\"' OP '\"' key4= paragraph '\"' -> ^( OPERATION5 $key3 OP $key4) | TEXT -> ^( CONSTANT TEXT ) | '\"' paragraph '\"' -> ^( PAR_CONSTANT paragraph ) )
+			// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:99:12: ( TEXT OP TEXT -> ^( OPERATION TEXT OP TEXT ) | TEXT OP_PRESENT -> ^( OPERATION1 TEXT OP_PRESENT ) | '\"' key0= paragraph '\"' op= OP text= TEXT -> ^( OPERATION2 $key0 $op $text) | '\"' key1= paragraph '\"' op_present= OP_PRESENT -> ^( OPERATION3 $key1 $op_present) | TEXT OP '\"' paragraph '\"' -> ^( OPERATION4 TEXT OP paragraph ) | '\"' key3= paragraph '\"' OP '\"' key4= paragraph '\"' -> ^( OPERATION5 $key3 OP $key4) | TEXT -> ^( CONSTANT TEXT ) | '\"' paragraph '\"' -> ^( PAR_CONSTANT paragraph ) )
 			int alt7=8;
 			alt7 = dfa7.predict(input);
 			switch (alt7) {
 				case 1 :
-					// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:95:13: TEXT OP TEXT
+					// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:99:13: TEXT OP TEXT
 					{
 					TEXT10=(Token)match(input,TEXT,FOLLOW_TEXT_in_expression276);  
 					stream_TEXT.add(TEXT10);
@@ -691,8 +694,9 @@ public class FilterParserParser extends Parser {
 					TEXT12=(Token)match(input,TEXT,FOLLOW_TEXT_in_expression280);  
 					stream_TEXT.add(TEXT12);
 
+
 					// AST REWRITE
-					// elements: TEXT, OP, TEXT
+					// elements: OP, TEXT, TEXT
 					// token labels: 
 					// rule labels: retval
 					// token list labels: 
@@ -702,9 +706,9 @@ public class FilterParserParser extends Parser {
 					RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.getTree():null);
 
 					root_0 = (CommonTree)adaptor.nil();
-					// 95:26: -> ^( OPERATION TEXT OP TEXT )
+					// 99:26: -> ^( OPERATION TEXT OP TEXT )
 					{
-						// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:95:29: ^( OPERATION TEXT OP TEXT )
+						// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:99:29: ^( OPERATION TEXT OP TEXT )
 						{
 						CommonTree root_1 = (CommonTree)adaptor.nil();
 						root_1 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(OPERATION, "OPERATION"), root_1);
@@ -722,7 +726,7 @@ public class FilterParserParser extends Parser {
 					}
 					break;
 				case 2 :
-					// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:96:14: TEXT OP_PRESENT
+					// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:100:14: TEXT OP_PRESENT
 					{
 					TEXT13=(Token)match(input,TEXT,FOLLOW_TEXT_in_expression307);  
 					stream_TEXT.add(TEXT13);
@@ -730,8 +734,9 @@ public class FilterParserParser extends Parser {
 					OP_PRESENT14=(Token)match(input,OP_PRESENT,FOLLOW_OP_PRESENT_in_expression309);  
 					stream_OP_PRESENT.add(OP_PRESENT14);
 
+
 					// AST REWRITE
-					// elements: OP_PRESENT, TEXT
+					// elements: TEXT, OP_PRESENT
 					// token labels: 
 					// rule labels: retval
 					// token list labels: 
@@ -741,9 +746,9 @@ public class FilterParserParser extends Parser {
 					RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.getTree():null);
 
 					root_0 = (CommonTree)adaptor.nil();
-					// 96:30: -> ^( OPERATION1 TEXT OP_PRESENT )
+					// 100:30: -> ^( OPERATION1 TEXT OP_PRESENT )
 					{
-						// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:96:33: ^( OPERATION1 TEXT OP_PRESENT )
+						// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:100:33: ^( OPERATION1 TEXT OP_PRESENT )
 						{
 						CommonTree root_1 = (CommonTree)adaptor.nil();
 						root_1 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(OPERATION1, "OPERATION1"), root_1);
@@ -760,7 +765,7 @@ public class FilterParserParser extends Parser {
 					}
 					break;
 				case 3 :
-					// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:97:14: '\"' key0= paragraph '\"' op= OP text= TEXT
+					// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:101:14: '\"' key0= paragraph '\"' op= OP text= TEXT
 					{
 					char_literal15=(Token)match(input,21,FOLLOW_21_in_expression334);  
 					stream_21.add(char_literal15);
@@ -779,8 +784,9 @@ public class FilterParserParser extends Parser {
 					text=(Token)match(input,TEXT,FOLLOW_TEXT_in_expression354);  
 					stream_TEXT.add(text);
 
+
 					// AST REWRITE
-					// elements: key0, op, text
+					// elements: op, text, key0
 					// token labels: op, text
 					// rule labels: key0, retval
 					// token list labels: 
@@ -793,9 +799,9 @@ public class FilterParserParser extends Parser {
 					RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.getTree():null);
 
 					root_0 = (CommonTree)adaptor.nil();
-					// 97:59: -> ^( OPERATION2 $key0 $op $text)
+					// 101:59: -> ^( OPERATION2 $key0 $op $text)
 					{
-						// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:97:62: ^( OPERATION2 $key0 $op $text)
+						// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:101:62: ^( OPERATION2 $key0 $op $text)
 						{
 						CommonTree root_1 = (CommonTree)adaptor.nil();
 						root_1 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(OPERATION2, "OPERATION2"), root_1);
@@ -813,7 +819,7 @@ public class FilterParserParser extends Parser {
 					}
 					break;
 				case 4 :
-					// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:98:14: '\"' key1= paragraph '\"' op_present= OP_PRESENT
+					// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:102:14: '\"' key1= paragraph '\"' op_present= OP_PRESENT
 					{
 					char_literal17=(Token)match(input,21,FOLLOW_21_in_expression384);  
 					stream_21.add(char_literal17);
@@ -829,6 +835,7 @@ public class FilterParserParser extends Parser {
 					op_present=(Token)match(input,OP_PRESENT,FOLLOW_OP_PRESENT_in_expression398);  
 					stream_OP_PRESENT.add(op_present);
 
+
 					// AST REWRITE
 					// elements: key1, op_present
 					// token labels: op_present
@@ -842,9 +849,9 @@ public class FilterParserParser extends Parser {
 					RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.getTree():null);
 
 					root_0 = (CommonTree)adaptor.nil();
-					// 98:63: -> ^( OPERATION3 $key1 $op_present)
+					// 102:63: -> ^( OPERATION3 $key1 $op_present)
 					{
-						// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:98:66: ^( OPERATION3 $key1 $op_present)
+						// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:102:66: ^( OPERATION3 $key1 $op_present)
 						{
 						CommonTree root_1 = (CommonTree)adaptor.nil();
 						root_1 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(OPERATION3, "OPERATION3"), root_1);
@@ -861,7 +868,7 @@ public class FilterParserParser extends Parser {
 					}
 					break;
 				case 5 :
-					// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:99:14: TEXT OP '\"' paragraph '\"'
+					// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:103:14: TEXT OP '\"' paragraph '\"'
 					{
 					TEXT19=(Token)match(input,TEXT,FOLLOW_TEXT_in_expression425);  
 					stream_TEXT.add(TEXT19);
@@ -880,8 +887,9 @@ public class FilterParserParser extends Parser {
 					char_literal23=(Token)match(input,21,FOLLOW_21_in_expression433);  
 					stream_21.add(char_literal23);
 
+
 					// AST REWRITE
-					// elements: TEXT, OP, paragraph
+					// elements: paragraph, OP, TEXT
 					// token labels: 
 					// rule labels: retval
 					// token list labels: 
@@ -891,9 +899,9 @@ public class FilterParserParser extends Parser {
 					RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.getTree():null);
 
 					root_0 = (CommonTree)adaptor.nil();
-					// 99:40: -> ^( OPERATION4 TEXT OP paragraph )
+					// 103:40: -> ^( OPERATION4 TEXT OP paragraph )
 					{
-						// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:99:43: ^( OPERATION4 TEXT OP paragraph )
+						// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:103:43: ^( OPERATION4 TEXT OP paragraph )
 						{
 						CommonTree root_1 = (CommonTree)adaptor.nil();
 						root_1 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(OPERATION4, "OPERATION4"), root_1);
@@ -911,7 +919,7 @@ public class FilterParserParser extends Parser {
 					}
 					break;
 				case 6 :
-					// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:100:14: '\"' key3= paragraph '\"' OP '\"' key4= paragraph '\"'
+					// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:104:14: '\"' key3= paragraph '\"' OP '\"' key4= paragraph '\"'
 					{
 					char_literal24=(Token)match(input,21,FOLLOW_21_in_expression460);  
 					stream_21.add(char_literal24);
@@ -938,8 +946,9 @@ public class FilterParserParser extends Parser {
 					char_literal28=(Token)match(input,21,FOLLOW_21_in_expression480);  
 					stream_21.add(char_literal28);
 
+
 					// AST REWRITE
-					// elements: OP, key4, key3
+					// elements: key3, key4, OP
 					// token labels: 
 					// rule labels: key3, key4, retval
 					// token list labels: 
@@ -951,9 +960,9 @@ public class FilterParserParser extends Parser {
 					RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.getTree():null);
 
 					root_0 = (CommonTree)adaptor.nil();
-					// 100:67: -> ^( OPERATION5 $key3 OP $key4)
+					// 104:67: -> ^( OPERATION5 $key3 OP $key4)
 					{
-						// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:100:70: ^( OPERATION5 $key3 OP $key4)
+						// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:104:70: ^( OPERATION5 $key3 OP $key4)
 						{
 						CommonTree root_1 = (CommonTree)adaptor.nil();
 						root_1 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(OPERATION5, "OPERATION5"), root_1);
@@ -971,10 +980,11 @@ public class FilterParserParser extends Parser {
 					}
 					break;
 				case 7 :
-					// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:101:14: TEXT
+					// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:105:14: TEXT
 					{
 					TEXT29=(Token)match(input,TEXT,FOLLOW_TEXT_in_expression509);  
 					stream_TEXT.add(TEXT29);
+
 
 					// AST REWRITE
 					// elements: TEXT
@@ -987,9 +997,9 @@ public class FilterParserParser extends Parser {
 					RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.getTree():null);
 
 					root_0 = (CommonTree)adaptor.nil();
-					// 101:20: -> ^( CONSTANT TEXT )
+					// 105:20: -> ^( CONSTANT TEXT )
 					{
-						// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:101:23: ^( CONSTANT TEXT )
+						// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:105:23: ^( CONSTANT TEXT )
 						{
 						CommonTree root_1 = (CommonTree)adaptor.nil();
 						root_1 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(CONSTANT, "CONSTANT"), root_1);
@@ -1005,7 +1015,7 @@ public class FilterParserParser extends Parser {
 					}
 					break;
 				case 8 :
-					// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:102:14: '\"' paragraph '\"'
+					// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:106:14: '\"' paragraph '\"'
 					{
 					char_literal30=(Token)match(input,21,FOLLOW_21_in_expression533);  
 					stream_21.add(char_literal30);
@@ -1018,6 +1028,7 @@ public class FilterParserParser extends Parser {
 					char_literal32=(Token)match(input,21,FOLLOW_21_in_expression537);  
 					stream_21.add(char_literal32);
 
+
 					// AST REWRITE
 					// elements: paragraph
 					// token labels: 
@@ -1029,9 +1040,9 @@ public class FilterParserParser extends Parser {
 					RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.getTree():null);
 
 					root_0 = (CommonTree)adaptor.nil();
-					// 102:32: -> ^( PAR_CONSTANT paragraph )
+					// 106:32: -> ^( PAR_CONSTANT paragraph )
 					{
-						// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:102:35: ^( PAR_CONSTANT paragraph )
+						// org/eclipse/tracecompass/tmf/filter/parser/FilterParser.g:106:35: ^( PAR_CONSTANT paragraph )
 						{
 						CommonTree root_1 = (CommonTree)adaptor.nil();
 						root_1 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(PAR_CONSTANT, "PAR_CONSTANT"), root_1);
@@ -1131,7 +1142,7 @@ public class FilterParserParser extends Parser {
 		}
 		@Override
 		public String getDescription() {
-			return "95:1: expression : ( TEXT OP TEXT -> ^( OPERATION TEXT OP TEXT ) | TEXT OP_PRESENT -> ^( OPERATION1 TEXT OP_PRESENT ) | '\"' key0= paragraph '\"' op= OP text= TEXT -> ^( OPERATION2 $key0 $op $text) | '\"' key1= paragraph '\"' op_present= OP_PRESENT -> ^( OPERATION3 $key1 $op_present) | TEXT OP '\"' paragraph '\"' -> ^( OPERATION4 TEXT OP paragraph ) | '\"' key3= paragraph '\"' OP '\"' key4= paragraph '\"' -> ^( OPERATION5 $key3 OP $key4) | TEXT -> ^( CONSTANT TEXT ) | '\"' paragraph '\"' -> ^( PAR_CONSTANT paragraph ) );";
+			return "99:1: expression : ( TEXT OP TEXT -> ^( OPERATION TEXT OP TEXT ) | TEXT OP_PRESENT -> ^( OPERATION1 TEXT OP_PRESENT ) | '\"' key0= paragraph '\"' op= OP text= TEXT -> ^( OPERATION2 $key0 $op $text) | '\"' key1= paragraph '\"' op_present= OP_PRESENT -> ^( OPERATION3 $key1 $op_present) | TEXT OP '\"' paragraph '\"' -> ^( OPERATION4 TEXT OP paragraph ) | '\"' key3= paragraph '\"' OP '\"' key4= paragraph '\"' -> ^( OPERATION5 $key3 OP $key4) | TEXT -> ^( CONSTANT TEXT ) | '\"' paragraph '\"' -> ^( PAR_CONSTANT paragraph ) );";
 		}
 	}
 
