@@ -108,7 +108,7 @@ public class CTFStreamInput implements IDefinitionScope {
      *            The stream to which this StreamInput belongs to.
      * @param file
      *            Information about the trace file (for debugging purposes).
-     * @since 4.5
+     * @since 4.6
      */
     public CTFStreamInput(ICTFStream stream, File file, StreamInputPacketIndex index) {
         fStream = stream;

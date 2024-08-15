@@ -95,7 +95,7 @@ public final class TmfStrings {
      * Get the string for nanosecond timestamp
      *
      * @return the label for nanosecond timestamp
-     * @since 9.3
+     * @since 9.4
      */
     public static @NonNull String nsTime() {
         return Objects.requireNonNull(org.eclipse.tracecompass.tmf.core.event.aspect.Messages.AspectName_Timestamp_Nanoseconds);

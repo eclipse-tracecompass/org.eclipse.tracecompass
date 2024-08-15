@@ -26,7 +26,7 @@ import org.eclipse.tracecompass.tmf.core.TmfStrings;
  * segment types.
  *
  * @author David Piché
- * @since 9.3
+ * @since 9.4
  *
  */
 public final class SegmentStartNsTimeAspect implements ISegmentAspect {
