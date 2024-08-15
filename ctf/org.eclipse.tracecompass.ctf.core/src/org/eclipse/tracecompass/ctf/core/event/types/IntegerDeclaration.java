@@ -345,7 +345,7 @@ public final class IntegerDeclaration extends Declaration implements ISimpleData
      * @param mappings
      *            A mapped range of integers
      * @return The integer declaration
-     * @since 4.5
+     * @since 4.6
      */
     public static IntegerDeclaration createDeclaration(int len, boolean signed, int base,
             @Nullable ByteOrder byteOrder, Encoding encoding, String clock, long alignment, @Nullable String role, Map<String, List<IntegerRange>> mappings) {
@@ -391,7 +391,7 @@ public final class IntegerDeclaration extends Declaration implements ISimpleData
      *            A mapped range of integers
      * @return IntegerDeclaration
      *
-     * @since 4.5
+     * @since 4.6
      */
     public static IntegerDeclaration createVarintDeclaration(boolean signed, int base, @Nullable String role, boolean varint, @Nullable Map<String, List<IntegerRange>> mappings) {
         IntegerDeclaration decl = new IntegerDeclaration(0, signed, base, null, Encoding.NONE, "", 0); //$NON-NLS-1$
@@ -508,7 +508,7 @@ public final class IntegerDeclaration extends Declaration implements ISimpleData
      * Getter for mappings
      *
      * @return a mapped range of integers
-     * @since 4.5
+     * @since 4.6
      */
     public Map<String, List<IntegerRange>> getMappings() {
         return fMappings;

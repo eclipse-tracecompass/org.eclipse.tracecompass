@@ -110,7 +110,7 @@ public interface ICTFPacketDescriptor {
      *
      * @param streamPacketContextDef
      *            the packet context to store in the descriptor.
-     * @since 4.5
+     * @since 4.6
      */
     default void setStreamPacketContextDef(StructDefinition streamPacketContextDef) {
         // Do nothing
