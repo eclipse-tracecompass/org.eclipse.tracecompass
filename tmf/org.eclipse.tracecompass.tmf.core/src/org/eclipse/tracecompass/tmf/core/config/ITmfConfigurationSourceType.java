@@ -11,7 +11,10 @@
 
 package org.eclipse.tracecompass.tmf.core.config;
 
+import java.io.File;
 import java.util.List;
+
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Interface to implement that describes a configuration source.
@@ -49,4 +52,16 @@ public interface ITmfConfigurationSourceType {
      * @return A list of query parameter descriptors to be passed
      */
     List<ITmfConfigParamDescriptor> getConfigParamDescriptors();
+    /**
+     * A string containing a json-schema describing the query parameters
+     * to be passed when creating a configuration instance of this type.
+     *
+     * Note: Use either {@link #getConfigParamDescriptors()} or {@link #getSchemaFile()}
+     *
+     * @return A file containing a valid json-schema or null if not used
+     * @since 9.5
+     */
+    default @Nullable File getSchemaFile() {
+        return null;
+    }
 }

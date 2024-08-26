@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.tracecompass.tmf.core.config;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -28,6 +29,7 @@ public class TmfConfigurationSourceType implements ITmfConfigurationSourceType {
     private final String fId;
     private final String fName;
     private final String fDescription;
+    private final @Nullable File fSchemaFile;
     private final List<ITmfConfigParamDescriptor> fParamDescriptors;
 
     /**
@@ -41,6 +43,7 @@ public class TmfConfigurationSourceType implements ITmfConfigurationSourceType {
         fName = builder.fName;
         fDescription = builder.fDescription;
         fParamDescriptors = builder.fDescriptors;
+        fSchemaFile = builder.fSchemaFile;
     }
 
     @Override
@@ -64,14 +67,22 @@ public class TmfConfigurationSourceType implements ITmfConfigurationSourceType {
     }
 
     @Override
+    public @Nullable File getSchemaFile() {
+        return fSchemaFile;
+    }
+
+    @Override
     @SuppressWarnings("nls")
     public String toString() {
+        File schemaFile = getSchemaFile();
+        String schemaFileName = schemaFile == null ? "null" : schemaFile.getName();
         return new StringBuilder(getClass().getSimpleName())
                 .append("[")
                 .append("fName=").append(getName())
                 .append(", fDescription=").append(getDescription())
                 .append(", fId=").append(getId())
                 .append(", fKeys=").append(getConfigParamDescriptors())
+                .append(", fSchemaFile=").append(schemaFileName)
                 .append("]").toString();
     }
 
@@ -82,7 +93,8 @@ public class TmfConfigurationSourceType implements ITmfConfigurationSourceType {
         }
         TmfConfigurationSourceType other = (TmfConfigurationSourceType) arg0;
         return Objects.equals(fName, other.fName) && Objects.equals(fId, other.fId) && Objects.equals(fDescription, other.fDescription)
-                && Objects.equals(fParamDescriptors, other.fParamDescriptors);
+                && Objects.equals(fParamDescriptors, other.fParamDescriptors)
+                && Objects.equals(fSchemaFile, other.fSchemaFile);
     }
 
     @Override
@@ -98,6 +110,7 @@ public class TmfConfigurationSourceType implements ITmfConfigurationSourceType {
         private String fId = ""; //$NON-NLS-1$
         private String fName = ""; //$NON-NLS-1$
         private String fDescription = ""; //$NON-NLS-1$
+        private @Nullable File fSchemaFile = null;
         private List<ITmfConfigParamDescriptor> fDescriptors = new ArrayList<>();
 
         /**
@@ -157,6 +170,19 @@ public class TmfConfigurationSourceType implements ITmfConfigurationSourceType {
         }
 
         /**
+         * Sets the json-schema of the configuration source type
+         *
+         * @param schema
+         *            the json schema file
+         * @return the builder instance.
+         * @since 9.5
+         */
+        public Builder setSchemaFile(@Nullable File schema) {
+            fSchemaFile = schema;
+            return this;
+        }
+
+        /**
          * The method to construct an instance of
          * {@link ITmfConfigurationSourceType}
          *
@@ -169,6 +195,10 @@ public class TmfConfigurationSourceType implements ITmfConfigurationSourceType {
 
             if (fName.isBlank()) {
                 throw new IllegalStateException("Configuration source type name not set"); //$NON-NLS-1$
+            }
+
+            if (fSchemaFile != null && !fSchemaFile.exists()) {
+                throw new IllegalStateException("Configuration source type schema file doesn't exist"); //$NON-NLS-1$
             }
             return new TmfConfigurationSourceType(this);
         }
