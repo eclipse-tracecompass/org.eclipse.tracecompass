@@ -1,6 +1,6 @@
 #!/bin/bash
 ###############################################################################
-# Copyright (c) 2016 Ericsson
+# Copyright (c) 2016, 2024 Ericsson
 #
 # All rights reserved. This program and the accompanying materials
 # are made available under the terms of the Eclipse Public License 2.0
@@ -23,7 +23,7 @@
 
 IFS=', ' read -r -a IGNORED_COMMITS <<< "$1"
 
-PREV_RELEASE_VERSION=$(git tag -l | tail -1 | cut -c 2-)
+PREV_RELEASE_VERSION=$(git tag -l | cut -c 2- | sort -n | tail -1)
 echo "Baseline version detected: $PREV_RELEASE_VERSION. If this is wrong, stop the script (Ctrl-C)"
 read -rsp $'Press any key to continue...\n' -n1 key
 
