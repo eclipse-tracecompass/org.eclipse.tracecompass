@@ -81,6 +81,16 @@
 <unit id="org.eclipse.xsd" version="0.0.0"/>
 <repository location="https://download.eclipse.org/modeling/emf/emf/builds/release/2.35.0/"/>
 </location>
+<location includeDependencyDepth="infinite" includeDependencyScopes="compile,provided,runtime,system" includeSource="true" label="Trace Event Logger" missingManifest="generate" type="Maven">
+<dependencies>
+<dependency>
+<groupId>org.eclipse.tracecompass</groupId>
+<artifactId>trace-event-logger</artifactId>
+<version>0.0.4</version>
+<type>jar</type>
+</dependency>
+</dependencies>
+</location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.swtchart.feature.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.swtchart.feature.source.feature.group" version="0.0.0"/>
