@@ -108,7 +108,8 @@ public final class SegmentStoreStatisticsAspects {
             }
             @Override
             public @Nullable Object apply(NamedStatistics input) {
-                return fMapper.apply(input.getStatistics().getMinNumber());
+                IStatistics<ISegment> statistics = input.getStatistics();
+                return statistics.getNbElements() != 0 ? fMapper.apply(statistics.getMinNumber()) : null;
             }
         });
 
@@ -119,7 +120,8 @@ public final class SegmentStoreStatisticsAspects {
             }
             @Override
             public @Nullable Object apply(NamedStatistics input) {
-                return fMapper.apply(input.getStatistics().getMaxNumber());
+                IStatistics<ISegment> statistics = input.getStatistics();
+                return statistics.getNbElements() != 0 ? fMapper.apply(statistics.getMaxNumber()) : null;
             }
         });
 
@@ -130,7 +132,8 @@ public final class SegmentStoreStatisticsAspects {
             }
             @Override
             public @Nullable Object apply(NamedStatistics input) {
-                return fMapper.apply(input.getStatistics().getMean());
+                IStatistics<ISegment> statistics = input.getStatistics();
+                return statistics.getNbElements() != 0 ? fMapper.apply(statistics.getMean()) : null;
             }
         });
 
@@ -141,7 +144,8 @@ public final class SegmentStoreStatisticsAspects {
             }
             @Override
             public @Nullable Object apply(NamedStatistics input) {
-                return fMapper.apply(input.getStatistics().getStdDev());
+                IStatistics<ISegment> statistics = input.getStatistics();
+                return statistics.getNbElements() != 0 ? fMapper.apply(statistics.getStdDev()) : null;
             }
         });
 
@@ -163,7 +167,8 @@ public final class SegmentStoreStatisticsAspects {
             }
             @Override
             public @Nullable Object apply(NamedStatistics input) {
-                return fMapper.apply(input.getStatistics().getTotal());
+                IStatistics<ISegment> statistics = input.getStatistics();
+                return statistics.getNbElements() != 0 ? fMapper.apply(statistics.getTotal()) : null;
             }
         });
 
