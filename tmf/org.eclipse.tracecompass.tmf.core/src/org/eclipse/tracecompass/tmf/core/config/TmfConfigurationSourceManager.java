@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2023 Ericsson
+ * Copyright (c) 2023, 2024 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -12,8 +12,10 @@ package org.eclipse.tracecompass.tmf.core.config;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -32,17 +34,22 @@ import com.google.common.collect.ImmutableList;
 public class TmfConfigurationSourceManager {
 
     /** Extension point ID */
-    public static final String CONFIG_EXTENSION_POINT_ID = "org.eclipse.tracecompass.tmf.core.config"; //$NON-NLS-1$
+    private static final String CONFIG_EXTENSION_POINT_ID = "org.eclipse.tracecompass.tmf.core.config"; //$NON-NLS-1$
 
     /** Extension point element 'source' */
-    public static final String SOURCE_TYPE_ELEM = "source"; //$NON-NLS-1$
+    private static final String SOURCE_TYPE_ELEM = "source"; //$NON-NLS-1$
 
     /** Extension point element 'class' */
-    public static final String SOURCE_ATTR = "class"; //$NON-NLS-1$
+    private static final String SOURCE_ATTR = "class"; //$NON-NLS-1$
 
-    private Map<ITmfConfigurationSourceType, ITmfConfigurationSource> fDescriptors = new ConcurrentHashMap<>();
+    /** Extension point element 'dpSource'*/
+    private static final String DP_SOURCE_TYPE_ELEM = "dpSource"; //$NON-NLS-1$
 
-    private @Nullable static TmfConfigurationSourceManager fInstance;
+    private Map<ITmfConfigurationSourceType, ITmfConfigurationSource> fGlobalDescriptors = new ConcurrentHashMap<>();
+
+    private Map<ITmfConfigurationSourceType, ITmfDataProviderConfigSource> fDpDescriptors = new ConcurrentHashMap<>();
+
+    private static @Nullable TmfConfigurationSourceManager fInstance;
 
     private TmfConfigurationSourceManager() {
     }
@@ -66,8 +73,11 @@ public class TmfConfigurationSourceManager {
      * Disposes the instance.
      */
     public synchronized void dispose() {
-        fDescriptors.values().forEach(t -> t.dispose());
-        fDescriptors.clear();
+        fGlobalDescriptors.values().forEach(t -> t.dispose());
+        fGlobalDescriptors.clear();
+
+        fDpDescriptors.values().forEach(t -> t.dispose());
+        fDpDescriptors.clear();
     }
 
     /**
@@ -77,13 +87,35 @@ public class TmfConfigurationSourceManager {
      */
     public List<ITmfConfigurationSourceType> getConfigurationSourceTypes() {
         ImmutableList.Builder<ITmfConfigurationSourceType> builder = new ImmutableList.Builder<>();
-        builder.addAll(fDescriptors.keySet());
+        builder.addAll(fGlobalDescriptors.keySet());
+        return builder.build();
+    }
+
+    /**
+     * Gets a list of available configuration source types for a given data
+     * provider
+     *
+     * @param dataProviderId
+     *            a data provider ID
+     * @return a list of available {@Link ITmfConfigurationSourceType}s for a
+     *         given data provider
+     * @since 9.4
+     */
+    public List<ITmfConfigurationSourceType> getConfigurationSourceTypes(String dataProviderId) {
+        ImmutableList.Builder<ITmfConfigurationSourceType> builder = new ImmutableList.Builder<>();
+        @SuppressWarnings("null")
+        Map<ITmfConfigurationSourceType, ITmfDataProviderConfigSource> filteredMap =
+                fDpDescriptors.entrySet()
+                .stream()
+                .filter(entry -> entry.getValue().appliesToDataProvider(dataProviderId))
+                .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
+        builder.addAll(filteredMap.keySet());
         return builder.build();
     }
 
     /**
      * Gets the {@link ITmfConfigurationSource} for a given
-     * {@Link ITmfConfigurationSourceType}
+     * {@Link ITmfConfigurationSourceType@getId()}
      *
      * @param typeId
      *            The configuration source type ID
@@ -91,15 +123,30 @@ public class TmfConfigurationSourceManager {
      *         exist
      */
     public @Nullable ITmfConfigurationSource getConfigurationSource(@Nullable String typeId) {
-        ITmfConfigurationSourceType desc = getDescriptor(typeId);
-        return desc == null ? null : fDescriptors.get(desc);
+        ITmfConfigurationSourceType desc = getDescriptor(fGlobalDescriptors, typeId);
+        return desc == null ? null : fGlobalDescriptors.get(desc);
     }
 
-    private @Nullable ITmfConfigurationSourceType getDescriptor(@Nullable String typeId) {
+    /**
+     * Gets the {@link ITmfDataProviderConfigSource} for a given
+     * {@Link ITmfConfigurationSourceType#getId()}
+     *
+     * @param typeId
+     *            The configuration source type ID
+     * @return Gets the {@link ITmfDataProviderConfigSource} or null if it doesn't
+     *         exist
+     * @since 9.4
+     */
+    public @Nullable ITmfDataProviderConfigSource getDataProviderConfigurationSource(@Nullable String typeId) {
+        ITmfConfigurationSourceType desc = getDescriptor(fDpDescriptors, typeId);
+        return desc == null ? null : fDpDescriptors.get(desc);
+    }
+
+    private static @Nullable ITmfConfigurationSourceType getDescriptor(Map<ITmfConfigurationSourceType, ?> map, @Nullable String typeId) {
         if (typeId == null) {
             return null;
         }
-        Optional<ITmfConfigurationSourceType> optional = fDescriptors.keySet().stream().filter(desc -> desc.getId().equals(typeId)).findAny();
+        Optional<ITmfConfigurationSourceType> optional = map.keySet().stream().filter(desc -> desc.getId().equals(typeId)).findAny();
         return optional.isEmpty() ? null : optional.get();
     }
 
@@ -118,7 +165,20 @@ public class TmfConfigurationSourceManager {
                         Activator.logError("ITmfConfigurationSource cannot be instantiated.", e); //$NON-NLS-1$
                     }
                     if (sourceInstance != null) {
-                        fDescriptors.put(sourceInstance.getConfigurationSourceType(), sourceInstance);
+                        fGlobalDescriptors.put(sourceInstance.getConfigurationSourceType(), sourceInstance);
+                    }
+                }
+            } else if (elementName.equals(DP_SOURCE_TYPE_ELEM)) {
+                String source = ce.getAttribute(SOURCE_ATTR);
+                if (source != null) {
+                    ITmfDataProviderConfigSource sourceInstance = null;
+                    try {
+                        sourceInstance = (ITmfDataProviderConfigSource) ce.createExecutableExtension(SOURCE_ATTR);
+                    } catch (CoreException e) {
+                        Activator.logError("ITmfDataProviderConfigSource cannot be instantiated.", e); //$NON-NLS-1$
+                    }
+                    if (sourceInstance != null) {
+                        fDpDescriptors.put(sourceInstance.getConfigurationSourceType(), sourceInstance);
                     }
                 }
             }

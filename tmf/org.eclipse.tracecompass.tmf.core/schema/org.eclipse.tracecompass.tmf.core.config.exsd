@@ -18,7 +18,8 @@
       </annotation>
       <complexType>
          <choice minOccurs="0" maxOccurs="unbounded">
-            <element ref="source"/>
+            <element ref="source" minOccurs="0" maxOccurs="1"/>
+            <element ref="dpSource" minOccurs="0" maxOccurs="1"/>
          </choice>
          <attribute name="point" type="string" use="required">
             <annotation>
@@ -63,6 +64,28 @@
                </documentation>
                <appinfo>
                   <meta.attribute kind="java" basedOn=":org.eclipse.tracecompass.tmf.core.config.IConfigurationSource"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="dpSource">
+      <complexType>
+         <attribute name="id" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The unique ID that identifies this configuration source type handler for data providers
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="class" type="string">
+            <annotation>
+               <documentation>
+                  The fully qualified name of a class that implements the &lt;samp&gt;ITmfDataProviderConfigSource&lt;/samp&gt; interface.
+               </documentation>
+               <appinfo>
+                  <meta.attribute kind="java" basedOn=":org.eclipse.tracecompass.tmf.core.config.ITmfDataProviderConfigSource"/>
                </appinfo>
             </annotation>
          </attribute>

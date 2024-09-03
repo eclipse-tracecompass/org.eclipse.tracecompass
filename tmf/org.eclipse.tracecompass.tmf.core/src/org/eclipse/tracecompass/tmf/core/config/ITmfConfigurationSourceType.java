@@ -52,11 +52,13 @@ public interface ITmfConfigurationSourceType {
      * @return A list of query parameter descriptors to be passed
      */
     List<ITmfConfigParamDescriptor> getConfigParamDescriptors();
+
     /**
-     * A string containing a json-schema describing the query parameters
-     * to be passed when creating a configuration instance of this type.
+     * A string containing a json-schema describing the query parameters to be
+     * passed when creating a configuration instance of this type.
      *
-     * Note: Use either {@link #getConfigParamDescriptors()} or {@link #getSchemaFile()}
+     * Note: Use either {@link #getConfigParamDescriptors()} or
+     * {@link #getSchemaFile()}
      *
      * @return A file containing a valid json-schema or null if not used
      * @since 9.5

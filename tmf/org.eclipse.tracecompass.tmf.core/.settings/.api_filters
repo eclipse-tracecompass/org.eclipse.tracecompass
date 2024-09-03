@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<component id="org.eclipse.tracecompass.tmf.core" version="2">
+    <resource path="src/org/eclipse/tracecompass/tmf/core/config/TmfConfigurationSourceManager.java" type="org.eclipse.tracecompass.tmf.core.config.TmfConfigurationSourceManager">
+        <filter comment="Static variable was not supposed to be public. It's pretty new and save to make it private." id="388018290">
+            <message_arguments>
+                <message_argument value="org.eclipse.tracecompass.tmf.core.config.TmfConfigurationSourceManager"/>
+                <message_argument value="CONFIG_EXTENSION_POINT_ID"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Static variable was not supposed to be public. It's pretty new and save to make it private." id="388018290">
+            <message_arguments>
+                <message_argument value="org.eclipse.tracecompass.tmf.core.config.TmfConfigurationSourceManager"/>
+                <message_argument value="SOURCE_ATTR"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Static variable was not supposed to be public. It's pretty new and save to make it private." id="388018290">
+            <message_arguments>
+                <message_argument value="org.eclipse.tracecompass.tmf.core.config.TmfConfigurationSourceManager"/>
+                <message_argument value="SOURCE_TYPE_ELEM"/>
+            </message_arguments>
+        </filter>
+    </resource>
+</component>
