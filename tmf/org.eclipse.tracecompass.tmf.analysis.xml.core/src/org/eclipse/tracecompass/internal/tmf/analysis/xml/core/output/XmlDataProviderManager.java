@@ -16,17 +16,29 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.internal.tmf.analysis.xml.core.fsm.compile.AnalysisCompilationData;
 import org.eclipse.tracecompass.internal.tmf.analysis.xml.core.fsm.compile.TmfXmlTimeGraphViewCu;
 import org.eclipse.tracecompass.internal.tmf.analysis.xml.core.fsm.compile.TmfXmlXYViewCu;
+import org.eclipse.tracecompass.internal.tmf.analysis.xml.core.module.XmlOutputElement;
+import org.eclipse.tracecompass.internal.tmf.analysis.xml.core.module.XmlUtils;
+import org.eclipse.tracecompass.internal.tmf.analysis.xml.core.module.XmlUtils.OutputType;
 import org.eclipse.tracecompass.internal.tmf.analysis.xml.core.module.XmlXYDataProvider;
+import org.eclipse.tracecompass.tmf.analysis.xml.core.module.TmfXmlUtils;
+import org.eclipse.tracecompass.tmf.core.analysis.IAnalysisModuleHelper;
+import org.eclipse.tracecompass.tmf.core.analysis.TmfAnalysisManager;
+import org.eclipse.tracecompass.tmf.core.dataprovider.IDataProviderDescriptor;
+import org.eclipse.tracecompass.tmf.core.dataprovider.IDataProviderDescriptor.ProviderType;
+import org.eclipse.tracecompass.tmf.core.model.DataProviderDescriptor;
 import org.eclipse.tracecompass.tmf.core.model.timegraph.ITimeGraphDataProvider;
 import org.eclipse.tracecompass.tmf.core.model.timegraph.TimeGraphEntryModel;
 import org.eclipse.tracecompass.tmf.core.model.timegraph.TmfTimeGraphCompositeDataProvider;
 import org.eclipse.tracecompass.tmf.core.model.tree.ITmfTreeDataModel;
+import org.eclipse.tracecompass.tmf.core.model.tree.ITmfTreeDataProvider;
 import org.eclipse.tracecompass.tmf.core.model.xy.ITmfTreeXYDataProvider;
 import org.eclipse.tracecompass.tmf.core.model.xy.TmfTreeXYCompositeDataProvider;
 import org.eclipse.tracecompass.tmf.core.signal.TmfSignalHandler;
@@ -320,5 +332,77 @@ public class XmlDataProviderManager {
     public void refreshDataProviderFactories() {
         fTimeGraphFactories.clear();
         fXYFactories.clear();
+    }
+
+    /**
+     * Get the XML data provider for a trace, provider id and XML
+     * {@link OutputType}
+     *
+     * @param trace
+     *            the queried trace
+     * @param id
+     *            the queried ID
+     * @param types
+     *            the data provider types
+     * @return the provider if an XML containing the ID exists and applies to
+     *         the trace, else null
+     */
+    @SuppressWarnings("unchecked")
+    public @Nullable <P extends ITmfTreeDataProvider<? extends ITmfTreeDataModel>> P getXmlProvider(ITmfTrace trace, String id, Set<OutputType> types) {
+        for (OutputType viewType : types) {
+            for (XmlOutputElement element : Iterables.filter(XmlUtils.getXmlOutputElements().values(),
+                    element -> element.getXmlElem().equals(viewType.getXmlElem()) && id.equals(element.getId()))) {
+                Element viewElement = TmfXmlUtils.getElementInFile(element.getPath(), viewType.getXmlElem(), id);
+                if (viewElement != null && viewType == OutputType.XY) {
+                    return (P) getXyProvider(trace, viewElement);
+                } else if (viewElement != null && viewType == OutputType.TIME_GRAPH) {
+                    return (P) getTimeGraphProvider(trace, viewElement);
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Get a list of XML defined data provider descriptors for a given trace/experiment.
+     *
+     * @param trace
+     *             a trace or experiment
+     * @param types
+     *            the data provider types
+     * @return list of XML defined data provider descriptors for a given trace/experiment.
+     */
+    public List<IDataProviderDescriptor> getXmlDataProviderDescriptors(ITmfTrace trace, Set<OutputType> types) {
+        List<IDataProviderDescriptor> descriptors = new ArrayList<>();
+        for (ITmfTrace tr : TmfTraceManager.getTraceSetWithExperiment(trace)) {
+            Map<String, IAnalysisModuleHelper> modules = TmfAnalysisManager.getAnalysisModules(tr.getClass());
+            for (OutputType viewType : types) {
+                for (XmlOutputElement element : Iterables.filter(XmlUtils.getXmlOutputElements().values(), element -> element.getXmlElem().equals(viewType.getXmlElem()))) {
+                    DataProviderDescriptor.Builder builder = new DataProviderDescriptor.Builder();
+                    String label = String.valueOf(element.getLabel());
+                    String elemId = element.getId();
+                    if (elemId == null) {
+                        // Ignore element
+                        continue;
+                    }
+                    builder.setId(elemId);
+                    if (viewType == OutputType.XY) {
+                        builder.setProviderType(ProviderType.TREE_TIME_XY);
+                    } else if (viewType == OutputType.TIME_GRAPH) {
+                        builder.setProviderType(ProviderType.TIME_GRAPH);
+                    }
+                    for (String id : element.getAnalyses()) {
+                        if (modules.containsKey(id)) {
+                            String analysisName = Objects.requireNonNull(modules.get(id)).getName();
+                            builder.setName(analysisName + ": " + label); //$NON-NLS-1$
+                            builder.setDescription(label + " provided by Analysis module: " + analysisName); //$NON-NLS-1$
+                            descriptors.add(builder.build());
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        return descriptors;
     }
 }
