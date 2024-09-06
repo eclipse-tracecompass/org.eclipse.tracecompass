@@ -25,6 +25,14 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 public class TmfConfiguration implements ITmfConfiguration {
 
+    /**
+     * Key to use in parameter map for passing a JSON string defining the
+     * configuration parameters.
+     * @since 9.5
+     */
+    @SuppressWarnings("nls")
+    public static final String JSON_STRING_KEY = "--json-string-key--";
+
     private final String fId;
     private final String fName;
     private final String fDescription;
