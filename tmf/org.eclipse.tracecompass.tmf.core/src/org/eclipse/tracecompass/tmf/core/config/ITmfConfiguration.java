@@ -40,8 +40,18 @@ public interface ITmfConfiguration {
     String getSourceTypeId();
 
     /**
-     * @return optional informational parameters to return. Can be used to show
-     *         more details to users of the configuration instance.
+     * @return optional parameters representing the configuration parameters used to create
+     * this configuration. This is intended to be used instead of {@link #getJsonParameters()}.
      */
     Map<String, Object> getParameters();
+
+    /**
+     * @return optional JSON string representing the configuration parameters used to create
+     * this configuration. This is intended to be used instead of {@link #getParameters()}.
+     *
+     * @since 9.5
+     */
+    default String getJsonParameters() {
+        return ""; //$NON-NLS-1$
+    }
 }

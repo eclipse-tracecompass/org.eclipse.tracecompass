@@ -17,6 +17,8 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.tmf.core.exceptions.TmfConfigurationException;
 
+import com.google.gson.Gson;
+
 /**
  * Interface to implement for providing a configuration source.
  *
@@ -44,6 +46,29 @@ public interface ITmfConfigurationSource {
     ITmfConfiguration create(Map<String, Object> parameters) throws TmfConfigurationException;
 
     /**
+     * Creates a new configuration instance.
+     * <p>
+     * The parameters to be provided are described by
+     * {@link ITmfConfigurationSourceType#getConfigParamDescriptors()}.
+     *
+     * @param parameters
+     *            The query parameters as JSON string used to create a configuration instance.
+     * @return a new {@link ITmfConfiguration} if successful
+     * @throws TmfConfigurationException
+     *             If the creation of the configuration fails
+     * @since 9.5
+     */
+    default ITmfConfiguration create(String parameters) throws TmfConfigurationException {
+        try {
+            @SuppressWarnings("null")
+            Map<String, Object> map = new Gson().fromJson(parameters, Map.class);
+            return create(map);
+        } catch (Exception e) {
+            throw new TmfConfigurationException("Can't convert json string to Map to update configuration", e); //$NON-NLS-1$
+        }
+    }
+
+    /**
      * Updates a configuration instance.
      * <p>
      * The parameters to be provided are described by
@@ -58,6 +83,31 @@ public interface ITmfConfigurationSource {
      *             If the update of the configuration fails
      */
     ITmfConfiguration update(String id, Map<String, Object> parameters) throws TmfConfigurationException;
+
+    /**
+     * Updates a configuration instance.
+     * <p>
+     * The parameters to be provided are described by
+     * {@link ITmfConfigurationSourceType#getConfigParamDescriptors()}.
+     *
+     * @param id
+     *            The configuration ID of the configuration to update
+     * @param parameters
+     *            The query parameters as JSON string used to update a configuration instance
+     * @return a new {@link ITmfConfiguration} if successful
+     * @throws TmfConfigurationException
+     *             If the update of the configuration fails
+     * @since 9.5
+     */
+    default ITmfConfiguration update(String id, String parameters) throws TmfConfigurationException {
+        try {
+            @SuppressWarnings("null")
+            Map<String, Object> map = new Gson().fromJson(parameters, Map.class);
+            return update(id, map);
+        } catch (Exception e) {
+            throw new TmfConfigurationException("Can't convert json string to Map to update configuration", e); //$NON-NLS-1$
+        }
+    }
 
     /**
      * Gets a configuration instance.
