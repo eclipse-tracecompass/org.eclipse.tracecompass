@@ -43,6 +43,7 @@ import org.eclipse.tracecompass.segmentstore.core.ISegmentStore;
 import org.eclipse.tracecompass.segmentstore.core.SegmentStoreFactory;
 import org.eclipse.tracecompass.tmf.core.analysis.requirements.TmfAbstractAnalysisRequirement;
 import org.eclipse.tracecompass.tmf.core.analysis.requirements.TmfAbstractAnalysisRequirement.PriorityLevel;
+import org.eclipse.tracecompass.tmf.core.dataprovider.DataType;
 import org.eclipse.tracecompass.tmf.core.analysis.requirements.TmfAnalysisEventRequirement;
 import org.eclipse.tracecompass.tmf.core.segment.ISegmentAspect;
 import org.eclipse.tracecompass.tmf.core.statesystem.ITmfStateProvider;
@@ -97,6 +98,11 @@ public class UstMemoryAnalysisModule extends TmfStateSystemAnalysisModule implem
                 return ((PotentialLeakSegment) segment).getTid();
             }
             return -1;
+        }
+
+        @Override
+        public DataType getDataType() {
+            return DataType.NUMBER;
         }
     }
 

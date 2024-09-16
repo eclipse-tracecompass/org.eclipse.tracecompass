@@ -28,6 +28,7 @@ import org.eclipse.tracecompass.segmentstore.core.ISegment;
 import org.eclipse.tracecompass.segmentstore.core.ISegmentStore;
 import org.eclipse.tracecompass.segmentstore.core.SegmentComparators;
 import org.eclipse.tracecompass.segmentstore.core.SegmentStoreFactory.SegmentStoreType;
+import org.eclipse.tracecompass.tmf.core.dataprovider.DataType;
 import org.eclipse.tracecompass.tmf.core.event.ITmfEvent;
 import org.eclipse.tracecompass.tmf.core.segment.ISegmentAspect;
 
@@ -248,6 +249,11 @@ public class SWSLatencyAnalysis extends AbstractSegmentStoreAnalysisEventBasedMo
                 return ((SchedWS) segment).getTid();
             }
             return -1;
+        }
+
+        @Override
+        public DataType getDataType() {
+            return DataType.NUMBER;
         }
     }
 

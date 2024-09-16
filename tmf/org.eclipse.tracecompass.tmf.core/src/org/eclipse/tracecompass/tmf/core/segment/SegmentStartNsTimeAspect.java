@@ -20,6 +20,7 @@ import org.eclipse.tracecompass.internal.tmf.core.segment.Messages;
 import org.eclipse.tracecompass.segmentstore.core.ISegment;
 import org.eclipse.tracecompass.segmentstore.core.SegmentComparators;
 import org.eclipse.tracecompass.tmf.core.TmfStrings;
+import org.eclipse.tracecompass.tmf.core.dataprovider.DataType;
 
 /**
  * An aspect used to get the start time of a segment. It can be used with most
@@ -66,5 +67,10 @@ public final class SegmentStartNsTimeAspect implements ISegmentAspect {
     @Override
     public @NonNull SegmentType getType() {
         return ISegmentAspect.SegmentType.CONTINUOUS;
+    }
+
+    @Override
+    public DataType getDataType() {
+        return DataType.TIMESTAMP;
     }
 }
