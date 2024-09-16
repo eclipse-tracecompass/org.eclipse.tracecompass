@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><?pde version="3.8"?><target name="tracecompass-e4.33" sequenceNumber="3">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><?pde version="3.8"?><target name="tracecompass-e4.33" sequenceNumber="4">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.cdt.gnu.dsf.feature.group" version="0.0.0"/>
@@ -68,7 +68,7 @@
 <unit id="org.eclipse.jdt.junit4.runtime" version="0.0.0"/>
 <unit id="org.eclipse.e4.ui.progress" version="0.0.0"/>
 <unit id="org.eclipse.osgi.services" version="0.0.0"/>
-<repository location="https://download.eclipse.org/eclipse/updates/4.33-I-builds/I20240822-0100/"/>
+<repository location="https://download.eclipse.org/eclipse/updates/4.33/R-4.33-202409030240/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.tracecompass.testtraces.tracecompass-test-traces-ctf" version="1.7.2"/>
@@ -78,7 +78,7 @@
 <unit id="org.eclipse.wst.xml.core" version="0.0.0"/>
 <unit id="org.eclipse.wst.xml.ui" version="0.0.0"/>
 <unit id="org.eclipse.wst.xsd.core" version="0.0.0"/>
-<repository location="https://download.eclipse.org/webtools/downloads/drops/R3.35.0/S-3.35RC1-20240825085431/repository/"/>
+<repository location="https://download.eclipse.org/webtools/downloads/drops/R3.35.0/R-3.35.0-20240825085431/repository/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.xsd" version="0.0.0"/>
