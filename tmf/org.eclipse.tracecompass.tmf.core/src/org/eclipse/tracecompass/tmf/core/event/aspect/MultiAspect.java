@@ -23,6 +23,7 @@ import java.util.logging.Logger;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.common.core.log.TraceCompassLog;
 import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils;
+import org.eclipse.tracecompass.tmf.core.dataprovider.DataType;
 import org.eclipse.tracecompass.tmf.core.event.ITmfEvent;
 
 import com.google.common.collect.Iterables;
@@ -63,11 +64,12 @@ public class MultiAspect<T> implements ITmfEventAspect<T> {
         }
 
         Set<String> names = new HashSet<>();
+        Set<DataType> dataTypes = new HashSet<>();
         for (ITmfEventAspect<?> aspect : aspects) {
-            // Ensure all aspects belong to the same class as the "aspectClass"
-            // parameter
+            // Ensure all aspects belong to the same class as the "aspectClass" parameter
             if (aspectClass.isAssignableFrom(aspect.getClass())) {
                 names.add(aspect.getName());
+                dataTypes.add(aspect.getDataType());
             } else {
                 throw new IllegalArgumentException("Aspects must belong to the same class as the \"aspectClass\" parameter."); //$NON-NLS-1$
             }
@@ -78,6 +80,13 @@ public class MultiAspect<T> implements ITmfEventAspect<T> {
             StringJoiner sj = new StringJoiner(", "); //$NON-NLS-1$
             names.forEach(sj::add);
             TraceCompassLogUtils.traceInstant(LOGGER, Level.WARNING, "Aspects do not have the same name: ", sj.toString()); //$NON-NLS-1$ );
+        }
+
+         // Ensure all aspects have the same data type
+        if (dataTypes.size() != 1) {
+            StringJoiner sj = new StringJoiner(", "); //$NON-NLS-1$
+            dataTypes.forEach(dt -> sj.add(dt.toString()));
+            TraceCompassLogUtils.traceInstant(LOGGER, Level.WARNING, "Aspects do not have the same data type: ", sj.toString()); //$NON-NLS-1$
         }
 
         return new MultiAspect<>(Iterables.get(names, 0), aspects);
@@ -159,5 +168,20 @@ public class MultiAspect<T> implements ITmfEventAspect<T> {
             }
         }
         return null;
+    }
+
+    /*
+     * Returns the data type of the first aspect in the list,
+     * or the default if the list is empty.
+     *
+     * @since 10.0
+     */
+    @Override
+    public DataType getDataType() {
+        for (ITmfEventAspect<?> aspect : fAspects) {
+            return aspect.getDataType();
+        }
+
+        return ITmfEventAspect.super.getDataType();
     }
 }

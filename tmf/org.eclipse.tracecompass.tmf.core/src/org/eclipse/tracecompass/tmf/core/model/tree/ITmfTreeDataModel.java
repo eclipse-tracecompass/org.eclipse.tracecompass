@@ -89,10 +89,10 @@ public interface ITmfTreeDataModel {
      * Get the type of the data tree
      *
      * @return the corresponding data type of the data tree
-     * @since 9.3
+     * @since 10.0
      */
-    default String getDataType() {
-        return DataType.STRING.name();
+    default DataType getDataType() {
+        return DataType.STRING;
     }
 
 }

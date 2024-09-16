@@ -115,7 +115,7 @@ public interface ITmfEventAspect<T> {
      * The data type is considered as String by default
      *
      * @return the data type of the aspect
-     * @since 9.3
+     * @since 10.0
      */
     default DataType getDataType() {
         return DataType.STRING;
