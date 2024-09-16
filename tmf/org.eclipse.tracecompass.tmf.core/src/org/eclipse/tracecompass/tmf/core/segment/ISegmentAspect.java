@@ -15,6 +15,7 @@ import java.util.Comparator;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.segmentstore.core.ISegment;
+import org.eclipse.tracecompass.tmf.core.dataprovider.DataType;
 
 /**
  * An aspect is a piece of information that can be extracted, directly or
@@ -119,5 +120,16 @@ public interface ISegmentAspect {
      */
     default SegmentType getType() {
         return SegmentType.CATEGORICAL;
+    }
+
+    /**
+     * This method will return the data type of the aspect.
+     * The data type is considered as String by default
+     *
+     * @return the data type of the aspect
+     * @since 10.0
+     */
+    default DataType getDataType() {
+        return DataType.STRING;
     }
 }
