@@ -74,7 +74,7 @@ public class TmfTreeDataModel implements ITmfTreeDataModel {
      *            The labels of this model
      * @param dataType
      *            The data type of this model
-     * @since 10.0
+     * @since 9.5
      */
     public TmfTreeDataModel(long id, long parentId, List<String> labels, DataType dataType) {
         this(id, parentId, labels, true, null, dataType);
@@ -91,7 +91,7 @@ public class TmfTreeDataModel implements ITmfTreeDataModel {
      *            The labels of this model
      * @param hasRowModel
      *            Whether this entry has data or not
-     * @since 9.3
+     * @since 9.5
      */
     public TmfTreeDataModel(long id, long parentId, List<String> labels, boolean hasRowModel) {
         this(id, parentId, labels, hasRowModel, null, null);
@@ -133,7 +133,7 @@ public class TmfTreeDataModel implements ITmfTreeDataModel {
      *            The style of this entry
      * @param dataType
      *            The data type of this entry
-     * @since 10.0
+     * @since 9.5
      */
     public TmfTreeDataModel(long id, long parentId, List<String> labels, boolean hasRowModel, @Nullable OutputElementStyle style, @Nullable DataType dataType) {
         fId = id;
