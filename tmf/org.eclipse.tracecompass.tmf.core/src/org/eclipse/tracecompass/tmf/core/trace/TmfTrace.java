@@ -144,6 +144,9 @@ public abstract class TmfTrace extends TmfEventProvider implements ITmfTrace, IT
     private final Map<String, IAnalysisModule> fAnalysisModules =
             Collections.synchronizedMap(new LinkedHashMap<String, IAnalysisModule>());
 
+    private final Map<String, IAnalysisModule> fAddedAnalysisModules =
+            Collections.synchronizedMap(new LinkedHashMap<String, IAnalysisModule>());
+
     // Analysis modules that were removed during lifecycle of the trace that need to be disposed
     private final Set<IAnalysisModule> fToBeDisposedAnalysisModules =
             Collections.synchronizedSet(new HashSet<IAnalysisModule>());
@@ -304,14 +307,34 @@ public abstract class TmfTrace extends TmfEventProvider implements ITmfTrace, IT
 
     @Override
     public IAnalysisModule getAnalysisModule(String analysisId) {
-        return fAnalysisModules.get(analysisId);
+        IAnalysisModule module = fAnalysisModules.get(analysisId);
+        if (module != null) {
+            return module;
+        }
+        return fAddedAnalysisModules.get(analysisId);
     }
 
 
     @Override
     public Iterable<IAnalysisModule> getAnalysisModules() {
         synchronized (fAnalysisModules) {
-            return new HashSet<>(fAnalysisModules.values());
+            HashSet<IAnalysisModule> modules = new HashSet<>(fAnalysisModules.values());
+            modules.addAll(fAddedAnalysisModules.values());
+            return modules;
+        }
+    }
+
+    @Override
+    public IAnalysisModule addAnalysisModule(@NonNull IAnalysisModule module) {
+        synchronized (fAnalysisModules) {
+            return fAddedAnalysisModules.put(module.getId(), module);
+        }
+    }
+
+    @Override
+    public IAnalysisModule removeAnalysisModule(@NonNull String id) {
+        synchronized (fAnalysisModules) {
+            return fAddedAnalysisModules.remove(id);
         }
     }
 
@@ -337,6 +360,7 @@ public abstract class TmfTrace extends TmfEventProvider implements ITmfTrace, IT
             module.dispose();
         }
         fAnalysisModules.clear();
+        fAddedAnalysisModules.clear();
 
         /* Clean up the analysis modules removed during lifecycle of trace */
         analysisModules = fToBeDisposedAnalysisModules;
