@@ -273,6 +273,37 @@ public interface ITmfTrace extends ITmfEventProvider {
      */
     @NonNull Iterable<@NonNull IAnalysisModule> getAnalysisModules();
 
+
+    /**
+     * Add an analysis module. It will return an existing analysis module with
+     * the same ID. Caller have to call {@link IAnalysisModule#dispose()} and
+     * {@link IAnalysisModule#clearPersistentData()} if required.
+     *
+     * @param module
+     *            the analysis module to add
+     * @return It will return an existing analysis module with the same ID or
+     *         null.
+     * @since 9.5
+     */
+    default @Nullable IAnalysisModule addAnalysisModule(@NonNull IAnalysisModule module) {
+        return null;
+    }
+
+    /**
+     * Remove an analysis module. It will return the existing analysis module with
+     * the same ID if it exists. Caller have to call {@link IAnalysisModule#dispose()}
+     * and {@link IAnalysisModule#clearPersistentData()} if required.
+     *
+     * @param id
+     *            the ID of the analysis module
+     * @return It will return an existing analysis module with the same ID or
+     *         null.
+     * @since 9.5
+     */
+    default @Nullable IAnalysisModule removeAnalysisModule(@NonNull String id) {
+        return null;
+    }
+
     /**
      * Refresh the analysis modules for this traces
      *
