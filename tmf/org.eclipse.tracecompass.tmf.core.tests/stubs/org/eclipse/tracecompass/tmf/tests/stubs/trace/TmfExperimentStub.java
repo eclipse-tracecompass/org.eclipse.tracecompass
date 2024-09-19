@@ -15,8 +15,6 @@
 package org.eclipse.tracecompass.tmf.tests.stubs.trace;
 
 import java.lang.reflect.Method;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -24,7 +22,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.tracecompass.internal.tmf.core.Activator;
 import org.eclipse.tracecompass.internal.tmf.core.request.TmfCoalescedEventRequest;
-import org.eclipse.tracecompass.tmf.core.analysis.IAnalysisModule;
 import org.eclipse.tracecompass.tmf.core.component.TmfEventProvider;
 import org.eclipse.tracecompass.tmf.core.event.ITmfEvent;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
@@ -40,8 +37,6 @@ import org.eclipse.tracecompass.tmf.core.trace.indexer.ITmfTraceIndexer;
  */
 @SuppressWarnings("javadoc")
 public class TmfExperimentStub extends TmfExperiment {
-
-    private final Collection<IAnalysisModule> fAdditionalModules = new HashSet<>();
 
     /**
      * Default constructor. Should not be called directly by the code, but
@@ -113,16 +108,6 @@ public class TmfExperimentStub extends TmfExperiment {
         params[0] = Boolean.valueOf(enabled);
         m.setAccessible(true);
         m.invoke(this, params);
-    }
-
-    /**
-     * Add an additional new module
-     *
-     * @param module
-     *            The new module
-     */
-    public void addAnalysisModule(IAnalysisModule module) {
-        fAdditionalModules.add(module);
     }
 
     /**

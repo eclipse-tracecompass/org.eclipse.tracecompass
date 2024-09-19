@@ -273,6 +273,47 @@ public interface ITmfTrace extends ITmfEventProvider {
      */
     @NonNull Iterable<@NonNull IAnalysisModule> getAnalysisModules();
 
+
+    /**
+     * Add an analysis module.
+     *
+     * It will replace a previously added analysis module with the same ID which
+     * will be returned. Callers have to call {@link IAnalysisModule#dispose()}
+     * and {@link IAnalysisModule#clearPersistentData()}, if required.
+     *
+     * @param module
+     *            the analysis module to add
+     * @return the replaced analysis module if it exists or null
+     * @throws TmfTraceException
+     *             If analysis module cannot be added, for example, a module
+     *             with same ID already exists as built-in analysis
+     * @since 9.5
+     */
+    default @Nullable IAnalysisModule addAnalysisModule(@NonNull IAnalysisModule module) throws TmfTraceException {
+        throw new TmfTraceException("Not Implemented"); //$NON-NLS-1$
+    }
+
+    /**
+     * Remove an analysis module that was previously added by calling
+     * ({@link #addAnalysisModule(IAnalysisModule)}.
+     *
+     * It will return the removed analysis module with the given ID if it
+     * exists. Callers have to call {@link IAnalysisModule#dispose()} and
+     * {@link IAnalysisModule#clearPersistentData()}, if required.
+     *
+     * @param id
+     *            the ID of the analysis module to remove
+     * @return the removed analysis module with the given ID or null if
+     *         it doesn't exist.
+     * @throws TmfTraceException
+     *             If analysis module cannot be removed, for example, a module
+     *             with same ID already exists as built-in analysis
+     * @since 9.5
+     */
+    default @Nullable IAnalysisModule removeAnalysisModule(@NonNull String id) throws TmfTraceException {
+        throw new TmfTraceException("Not Implemented"); //$NON-NLS-1$
+    }
+
     /**
      * Refresh the analysis modules for this traces
      *

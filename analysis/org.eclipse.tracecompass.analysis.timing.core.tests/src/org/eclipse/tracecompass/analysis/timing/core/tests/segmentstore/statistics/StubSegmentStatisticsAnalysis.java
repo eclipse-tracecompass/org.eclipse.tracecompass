@@ -26,6 +26,7 @@ import org.eclipse.tracecompass.segmentstore.core.ISegmentStore;
 import org.eclipse.tracecompass.segmentstore.core.SegmentStoreFactory;
 import org.eclipse.tracecompass.tmf.core.analysis.IAnalysisModule;
 import org.eclipse.tracecompass.tmf.core.exceptions.TmfAnalysisException;
+import org.eclipse.tracecompass.tmf.core.exceptions.TmfTraceException;
 import org.eclipse.tracecompass.tmf.core.segment.ISegmentAspect;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
 import org.eclipse.tracecompass.tmf.tests.stubs.analysis.TestAnalysis;
@@ -97,9 +98,12 @@ public class StubSegmentStatisticsAnalysis extends AbstractSegmentStatisticsAnal
     public boolean setTrace(@NonNull ITmfTrace trace) throws TmfAnalysisException {
         if (trace instanceof TmfXmlTraceStub) {
             TmfXmlTraceStub tmfXmlTraceStub = (TmfXmlTraceStub) trace;
-            tmfXmlTraceStub.addAnalysisModule(this);
-            tmfXmlTraceStub.addAnalysisModule(fSegmentStoreProvider);
-
+            try {
+                tmfXmlTraceStub.addAnalysisModule(this);
+                tmfXmlTraceStub.addAnalysisModule(fSegmentStoreProvider);
+            } catch (TmfTraceException e) {
+                throw new TmfAnalysisException(e.getMessage());
+            }
         }
         return super.setTrace(trace);
     }

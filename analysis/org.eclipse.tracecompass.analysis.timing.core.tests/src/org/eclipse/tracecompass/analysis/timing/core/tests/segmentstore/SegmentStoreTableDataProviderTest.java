@@ -38,6 +38,7 @@ import org.eclipse.tracecompass.internal.provisional.tmf.core.model.table.Virtua
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.table.VirtualTableLine;
 import org.eclipse.tracecompass.internal.tmf.core.model.filters.FetchParametersUtils;
 import org.eclipse.tracecompass.tmf.core.exceptions.TmfAnalysisException;
+import org.eclipse.tracecompass.tmf.core.exceptions.TmfTraceException;
 import org.eclipse.tracecompass.tmf.core.model.CommonStatusMessage;
 import org.eclipse.tracecompass.tmf.core.model.CoreFilterProperty;
 import org.eclipse.tracecompass.tmf.core.model.filters.TimeQueryFilter;
@@ -97,7 +98,11 @@ public class SegmentStoreTableDataProviderTest {
         preFixture.setTrace(trace);
         SegmentStoreAnalysisModule fixture = new SegmentStoreAnalysisModule(trace);
         if (trace instanceof TmfXmlTraceStubNs) {
-            ((TmfXmlTraceStubNs) trace).addAnalysisModule(fixture);
+            try {
+                ((TmfXmlTraceStubNs) trace).addAnalysisModule(fixture);
+            } catch (TmfTraceException e) {
+                throw new TmfAnalysisException(e.getMessage());
+            }
         }
         fixture.schedule();
         fixture.waitForCompletion();

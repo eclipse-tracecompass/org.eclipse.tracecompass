@@ -144,6 +144,9 @@ public abstract class TmfTrace extends TmfEventProvider implements ITmfTrace, IT
     private final Map<String, IAnalysisModule> fAnalysisModules =
             Collections.synchronizedMap(new LinkedHashMap<String, IAnalysisModule>());
 
+    private final Map<String, IAnalysisModule> fAddedAnalysisModules =
+            Collections.synchronizedMap(new LinkedHashMap<String, IAnalysisModule>());
+
     // Analysis modules that were removed during lifecycle of the trace that need to be disposed
     private final Set<IAnalysisModule> fToBeDisposedAnalysisModules =
             Collections.synchronizedSet(new HashSet<IAnalysisModule>());
@@ -304,14 +307,40 @@ public abstract class TmfTrace extends TmfEventProvider implements ITmfTrace, IT
 
     @Override
     public IAnalysisModule getAnalysisModule(String analysisId) {
-        return fAnalysisModules.get(analysisId);
+        IAnalysisModule module = fAnalysisModules.get(analysisId);
+        if (module != null) {
+            return module;
+        }
+        return fAddedAnalysisModules.get(analysisId);
     }
 
 
     @Override
     public Iterable<IAnalysisModule> getAnalysisModules() {
         synchronized (fAnalysisModules) {
-            return new HashSet<>(fAnalysisModules.values());
+            HashSet<IAnalysisModule> modules = new HashSet<>(fAnalysisModules.values());
+            modules.addAll(fAddedAnalysisModules.values());
+            return modules;
+        }
+    }
+
+    @Override
+    public IAnalysisModule addAnalysisModule(@NonNull IAnalysisModule module) throws TmfTraceException {
+        synchronized (fAnalysisModules) {
+            if (fAnalysisModules.get(module.getId()) != null) {
+                throw new TmfTraceException("Can't add analysis with same ID as built-in analysis: " + module.getId()); //$NON-NLS-1$
+            }
+            return fAddedAnalysisModules.put(module.getId(), module);
+        }
+    }
+
+    @Override
+    public IAnalysisModule removeAnalysisModule(@NonNull String id) throws TmfTraceException {
+        synchronized (fAnalysisModules) {
+            if (fAnalysisModules.get(id) != null) {
+                throw new TmfTraceException("Can't remove built-in analysis with ID: " + id); //$NON-NLS-1$
+            }
+            return fAddedAnalysisModules.remove(id);
         }
     }
 
@@ -337,6 +366,7 @@ public abstract class TmfTrace extends TmfEventProvider implements ITmfTrace, IT
             module.dispose();
         }
         fAnalysisModules.clear();
+        fAddedAnalysisModules.clear();
 
         /* Clean up the analysis modules removed during lifecycle of trace */
         analysisModules = fToBeDisposedAnalysisModules;
