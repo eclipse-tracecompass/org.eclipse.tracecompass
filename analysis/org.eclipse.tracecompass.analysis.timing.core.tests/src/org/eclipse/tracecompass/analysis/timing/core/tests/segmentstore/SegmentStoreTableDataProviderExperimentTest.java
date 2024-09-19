@@ -45,6 +45,7 @@ import org.eclipse.tracecompass.segmentstore.core.ISegment;
 import org.eclipse.tracecompass.segmentstore.core.ISegmentStore;
 import org.eclipse.tracecompass.tmf.core.analysis.IAnalysisModule;
 import org.eclipse.tracecompass.tmf.core.exceptions.TmfAnalysisException;
+import org.eclipse.tracecompass.tmf.core.exceptions.TmfTraceException;
 import org.eclipse.tracecompass.tmf.core.model.CoreFilterProperty;
 import org.eclipse.tracecompass.tmf.core.model.filters.TimeQueryFilter;
 import org.eclipse.tracecompass.tmf.core.model.tree.TmfTreeDataModel;
@@ -103,7 +104,11 @@ public class SegmentStoreTableDataProviderExperimentTest {
         public boolean setTrace(@NonNull ITmfTrace trace) throws TmfAnalysisException {
             if (trace instanceof TmfXmlTraceStub) {
                 TmfXmlTraceStub tmfXmlTraceStub = (TmfXmlTraceStub) trace;
-                tmfXmlTraceStub.addAnalysisModule(this);
+                try {
+                    tmfXmlTraceStub.addAnalysisModule(this);
+                } catch (TmfTraceException e) {
+                    throw new TmfAnalysisException(e.getMessage());
+                }
             }
             return super.setTrace(trace);
         }
@@ -210,7 +215,11 @@ public class SegmentStoreTableDataProviderExperimentTest {
 
     private static ITmfVirtualTableDataProvider<@NonNull TmfTreeDataModel, @NonNull VirtualTableLine> getDataProvider(@NonNull TmfExperimentStub experiment) throws TmfAnalysisException {
         IAnalysisModule m = new SegmentStoreAnalysisModule(experiment);
-        experiment.addAnalysisModule(m);
+        try {
+            experiment.addAnalysisModule(m);
+        } catch (TmfTraceException e) {
+            throw new TmfAnalysisException(e.getMessage());
+        }
         m.schedule();
         return new SegmentStoreTableDataProvider(experiment, (ISegmentStoreProvider) m, "");
     }

@@ -24,6 +24,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.Iterator;
 import java.util.Vector;
 import java.util.concurrent.TimeUnit;
 
@@ -32,6 +33,7 @@ import org.eclipse.tracecompass.tmf.core.analysis.IAnalysisModule;
 import org.eclipse.tracecompass.tmf.core.component.ITmfEventProvider;
 import org.eclipse.tracecompass.tmf.core.event.ITmfEvent;
 import org.eclipse.tracecompass.tmf.core.event.aspect.ITmfEventAspect;
+import org.eclipse.tracecompass.tmf.core.exceptions.TmfAnalysisException;
 import org.eclipse.tracecompass.tmf.core.exceptions.TmfTraceException;
 import org.eclipse.tracecompass.tmf.core.request.ITmfEventRequest.ExecutionType;
 import org.eclipse.tracecompass.tmf.core.request.TmfEventRequest;
@@ -48,6 +50,7 @@ import org.eclipse.tracecompass.tmf.core.trace.TmfTrace;
 import org.eclipse.tracecompass.tmf.core.trace.experiment.TmfExperiment;
 import org.eclipse.tracecompass.tmf.core.trace.location.ITmfLocation;
 import org.eclipse.tracecompass.tmf.tests.stubs.analysis.TestAnalysis;
+import org.eclipse.tracecompass.tmf.tests.stubs.analysis.TestAnalysis2;
 import org.eclipse.tracecompass.tmf.tests.stubs.trace.TmfTraceStub;
 import org.junit.After;
 import org.junit.Before;
@@ -448,6 +451,74 @@ public class TmfTraceTest {
          * test suite or this file only), but there must be at least 2 modules
          */
         assertTrue(count >= 2);
+    }
+
+    @Test
+    public void testGetManualModules() throws TmfAnalysisException, TmfTraceException {
+        /* There should not be any modules at this point */
+        Iterable<IAnalysisModule> modules = fTrace.getAnalysisModules();
+        assertFalse(modules.iterator().hasNext());
+
+        /* Open the trace, the modules should be populated */
+        fTrace.traceOpened(new TmfTraceOpenedSignal(this, fTrace, null));
+
+        IAnalysisModule manualModule = new TestAnalysis2("1st Manual TestAnalysis2");
+        assertTrue(manualModule.setTrace(fTrace));
+
+        assertNull(fTrace.getAnalysisModule(manualModule.getId()));
+        fTrace.addAnalysisModule(manualModule);
+
+        /*
+         * Make sure that manualModule is returned
+         */
+        assertNotNull(fTrace.getAnalysisModule(manualModule.getId()));
+        modules = fTrace.getAnalysisModules();
+        assertTrue(modules.iterator().hasNext());
+
+        IAnalysisModule foundModule = null;
+        for (IAnalysisModule module : modules) {
+            if (module.getId().equals(manualModule.getId())) {
+                foundModule = module;
+                break;
+            }
+        }
+        assertNotNull(foundModule);
+
+        fTrace.removeAnalysisModule(manualModule.getId());
+
+        /*
+         * Make sure that manualModule is not returned
+         */
+        assertNull(fTrace.getAnalysisModule(manualModule.getId()));
+        modules = fTrace.getAnalysisModules();
+        assertTrue(modules.iterator().hasNext());
+        foundModule = null;
+        for (IAnalysisModule module : modules) {
+            if (module.getId().equals(manualModule.getId())) {
+                foundModule = module;
+                break;
+            }
+        }
+        assertNull(foundModule);
+
+        // At this point only built-in analysis modules are available
+        // Take the first one in the list for the following tests
+        Iterator<IAnalysisModule> iter = fTrace.getAnalysisModules().iterator();
+        if (iter.hasNext()) {
+            IAnalysisModule builtinAnalysis = iter.next();
+            assertNotNull(builtinAnalysis);
+            try {
+                fTrace.addAnalysisModule(builtinAnalysis);
+            } catch (TmfTraceException e) {
+                // success
+            }
+
+            try {
+                fTrace.removeAnalysisModule(builtinAnalysis.getId());
+            } catch (TmfTraceException e) {
+                // success
+            }
+        }
     }
 
     // ------------------------------------------------------------------------
