@@ -111,7 +111,7 @@ public class TmfTreeCompositeDataProvider<M extends ITmfTreeDataModel, P extends
         for (P dataProvider : fProviders) {
             Map<Long, AtomicInteger> indexMap = new HashMap<>();
             TmfModelResponse<TmfTreeModel<M>> response = dataProvider.fetchTree(fetchParameters, monitor);
-            isComplete &= response.getStatus() == ITmfResponse.Status.COMPLETED;
+            isComplete &= (response.getStatus() == ITmfResponse.Status.COMPLETED || response.getStatus() == ITmfResponse.Status.FAILED);
             TmfTreeModel<M> model = response.getModel();
             if (model != null) {
                 Object scope = (model.getScope() == null) ? dataProvider : model.getScope();

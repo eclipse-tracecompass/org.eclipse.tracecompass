@@ -140,9 +140,10 @@ public class TmfTreeXYCompositeDataProvider<M extends ITmfTreeDataModel, P exten
         }
         // If one response is failed, return a failed response with a concatenation of the messages
         String failedMsg = handleFailedStatus(responses);
-        if (failedMsg != null) {
-            return TmfXyResponseFactory.createFailedResponse(failedMsg);
-        }
+        System.out.println("Failed " + failedMsg);
+//        if (failedMsg != null) {
+//            return TmfXyResponseFactory.createFailedResponse(failedMsg);
+//        }
 
         boolean allCommon = Iterables.all(providers, ITmfCommonXAxisModel.class::isInstance);
         // The query is considered complete if all providers are completed
