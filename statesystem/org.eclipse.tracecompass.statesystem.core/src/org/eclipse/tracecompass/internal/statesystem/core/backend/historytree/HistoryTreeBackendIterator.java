@@ -62,9 +62,10 @@ class HistoryTreeBackendIterator implements Iterator<@NonNull ITmfStateInterval>
                 HTNode currentNode = fSht.readNode(fSeqNumberQueue);
                 /*
                  * Compute reduced conditions here to reduce complexity in
-                 * queuing operations.
+                 * queuing operations. Do not reduce for the root node.
                  */
-                TimeRangeCondition subTimes = fTimes.subCondition(currentNode.getNodeStart(), currentNode.getNodeEnd());
+                TimeRangeCondition subTimes = currentNode.getParentSequenceNumber() == -1 ? fTimes :
+                    fTimes.subCondition(currentNode.getNodeStart(), currentNode.getNodeEnd());
                 /*
                  * During the SHT construction, the bounds of the children are
                  * not final, so we may have queued some nodes which don't
