@@ -295,7 +295,7 @@ public final class ThreadedHistoryTreeBackend extends HistoryTreeBackend
     }
 
     @Override
-    public Iterable<@NonNull ITmfStateInterval> query2D(IntegerRangeCondition quarks, TimeRangeCondition times)
+    public Iterable<@NonNull ITmfStateInterval> query2D(IntegerRangeCondition quarks, TimeRangeCondition times, boolean reverse)
             throws TimeRangeException {
         try (TraceCompassLogUtils.ScopeLog log = new TraceCompassLogUtils.ScopeLog(LOGGER, Level.FINEST, "ThreadedHistoryTreeBackend:query2D", //$NON-NLS-1$
                 "ssid", getSSID(), //$NON-NLS-1$
@@ -311,7 +311,7 @@ public final class ThreadedHistoryTreeBackend extends HistoryTreeBackend
             Iterable<@NonNull HTInterval> queuedIntervals = Iterables.filter(intervalQueue,
                     interval -> !isFinishedBuilding() && quarks.test(interval.getAttribute())
                             && times.intersects(interval.getStartTime(), interval.getEndTime()));
-            return Iterables.concat(super.query2D(quarks, times), queuedIntervals);
+            return Iterables.concat(super.query2D(quarks, times, reverse), queuedIntervals);
         }
     }
 }
