@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2023 Ericsson, Ecole Polytechnique de Montreal and others
+ * Copyright (c) 2011, 2024 Ericsson, Ecole Polytechnique de Montreal and others
  *
  * All rights reserved. This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0 which
@@ -29,9 +29,9 @@ import java.nio.channels.FileChannel.MapMode;
 import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -153,6 +153,18 @@ public class CTFTrace implements IDefinitionScope {
     /** Handlers for the metadata files */
     private static final FileFilter METADATA_FILE_FILTER = new MetadataFileFilter();
     private static final Comparator<File> METADATA_COMPARATOR = new MetadataComparator();
+
+    /**
+     * Clock offset property
+     *
+     * @since 6.1
+     */
+    public static final String CLOCK_OFFSET = "clock_offset"; //$NON-NLS-1$
+
+    /**
+     * Clock scale property
+     */
+    private static final String CLOCK_SCALE = "clock_scale"; //$NON-NLS-1$
 
     private final DeclarationScope fScope = new DeclarationScope(null, MetadataStrings.TRACE);
 
@@ -777,7 +789,11 @@ public class CTFTrace implements IDefinitionScope {
      *         (key, value)
      */
     public Map<String, String> getEnvironment() {
-        return Collections.unmodifiableMap(fEnvironment);
+        Map<String, String> env = new LinkedHashMap<>();
+        env.putAll(fEnvironment);
+        env.put(CLOCK_OFFSET, String.valueOf(getOffset()));
+        env.put(CLOCK_SCALE, String.valueOf(getTimeScale()));
+        return env;
     }
 
     /**

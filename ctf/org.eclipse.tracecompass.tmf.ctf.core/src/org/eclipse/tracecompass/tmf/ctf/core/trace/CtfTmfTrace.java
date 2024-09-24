@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2017 Ericsson, École Polytechnique de Montréal
+ * Copyright (c) 2012, 2024 Ericsson, École Polytechnique de Montréal
  *
  * All rights reserved. This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0 which
@@ -113,7 +113,9 @@ public class CtfTmfTrace extends TmfTrace
      * Clock offset property
      *
      * @since 1.2
+     * @deprecated use {@link CTFTrace#CLOCK_OFFSET} instead
      */
+    @Deprecated
     public static final String CLOCK_OFFSET = "clock_offset"; //$NON-NLS-1$
 
     /**
@@ -584,7 +586,6 @@ public class CtfTmfTrace extends TmfTrace
             return properties;
         }
         properties.putAll(trace.getEnvironment());
-        properties.put(CLOCK_OFFSET, Long.toUnsignedString(trace.getOffset()));
         properties.put(Messages.CtfTmfTrace_HostID, getHostId());
         return properties;
     }

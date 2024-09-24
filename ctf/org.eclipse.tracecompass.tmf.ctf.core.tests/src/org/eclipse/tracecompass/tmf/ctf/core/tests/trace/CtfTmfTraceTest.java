@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2015 Ericsson
+ * Copyright (c) 2012, 2024 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -245,7 +245,7 @@ public class CtfTmfTraceTest {
     @Test
     public void testGetTraceProperties() {
         int result = fixture.getProperties().size();
-        assertEquals(10, result);
+        assertEquals(11, result);
         assertEquals(String.valueOf(1332166405241713987L), fixture.getProperties().get("clock_offset"));
     }
 
