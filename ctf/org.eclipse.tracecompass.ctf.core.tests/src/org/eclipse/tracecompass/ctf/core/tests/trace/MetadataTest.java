@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2014 Ericsson
+ * Copyright (c) 2013, 2024 Ericsson
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
@@ -346,6 +346,6 @@ public class MetadataTest {
         setUp();
         assertEquals(new UUID(0xd18e637435a1cd42L, 0x8e70a9cffa712793L), CtfTestTraceUtils.getTrace(testTrace).getUUID());
         assertEquals(1332166405241713920.0, CtfTestTraceUtils.getTrace(testTrace).getClock().getClockOffset(), 200.0);
-        assertEquals(8, CtfTestTraceUtils.getTrace(testTrace).getEnvironment().size());
+        assertEquals(10, CtfTestTraceUtils.getTrace(testTrace).getEnvironment().size());
     }
 }
