@@ -14,6 +14,7 @@ package org.eclipse.tracecompass.tmf.core.model;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.tracecompass.tmf.core.config.ITmfConfiguration;
 import org.eclipse.tracecompass.tmf.core.dataprovider.IDataProviderDescriptor;
 
 /**
@@ -31,11 +32,13 @@ public class DataProviderDescriptor implements IDataProviderDescriptor {
     private final String fName;
     private final String fDescription;
     private final ProviderType fType;
+    private final @Nullable String fParentId;
+    private final @Nullable ITmfConfiguration fConfiguration;
 
     /**
      * Constructor
      *
-     * @param bulider
+     * @param builder
      *            the builder object to create the descriptor
      */
     private DataProviderDescriptor(Builder builder) {
@@ -43,6 +46,8 @@ public class DataProviderDescriptor implements IDataProviderDescriptor {
         fName = builder.fName;
         fDescription = builder.fDescription;
         fType = Objects.requireNonNull(builder.fType);
+        fParentId = builder.fParentId;
+        fConfiguration = builder.fConfiguration;
     }
 
     @Override
@@ -66,11 +71,23 @@ public class DataProviderDescriptor implements IDataProviderDescriptor {
     }
 
     @Override
+    public @Nullable String getParentId() {
+        return fParentId;
+    }
+
+    @Override
+    public @Nullable ITmfConfiguration getConfiguration() {
+        return fConfiguration;
+    }
+
+    @Override
     @SuppressWarnings("nls")
     public String toString() {
         return getClass().getSimpleName() + " [fName=" + getName()
                 + ", fDescription=" + getDescription() + ", fType=" + getType()
                 +  ", fId=" + getId()
+                +  ", fParentId=" + fParentId
+                +  ", fConfiguration=" + fConfiguration
                 + "]";
     }
 
@@ -81,7 +98,8 @@ public class DataProviderDescriptor implements IDataProviderDescriptor {
         }
         DataProviderDescriptor other = (DataProviderDescriptor) arg0;
         return Objects.equals(fName, other.fName) && Objects.equals(fId, other.fId)
-                && Objects.equals(fType, other.fType) && Objects.equals(fDescription, other.fDescription);
+                && Objects.equals(fType, other.fType) && Objects.equals(fDescription, other.fDescription)
+                && Objects.equals(fParentId, other.fParentId) && Objects.equals(fConfiguration, other.fConfiguration);
     }
 
     @Override
@@ -97,6 +115,8 @@ public class DataProviderDescriptor implements IDataProviderDescriptor {
         private String fName = ""; //$NON-NLS-1$
         private String fDescription = ""; //$NON-NLS-1$
         private @Nullable ProviderType fType = null;
+        private @Nullable String fParentId = null;
+        private @Nullable ITmfConfiguration fConfiguration = null;
 
         /**
          * Constructor
@@ -150,6 +170,32 @@ public class DataProviderDescriptor implements IDataProviderDescriptor {
          */
         public Builder setProviderType(ProviderType type) {
             fType = type;
+            return this;
+        }
+
+        /**
+         * Sets the parent ID of the descriptor
+         *
+         * @param parentId
+         *            the parent ID to set
+         * @return the builder instance.
+         * @since 9.5
+         */
+        public Builder setParentId(@Nullable String parentId) {
+            fParentId = parentId;
+            return this;
+        }
+
+        /**
+         * Sets the {@link ITmfConfiguration} used to create this data provider
+         *
+         * @param configuration
+         *            the {@link ITmfConfiguration} to set
+         * @return the builder instance.
+         * @since 9.5
+         */
+        public Builder setConfiguration(@Nullable ITmfConfiguration configuration) {
+            fConfiguration = configuration;
             return this;
         }
 
