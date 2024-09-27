@@ -233,6 +233,38 @@ public class DataProviderManager {
     }
 
     /**
+     * Get the list of available providers for this trace / experiment without
+     * triggering the analysis or creating the provider
+     *
+     * @param trace
+     *            queried trace
+     * @param configId
+     *            a configuration ID used for the data provider
+     * @param ids
+     *            A list of ID of the data provider factory or a data provider ID of
+     *            form factoryId:secondaryId
+     * @return list of the available providers for this trace / experiment
+     * @since 9.5
+     */
+    public synchronized @NonNull List<IDataProviderDescriptor> getAvailableProviders(ITmfTrace trace, String configId, String... ids) {
+        List<IDataProviderDescriptor> descriptors = new ArrayList<>();
+        for (String id : ids) {
+            String factoryId = extractFactoryId(id);
+            IDataProviderFactory factory = getFactory(factoryId);
+            if (factory != null) {
+                for (IDataProviderDescriptor desc : factory.getDescriptors(trace)) {
+                    if (desc.getId().contains(configId)) {
+                        descriptors.add(desc);
+                    }
+                }
+            }
+        }
+        descriptors.sort(Comparator.comparing(IDataProviderDescriptor::getName));
+        return descriptors;
+    }
+
+
+    /**
      * Remove a data provider from the instances. This method will not dispose
      * of the data provider. It is the responsibility of the caller to dispose
      * of it if needed.
