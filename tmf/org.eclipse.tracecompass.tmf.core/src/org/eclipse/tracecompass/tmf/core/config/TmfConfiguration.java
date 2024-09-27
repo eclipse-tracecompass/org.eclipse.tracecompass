@@ -30,7 +30,7 @@ public class TmfConfiguration implements ITmfConfiguration {
     private final String fDescription;
     private final String fSourceTypeId;
     private final Map<String, Object> fParameters;
-    private final String fJsonParameters;
+    private final @Nullable String fJsonParameters;
 
     /**
      * Constructor
@@ -74,7 +74,11 @@ public class TmfConfiguration implements ITmfConfiguration {
 
     @Override
     public String getJsonParameters() {
-        return fJsonParameters;
+        String parameters = fJsonParameters;
+        if (parameters == null) {
+            return "{}"; //$NON-NLS-1$
+        }
+        return parameters;
     }
 
     @Override
@@ -209,10 +213,6 @@ public class TmfConfiguration implements ITmfConfiguration {
          * @return a {@link ITmfConfiguration} instance
          */
         public ITmfConfiguration build() {
-            String typeId = fSourceTypeId;
-            if (typeId.isBlank()) {
-                throw new IllegalStateException("Configuration source type ID not set"); //$NON-NLS-1$
-            }
             String id = fId;
             if (id.isBlank()) {
                 throw new IllegalStateException("Configuration ID not set"); //$NON-NLS-1$

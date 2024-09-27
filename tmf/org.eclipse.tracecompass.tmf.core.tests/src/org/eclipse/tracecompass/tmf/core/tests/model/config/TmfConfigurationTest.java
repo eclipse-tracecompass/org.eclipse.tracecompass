@@ -67,35 +67,8 @@ public class TmfConfigurationTest {
      */
     @Test
     public void testBuilderMissingParams() {
-        // Test missing source type ID
-        TmfConfiguration.Builder builder = new TmfConfiguration.Builder()
-                .setName(PATH)
-                .setId(ID)
-                .setDescription(DESC)
-                .setParameters(PARAM);
-        try {
-            builder.build();
-            fail("No exception created");
-        } catch (IllegalStateException e) {
-            // success
-        }
-
-        // Test blank source type ID
-        builder = new TmfConfiguration.Builder()
-                .setName(PATH)
-                .setSourceTypeId("  ") // blank
-                .setId(ID)
-                .setDescription(DESC)
-                .setParameters(PARAM);
-        try {
-            builder.build();
-            fail("No exception created");
-        } catch (IllegalStateException e) {
-            // success
-        }
-
         // Test missing ID
-        builder = new TmfConfiguration.Builder()
+        TmfConfiguration.Builder builder = new TmfConfiguration.Builder()
                 .setName(PATH)
                 .setDescription(DESC)
                 .setSourceTypeId(SOURCE_ID)
