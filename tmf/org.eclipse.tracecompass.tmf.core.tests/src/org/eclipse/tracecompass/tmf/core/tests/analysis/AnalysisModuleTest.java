@@ -33,12 +33,16 @@ import org.eclipse.osgi.util.NLS;
 import org.eclipse.tracecompass.tmf.core.analysis.IAnalysisModule;
 import org.eclipse.tracecompass.tmf.core.analysis.Messages;
 import org.eclipse.tracecompass.tmf.core.analysis.TmfAbstractAnalysisModule;
+import org.eclipse.tracecompass.tmf.core.config.ITmfConfiguration;
+import org.eclipse.tracecompass.tmf.core.config.TmfConfiguration;
 import org.eclipse.tracecompass.tmf.core.exceptions.TmfAnalysisException;
+import org.eclipse.tracecompass.tmf.core.exceptions.TmfConfigurationException;
 import org.eclipse.tracecompass.tmf.core.tests.shared.TmfTestHelper;
 import org.eclipse.tracecompass.tmf.core.tests.shared.TmfTestTrace;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
 import org.eclipse.tracecompass.tmf.tests.stubs.analysis.TestAnalysis;
 import org.eclipse.tracecompass.tmf.tests.stubs.analysis.TestAnalysis2;
+import org.eclipse.tracecompass.tmf.tests.stubs.analysis.TestConfigurableAnalysis;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
@@ -58,6 +62,10 @@ public class AnalysisModuleTest {
 
     private static final @NonNull String MODULE_GENERIC_ID = "test.id";
     private static final @NonNull String MODULE_GENERIC_NAME = "Test analysis";
+
+    private static final @NonNull String CONFIG_GENERIC_ID = "test.config.id";
+    private static final @NonNull String CONFIG_GENERIC_NAME = "Test config";
+    private static final @NonNull String CONFIG_GENERIC_TYPE = "test.config.type.id";
 
     /**
      * Some tests use traces, let's clean them here
@@ -450,5 +458,32 @@ public class AnalysisModuleTest {
         moduleC.dispose();
         trace.dispose();
 
+    }
+
+    /**
+     * Test configurable analysis
+     *
+     * @throws TmfConfigurationException
+     *             if an unexpected error happens
+     */
+    @Test
+    public void testConfigurableAnalysis() throws TmfConfigurationException {
+        TestConfigurableAnalysis module = new TestConfigurableAnalysis();
+        module.setName(MODULE_GENERIC_NAME);
+        module.setId(MODULE_GENERIC_ID);
+        assertNull(module.getConfiguration());
+
+        ITmfConfiguration config = new TmfConfiguration.Builder()
+                .setId(CONFIG_GENERIC_ID)
+                .setName(CONFIG_GENERIC_NAME)
+                .setSourceTypeId(CONFIG_GENERIC_TYPE)
+                .build();
+
+        module.setConfiguration(config);
+        ITmfConfiguration moduleConfig = module.getConfiguration();
+        assertNotNull(moduleConfig);
+        assertEquals(config, moduleConfig);
+
+        module.dispose();
     }
 }

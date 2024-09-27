@@ -20,7 +20,9 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.tmf.core.analysis.requirements.IAnalysisRequirementProvider;
 import org.eclipse.tracecompass.tmf.core.component.ITmfComponent;
+import org.eclipse.tracecompass.tmf.core.config.ITmfConfiguration;
 import org.eclipse.tracecompass.tmf.core.exceptions.TmfAnalysisException;
+import org.eclipse.tracecompass.tmf.core.exceptions.TmfConfigurationException;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
 
 /**
@@ -137,6 +139,33 @@ public interface IAnalysisModule extends ITmfComponent, IAnalysisRequirementProv
      * @return The value of a parameter
      */
     @Nullable Object getParameter(@NonNull String name);
+
+    /**
+     * Sets a configuration instance which provides parameters to this analysis.
+     *
+     * Use this when creating and managing analysis modules programmatically.
+     * Call the method before calling {@link #schedule()}
+     *
+     * @param configuration
+     *            A ITmfConfiguration
+     * @throws TmfConfigurationException
+     *          This exception should be thrown if configuration is invalid
+     * @since 9.5
+     */
+    default void setConfiguration(ITmfConfiguration configuration) throws TmfConfigurationException {
+        throw new TmfConfigurationException("Not implemented"); //$NON-NLS-1$
+    }
+
+    /**
+     * Gets the configuration instance used to parameterize the analysis module.
+     *
+     * @return the configuration instance or null if no configuration is set or
+     *         used
+     * @since 9.5
+     */
+    default @Nullable ITmfConfiguration getConfiguration() {
+        return null;
+    }
 
     /**
      * Get the level of dependencies on other analyses that this analysis has.
