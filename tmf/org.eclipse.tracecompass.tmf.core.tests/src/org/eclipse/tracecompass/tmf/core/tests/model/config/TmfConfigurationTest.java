@@ -12,14 +12,26 @@ package org.eclipse.tracecompass.tmf.core.tests.model.config;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.tracecompass.tmf.core.config.ITmfConfiguration;
 import org.eclipse.tracecompass.tmf.core.config.TmfConfiguration;
+import org.eclipse.tracecompass.tmf.core.exceptions.TmfConfigurationException;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -37,6 +49,27 @@ public class TmfConfigurationTest {
     private static final String SOURCE_ID = "my-source-id";
     private static final @NonNull Map<@NonNull String, @NonNull Object> PARAM = ImmutableMap.of("path", "/tmp/home/my-test.xml");
     private static final String EXPECTED_TO_STRING = "TmfConfiguration[fName=/tmp/my-test.xml, fDescription=descriptor, fType=my-source-id, fId=my-test.xml, fParameters={path=/tmp/home/my-test.xml}]";
+
+    private static final TemporaryFolder TEMPORARY_FOLDER = new TemporaryFolder();
+
+    /**
+     * Setup-up test class
+     *
+     * @throws IOException
+     *             if an error occurs
+     */
+    @BeforeClass
+    public static void setUp() throws IOException {
+        TEMPORARY_FOLDER.create();
+    }
+
+    /**
+     * Clean-up test class
+     */
+    @AfterClass
+    public static void cleanUp() {
+        TEMPORARY_FOLDER.delete();
+    }
 
     // ------------------------------------------------------------------------
     // Tests
@@ -65,45 +98,15 @@ public class TmfConfigurationTest {
      */
     @Test
     public void testBuilderMissingParams() {
-        // Test missing source type ID
-        TmfConfiguration.Builder builder = new TmfConfiguration.Builder()
-                .setName(PATH)
-                .setId(ID)
-                .setDescription(DESC)
-                .setParameters(PARAM);
-        try {
-            builder.build();
-            fail("No exception created");
-        } catch (IllegalStateException e) {
-            // success
-        }
-
-        // Test blank source type ID
-        builder = new TmfConfiguration.Builder()
-                .setName(PATH)
-                .setSourceTypeId("  ") // blank
-                .setId(ID)
-                .setDescription(DESC)
-                .setParameters(PARAM);
-        try {
-            builder.build();
-            fail("No exception created");
-        } catch (IllegalStateException e) {
-            // success
-        }
-
         // Test missing ID
-        builder = new TmfConfiguration.Builder()
+        TmfConfiguration.Builder builder = new TmfConfiguration.Builder()
                 .setName(PATH)
                 .setDescription(DESC)
                 .setSourceTypeId(SOURCE_ID)
                 .setParameters(PARAM);
-        try {
-            builder.build();
-            fail("No exception created");
-        } catch (IllegalStateException e) {
-            // success
-        }
+        ITmfConfiguration config =  builder.build();
+        // success - no exception created
+        assertEquals(UUID.nameUUIDFromBytes(Objects.requireNonNull((PATH).getBytes(Charset.defaultCharset()))).toString(), config.getId());
 
         // Test blank ID
         builder = new TmfConfiguration.Builder()
@@ -112,12 +115,9 @@ public class TmfConfigurationTest {
                 .setId("\n") // blank
                 .setDescription(DESC)
                 .setParameters(PARAM);
-        try {
-            builder.build();
-            fail("No exception created");
-        } catch (IllegalStateException e) {
-            // success
-        }
+        config = builder.build();
+        // success - no exception created
+        assertEquals(UUID.nameUUIDFromBytes(Objects.requireNonNull((PATH).getBytes(Charset.defaultCharset()))).toString(), config.getId());
 
         // Test successful builder
         builder = new TmfConfiguration.Builder()
@@ -215,5 +215,35 @@ public class TmfConfigurationTest {
         assertEquals(config1.hashCode(), config1.hashCode());
         assertEquals(config2.hashCode(), config2.hashCode());
         assertNotEquals(config1.hashCode(), config2.hashCode());
+    }
+
+    /**
+     * Test {@Link TmfConfiguration#hashCode()}
+     *
+     * @throws TmfConfigurationException
+     *             if a such error occurs
+     */
+    @Test
+    public void testJsonFile() throws TmfConfigurationException {
+        TmfConfiguration.Builder builder = new TmfConfiguration.Builder()
+                .setName(PATH)
+                .setId(ID)
+                .setDescription(DESC)
+                .setSourceTypeId(SOURCE_ID)
+                .setParameters(PARAM);
+        ITmfConfiguration config1 = builder.build();
+
+        File folder = TEMPORARY_FOLDER.getRoot();
+
+        IPath rootFolder = new Path(folder.getAbsolutePath());
+        TmfConfiguration.writeConfiguration(config1, rootFolder);
+
+        IPath path = rootFolder.append(config1.getId()).addFileExtension("json");
+        File file = path.toFile();
+        assertTrue(file.exists());
+
+        ITmfConfiguration readConfig = TmfConfiguration.fromJsonFile(file);
+        assertNotNull(readConfig);
+        assertEquals(config1, readConfig);
     }
 }
