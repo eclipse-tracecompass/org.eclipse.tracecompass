@@ -312,8 +312,8 @@ public class DataProviderManagerTest {
                 .setId("org.eclipse.tracecompass.internal.analysis.os.linux.core.segmentstore.PriorityStatisticsDataProvider:org.eclipse.linuxtools.lttng2.ust.analysis.callstack");
         EXPECTED_UST_DP_DESCRIPTORS.add(builder.build());
         builder = new DataProviderDescriptor.Builder();
-        builder.setName("FlameChart LTTng-UST CallStack (new)")
-                .setDescription("Show FlameChart provided by Analysis module: LTTng-UST CallStack (new)")
+        builder.setName("LTTng-UST CallStack (new) - Flame Chart")
+                .setDescription("Show Flame Chart provided by Analysis module: LTTng-UST CallStack (new)")
                 .setProviderType(ProviderType.TIME_GRAPH)
                 .setId("org.eclipse.tracecompass.analysis.profiling.core.flamechart:org.eclipse.tracecompass.lttng2.ust.core.analysis.callstack");
         EXPECTED_UST_DP_DESCRIPTORS.add(builder.build());
