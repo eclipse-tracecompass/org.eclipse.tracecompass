@@ -88,9 +88,9 @@ public class FlameChartDataProviderTest extends CallStackTestBase2 {
 
         for (IDataProviderDescriptor descriptor : descriptors) {
             if (descriptor.getId().equals("org.eclipse.tracecompass.analysis.profiling.core.flamechart:org.eclipse.tracecompass.analysis.profiling.core.tests.stub")) {
-                assertEquals("FlameChart Test Callstack (new)", descriptor.getName());
+                assertEquals("Test Callstack (new) - Flame Chart", descriptor.getName());
                 assertEquals(IDataProviderDescriptor.ProviderType.TIME_GRAPH, descriptor.getType());
-                assertEquals("Show FlameChart provided by Analysis module: Test Callstack (new)", descriptor.getDescription());
+                assertEquals("Show Flame Chart provided by Analysis module: Test Callstack (new)", descriptor.getDescription());
             } else {
                 fail("Unknown Entry" + descriptor.getId());
             }

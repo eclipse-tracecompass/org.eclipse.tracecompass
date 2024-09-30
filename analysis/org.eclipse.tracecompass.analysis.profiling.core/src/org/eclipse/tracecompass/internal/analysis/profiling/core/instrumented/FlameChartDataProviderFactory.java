@@ -99,7 +99,7 @@ public class FlameChartDataProviderFactory implements IDataProviderFactory {
             if (!existingModules.contains(analysis.getId())) {
                 DataProviderDescriptor.Builder builder = new DataProviderDescriptor.Builder();
                 builder.setId(FlameChartDataProvider.ID + DataProviderConstants.ID_SEPARATOR + analysis.getId())
-                        .setName(Objects.requireNonNull(Messages.FlameChartDataProvider_Title + " " + analysis.getName())) //$NON-NLS-1$
+                        .setName(Objects.requireNonNull(analysis.getName() + " - " +Messages.FlameChartDataProvider_Title)) //$NON-NLS-1$
                         .setDescription(Objects.requireNonNull(NLS.bind(Messages.FlameChartDataProvider_Description, analysis.getHelpText())))
                         .setProviderType(ProviderType.TIME_GRAPH);
                 descriptors.add(builder.build());
