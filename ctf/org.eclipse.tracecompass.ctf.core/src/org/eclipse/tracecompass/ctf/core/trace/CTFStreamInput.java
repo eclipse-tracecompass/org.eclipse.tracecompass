@@ -299,7 +299,7 @@ public class CTFStreamInput implements IDefinitionScope {
          * create a packet bit buffer to read the packet header
          */
         int maximumSize = fStreamPacketContextDecl.getMaximumSize() + fTracePacketHeaderDecl.getMaximumSize();
-        BitBuffer bitBuffer = new BitBuffer(createPacketBitBuffer(fc, dataOffsetbits/Byte.SIZE, maximumSize));
+        BitBuffer bitBuffer = new BitBuffer(createPacketBitBuffer(fc, dataOffsetbits / Byte.SIZE, maximumSize));
         bitBuffer.setByteOrder(getStream().getTrace().getByteOrder());
         return bitBuffer;
     }
@@ -372,7 +372,7 @@ public class CTFStreamInput implements IDefinitionScope {
         }
         if (!Objects.equals(getStream().getTrace().getUUID(), uuid) && !fUUIDMismatchWarning) {
             fUUIDMismatchWarning = true;
-            CtfCoreLoggerUtil.logWarning("Reading CTF trace: UUID mismatch for trace " + getStream().getTrace()); //$NON-NLS-1$
+            CtfCoreLoggerUtil.logWarning("Reading CTF trace: UUID mismatch for trace " + getStream().getTrace() + " is not uuid from metadata (" + String.valueOf(uuid) + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         }
         if (streamIDDef != null) {
             long streamID = streamIDDef.getValue();
