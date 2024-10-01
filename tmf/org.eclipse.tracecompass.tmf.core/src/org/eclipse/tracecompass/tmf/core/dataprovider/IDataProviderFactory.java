@@ -14,6 +14,7 @@ package org.eclipse.tracecompass.tmf.core.dataprovider;
 import java.util.Collection;
 import java.util.Collections;
 
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.tmf.core.model.tree.ITmfTreeDataModel;
@@ -28,7 +29,7 @@ import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
  * @author Simon Delisle
  * @since 3.2
  */
-public interface IDataProviderFactory {
+public interface IDataProviderFactory extends IAdaptable {
 
     /**
      * Create a {@link ITmfTreeDataProvider} for the given trace. If this factory
@@ -77,4 +78,16 @@ public interface IDataProviderFactory {
         return Collections.emptyList();
     }
 
+    /**
+     *  Disposes the data provider factory
+     *  @since 9.5
+     */
+    default void dispose() {
+        // do nothing
+    }
+
+    @Override
+    default <T> T getAdapter(Class<T> adapter) {
+        return null;
+    }
 }

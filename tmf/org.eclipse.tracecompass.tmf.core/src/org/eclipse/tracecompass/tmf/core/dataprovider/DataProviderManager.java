@@ -83,6 +83,7 @@ public class DataProviderManager {
             TmfSignalManager.deregister(manager);
             for (IDataProviderFactory factory : manager.fDataProviderFactories.values()) {
                 TmfSignalManager.deregister(factory);
+                factory.dispose();
             }
             manager.fDataProviderFactories.clear();
             manager.fInstances.clear();
@@ -343,4 +344,6 @@ public class DataProviderManager {
         String[] ids = id.split(DataProviderConstants.ID_SEPARATOR, 2);
         return ids.length > 1 ? ids[0] : id;
     }
+
+
 }
