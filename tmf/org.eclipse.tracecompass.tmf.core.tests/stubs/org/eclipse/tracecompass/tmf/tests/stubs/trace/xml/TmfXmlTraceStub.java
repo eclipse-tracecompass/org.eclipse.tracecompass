@@ -73,7 +73,6 @@ import org.xml.sax.SAXException;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Iterables;
 
 /**
  * An XML development trace using a custom XML trace definition and schema.
@@ -113,7 +112,6 @@ public abstract class TmfXmlTraceStub extends TmfTrace {
 
     private Collection<ITmfEventAspect<?>> fAspects = TmfTrace.BASE_ASPECTS;
     private final Collection<ITmfEventAspect<?>> fAdditionalAspects = new HashSet<>();
-    private final Collection<IAnalysisModule> fAdditionalModules = new HashSet<>();
 
     /**
      * Constructor. Constructs the custom XML trace with the appropriate
@@ -437,22 +435,6 @@ public abstract class TmfXmlTraceStub extends TmfTrace {
         builder.addAll(fAspects);
         builder.add(aspect);
         fAspects = builder.build();
-    }
-
-    /**
-     * Add an additional new module
-     *
-     * @param module
-     *            The new module
-     */
-    public void addAnalysisModule(IAnalysisModule module) {
-        fAdditionalModules.add(module);
-    }
-
-    @Override
-    public Iterable<@NonNull IAnalysisModule> getAnalysisModules() {
-        @NonNull Iterable<IAnalysisModule> modules = super.getAnalysisModules();
-        return checkNotNull(Iterables.concat(modules, fAdditionalModules));
     }
 
     @Override
