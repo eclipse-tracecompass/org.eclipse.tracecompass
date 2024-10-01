@@ -55,7 +55,8 @@ public class SegmentNameSegmentStoreStatisticsDataProviderFactory extends Abstra
         builder.setId(SegmentStoreStatisticsDataProvider.ID + DataProviderConstants.ID_SEPARATOR + analysis.getId())
                 .setName(Objects.requireNonNull(NLS.bind(Messages.SegmentStoreStatisticsDataProvider_title, analysis.getName())))
                 .setDescription(Objects.requireNonNull(NLS.bind(Messages.SegmentStoreStatisticsDataProvider_description, analysis.getHelpText())))
-                .setProviderType(ProviderType.DATA_TREE);
+                .setProviderType(ProviderType.DATA_TREE)
+                .setCreationConfiguration(analysis.getConfiguration());
         return builder.build();
     }
 }

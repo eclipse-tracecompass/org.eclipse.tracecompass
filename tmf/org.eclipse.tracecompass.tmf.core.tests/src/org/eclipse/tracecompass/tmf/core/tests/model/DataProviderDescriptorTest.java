@@ -14,6 +14,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.tracecompass.tmf.core.config.ITmfConfiguration;
+import org.eclipse.tracecompass.tmf.core.config.TmfConfiguration;
 import org.eclipse.tracecompass.tmf.core.dataprovider.IDataProviderDescriptor;
 import org.eclipse.tracecompass.tmf.core.dataprovider.IDataProviderDescriptor.ProviderType;
 import org.eclipse.tracecompass.tmf.core.model.DataProviderDescriptor;
@@ -31,6 +33,9 @@ public class DataProviderDescriptorTest {
     private static final String ID = "my.data.provider.id";
     private static final String NAME = "Data Provider Name";
     private static final ProviderType TYPE = ProviderType.TIME_GRAPH;
+    private static final String PARENT_ID = "a.parent.id";
+    private static final String CONFIG_ID = "a.config.id";
+    private static final String CONFIG_TYPE_ID = "a.type.id";
 
     /**
      * Test the equality methods
@@ -59,6 +64,22 @@ public class DataProviderDescriptorTest {
         assertFalse(baseDescriptor.equals(builder.build()));
         builder.setDescription(DESCRIPTION).setId(ID).setName(NAME).setProviderType(ProviderType.TABLE);
         assertFalse(baseDescriptor.equals(builder.build()));
+        builder.setDescription(DESCRIPTION).setId(ID).setName(NAME).setProviderType(ProviderType.TABLE).setParentId(PARENT_ID);
+        assertFalse(baseDescriptor.equals(builder.build()));
+
+        baseDescriptor = builder.build();
+        ITmfConfiguration config = new TmfConfiguration.Builder().setId(CONFIG_ID).setSourceTypeId(CONFIG_TYPE_ID).build();
+        builder.setDescription(DESCRIPTION)
+               .setId(ID)
+               .setName(NAME)
+               .setProviderType(ProviderType.TABLE)
+               .setParentId(PARENT_ID)
+               .setCreationConfiguration(config);
+        assertFalse(baseDescriptor.equals(builder.build()));
+
+        // Make sure it is equal to itself (with parent id and config)
+        baseDescriptor = builder.build();
+        assertTrue(baseDescriptor.equals(builder.build()));
     }
 
 }

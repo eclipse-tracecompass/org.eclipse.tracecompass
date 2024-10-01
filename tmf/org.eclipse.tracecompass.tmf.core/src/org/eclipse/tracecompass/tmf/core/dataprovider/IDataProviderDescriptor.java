@@ -12,6 +12,8 @@
 package org.eclipse.tracecompass.tmf.core.dataprovider;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.tracecompass.tmf.core.config.ITmfConfiguration;
 
 /**
  * Data Provider description, used to list the available providers for a trace
@@ -57,7 +59,12 @@ public interface IDataProviderDescriptor {
          * A provider for a data tree, which has entries (rows) and columns.
          * @since 6.1
          */
-        DATA_TREE
+        DATA_TREE,
+        /**
+         * A provider with no data. Can be used as data provider factory.
+         * @since 9.5
+         */
+        NONE
     }
 
     /**
@@ -87,4 +94,25 @@ public interface IDataProviderDescriptor {
      * @return a short description of this data provider.
      */
     String getDescription();
+
+    /**
+     * Gets the parent data provider ID for grouping purposes.
+     *
+     * @return parent ID or null if not grouped or derived data provider
+     * @since 9.5
+     */
+    default @Nullable String getParentId() {
+        return null;
+    }
+
+    /**
+     * Gets the input configuration used to create this data provider.
+     *
+     * @return the {@link ITmfConfiguration} configuration use to create this
+     * data provider, or null if not applicable
+     * @since 9.5
+     */
+    default @Nullable ITmfConfiguration getCreationConfiguration() {
+        return null;
+    }
 }

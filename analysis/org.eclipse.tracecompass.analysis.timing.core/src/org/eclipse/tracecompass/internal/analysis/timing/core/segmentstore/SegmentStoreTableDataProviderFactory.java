@@ -79,7 +79,8 @@ public class SegmentStoreTableDataProviderFactory implements IDataProviderFactor
                 builder.setId(SegmentStoreTableDataProvider.ID + DataProviderConstants.ID_SEPARATOR + analysis.getId())
                         .setName(Objects.requireNonNull(NLS.bind(Messages.SegmentStoreTableDataProvider_title, analysis.getName())))
                         .setDescription(Objects.requireNonNull(NLS.bind(Messages.SegmentStoreTableDataProvider_description, analysis.getHelpText())))
-                        .setProviderType(ProviderType.TABLE);
+                        .setProviderType(ProviderType.TABLE)
+                        .setCreationConfiguration(analysis.getConfiguration());
                 descriptors.add(builder.build());
                 existingModules.add(analysis.getId());
             }

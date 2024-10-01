@@ -20,6 +20,7 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.tmf.core.analysis.requirements.IAnalysisRequirementProvider;
 import org.eclipse.tracecompass.tmf.core.component.ITmfComponent;
+import org.eclipse.tracecompass.tmf.core.config.ITmfConfiguration;
 import org.eclipse.tracecompass.tmf.core.exceptions.TmfAnalysisException;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
 
@@ -137,6 +138,34 @@ public interface IAnalysisModule extends ITmfComponent, IAnalysisRequirementProv
      * @return The value of a parameter
      */
     @Nullable Object getParameter(@NonNull String name);
+
+    /**
+     * @param configuration
+     *            A ITmfConfiguration
+     * @return true if it was successful or false if invalid config (TODO should we through exception?)
+     * @since 9.5
+     */
+    default boolean setConfiguration(ITmfConfiguration configuration) {
+        return false;
+    }
+
+    /**
+     * @param configuration
+     *            A ITmfConfiguration
+     * @return true if it was successful or false if invalid config (TODO should we through exception?)
+     * @since 9.5
+     */
+    default @Nullable ITmfConfiguration getConfiguration() {
+        return null;
+    }
+
+    /**
+     * @return the configuration root path
+     * @since 9.5
+     */
+    default @Nullable String getConfigurationRoot() {
+        return null;
+    }
 
     /**
      * Get the level of dependencies on other analyses that this analysis has.

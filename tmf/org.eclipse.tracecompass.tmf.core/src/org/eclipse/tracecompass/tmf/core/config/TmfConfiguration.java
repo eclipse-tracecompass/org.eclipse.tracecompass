@@ -30,11 +30,12 @@ public class TmfConfiguration implements ITmfConfiguration {
     private final String fDescription;
     private final String fSourceTypeId;
     private final Map<String, Object> fParameters;
+    private final @Nullable String fJsonParameters;
 
     /**
      * Constructor
      *
-     * @param bulider
+     * @param builder
      *            the builder object to create the descriptor
      */
     private TmfConfiguration(Builder builder) {
@@ -43,6 +44,7 @@ public class TmfConfiguration implements ITmfConfiguration {
         fDescription = builder.fDescription;
         fSourceTypeId = Objects.requireNonNull(builder.fSourceTypeId);
         fParameters = builder.fParameters;
+        fJsonParameters = builder.fJsonParameters;
     }
 
     @Override
@@ -71,6 +73,15 @@ public class TmfConfiguration implements ITmfConfiguration {
     }
 
     @Override
+    public String getJsonParameters() {
+        String parameters = fJsonParameters;
+        if (parameters == null) {
+            return "{}"; //$NON-NLS-1$
+        }
+        return parameters;
+    }
+
+    @Override
     @SuppressWarnings("nls")
     public String toString() {
         return new StringBuilder(getClass().getSimpleName())
@@ -80,6 +91,7 @@ public class TmfConfiguration implements ITmfConfiguration {
             .append(", fType=").append(getSourceTypeId())
             .append(", fId=").append(getId())
             .append(", fParameters=").append(getParameters())
+            .append(", fJsonParameters=").append(getJsonParameters())
             .append("]").toString();
     }
 
@@ -90,12 +102,13 @@ public class TmfConfiguration implements ITmfConfiguration {
         }
         TmfConfiguration other = (TmfConfiguration) arg0;
         return Objects.equals(fName, other.fName) && Objects.equals(fId, other.fId)
-                && Objects.equals(fSourceTypeId, other.fSourceTypeId) && Objects.equals(fDescription, other.fDescription) && Objects.equals(fParameters, other.fParameters);
+                && Objects.equals(fSourceTypeId, other.fSourceTypeId) && Objects.equals(fDescription, other.fDescription)
+                && Objects.equals(fParameters, other.fParameters) && Objects.equals(fJsonParameters, other.fJsonParameters);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(fName, fId, fSourceTypeId, fDescription, fParameters);
+        return Objects.hash(fName, fId, fSourceTypeId, fDescription, fParameters, fJsonParameters);
     }
 
     /**
@@ -108,6 +121,7 @@ public class TmfConfiguration implements ITmfConfiguration {
         private String fDescription = ""; //$NON-NLS-1$
         private String fSourceTypeId = ""; //$NON-NLS-1$
         private Map<String, Object> fParameters = new HashMap<>();
+        private String fJsonParameters = ""; //$NON-NLS-1$
 
         /**
          * Constructor
@@ -179,15 +193,26 @@ public class TmfConfiguration implements ITmfConfiguration {
         }
 
         /**
+         * Sets the optional JSON parameters of the {@link ITmfConfiguration}
+         * instance
+         *
+         * @param jsonParameters
+         *            the optional JSON parameters of the {@link ITmfConfiguration}
+         *            instance
+         * @return the builder instance
+         * @since 9.5
+         */
+        public Builder setJsonParameters(String jsonParameters) {
+            fJsonParameters = jsonParameters;
+            return this;
+        }
+
+        /**
          * The method to construct an instance of {@link ITmfConfiguration}
          *
          * @return a {@link ITmfConfiguration} instance
          */
         public ITmfConfiguration build() {
-            String typeId = fSourceTypeId;
-            if (typeId.isBlank()) {
-                throw new IllegalStateException("Configuration source type ID not set"); //$NON-NLS-1$
-            }
             String id = fId;
             if (id.isBlank()) {
                 throw new IllegalStateException("Configuration ID not set"); //$NON-NLS-1$
