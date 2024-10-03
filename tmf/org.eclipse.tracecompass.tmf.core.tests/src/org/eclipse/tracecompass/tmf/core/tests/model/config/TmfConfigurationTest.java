@@ -14,6 +14,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.fail;
 
+import java.util.Collections;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNull;
@@ -36,7 +37,8 @@ public class TmfConfigurationTest {
     private static final String DESC = "descriptor";
     private static final String SOURCE_ID = "my-source-id";
     private static final @NonNull Map<@NonNull String, @NonNull Object> PARAM = ImmutableMap.of("path", "/tmp/home/my-test.xml");
-    private static final String EXPECTED_TO_STRING = "TmfConfiguration[fName=/tmp/my-test.xml, fDescription=descriptor, fType=my-source-id, fId=my-test.xml, fParameters={path=/tmp/home/my-test.xml}]";
+    private static final String EXPECTED_TO_STRING = "TmfConfiguration[fName=/tmp/my-test.xml, fDescription=descriptor, fType=my-source-id, fId=my-test.xml, fParameters={path=/tmp/home/my-test.xml}, fJsonParameters=]";
+    private static final String EXPECTED2_TO_STRING = "TmfConfiguration[fName=/tmp/my-test.xml, fDescription=descriptor, fType=my-source-id, fId=my-test.xml, fParameters={}, fJsonParameters={\"path\":\"/tmp/my-test.xml\"}]";
 
     // ------------------------------------------------------------------------
     // Tests
@@ -137,7 +139,8 @@ public class TmfConfigurationTest {
                 .setId(ID)
                 .setDescription(DESC)
                 .setSourceTypeId(SOURCE_ID)
-                .setParameters(PARAM);
+                .setParameters(PARAM)
+                .setJsonParameters("{\"path\":\"" + PATH +"\"}");
         ITmfConfiguration baseConfiguration = builder.build();
 
         // Make sure it is equal to itself
@@ -188,6 +191,15 @@ public class TmfConfigurationTest {
                 .setSourceTypeId(SOURCE_ID)
                 .setParameters(PARAM);
         assertEquals(EXPECTED_TO_STRING, builder.build().toString());
+
+        builder = new TmfConfiguration.Builder()
+                .setName(PATH)
+                .setId(ID)
+                .setDescription(DESC)
+                .setSourceTypeId(SOURCE_ID)
+                .setParameters(Collections.emptyMap())
+                .setJsonParameters("{\"path\":\"" + PATH +"\"}");
+        assertEquals(EXPECTED2_TO_STRING, builder.build().toString());
     }
 
     /**
@@ -212,8 +224,19 @@ public class TmfConfigurationTest {
 
         ITmfConfiguration config2 = builder.build();
 
+        builder = new TmfConfiguration.Builder()
+                .setName(PATH + "1")
+                .setId(ID + "1")
+                .setDescription(DESC + "1")
+                .setSourceTypeId(SOURCE_ID + "1")
+                .setJsonParameters("{\"path\":\"" + PATH +"\"}");
+
+        ITmfConfiguration config3 = builder.build();
+
         assertEquals(config1.hashCode(), config1.hashCode());
         assertEquals(config2.hashCode(), config2.hashCode());
+        assertEquals(config3.hashCode(), config3.hashCode());
         assertNotEquals(config1.hashCode(), config2.hashCode());
+        assertNotEquals(config2.hashCode(), config3.hashCode());
     }
 }
