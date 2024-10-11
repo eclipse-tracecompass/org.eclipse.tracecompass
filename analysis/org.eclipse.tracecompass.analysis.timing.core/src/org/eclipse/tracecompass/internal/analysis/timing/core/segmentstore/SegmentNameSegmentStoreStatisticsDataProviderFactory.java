@@ -53,6 +53,7 @@ public class SegmentNameSegmentStoreStatisticsDataProviderFactory extends Abstra
     protected @Nullable IDataProviderDescriptor getDataProviderDescriptor(IAnalysisModule analysis) {
         DataProviderDescriptor.Builder builder = new DataProviderDescriptor.Builder();
         builder.setId(SegmentStoreStatisticsDataProvider.ID + DataProviderConstants.ID_SEPARATOR + analysis.getId())
+                .setParentId(analysis.getConfiguration() != null ? analysis.getId() : null)
                 .setName(Objects.requireNonNull(NLS.bind(Messages.SegmentStoreStatisticsDataProvider_title, analysis.getName())))
                 .setDescription(Objects.requireNonNull(NLS.bind(Messages.SegmentStoreStatisticsDataProvider_description, analysis.getHelpText())))
                 .setProviderType(ProviderType.DATA_TREE)

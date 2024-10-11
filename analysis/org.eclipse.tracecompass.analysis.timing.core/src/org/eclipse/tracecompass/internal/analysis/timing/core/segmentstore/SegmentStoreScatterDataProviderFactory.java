@@ -73,6 +73,7 @@ public class SegmentStoreScatterDataProviderFactory implements IDataProviderFact
             if (!existingModules.contains(analysis.getId())) {
                 DataProviderDescriptor.Builder builder = new DataProviderDescriptor.Builder();
                 builder.setId(SegmentStoreScatterDataProvider.ID + DataProviderConstants.ID_SEPARATOR + analysis.getId())
+                    .setParentId(analysis.getConfiguration() != null ? analysis.getId() : null)
                     .setName(Objects.requireNonNull(NLS.bind(Messages.SegmentStoreScatterGraphDataProvider_title, analysis.getName())))
                     .setDescription(Objects.requireNonNull(NLS.bind(Messages.SegmentStoreScatterGraphDataProvider_description, analysis.getHelpText())))
                     .setProviderType(ProviderType.TREE_TIME_XY)
