@@ -34,6 +34,7 @@ import org.eclipse.tracecompass.tmf.core.config.ITmfConfigParamDescriptor;
 import org.eclipse.tracecompass.tmf.core.config.ITmfConfiguration;
 import org.eclipse.tracecompass.tmf.core.config.ITmfConfigurationSource;
 import org.eclipse.tracecompass.tmf.core.config.ITmfConfigurationSourceType;
+import org.eclipse.tracecompass.tmf.core.config.TmfConfiguration;
 import org.eclipse.tracecompass.tmf.core.config.TmfConfigurationSourceManager;
 import org.eclipse.tracecompass.tmf.core.exceptions.TmfConfigurationException;
 import org.junit.After;
@@ -179,6 +180,58 @@ public class XmlConfigurationSourceTest {
         try {
             ITmfConfiguration config = sfXmlConfigSource.create(VALID_PARAM);
             validateConfig(PATH_TO_VALID_FILE, config);
+        } catch (TmfConfigurationException e) {
+            fail();
+        }
+    }
+
+
+    /**
+     * Test the creation of a configuration instance
+     */
+    @Test
+    public void testCreationNewApi() {
+        // Test missing path
+        Map<String, Object> param = Collections.emptyMap();
+
+        TmfConfiguration.Builder builder = new TmfConfiguration.Builder();
+        builder.setId("test.id")
+               .setName("Dummy")
+               .setDescription("Dummy")
+               .setName(EXPECTED_CONFIG_NAME)
+               .setSourceTypeId(XML_ANALYSIS_TYPE_ID)
+               .setParameters(param);
+
+        ITmfConfiguration config = builder.build();
+        try {
+            sfXmlConfigSource.create(config);
+        } catch (TmfConfigurationException e) {
+            // success
+            assertEquals(EXPECTED_MESSAGE_NO_PATH, e.getMessage());
+        }
+
+        // Test XML file doesn't exist
+        param = ImmutableMap.of(EXPECTED_KEY_NAME, XmlUtils.getXmlFilesPath().append(UNKNOWN_TYPE).toOSString());
+        config = builder.setParameters(param).build();
+        try {
+            sfXmlConfigSource.create(config);
+        } catch (TmfConfigurationException e) {
+            // success
+            assertEquals(EXPECTED_MESSAGE_FILE_NOT_FOUND, e.getMessage());
+        }
+
+        // Test invalid XML file
+        config = builder.setParameters(INVALID_PARAM).build();
+        try {
+            sfXmlConfigSource.create(config);
+        } catch (TmfConfigurationException e) {
+            // success
+        }
+
+        config = builder.setParameters(VALID_PARAM).build();
+        try {
+            ITmfConfiguration configInstance = sfXmlConfigSource.create(config);
+            validateConfig(PATH_TO_VALID_FILE, configInstance);
         } catch (TmfConfigurationException e) {
             fail();
         }
