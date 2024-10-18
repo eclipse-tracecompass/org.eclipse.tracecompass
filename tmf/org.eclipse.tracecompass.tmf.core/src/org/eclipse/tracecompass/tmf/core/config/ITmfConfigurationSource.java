@@ -32,7 +32,8 @@ public interface ITmfConfigurationSource {
     /**
      * Creates a new configuration instance.
      * <p>
-     * The parameters to be provided are described by
+     * The parameters to be provided are described by the
+     * {@link ITmfConfigurationSourceType#getSchemaFile()} or by the list of
      * {@link ITmfConfigurationSourceType#getConfigParamDescriptors()}.
      *
      * @param parameters
@@ -44,9 +45,30 @@ public interface ITmfConfigurationSource {
     ITmfConfiguration create(Map<String, Object> parameters) throws TmfConfigurationException;
 
     /**
+     * Creates a new configuration instance.
+     * <p>
+     * The input configuration instance will have default parameters (e.g. name,
+     * description or sourceTypeId) and custom parameters which are described by
+     * the corresponding {@link ITmfConfigurationSourceType#getSchemaFile()} or
+     * by the list of
+     * {@link ITmfConfigurationSourceType#getConfigParamDescriptors()}.
+     *
+     * @param configuration
+     *            The input configuration parameters to create a configuration instance.
+     * @return a new {@link ITmfConfiguration} if successful
+     * @throws TmfConfigurationException
+     *             If the creation of the configuration fails
+     * @since 9.5
+     */
+    default ITmfConfiguration create(ITmfConfiguration configuration) throws TmfConfigurationException {
+        return create(configuration.getParameters());
+    }
+
+    /**
      * Updates a configuration instance.
      * <p>
-     * The parameters to be provided are described by
+     * The parameters to be provided are described by the
+     * {@link ITmfConfigurationSourceType#getSchemaFile()} or by the list of
      * {@link ITmfConfigurationSourceType#getConfigParamDescriptors()}.
      *
      * @param id
@@ -58,6 +80,29 @@ public interface ITmfConfigurationSource {
      *             If the update of the configuration fails
      */
     ITmfConfiguration update(String id, Map<String, Object> parameters) throws TmfConfigurationException;
+
+    /**
+     * Updates a configuration instance.
+     * <p>
+     * The input configuration instance will have default parameters (e.g. name,
+     * description or sourceTypeId) and custom parameters which are described by
+     * the corresponding {@link ITmfConfigurationSourceType#getSchemaFile()} or
+     * by the list of
+     * {@link ITmfConfigurationSourceType#getConfigParamDescriptors()}.
+     *
+     * @param id
+     *            The configuration ID of the configuration to update
+     * @param configuration
+     *            The input configuration parameters to update a configuration
+     *            instance.
+     * @return a new {@link ITmfConfiguration} if successful
+     * @throws TmfConfigurationException
+     *             If the update of the configuration fails
+     * @since 9.5
+     */
+    default ITmfConfiguration update(String id, ITmfConfiguration configuration) throws TmfConfigurationException {
+        return update(id, configuration.getParameters());
+    }
 
     /**
      * Gets a configuration instance.

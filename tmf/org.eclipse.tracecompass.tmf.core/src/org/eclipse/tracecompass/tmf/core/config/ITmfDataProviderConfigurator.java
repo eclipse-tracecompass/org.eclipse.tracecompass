@@ -12,7 +12,6 @@
 package org.eclipse.tracecompass.tmf.core.config;
 
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.tracecompass.tmf.core.dataprovider.DataProviderManager;
 import org.eclipse.tracecompass.tmf.core.dataprovider.IDataProviderDescriptor;
@@ -35,17 +34,20 @@ public interface ITmfDataProviderConfigurator {
      * Prepares a data provider based on input parameters and returns its
      * corresponding data provider descriptor.
      *
+     * The input configuration instance will have default parameters (e.g. name,
+     * description or sourceTypeId) and custom parameters which are described by
+     * the corresponding {@link ITmfConfigurationSourceType#getSchemaFile()} or
+     * by the list of
+     * {@link ITmfConfigurationSourceType#getConfigParamDescriptors()}.
+     *
      * The data provider descriptor shall return the parent data provider ID
      * through {@link IDataProviderDescriptor#getParentId()}, as well as the
      * creation configuration through
      * {@link IDataProviderDescriptor#getConfiguration()}.
      *
-     * @param typeId
-     *            The Configuration type ID specified in corresponding
-     *            {@link ITmfConfigurationSourceType}
      * @param trace
      *            The trace (or experiment) instance
-     * @param parameters
+     * @param configuration
      *            The configuration parameters.
      * @return a data provider descriptor corresponding to the derived data
      *         provider.
@@ -53,11 +55,11 @@ public interface ITmfDataProviderConfigurator {
      * @throws TmfConfigurationException
      *             if an error occurs
      */
-    IDataProviderDescriptor createDataProviderDescriptors(String typeId, ITmfTrace trace, Map<String, Object> parameters) throws TmfConfigurationException;
+    IDataProviderDescriptor createDataProviderDescriptors(ITmfTrace trace, ITmfConfiguration configuration) throws TmfConfigurationException;
 
     /**
      * Remove a data provider provider that was created by
-     * {@link #createDataProviderDescriptors(String, ITmfTrace, Map)}
+     * {@link #createDataProviderDescriptors(ITmfTrace, ITmfConfiguration)}
      *
      * @param trace
      *            The trace (or experiment) instance
