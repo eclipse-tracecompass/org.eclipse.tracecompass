@@ -140,13 +140,6 @@ public class DataProviderParameterUtils {
         PREVIOUS
     }
 
-    /**
-     * Key for configuration type ID
-     *
-     * @since 9.5
-     */
-    public static final String CONFIGURATION_TYPE_ID = "typeId"; //$NON-NLS-1$
-
     private DataProviderParameterUtils() {
         // Private constructor
     }
