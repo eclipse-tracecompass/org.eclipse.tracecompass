@@ -52,8 +52,8 @@
     <skip-short-tc-ui-tests>false</skip-short-tc-ui-tests>
     <skip-long-tc-ui-tests>false</skip-long-tc-ui-tests>
 
-    <tycho-version>4.0.3</tycho-version>
-    <tycho-extras-version>4.0.3</tycho-extras-version>
+    <tycho-version>4.0.9</tycho-version>
+    <tycho-extras-version>4.0.9</tycho-extras-version>
     <tycho-use-project-settings>true</tycho-use-project-settings>
     <tycho.scmUrl>scm:git:https://github.com/eclipse-tracecompass/org.eclipse.tracecompass</tycho.scmUrl>
     <cbi-plugins.version>1.4.2</cbi-plugins.version>
