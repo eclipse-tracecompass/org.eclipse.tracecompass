@@ -21,11 +21,10 @@ import java.io.IOException;
 import java.util.Comparator;
 import java.util.Iterator;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.tracecompass.common.core.NonNullUtils;
+import org.eclipse.tracecompass.datastore.core.tests.historytree.overlapping.AbstractOverlappingHistoryTreeTestBase;
 import org.eclipse.tracecompass.internal.provisional.datastore.core.historytree.AbstractHistoryTree;
-import org.eclipse.tracecompass.internal.provisional.datastore.core.historytree.overlapping.AbstractOverlappingHistoryTreeTestBase;
 import org.eclipse.tracecompass.internal.segmentstore.core.segmentHistoryTree.SegmentHistoryTree;
 import org.eclipse.tracecompass.internal.segmentstore.core.segmentHistoryTree.SegmentTreeNode;
 import org.eclipse.tracecompass.segmentstore.core.BasicSegment;
@@ -46,7 +45,7 @@ public class SegmentHistoryTreeTest extends AbstractOverlappingHistoryTreeTestBa
     private static final BasicSegment DEFAULT_OBJECT = new BasicSegment(0, 0);
 
     @Override
-    protected SegmentHistoryTreeStub<BasicSegment> createHistoryTree(@NonNull File stateHistoryFile, int blockSize, int maxChildren, int providerVersion, long treeStart)
+    protected SegmentHistoryTreeStub<BasicSegment> createHistoryTree(File stateHistoryFile, int blockSize, int maxChildren, int providerVersion, long treeStart)
             throws IOException {
         return new SegmentHistoryTreeStub<>(stateHistoryFile,
                 blockSize,
@@ -57,7 +56,7 @@ public class SegmentHistoryTreeTest extends AbstractOverlappingHistoryTreeTestBa
     }
 
     @Override
-    protected SegmentHistoryTreeStub<BasicSegment> createHistoryTree(@NonNull File existingStateFile, int expectedProviderVersion) throws IOException {
+    protected SegmentHistoryTreeStub<BasicSegment> createHistoryTree(File existingStateFile, int expectedProviderVersion) throws IOException {
         return new SegmentHistoryTreeStub<>(existingStateFile, expectedProviderVersion,
                 BasicSegment.BASIC_SEGMENT_READ_FACTORY);
     }
@@ -68,7 +67,7 @@ public class SegmentHistoryTreeTest extends AbstractOverlappingHistoryTreeTestBa
     }
 
     @Override
-    protected long fillValues(@NonNull AbstractHistoryTree<@NonNull BasicSegment, SegmentTreeNode<@NonNull BasicSegment>> ht, int fillSize, long start) {
+    protected long fillValues(AbstractHistoryTree<BasicSegment, SegmentTreeNode<BasicSegment>> ht, int fillSize, long start) {
         int nbValues = fillSize / DEFAULT_OBJECT.getSizeOnDisk();
         for (int i = 0; i < nbValues; i++) {
             ht.insert(createInterval(start + i, start + i + 1));
@@ -193,7 +192,7 @@ public class SegmentHistoryTreeTest extends AbstractOverlappingHistoryTreeTestBa
         assertSortedIteration(oht, rangeStart, rangeEnd, cmp, nbInRange);
     }
 
-    private static void assertSortedIteration(SegmentHistoryTreeStub<@NonNull BasicSegment> oht, long rangeStart, long rangeEnd, Comparator<@NonNull BasicSegment> cmp, int nbInRange) {
+    private static void assertSortedIteration(SegmentHistoryTreeStub<BasicSegment> oht, long rangeStart, long rangeEnd, Comparator<BasicSegment> cmp, int nbInRange) {
         int count = 0;
         BasicSegment prev = DEFAULT_OBJECT;
         for (BasicSegment segment : oht.getIntersectingElements(rangeStart, rangeEnd, cmp)) {

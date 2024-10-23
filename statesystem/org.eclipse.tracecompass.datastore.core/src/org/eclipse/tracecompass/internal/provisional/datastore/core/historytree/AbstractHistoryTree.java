@@ -369,7 +369,7 @@ public abstract class AbstractHistoryTree<E extends IHTInterval, N extends HTNod
      * @return The immutable latest branch
      */
     @VisibleForTesting
-    protected final List<N> getLatestBranch() {
+    public final List<N> getLatestBranch() {
         List<N> latestBranchSnapshot = fLatestBranchSnapshot;
         if (latestBranchSnapshot == null) {
             synchronized (fLatestBranch) {
@@ -388,7 +388,8 @@ public abstract class AbstractHistoryTree<E extends IHTInterval, N extends HTNod
      *            The depth at which to get the node
      * @return The node at depth
      */
-    protected N getLatestNode(int depth) {
+    @VisibleForTesting
+    public N getLatestNode(int depth) {
         if (depth > fLatestBranch.size()) {
             throw new IndexOutOfBoundsException("Trying to get latest node too deep"); //$NON-NLS-1$
         }
@@ -435,7 +436,7 @@ public abstract class AbstractHistoryTree<E extends IHTInterval, N extends HTNod
      *             closed
      */
     @VisibleForTesting
-    protected @NonNull N getNode(int seqNum) throws ClosedChannelException {
+    public @NonNull N getNode(int seqNum) throws ClosedChannelException {
         // First, check in the latest branch if the node is there
         for (N node : fLatestBranch) {
             if (node.getSequenceNumber() == seqNum) {
@@ -978,7 +979,7 @@ public abstract class AbstractHistoryTree<E extends IHTInterval, N extends HTNod
      * @return The current depth
      */
     @VisibleForTesting
-    protected int getDepth() {
+    public int getDepth() {
         return getLatestBranch().size();
     }
 
@@ -988,7 +989,7 @@ public abstract class AbstractHistoryTree<E extends IHTInterval, N extends HTNod
      * @return The latest leaf
      */
     @VisibleForTesting
-    protected N getLatestLeaf() {
+    public N getLatestLeaf() {
         List<N> latestBranch = getLatestBranch();
         return latestBranch.get(latestBranch.size() - 1);
     }
@@ -1005,7 +1006,7 @@ public abstract class AbstractHistoryTree<E extends IHTInterval, N extends HTNod
      * @return False if a problem was found, true otherwise
      */
     @VisibleForTesting
-    protected boolean verifyChildrenSpecific(N parent,
+    public boolean verifyChildrenSpecific(N parent,
             int index,
             N child) {
         // Nothing to do for the default implementation
@@ -1023,7 +1024,7 @@ public abstract class AbstractHistoryTree<E extends IHTInterval, N extends HTNod
      * @return False if a problem was found, true otherwise
      */
     @VisibleForTesting
-    protected boolean verifyIntersectingChildren(N parent, N child) {
+    public boolean verifyIntersectingChildren(N parent, N child) {
         int childSequence = child.getSequenceNumber();
         boolean shouldBeInCollection;
         Collection<Integer> nextChildren;
