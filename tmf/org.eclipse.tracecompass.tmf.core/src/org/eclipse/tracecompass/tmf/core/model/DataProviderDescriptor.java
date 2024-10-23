@@ -104,7 +104,7 @@ public class DataProviderDescriptor implements IDataProviderDescriptor {
 
     @Override
     public int hashCode() {
-        return Objects.hash(fName, fId, fType, fDescription);
+        return Objects.hash(fParentId, fName, fId, fType, fDescription, fConfiguration);
     }
 
     /**
