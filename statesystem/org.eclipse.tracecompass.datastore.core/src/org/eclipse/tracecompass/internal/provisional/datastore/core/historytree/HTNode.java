@@ -663,7 +663,7 @@ public class HTNode<E extends IHTInterval> implements IHTNode<E> {
      *
      * @return The list of intervals in this node
      */
-    protected List<E> getIntervals() {
+    public List<E> getIntervals() {
         return ImmutableList.copyOf(fIntervals);
     }
 

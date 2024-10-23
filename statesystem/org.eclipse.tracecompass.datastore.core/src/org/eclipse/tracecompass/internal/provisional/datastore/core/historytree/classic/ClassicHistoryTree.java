@@ -119,7 +119,7 @@ public class ClassicHistoryTree<E extends IHTInterval>
     }
 
     @Override
-    protected long getNewBranchStart(int depth, E interval) {
+    public long getNewBranchStart(int depth, E interval) {
         // The new branch starts at the end of the tree + 1, because the last
         // branch closed at tree end and they must be sequential
         return getTreeEnd() + 1;
@@ -131,14 +131,14 @@ public class ClassicHistoryTree<E extends IHTInterval>
 
     @Override
     @VisibleForTesting
-    protected boolean verifyChildrenSpecific(ClassicNode<E> parent,
+    public boolean verifyChildrenSpecific(ClassicNode<E> parent,
             int index, ClassicNode<E> child) {
         return (parent.getChildStart(index) == child.getNodeStart());
     }
 
     @Override
     @VisibleForTesting
-    protected boolean verifyIntersectingChildren(ClassicNode<E> parent, ClassicNode<E> child) {
+    public boolean verifyIntersectingChildren(ClassicNode<E> parent, ClassicNode<E> child) {
         int childSequence = child.getSequenceNumber();
         for (long t = parent.getNodeStart(); t < parent.getNodeEnd(); t++) {
             TimeRangeCondition timeCondition = TimeRangeCondition.singleton(t);

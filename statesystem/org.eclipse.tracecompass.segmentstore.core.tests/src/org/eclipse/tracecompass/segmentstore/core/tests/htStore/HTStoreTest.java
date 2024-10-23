@@ -46,7 +46,7 @@ public class HTStoreTest extends AbstractTestSegmentStore {
     private @Nullable Path fFilePath;
 
     @Override
-    protected HistoryTreeSegmentStoreStub<@NonNull TestSegment> getSegmentStore() {
+    protected HistoryTreeSegmentStoreStub<TestSegment> getSegmentStore() {
         try {
             Path tmpFile = Files.createTempFile("tmpSegStore", null);
             fFilePath = tmpFile;
@@ -58,7 +58,7 @@ public class HTStoreTest extends AbstractTestSegmentStore {
     }
 
     @Override
-    protected ISegmentStore<@NonNull TestSegment> getSegmentStore(@NonNull TestSegment @NonNull [] data) {
+    protected ISegmentStore<TestSegment> getSegmentStore(@NonNull TestSegment @NonNull [] data) {
         try {
             Path tmpFile = Files.createTempFile("tmpSegStore", null);
             fFilePath = tmpFile;

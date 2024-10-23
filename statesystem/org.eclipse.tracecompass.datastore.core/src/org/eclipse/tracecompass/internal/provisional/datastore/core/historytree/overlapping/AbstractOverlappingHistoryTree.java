@@ -115,25 +115,25 @@ public abstract class AbstractOverlappingHistoryTree<E extends IHTInterval, N ex
 
     @Override
     @VisibleForTesting
-    protected N getLatestLeaf() {
+    public N getLatestLeaf() {
         return super.getLatestLeaf();
     }
 
     @Override
     @VisibleForTesting
-    protected int getDepth() {
+    public int getDepth() {
         return super.getDepth();
     }
 
     @Override
     @VisibleForTesting
-    protected N getLatestNode(int depth) {
+    public N getLatestNode(int depth) {
         return super.getLatestNode(depth);
     }
 
     @Override
     @VisibleForTesting
-    protected boolean verifyChildrenSpecific(N parent, int index, N child) {
+    public boolean verifyChildrenSpecific(N parent, int index, N child) {
         return (parent.getChildStart(index) == child.getNodeStart() &&
                 parent.getChildEnd(index) == child.getNodeEnd());
 
@@ -141,7 +141,7 @@ public abstract class AbstractOverlappingHistoryTree<E extends IHTInterval, N ex
 
     @Override
     @VisibleForTesting
-    protected boolean verifyIntersectingChildren(N parent, N child) {
+    public boolean verifyIntersectingChildren(N parent, N child) {
         int childSequence = child.getSequenceNumber();
         boolean shouldBeInCollection;
         Collection<Integer> nextChildren;

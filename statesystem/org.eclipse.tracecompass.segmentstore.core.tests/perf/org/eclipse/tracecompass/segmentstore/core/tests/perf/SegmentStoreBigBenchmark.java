@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Arrays;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.tracecompass.segmentstore.core.BasicSegment;
 import org.eclipse.tracecompass.segmentstore.core.ISegmentStore;
@@ -38,7 +37,7 @@ public class SegmentStoreBigBenchmark extends SegmentStoreBenchmark {
      * @param segStore
      *            The segment store to use
      */
-    public SegmentStoreBigBenchmark(String name, ISegmentStore<@NonNull BasicSegment> segStore) {
+    public SegmentStoreBigBenchmark(String name, ISegmentStore<BasicSegment> segStore) {
         super(name, segStore);
     }
 
