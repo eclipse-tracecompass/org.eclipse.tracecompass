@@ -322,7 +322,7 @@ public class SegmentHistoryTree<E extends ISegment> extends AbstractOverlappingH
 
     @Override
     @VisibleForTesting
-    protected boolean verifyChildrenSpecific(SegmentTreeNode<E> parent, int index, SegmentTreeNode<E> child) {
+    public boolean verifyChildrenSpecific(SegmentTreeNode<E> parent, int index, SegmentTreeNode<E> child) {
         return (parent.getMaxStart(index) >= child.getMaxStart()
                 && parent.getMinEnd(index) <= child.getMinEnd()
                 && parent.getLongest(index) >= child.getLongest()
@@ -331,7 +331,7 @@ public class SegmentHistoryTree<E extends ISegment> extends AbstractOverlappingH
 
     @Override
     @VisibleForTesting
-    protected boolean verifyIntersectingChildren(SegmentTreeNode<E> parent, SegmentTreeNode<E> child) {
+    public boolean verifyIntersectingChildren(SegmentTreeNode<E> parent, SegmentTreeNode<E> child) {
         int childSequence = child.getSequenceNumber();
         for (long t = parent.getNodeStart(); t < parent.getNodeEnd(); t++) {
             TimeRangeCondition rc = TimeRangeCondition.singleton(t);

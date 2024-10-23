@@ -123,7 +123,7 @@ public class HtIo<E extends IHTInterval, N extends HTNode<E>> {
      * read again
      */
     @VisibleForTesting
-    static void clearCache() {
+    public static void clearCache() {
         NODE_CACHE.invalidateAll();
     }
 
@@ -138,7 +138,7 @@ public class HtIo<E extends IHTInterval, N extends HTNode<E>> {
      *         <code>false</code> otherwise
      */
     @VisibleForTesting
-    static <E extends IHTInterval, N extends HTNode<E>> boolean isInCache(HtIo<E, N> htio, int seqNum) {
+    public static <E extends IHTInterval, N extends HTNode<E>> boolean isInCache(HtIo<E, N> htio, int seqNum) {
         @SuppressWarnings("unchecked")
         @Nullable HTNode<IHTInterval> present = NODE_CACHE.getIfPresent(new CacheKey((HtIo<IHTInterval, HTNode<IHTInterval>>) htio, seqNum));
         return (present != null);

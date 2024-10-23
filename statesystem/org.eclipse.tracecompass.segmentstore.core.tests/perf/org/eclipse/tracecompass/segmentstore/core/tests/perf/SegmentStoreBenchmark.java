@@ -21,7 +21,6 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Random;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.test.performance.Performance;
 import org.eclipse.test.performance.PerformanceMeter;
@@ -60,7 +59,7 @@ public class SegmentStoreBenchmark {
     private static final int DEFAULT_SAMPLE = 1000;
     private static final int DEFAULT_LOOP_COUNT = 10;
 
-    private final ISegmentStore<@NonNull BasicSegment> fSegStore;
+    private final ISegmentStore<BasicSegment> fSegStore;
     private final String fName;
     private final Performance fPerf;
 
@@ -87,7 +86,7 @@ public class SegmentStoreBenchmark {
      * @param segStore
      *            The segment store to fill for the benchmarks
      */
-    public SegmentStoreBenchmark(String name, ISegmentStore<@NonNull BasicSegment> segStore) {
+    public SegmentStoreBenchmark(String name, ISegmentStore<BasicSegment> segStore) {
         fSegStore = segStore;
         fName = name;
         fPerf = NonNullUtils.checkNotNull(Performance.getDefault());
@@ -258,9 +257,9 @@ public class SegmentStoreBenchmark {
         pMiterate2.commit();
     }
 
-    private static int iterate(Iterable<@NonNull BasicSegment> store) {
+    private static int iterate(Iterable<BasicSegment> store) {
         int count = 0;
-        Iterator<@NonNull BasicSegment> iterator = store.iterator();
+        Iterator<BasicSegment> iterator = store.iterator();
         while (iterator.hasNext()) {
             count++;
             iterator.next();
@@ -268,13 +267,13 @@ public class SegmentStoreBenchmark {
         return count;
     }
 
-    private static int sortedIterate(ISegmentStore<@NonNull BasicSegment> store, Comparator<ISegment> order) {
-        Iterable<@NonNull BasicSegment> iterable = store.iterator(order);
+    private static int sortedIterate(ISegmentStore<BasicSegment> store, Comparator<ISegment> order) {
+        Iterable<BasicSegment> iterable = store.iterator(order);
         return iterate(iterable);
     }
 
-    private static void assertOrder(ISegmentStore<@NonNull BasicSegment> store, Comparator<@NonNull ISegment> order) {
-        Iterable<@NonNull BasicSegment> iterable = store.iterator(order);
+    private static void assertOrder(ISegmentStore<BasicSegment> store, Comparator<ISegment> order) {
+        Iterable<BasicSegment> iterable = store.iterator(order);
         BasicSegment prev = null;
         long count = 0L;
         for (BasicSegment segment : iterable) {
@@ -286,7 +285,7 @@ public class SegmentStoreBenchmark {
         }
     }
 
-    private static void populate(int size, int[] fuzz, ISegmentStore<@NonNull BasicSegment> store, long low, long high) {
+    private static void populate(int size, int[] fuzz, ISegmentStore<BasicSegment> store, long low, long high) {
         for (long i = low; i < high; i++) {
             long start = i + fuzz[(int) (i % size)];
             store.add(new BasicSegment(start, start + 10));

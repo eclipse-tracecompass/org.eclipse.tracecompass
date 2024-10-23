@@ -325,7 +325,7 @@ public class OverlappingNode<E extends IHTInterval> extends HTNode<E> {
      * @return The child start value
      */
     @VisibleForTesting
-    protected long getChildStart(int index) {
+    public long getChildStart(int index) {
         OverlappingExtraData extraData = getCoreNodeData();
         if (extraData != null) {
             return extraData.getChildStart(index);
@@ -341,7 +341,7 @@ public class OverlappingNode<E extends IHTInterval> extends HTNode<E> {
      * @return The child end value
      */
     @VisibleForTesting
-    protected long getChildEnd(int index) {
+    public long getChildEnd(int index) {
         OverlappingExtraData extraData = getCoreNodeData();
         if (extraData != null) {
             return extraData.getChildEnd(index);
