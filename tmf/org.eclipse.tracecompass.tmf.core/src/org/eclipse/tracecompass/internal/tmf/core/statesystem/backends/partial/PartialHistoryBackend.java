@@ -36,7 +36,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.internal.provisional.datastore.core.condition.IntegerRangeCondition;
 import org.eclipse.tracecompass.internal.provisional.datastore.core.condition.TimeRangeCondition;
 import org.eclipse.tracecompass.internal.tmf.core.Activator;
-import org.eclipse.tracecompass.statesystem.core.ITmfStateSystem;
 import org.eclipse.tracecompass.statesystem.core.backend.IPartialStateHistoryBackend;
 import org.eclipse.tracecompass.statesystem.core.backend.IStateHistoryBackend;
 import org.eclipse.tracecompass.statesystem.core.exceptions.StateSystemDisposedException;
@@ -303,7 +302,7 @@ public class PartialHistoryBackend implements IStateHistoryBackend {
          * Now, we have the intervals with their real end times written to the
          * backend, we should be able to get them from there
          */
-        List<ITmfStateInterval> intervalsList = ((ITmfStateSystem) fPartialSS).queryFullState(t);
+        List<ITmfStateInterval> intervalsList = fPartialSS.queryFullState(t);
 
         for (int i = 0; i < currentStateInfo.size(); i++) {
             ITmfStateInterval interval = currentStateInfo.get(i);
@@ -320,7 +319,7 @@ public class PartialHistoryBackend implements IStateHistoryBackend {
          * upper checkpoint exists
          */
         if (fCheckpoints.ceilingKey(t) != null) {
-            intervalsList = prepareIntervalList(((ITmfStateSystem) fPartialSS).getNbAttributes());
+            intervalsList = prepareIntervalList(fPartialSS.getNbAttributes());
             filledStateInfo.clear();
             try {
                 fInnerHistory.doQuery(intervalsList, checkpointTime2);
@@ -366,7 +365,7 @@ public class PartialHistoryBackend implements IStateHistoryBackend {
 
         /* Reload the previous checkpoint */
         long checkpointTime = fCheckpoints.floorKey(t);
-        int nbAtributes = ((ITmfStateSystem)fPartialSS).getNbAttributes();
+        int nbAtributes = fPartialSS.getNbAttributes();
         List<ITmfStateInterval> intervalsList = prepareIntervalList(nbAtributes);
 
         /* Checking if the interval was stored in the real backend */
@@ -416,7 +415,7 @@ public class PartialHistoryBackend implements IStateHistoryBackend {
         }
 
         /* Querying the partial history at the lowerCheckpoint */
-        List<@Nullable ITmfStateInterval> currentStateInfo = prepareIntervalList(((ITmfStateSystem)fPartialSS).getNbAttributes());
+        List<@Nullable ITmfStateInterval> currentStateInfo = prepareIntervalList(fPartialSS.getNbAttributes());
         try {
             fInnerHistory.doQuery(currentStateInfo, lowerCheckpoint);
         } catch (StateSystemDisposedException e) {
@@ -469,7 +468,7 @@ public class PartialHistoryBackend implements IStateHistoryBackend {
             Logger logger = Logger.getAnonymousLogger();
             try {
                 synchronized (fPartialSS) {
-                    for (ITmfStateInterval interval : ((ITmfStateSystem) fPartialSS).query2D(quarksColletion, min, max)) {
+                    for (ITmfStateInterval interval : fPartialSS.query2D(quarksColletion, min, max)) {
                         fCurrentIntervals.add(interval);
                     }
                 }

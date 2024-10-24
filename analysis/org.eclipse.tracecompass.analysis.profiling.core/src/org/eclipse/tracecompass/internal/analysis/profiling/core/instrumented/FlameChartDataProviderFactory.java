@@ -73,7 +73,7 @@ public class FlameChartDataProviderFactory implements IDataProviderFactory {
         // The trace can be an experiment, so we need to know if there are
         // multiple analysis modules with the same ID
         Iterable<IFlameChartProvider> modules = TmfTraceUtils.getAnalysisModulesOfClass(trace, IFlameChartProvider.class);
-        Iterable<IFlameChartProvider> filteredModules = Iterables.filter(modules, m -> ((IAnalysisModule) m).getId().equals(secondaryId));
+        Iterable<IFlameChartProvider> filteredModules = Iterables.filter(modules, m -> m.getId().equals(secondaryId));
         Iterator<IFlameChartProvider> iterator = filteredModules.iterator();
         if (iterator.hasNext()) {
             IFlameChartProvider module = iterator.next();
@@ -82,7 +82,7 @@ public class FlameChartDataProviderFactory implements IDataProviderFactory {
                 // the factory can try with individual traces
                 return null;
             }
-            ((IAnalysisModule) module).schedule();
+            module.schedule();
             return new FlameChartDataProvider(trace, module, secondaryId);
         }
         return null;

@@ -25,7 +25,6 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.tracecompass.internal.tmf.core.filter.TmfCollapseFilter;
 import org.eclipse.tracecompass.internal.tmf.ui.Activator;
-import org.eclipse.tracecompass.tmf.core.component.ITmfEventProvider;
 import org.eclipse.tracecompass.tmf.core.event.ITmfEvent;
 import org.eclipse.tracecompass.tmf.core.event.ITmfEventField;
 import org.eclipse.tracecompass.tmf.core.event.ITmfEventType;
@@ -354,7 +353,7 @@ public class TmfEventsCache {
         }
 
         request = new DataRequest(ITmfEvent.class, filter, startRank, ITmfEventRequest.ALL_DATA);
-        ((ITmfEventProvider) fTrace).sendRequest(request);
+        fTrace.sendRequest(request);
         try {
             request.waitForCompletion();
             return ((DataRequest) request).getFilteredIndex();
@@ -461,7 +460,7 @@ public class TmfEventsCache {
                     }
                 };
 
-                ((ITmfEventProvider) fTrace).sendRequest(request);
+                fTrace.sendRequest(request);
                 try {
                     request.waitForCompletion();
                 } catch (InterruptedException e) {

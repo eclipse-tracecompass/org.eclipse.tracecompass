@@ -1936,7 +1936,7 @@ public class SDWidget extends ScrollView implements SelectionListener,
         if (fSite instanceof SDView) {
             ((SDView) fSite).resetProviders();
             if (lm != null) {
-                lm.resetLoader(((SDView) fSite).getViewSite().getId());
+                lm.resetLoader(fSite.getViewSite().getId());
             }
         }
     }

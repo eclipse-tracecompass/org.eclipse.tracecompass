@@ -118,7 +118,7 @@ public class TmfAnalysisElement extends TmfProjectModelElement implements ITmfSt
         IPath path = tracesFolder.getPath();
         IResource resource = getResource();
         if (resource instanceof IFolder) {
-            path = ((IFolder) resource).getFullPath();
+            path = resource.getFullPath();
         }
 
         IAnalysisModule module = getAnalysisModule();

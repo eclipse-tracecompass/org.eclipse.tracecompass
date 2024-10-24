@@ -481,7 +481,7 @@ public class ImportTracePackageWizardPage extends AbstractTracePackageWizardPage
     private static void uncheckTraceElement(TracePackageTraceElement traceElement) {
         for (TracePackageElement e : traceElement.getChildren()) {
             if (e instanceof TracePackageFilesElement) {
-                ((TracePackageFilesElement) e).setChecked(false);
+                e.setChecked(false);
             }
         }
     }
@@ -489,7 +489,7 @@ public class ImportTracePackageWizardPage extends AbstractTracePackageWizardPage
     private static void uncheckExperimentElement(TracePackageExperimentElement experimentElement, List<TracePackageTraceElement> expTraceElements) {
         for (TracePackageElement e : experimentElement.getChildren()) {
             if (e instanceof TracePackageFilesElement) {
-                ((TracePackageFilesElement) e).setChecked(false);
+                e.setChecked(false);
             }
         }
 

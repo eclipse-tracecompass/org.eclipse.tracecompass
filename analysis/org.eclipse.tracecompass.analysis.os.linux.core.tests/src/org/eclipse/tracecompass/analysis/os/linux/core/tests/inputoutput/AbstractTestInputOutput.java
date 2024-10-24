@@ -31,7 +31,6 @@ import org.eclipse.tracecompass.tmf.core.event.TmfEvent;
 import org.eclipse.tracecompass.tmf.core.exceptions.TmfTraceException;
 import org.eclipse.tracecompass.tmf.core.signal.TmfTraceOpenedSignal;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
-import org.eclipse.tracecompass.tmf.core.trace.TmfTrace;
 import org.eclipse.tracecompass.tmf.core.trace.TmfTraceManager;
 import org.eclipse.tracecompass.tmf.core.trace.TmfTraceUtils;
 
@@ -131,7 +130,7 @@ public class AbstractTestInputOutput {
         }
 
         deleteSuppFiles(trace);
-        ((TmfTrace) trace).traceOpened(new TmfTraceOpenedSignal(this, trace, null));
+        trace.traceOpened(new TmfTraceOpenedSignal(this, trace, null));
         fTrace = trace;
 
         /* Start the kernel analysis module */
