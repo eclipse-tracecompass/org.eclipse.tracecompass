@@ -945,7 +945,7 @@ class TimeGraphFindDialog extends Dialog {
      */
     private static void setGridData(Control component, int horizontalAlignment, boolean grabExcessHorizontalSpace, int verticalAlignment, boolean grabExcessVerticalSpace) {
         GridData gd;
-        if (component instanceof Button && (((Button) component).getStyle() & SWT.PUSH) != 0) {
+        if (component instanceof Button && (component.getStyle() & SWT.PUSH) != 0) {
             gd = (GridData) component.getLayoutData();
             gd.horizontalAlignment = GridData.FILL;
             gd.widthHint = 100;

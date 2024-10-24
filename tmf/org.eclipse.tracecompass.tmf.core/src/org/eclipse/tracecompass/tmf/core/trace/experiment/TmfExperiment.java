@@ -481,7 +481,7 @@ public class TmfExperiment extends TmfTrace implements ITmfPersistentlyIndexable
             traceContext.setRank(ranks[i]);
             // update location after seek
             locations[i] = traceContext.getLocation();
-            context.setContent(i, traceContext, ((ITmfTrace) getChild(i)).getNext(traceContext));
+            context.setContent(i, traceContext, getChild(i).getNext(traceContext));
             rank += ranks[i];
         }
 
@@ -627,7 +627,7 @@ public class TmfExperiment extends TmfTrace implements ITmfPersistentlyIndexable
                         trace, traceContext.getLocation(), traceContext.getRank());
                 experimentContext.setLocation(new TmfExperimentLocation(locationArray));
                 // queue the next event
-                ITmfEvent nextEvent = ((ITmfTrace) getChild(trace)).getNext(traceContext);
+                ITmfEvent nextEvent = getChild(trace).getNext(traceContext);
                 experimentContext.setContent(trace, traceContext, nextEvent);
             }
         }

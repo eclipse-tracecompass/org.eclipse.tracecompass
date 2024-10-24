@@ -769,7 +769,7 @@ public class Frame extends BasicFrame {
             int event = getMaxEventOccurrence();
             if (message != null) {
                 if (message instanceof AsyncMessage) {
-                    event = ((AsyncMessage) message).getStartOccurrence();
+                    event = message.getStartOccurrence();
                 } else {
                     event = message.getEventOccurrence();
                 }
@@ -829,7 +829,7 @@ public class Frame extends BasicFrame {
             int event = getMaxEventOccurrence();
             if (message != null) {
                 if (message instanceof AsyncMessage) {
-                    event = ((AsyncMessage) message).getStartOccurrence();
+                    event = message.getStartOccurrence();
                 } else {
                     event = message.getEventOccurrence();
                 }
@@ -864,8 +864,8 @@ public class Frame extends BasicFrame {
         if (node instanceof SyncMessage) {
             distance = ((SyncMessage) node).getEventOccurrence() - event;
         } else if (node instanceof AsyncMessage) {
-            int start = ((AsyncMessage) node).getStartOccurrence();
-            int end = ((AsyncMessage) node).getEndOccurrence();
+            int start = node.getStartOccurrence();
+            int end = node.getEndOccurrence();
             if ((start - event) < (end - event)) {
                 distance = start - event;
             } else {
@@ -993,7 +993,7 @@ public class Frame extends BasicFrame {
         int event = getMaxEventOccurrence();
         if (startMessage != null) {
             if (startMessage instanceof AsyncMessage) {
-                event = ((AsyncMessage) startMessage).getStartOccurrence();
+                event = startMessage.getStartOccurrence();
             } else {
                 event = startMessage.getEventOccurrence();
             }

@@ -637,7 +637,7 @@ public abstract class TmfCommonXAxisChartViewer extends TmfXYChartViewer {
             lineSeries.setLineColor(color);
             lineSeries.setSymbolColor(color);
             lineSeries.setVisible(true);
-            lineSeries.setLineWidth(((Number) presProvider.getFloatStyleOrDefault(appearance, StyleProperties.WIDTH, 1.0f)).intValue());
+            lineSeries.setLineWidth(presProvider.getFloatStyleOrDefault(appearance, StyleProperties.WIDTH, 1.0f).intValue());
             return lineSeries;
         }
 
@@ -674,7 +674,7 @@ public abstract class TmfCommonXAxisChartViewer extends TmfXYChartViewer {
             lineSeries.setLineColor(color);
             lineSeries.setSymbolColor(color);
             lineSeries.setVisible(true);
-            lineSeries.setLineWidth(((Number) presProvider.getFloatStyleOrDefault(appearance, StyleProperties.WIDTH, 1.0f)).intValue());
+            lineSeries.setLineWidth(presProvider.getFloatStyleOrDefault(appearance, StyleProperties.WIDTH, 1.0f).intValue());
             return lineSeries;
         }
 

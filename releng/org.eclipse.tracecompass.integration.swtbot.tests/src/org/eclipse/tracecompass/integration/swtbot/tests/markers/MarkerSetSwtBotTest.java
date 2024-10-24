@@ -30,7 +30,6 @@ import org.eclipse.tracecompass.tmf.core.signal.TmfSignalManager;
 import org.eclipse.tracecompass.tmf.core.signal.TmfWindowRangeUpdatedSignal;
 import org.eclipse.tracecompass.tmf.core.timestamp.TmfTimeRange;
 import org.eclipse.tracecompass.tmf.core.timestamp.TmfTimestamp;
-import org.eclipse.tracecompass.tmf.ctf.core.trace.CtfTmfTrace;
 import org.eclipse.tracecompass.tmf.ui.swtbot.tests.shared.ConditionHelpers;
 import org.eclipse.tracecompass.tmf.ui.swtbot.tests.shared.SWTBotUtils;
 import org.eclipse.tracecompass.tmf.ui.tests.shared.WaitUtils;
@@ -92,7 +91,7 @@ public class MarkerSetSwtBotTest {
 
         final CtfTestTrace cygProfile = CtfTestTrace.CYG_PROFILE;
         LttngUstTrace trace = LttngUstTestTraceUtils.getTrace(cygProfile);
-        fStart = ((CtfTmfTrace) trace).getStartTime().toNanos();
+        fStart = trace.getStartTime().toNanos();
         fFullRange = new TmfTimeRange(TmfTimestamp.fromNanos(fStart), TmfTimestamp.fromNanos(fStart + 100l));
         final File file = new File(trace.getPath());
         LttngUstTestTraceUtils.dispose(cygProfile);

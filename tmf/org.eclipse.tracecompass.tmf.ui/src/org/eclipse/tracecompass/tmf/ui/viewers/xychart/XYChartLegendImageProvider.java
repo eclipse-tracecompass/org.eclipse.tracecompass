@@ -90,7 +90,7 @@ public class XYChartLegendImageProvider implements ILegendImageProvider2 {
         LineStyle lineStyle = LineStyle.valueOf((String) presProvider.getStyleOrDefault(appearance, StyleProperties.SERIES_STYLE, StyleProperties.SeriesStyle.SOLID));
         if (lineStyle != LineStyle.NONE) {
             gc.setForeground(lineColor);
-            gc.setLineWidth(((Number) presProvider.getFloatStyleOrDefault(appearance, StyleProperties.WIDTH, 1.0f)).intValue());
+            gc.setLineWidth(presProvider.getFloatStyleOrDefault(appearance, StyleProperties.WIDTH, 1.0f).intValue());
             gc.setLineStyle(lineStyle.ordinal());
             gc.drawLine(0, imageHeight / 2, imageWidth, imageHeight / 2);
             gc.setForeground(prev);
