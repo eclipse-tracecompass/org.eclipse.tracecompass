@@ -751,7 +751,7 @@ public class ScrollView extends Composite {
      */
     public boolean isOverviewEnabled() {
         if (fCornerControl instanceof Button) {
-            Object data = ((Button) fCornerControl).getData();
+            Object data = fCornerControl.getData();
             // overview alreay
             if (data instanceof Overview) {
                 return true;
