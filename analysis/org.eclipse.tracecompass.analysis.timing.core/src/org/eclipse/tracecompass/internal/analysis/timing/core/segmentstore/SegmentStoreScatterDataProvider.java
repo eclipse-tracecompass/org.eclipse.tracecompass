@@ -254,10 +254,11 @@ public class SegmentStoreScatterDataProvider extends AbstractTmfTraceDataProvide
     @Override
     public TmfModelResponse<TmfTreeModel<TmfTreeDataModel>> fetchTree(Map<String, Object> fetchParameters, @Nullable IProgressMonitor monitor) {
         ISegmentStoreProvider provider = fProvider;
+        boolean waitResult = true;
         if (provider instanceof IAnalysisModule) {
             IAnalysisModule module = (IAnalysisModule) provider;
             IProgressMonitor mon = monitor != null ? monitor : new NullProgressMonitor();
-            module.waitForCompletion(mon);
+            waitResult = module.waitForCompletion(mon);
             if (mon.isCanceled()) {
                 return new TmfModelResponse<>(null, Status.CANCELLED, CommonStatusMessage.TASK_CANCELLED);
             }
@@ -265,7 +266,10 @@ public class SegmentStoreScatterDataProvider extends AbstractTmfTraceDataProvide
         ISegmentStore<ISegment> segStore = provider.getSegmentStore();
 
         if (segStore == null) {
-            return new TmfModelResponse<>(null, ITmfResponse.Status.FAILED, CommonStatusMessage.ANALYSIS_INITIALIZATION_FAILED);
+            if (!waitResult) {
+                return new TmfModelResponse<>(null, ITmfResponse.Status.FAILED, CommonStatusMessage.ANALYSIS_INITIALIZATION_FAILED);
+            }
+            return new TmfModelResponse<>(new TmfTreeModel<>(Collections.emptyList(), Collections.emptyList()), ITmfResponse.Status.COMPLETED, CommonStatusMessage.COMPLETED);
         }
         TimeQueryFilter filter = FetchParametersUtils.createTimeQuery(fetchParameters);
         if (filter == null) {
@@ -333,8 +337,10 @@ public class SegmentStoreScatterDataProvider extends AbstractTmfTraceDataProvide
         }
 
         final ISegmentStore<ISegment> segStore = provider.getSegmentStore();
+
         if (segStore == null) {
-            return TmfXyResponseFactory.createFailedResponse(Objects.requireNonNull(Messages.SegmentStoreDataProvider_SegmentNotAvailable));
+            return TmfXyResponseFactory.create(Objects.requireNonNull(Messages.SegmentStoreScatterGraphViewer_title),
+                    Collections.emptyList(), true);
         }
 
         // TODO server: Parameters validation should be handle separately. It
