@@ -18,6 +18,9 @@
 
 package org.eclipse.tracecompass.tmf.ui.views.histogram;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -48,6 +51,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.tracecompass.common.core.log.TraceCompassLog;
 import org.eclipse.tracecompass.internal.tmf.ui.views.histogram.HistogramTimeAdapter;
 import org.eclipse.tracecompass.tmf.core.signal.TmfSignalHandler;
 import org.eclipse.tracecompass.tmf.core.signal.TmfSignalManager;
@@ -67,6 +71,8 @@ import org.eclipse.tracecompass.tmf.ui.views.TmfView;
 import org.eclipse.tracecompass.tmf.ui.widgets.timegraph.widgets.ITimeDataProvider;
 import org.eclipse.tracecompass.tmf.ui.widgets.timegraph.widgets.TimeGraphColorScheme;
 import org.eclipse.tracecompass.tmf.ui.widgets.timegraph.widgets.TimeGraphScale;
+import org.eclipse.tracecompass.traceeventlogger.LogUtils;
+import org.eclipse.tracecompass.traceeventlogger.LogUtils.ScopeLog;
 
 /**
  * Re-usable histogram widget.
@@ -110,6 +116,7 @@ public abstract class Histogram implements ControlListener, PaintListener, KeyLi
     // ------------------------------------------------------------------------
 
     private static final int TIME_SCALE_HEIGHT = 27;
+    private static final Logger LOGGER = TraceCompassLog.getLogger(Histogram.class);
 
     // Histogram colors
 
@@ -249,7 +256,6 @@ public abstract class Histogram implements ControlListener, PaintListener, KeyLi
      * show the traces or not
      */
     static boolean showTraces = true;
-
 
     private boolean fSendTimeAlignSignals = false;
 
@@ -655,17 +661,27 @@ public abstract class Histogram implements ControlListener, PaintListener, KeyLi
      */
     @Override
     public void modelUpdated() {
-        if (!fCanvas.isDisposed() && fCanvas.getDisplay() != null) {
-            fCanvas.getDisplay().asyncExec(() ->  {
-                    if (!fCanvas.isDisposed()) {
-                        // Retrieve and normalize the data
-                        final int canvasWidth = fCanvas.getBounds().width;
-                        final int canvasHeight = fCanvas.getBounds().height;
-                        if (canvasWidth <= 0 || canvasHeight <= 0) {
-                            return;
+        try (LogUtils.FlowScopeLog fs = new LogUtils.FlowScopeLogBuilder(LOGGER, Level.FINER, "Histogram:ModelUpdated").setCategory("Histogram").build()) { //$NON-NLS-1$ //$NON-NLS-2$
+            if (!fCanvas.isDisposed() && fCanvas.getDisplay() != null) {
+                fCanvas.getDisplay().asyncExec(() -> {
+                    int canvasWidth = -1;
+                    int canvasHeight = -1;
+                    try (LogUtils.FlowScopeLog fs1 = new LogUtils.FlowScopeLogBuilder(LOGGER, Level.FINER, "Histogram:getBounds").setParentScope(fs).build()) { //$NON-NLS-1$
+                        if (!fCanvas.isDisposed()) {
+                            // Retrieve and normalize the data
+                            canvasWidth = fCanvas.getBounds().width;
+                            canvasHeight = fCanvas.getBounds().height;
                         }
+                    }
+
+                    if (canvasHeight <= 0 || canvasWidth <= 0) {
+                        return;
+                    }
+                    try (LogUtils.FlowScopeLog fs1 = new LogUtils.FlowScopeLogBuilder(LOGGER, Level.FINER, "Histogram:scaleData").setParentScope(fs).build()) { //$NON-NLS-1$
                         fDataModel.setSelection(fSelectionBegin, fSelectionEnd);
                         fScaledData = fDataModel.scaleTo(canvasWidth, canvasHeight, 1);
+                    }
+                    try (LogUtils.FlowScopeLog fs1 = new LogUtils.FlowScopeLogBuilder(LOGGER, Level.FINER, "Histogram:redraw").setParentScope(fs).build()) { //$NON-NLS-1$
                         synchronized (fDataModel) {
                             if (fScaledData != null) {
                                 fCanvas.redraw();
@@ -679,16 +695,16 @@ public abstract class Histogram implements ControlListener, PaintListener, KeyLi
                                 GridData gd = (GridData) fMaxNbEventsLabel.getLayoutData();
                                 gd.widthHint = Math.max(gd.widthHint, fMaxNbEventsLabel.computeSize(SWT.DEFAULT, SWT.DEFAULT).x);
                                 fMaxNbEventsLabel.getParent().layout();
-                                if (old.length() < fMaxNbEventsLabel.getText().length()) {
-                                    if ((fSendTimeAlignSignals) && (fParentView instanceof ITmfTimeAligned)) {
-                                        TmfSignalManager.dispatchSignal(new TmfTimeViewAlignmentSignal(this, ((ITmfTimeAligned) fParentView).getTimeViewAlignmentInfo(), true));
-                                    }
+                                if (old.length() < fMaxNbEventsLabel.getText().length() && (fSendTimeAlignSignals) && (fParentView instanceof ITmfTimeAligned)) {
+                                    TmfSignalManager.dispatchSignal(new TmfTimeViewAlignmentSignal(this, ((ITmfTimeAligned) fParentView).getTimeViewAlignmentInfo(), true));
                                 }
+
                             }
                             fTimeLineScale.redraw();
                         }
-                }
-            });
+                    }
+                });
+            }
         }
     }
 
@@ -786,7 +802,7 @@ public abstract class Histogram implements ControlListener, PaintListener, KeyLi
 
         final HistogramScaledData scaledData = new HistogramScaledData(fScaledData);
 
-        try {
+        try (ScopeLog sl = new ScopeLog(LOGGER, Level.FINER, "Histogram:FmtImg")) { //$NON-NLS-1$
             final int height = image.getBounds().height;
 
             // Clear the drawing area
