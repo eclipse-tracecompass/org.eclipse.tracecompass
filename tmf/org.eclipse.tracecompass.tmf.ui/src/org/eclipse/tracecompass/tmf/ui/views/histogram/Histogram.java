@@ -74,6 +74,8 @@ import org.eclipse.tracecompass.tmf.ui.widgets.timegraph.widgets.TimeGraphScale;
 import org.eclipse.tracecompass.traceeventlogger.LogUtils;
 import org.eclipse.tracecompass.traceeventlogger.LogUtils.ScopeLog;
 
+import com.google.common.base.Objects;
+
 /**
  * Re-usable histogram widget.
  *
@@ -679,7 +681,11 @@ public abstract class Histogram implements ControlListener, PaintListener, KeyLi
                     }
                     try (LogUtils.FlowScopeLog fs1 = new LogUtils.FlowScopeLogBuilder(LOGGER, Level.FINER, "Histogram:scaleData").setParentScope(fs).build()) { //$NON-NLS-1$
                         fDataModel.setSelection(fSelectionBegin, fSelectionEnd);
-                        fScaledData = fDataModel.scaleTo(canvasWidth, canvasHeight, 1);
+                        HistogramScaledData scaledData = fDataModel.scaleTo(canvasWidth, canvasHeight, 1);
+                        if (Objects.equal(scaledData, fScaledData)) {
+                            return;
+                        }
+                        fScaledData = scaledData;
                     }
                     try (LogUtils.FlowScopeLog fs1 = new LogUtils.FlowScopeLogBuilder(LOGGER, Level.FINER, "Histogram:redraw").setParentScope(fs).build()) { //$NON-NLS-1$
                         synchronized (fDataModel) {
