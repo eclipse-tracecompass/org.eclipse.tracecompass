@@ -45,6 +45,8 @@ import org.eclipse.tracecompass.tmf.core.event.ITmfEventType;
 import org.eclipse.tracecompass.tmf.core.event.aspect.ITmfEventAspect;
 import org.eclipse.tracecompass.tmf.core.event.aspect.MultiAspect;
 import org.eclipse.tracecompass.tmf.core.event.aspect.TmfBaseAspects;
+import org.eclipse.tracecompass.tmf.core.event.aspect.TmfCallsiteAspect;
+import org.eclipse.tracecompass.tmf.core.event.lookup.ITmfCallsite;
 import org.eclipse.tracecompass.tmf.core.filter.FilterManager;
 import org.eclipse.tracecompass.tmf.core.filter.ITmfFilter;
 import org.eclipse.tracecompass.tmf.core.filter.model.ITmfFilterTreeNode;
@@ -561,13 +563,29 @@ public class TmfEventTableDataProvider extends AbstractTmfTableDataProvider impl
         List<VirtualTableCell> entry = new ArrayList<>(aspects.size());
         for (Entry<Long, ITmfEventAspect<?>> aspectEntry : aspects.entrySet()) {
             ITmfEventAspect<?> aspect = Objects.requireNonNull(aspectEntry.getValue());
-            Object aspectResolved = aspect.resolve(event);
+            Object aspectResolved = null;
+            if (aspect instanceof TmfCallsiteAspect) {
+                aspectResolved = toCallsiteString(event, (TmfCallsiteAspect) aspect);
+            } else {
+                aspectResolved = aspect.resolve(event);
+            }
             String cellContent = aspectResolved == null ? StringUtils.EMPTY : String.valueOf(aspectResolved);
             entry.add(new VirtualTableCell(cellContent));
         }
         EventTableLine tableLine = new EventTableLine(entry, lineIndex, event.getTimestamp(), lineRank, 0);
         tableLine.setActiveProperties(matches ? CoreFilterProperty.HIGHLIGHT : 0);
         return tableLine;
+    }
+
+    private static @Nullable String toCallsiteString(ITmfEvent event, TmfCallsiteAspect callsiteAspect) {
+        List<ITmfCallsite> result = callsiteAspect.resolve(event);
+        if (result != null && !result.isEmpty()) {
+            if (result.size() == 1) {
+                return result.get(0).toString();
+            }
+            return result.toString();
+        }
+        return null;
     }
 
     /**
