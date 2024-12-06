@@ -1,5 +1,5 @@
 /**********************************************************************
- * Copyright (c) 2014 Ericsson
+ * Copyright (c) 2014, 2024 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -21,6 +21,7 @@ import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -30,6 +31,7 @@ import org.eclipse.tracecompass.internal.lttng2.control.core.model.IDomainInfo;
 import org.eclipse.tracecompass.internal.lttng2.control.core.model.IEventInfo;
 import org.eclipse.tracecompass.internal.lttng2.control.core.model.ILoggerInfo;
 import org.eclipse.tracecompass.internal.lttng2.control.core.model.ISessionInfo;
+import org.eclipse.tracecompass.internal.lttng2.control.core.model.IUstProviderInfo;
 import org.eclipse.tracecompass.internal.lttng2.control.core.model.LogLevelType;
 import org.eclipse.tracecompass.internal.lttng2.control.core.model.TraceChannelOutputType;
 import org.eclipse.tracecompass.internal.lttng2.control.core.model.TraceDomainType;
@@ -60,6 +62,7 @@ public class LTTngControlServiceMiTest extends LTTngControlServiceTest {
     private static final String SCEN_ENABLING_JUL_LOGGERS = "EnableJulLoggers";
     private static final String SCEN_ENABLING_LOG4J_LOGGERS = "EnableLog4jLoggers";
     private static final String SCEN_ENABLING_PYTHON_LOGGERS = "EnablePythonLoggers";
+    private static final String SCEN_GET_UST_PROVIDER4 = "GetUstProvider4";
 
     @Override
     protected ILttngControlService getControlService() {
@@ -459,6 +462,25 @@ public class LTTngControlServiceMiTest extends LTTngControlServiceTest {
             assertEquals(TracePythonLogLevel.PYTHON_CRITICAL, loggerInfo.getLogLevel());
             assertEquals(LogLevelType.LOGLEVEL_ONLY, loggerInfo.getLogLevelType());
             assertEquals(TraceEnablement.ENABLED, loggerInfo.getState());
+        } catch (ExecutionException e) {
+            fail(e.toString());
+        }
+    }
+
+    @Test
+    @Override
+    public void testUstProvider4() {
+        try {
+            fShell.setScenario(SCEN_GET_UST_PROVIDER4);
+            List<IUstProviderInfo> providers = fService.getUstProvider();
+
+            assertNotNull(providers);
+            assertEquals(2, providers.size());
+
+            // Verify that there are no logger ust provider
+            Optional<IUstProviderInfo> optional = providers.stream().filter(provider -> provider.getLoggers().size() > 0).findFirst();
+            assertTrue(optional.isEmpty());
+
         } catch (ExecutionException e) {
             fail(e.toString());
         }
