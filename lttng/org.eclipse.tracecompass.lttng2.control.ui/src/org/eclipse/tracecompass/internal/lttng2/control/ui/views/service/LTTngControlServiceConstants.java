@@ -513,7 +513,7 @@ public interface LTTngControlServiceConstants {
     /**
      * Pattern to match error line if no ust tracer is available or installed.
      */
-    Pattern LIST_UST_NO_UST_PROVIDER_PATTERN = Pattern.compile(".*Unable\\s*to\\s*list\\s*UST\\s*event.*"); //$NON-NLS-1$
+    Pattern LIST_UST_NO_UST_PROVIDER_PATTERN = Pattern.compile(".*Unable\\s*to\\s*list\\s*(.*)\\s*event.*"); //$NON-NLS-1$
     /**
      * Pattern to match for list snapshot information (lttng snapshot list-output)
      */

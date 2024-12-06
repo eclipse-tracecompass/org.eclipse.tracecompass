@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.eclipse.core.commands.ExecutionException;
@@ -99,6 +100,7 @@ public class LTTngControlServiceTest {
     private static final String SCEN_GET_UST_PROVIDER1 = "GetUstProvider1";
     private static final String SCEN_GET_UST_PROVIDER2 = "GetUstProvider2";
     private static final String SCEN_GET_UST_PROVIDER3 = "GetUstProvider3";
+    private static final String SCEN_GET_UST_PROVIDER4 = "GetUstProvider4";
     private static final String SCEN_LIST_WITH_NO_UST1 = "ListWithNoUst1";
     private static final String SCEN_LIST_WITH_NO_UST2 = "ListWithNoUst2";
     private static final String SCEN_LIST_WITH_NO_UST3 = "ListWithNoUst3";
@@ -746,6 +748,23 @@ public class LTTngControlServiceTest {
         }
     }
 
+    @Test
+    public void testUstProvider4() {
+        try {
+            fShell.setScenario(SCEN_GET_UST_PROVIDER4);
+            List<IUstProviderInfo> providers = fService.getUstProvider();
+
+            assertNotNull(providers);
+            assertEquals(2, providers.size());
+
+            // Verify that there are no logger ust provider
+            Optional<IUstProviderInfo> optional = providers.stream().filter(provider -> provider.getLoggers().size() > 0).findFirst();
+            assertTrue(optional.isEmpty());
+
+        } catch (ExecutionException e) {
+            fail(e.toString());
+        }
+    }
 
     @Test
     public void testGetKernelProviderNoUst1() {
