@@ -1,5 +1,5 @@
 /**********************************************************************
- * Copyright (c) 2012, 2016 Ericsson
+ * Copyright (c) 2012, 2024 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -513,7 +513,7 @@ public interface LTTngControlServiceConstants {
     /**
      * Pattern to match error line if no ust tracer is available or installed.
      */
-    Pattern LIST_UST_NO_UST_PROVIDER_PATTERN = Pattern.compile(".*Unable\\s*to\\s*list\\s*UST\\s*event.*"); //$NON-NLS-1$
+    Pattern LIST_UST_NO_UST_PROVIDER_PATTERN = Pattern.compile(".*Unable\\s*to\\s*list\\s*(.*)\\s*event.*"); //$NON-NLS-1$
     /**
      * Pattern to match for list snapshot information (lttng snapshot list-output)
      */

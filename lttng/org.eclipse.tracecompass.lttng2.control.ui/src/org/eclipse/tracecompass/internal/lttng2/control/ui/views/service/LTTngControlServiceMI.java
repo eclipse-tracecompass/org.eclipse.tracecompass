@@ -1141,6 +1141,11 @@ public class LTTngControlServiceMI extends LTTngControlService {
         ICommandResult result = executeCommand(command, monitor, false);
 
         if (isError(result)) {
+            // Ignore the following case (example jul):
+            // Error: Unable to list jul events: Session daemon agent tracing is disabled
+            if (ignoredPattern(result.getErrorOutput(), LTTngControlServiceConstants.LIST_UST_NO_UST_PROVIDER_PATTERN)) {
+                return;
+            }
             throw new ExecutionException(Messages.TraceControl_CommandError + command.toString());
         }
 

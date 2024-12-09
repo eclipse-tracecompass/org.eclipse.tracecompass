@@ -1,5 +1,5 @@
 /**********************************************************************
- * Copyright (c) 2012, 2015 Ericsson
+ * Copyright (c) 2012, 2024 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -746,6 +746,10 @@ public class LTTngControlServiceTest {
         }
     }
 
+    @Test
+    public void testUstProvider4() {
+        // Nothing to do because loggers are only supported with MI.
+    }
 
     @Test
     public void testGetKernelProviderNoUst1() {
