@@ -103,6 +103,8 @@ public abstract class SortingJob extends Job {
     private final String fTsKey;
     private final String fPath;
     private final ITmfTrace fTrace;
+    private final long fOffset;
+
 
     /**
      * Constructor
@@ -112,17 +114,39 @@ public abstract class SortingJob extends Job {
      * @param path
      *            Trace path
      * @param tsKey
-     *            Timestamp key, represent the json object key. The value associated
-     *            to this key is the timestamp that will be use to sort
+     *            Timestamp key, represent the json object key. The value
+     *            associated to this key is the timestamp that will be use to
+     *            sort
      * @param bracketsToSkip
      *            Number of bracket to skip
      */
     public SortingJob(ITmfTrace trace, String path, String tsKey, int bracketsToSkip) {
+        this(trace, path, tsKey, bracketsToSkip, 0);
+    }
+
+    /**
+     * Constructor
+     *
+     * @param trace
+     *            Trace to sort
+     * @param path
+     *            Trace path
+     * @param tsKey
+     *            Timestamp key, represent the json object key. The value
+     *            associated to this key is the timestamp that will be use to
+     *            sort
+     * @param bracketsToSkip
+     *            Number of bracket to skip
+     * @param offset
+     *            offset in bytes to skip in the file.
+     */
+    public SortingJob(ITmfTrace trace, String path, String tsKey, int bracketsToSkip, long offset) {
         super(Messages.SortingJob_description);
         fTrace = trace;
         fPath = path;
         fTsKey = tsKey;
         fBracketsToSkip = bracketsToSkip;
+        fOffset = offset;
     }
 
     /**
@@ -148,6 +172,11 @@ public abstract class SortingJob extends Job {
         tempDir.mkdirs();
         List<File> tracelings = new ArrayList<>();
         try (BufferedInputStream parser = new BufferedInputStream(new FileInputStream(fPath))) {
+            long offset = parser.skip(fOffset);
+            if (offset != fOffset) {
+                // already at EOF
+                return new Status(IStatus.ERROR, getClass(), "Offset " + fOffset + " is greater than the file size.");
+            }
             int data = 0;
             for (int nbBracket = 0; nbBracket < fBracketsToSkip; nbBracket++) {
                 data = parser.read();
