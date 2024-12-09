@@ -53,6 +53,7 @@ public class InstrumentedCallStackElement extends CallStackElement {
     private final int fQuark;
     private final IHostIdResolver fHostResolver;
     private final @Nullable IThreadIdResolver fThreadIdResolver;
+    private @Nullable ITmfStateInterval fSymbolKeyInterval = null;
     private final Map<Integer, ICallStackElement> fNextElements = new HashMap<>();
 
     private @Nullable CallStack fCallstack = null;
@@ -178,6 +179,10 @@ public class InstrumentedCallStackElement extends CallStackElement {
     public int retrieveSymbolKeyAt(long startTime) {
         int processId = CallStackElement.DEFAULT_SYMBOL_KEY;
         if (fQuark != ITmfStateSystem.ROOT_ATTRIBUTE) {
+            ITmfStateInterval symbolKeyInterval = fSymbolKeyInterval;
+            if (symbolKeyInterval != null && symbolKeyInterval.intersects(startTime)) {
+                return symbolKeyInterval.getValueInt();
+            }
             try {
                 // Query a time that is within the bounds of the state system
                 long start = Math.max(fStateSystem.getStartTime(), startTime);
@@ -185,6 +190,7 @@ public class InstrumentedCallStackElement extends CallStackElement {
 
                 // Query the value of the quark at the requested time
                 ITmfStateInterval interval = fStateSystem.querySingleState(start, fQuark);
+                fSymbolKeyInterval = interval;
                 ITmfStateValue processStateValue = interval.getStateValue();
                 // If the state value is an integer, assume it is the symbol we
                 // are looking for
