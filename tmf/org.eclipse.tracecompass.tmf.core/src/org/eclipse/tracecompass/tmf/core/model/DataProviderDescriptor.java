@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019 Ericsson
+ * Copyright (c) 2019, 2025 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0 which
@@ -15,6 +15,7 @@ import java.util.Objects;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.tmf.core.config.ITmfConfiguration;
+import org.eclipse.tracecompass.tmf.core.dataprovider.IDataProviderCapabilities;
 import org.eclipse.tracecompass.tmf.core.dataprovider.IDataProviderDescriptor;
 
 /**
@@ -34,6 +35,7 @@ public class DataProviderDescriptor implements IDataProviderDescriptor {
     private final ProviderType fType;
     private final @Nullable String fParentId;
     private final @Nullable ITmfConfiguration fConfiguration;
+    private final IDataProviderCapabilities fCapabilities;
 
     /**
      * Constructor
@@ -48,6 +50,7 @@ public class DataProviderDescriptor implements IDataProviderDescriptor {
         fType = Objects.requireNonNull(builder.fType);
         fParentId = builder.fParentId;
         fConfiguration = builder.fConfiguration;
+        fCapabilities = builder.fCapabilities;
     }
 
     @Override
@@ -71,6 +74,11 @@ public class DataProviderDescriptor implements IDataProviderDescriptor {
     }
 
     @Override
+    public IDataProviderCapabilities getCapabilities() {
+        return fCapabilities;
+    }
+
+    @Override
     public @Nullable String getParentId() {
         return fParentId;
     }
@@ -88,6 +96,7 @@ public class DataProviderDescriptor implements IDataProviderDescriptor {
                 +  ", fId=" + getId()
                 +  ", fParentId=" + fParentId
                 +  ", fConfiguration=" + fConfiguration
+                +  ", fCapabilities=" + fCapabilities
                 + "]";
     }
 
@@ -99,12 +108,13 @@ public class DataProviderDescriptor implements IDataProviderDescriptor {
         DataProviderDescriptor other = (DataProviderDescriptor) arg0;
         return Objects.equals(fName, other.fName) && Objects.equals(fId, other.fId)
                 && Objects.equals(fType, other.fType) && Objects.equals(fDescription, other.fDescription)
-                && Objects.equals(fParentId, other.fParentId) && Objects.equals(fConfiguration, other.fConfiguration);
+                && Objects.equals(fParentId, other.fParentId) && Objects.equals(fConfiguration, other.fConfiguration)
+                && Objects.equals(fCapabilities, other.fCapabilities);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(fParentId, fName, fId, fType, fDescription, fConfiguration);
+        return Objects.hash(fParentId, fName, fId, fType, fDescription, fConfiguration, fCapabilities);
     }
 
     /**
@@ -117,6 +127,7 @@ public class DataProviderDescriptor implements IDataProviderDescriptor {
         private @Nullable ProviderType fType = null;
         private @Nullable String fParentId = null;
         private @Nullable ITmfConfiguration fConfiguration = null;
+        private IDataProviderCapabilities fCapabilities = DataProviderCapabilities.NULL_INSTANCE;
 
         /**
          * Constructor
@@ -196,6 +207,19 @@ public class DataProviderDescriptor implements IDataProviderDescriptor {
          */
         public Builder setConfiguration(@Nullable ITmfConfiguration configuration) {
             fConfiguration = configuration;
+            return this;
+        }
+
+        /**
+         * Set data provider capabilities
+         *
+         * @param capabilities
+         *            the capabilities to set
+         * @return the builder instance.
+         * @since 9.5
+         */
+        public Builder setCapabilities(IDataProviderCapabilities capabilities) {
+            fCapabilities = capabilities;
             return this;
         }
 

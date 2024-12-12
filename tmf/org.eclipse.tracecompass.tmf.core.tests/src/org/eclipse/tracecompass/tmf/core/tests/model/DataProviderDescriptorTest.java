@@ -1,5 +1,5 @@
 /**********************************************************************
- * Copyright (c) 2020 École Polytechnique de Montréal
+ * Copyright (c) 2020, 2025 École Polytechnique de Montréal, Ericsson
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -16,8 +16,10 @@ import static org.junit.Assert.assertTrue;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.tracecompass.tmf.core.config.ITmfConfiguration;
 import org.eclipse.tracecompass.tmf.core.config.TmfConfiguration;
+import org.eclipse.tracecompass.tmf.core.dataprovider.IDataProviderCapabilities;
 import org.eclipse.tracecompass.tmf.core.dataprovider.IDataProviderDescriptor;
 import org.eclipse.tracecompass.tmf.core.dataprovider.IDataProviderDescriptor.ProviderType;
+import org.eclipse.tracecompass.tmf.core.model.DataProviderCapabilities;
 import org.eclipse.tracecompass.tmf.core.model.DataProviderDescriptor;
 import org.junit.Test;
 
@@ -75,6 +77,22 @@ public class DataProviderDescriptorTest {
                .setProviderType(ProviderType.TABLE)
                .setParentId(PARENT_ID)
                .setConfiguration(config);
+        assertFalse(baseDescriptor.equals(builder.build()));
+
+        // Check for NULL_INSTANCE (object equality)
+        assertTrue(baseDescriptor.getCapabilities() == DataProviderCapabilities.NULL_INSTANCE);
+
+        // Change capabilities
+        builder.setCapabilities(new IDataProviderCapabilities() {
+            @Override
+            public boolean canDelete() {
+                return true;
+            }
+            @Override
+            public boolean canCreate() {
+                return false;
+            }
+        });
         assertFalse(baseDescriptor.equals(builder.build()));
 
         // Make sure it is equal to itself (with parent id and config)

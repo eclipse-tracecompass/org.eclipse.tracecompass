@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019, 2020 Ericsson
+ * Copyright (c) 2019, 2025 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0 which
@@ -14,6 +14,7 @@ package org.eclipse.tracecompass.tmf.core.dataprovider;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.tmf.core.config.ITmfConfiguration;
+import org.eclipse.tracecompass.tmf.core.model.DataProviderCapabilities;
 
 /**
  * Data Provider description, used to list the available providers for a trace
@@ -114,5 +115,13 @@ public interface IDataProviderDescriptor {
      */
     default @Nullable ITmfConfiguration getConfiguration() {
         return null;
+    }
+
+    /**
+     * @return The data provider capabilities instance
+     * @since 9.5
+     */
+    default IDataProviderCapabilities getCapabilities() {
+        return DataProviderCapabilities.NULL_INSTANCE;
     }
 }
