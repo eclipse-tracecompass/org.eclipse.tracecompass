@@ -126,6 +126,9 @@ public class HistogramDataProvider extends AbstractTmfTraceDataProvider implemen
         final ITmfStatistics stats = Objects.requireNonNull(fModule.getStatistics());
         if (selected.contains(fTotalId)) {
             List<Long> values = stats.histogramQuery(filter.getTimesRequested());
+            if (values.size() < n) {
+                return TmfXyResponseFactory.create(TITLE, xValues, Collections.emptyList(), false);
+            }
 
             double[] y = new double[n];
             Arrays.setAll(y, values::get);
