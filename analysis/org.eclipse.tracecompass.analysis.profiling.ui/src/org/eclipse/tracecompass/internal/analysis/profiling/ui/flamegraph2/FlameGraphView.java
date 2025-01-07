@@ -60,6 +60,8 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.MenuDetectEvent;
 import org.eclipse.swt.events.MenuDetectListener;
 import org.eclipse.swt.events.MouseAdapter;
@@ -85,6 +87,8 @@ import org.eclipse.tracecompass.internal.provisional.tmf.core.model.filters.TmfF
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.filters.TraceCompassFilter;
 import org.eclipse.tracecompass.internal.provisional.tmf.ui.widgets.timegraph.BaseDataProviderTimeGraphPresentationProvider;
 import org.eclipse.tracecompass.internal.tmf.core.model.filters.FetchParametersUtils;
+import org.eclipse.tracecompass.internal.tmf.ui.views.ITmfTimeNavigationProvider;
+import org.eclipse.tracecompass.internal.tmf.ui.views.ITmfTimeZoomProvider;
 import org.eclipse.tracecompass.statesystem.core.StateSystemUtils;
 import org.eclipse.tracecompass.tmf.core.analysis.IAnalysisModule;
 import org.eclipse.tracecompass.tmf.core.dataprovider.DataProviderManager;
@@ -133,6 +137,8 @@ import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.IWorkbenchPartSite;
+import org.eclipse.ui.contexts.IContextActivation;
+import org.eclipse.ui.contexts.IContextService;
 import org.eclipse.ui.progress.IWorkbenchSiteProgressService;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -156,6 +162,7 @@ public class FlameGraphView extends TmfView {
      * ID of the view
      */
     public static final String ID = "org.eclipse.tracecompass.analysis.profiling.ui.flamegraph"; //$NON-NLS-1$
+    private static final String TMF_VIEW_UI_CONTEXT = "org.eclipse.tracecompass.tmf.ui.view.context"; //$NON-NLS-1$
 
     private static final @NonNull String SYMBOL_MAPPING_ICON_PATH = "icons/obj16/binaries_obj.gif"; //$NON-NLS-1$
     private static final @NonNull String GROUP_BY_ICON_PATH = "icons/etool16/group_by.gif"; //$NON-NLS-1$
@@ -214,6 +221,9 @@ public class FlameGraphView extends TmfView {
     private @Nullable ZoomThread fZoomThread;
     private final Object fZoomThreadResultLock = new Object();
 
+    private IContextService fContextService;
+
+    private List<IContextActivation> fActiveContexts = new ArrayList<>();
     /**
      * Constructor
      */
@@ -309,6 +319,34 @@ public class FlameGraphView extends TmfView {
                 });
             }
         });
+
+        fContextService = Objects.requireNonNull(getSite().getWorkbenchWindow().getService(IContextService.class));
+
+        if (timeGraphControl.isInFocus()) {
+            activateContextService();
+        }
+        timeGraphControl.addFocusListener(new FocusListener() {
+            @Override
+            public void focusLost(FocusEvent e) {
+                deactivateContextService();
+            }
+
+            @Override
+            public void focusGained(FocusEvent e) {
+                activateContextService();
+            }
+        });
+    }
+
+    private void activateContextService() {
+        if (fActiveContexts.isEmpty()) {
+            fActiveContexts.add(fContextService.activateContext(TMF_VIEW_UI_CONTEXT));
+        }
+    }
+
+    private void deactivateContextService() {
+        fContextService.deactivateContexts(fActiveContexts);
+        fActiveContexts.clear();
     }
 
     /**
@@ -525,6 +563,57 @@ public class FlameGraphView extends TmfView {
     @VisibleForTesting
     public BaseDataProviderTimeGraphPresentationProvider getPresentationProvider() {
         return fPresentationProvider;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> T getAdapter(Class<T> adapter) {
+        if (adapter == ITmfTimeNavigationProvider.class) {
+            return (T) getTimeNavigator();
+        }
+        if (adapter == ITmfTimeZoomProvider.class) {
+            return (T) getTimeZoomProvider();
+        }
+        return super.getAdapter(adapter);
+    }
+
+    private ITmfTimeNavigationProvider getTimeNavigator() {
+        return left -> {
+            TimeGraphControl control = getTimeGraphControl();
+            if (control != null) {
+                control.horizontalScroll(left);
+            }
+        };
+    }
+
+    private ITmfTimeZoomProvider getTimeZoomProvider() {
+        return (zoomIn, useMousePosition) -> {
+            TimeGraphControl control = getTimeGraphControl();
+            TimeGraphViewer viewer = getTimeGraphViewer();
+            if (control != null && viewer != null) {
+                if (useMousePosition) {
+                    control.zoom(zoomIn);
+                } else {
+                    int xCoord = control.toControl(control.getDisplay().getCursorLocation()).x;
+                    if ((viewer.getNameSpace() <= xCoord) && (xCoord < control.getSize().x)) {
+                        if (zoomIn) {
+                            control.zoomIn();
+                        } else {
+                            control.zoomOut();
+                        }
+                    }
+                }
+            }
+        };
+    }
+
+    private @Nullable TimeGraphControl getTimeGraphControl() {
+        TimeGraphViewer viewer = getTimeGraphViewer();
+        TimeGraphControl control = viewer.getTimeGraphControl();
+        if (control != null) {
+            return control;
+        }
+        return null;
     }
 
     private static BiFunction<ITimeEvent, Long, Map<String, String>> getTooltipResolver(ITimeGraphDataProvider<? extends TimeGraphEntryModel> provider) {
