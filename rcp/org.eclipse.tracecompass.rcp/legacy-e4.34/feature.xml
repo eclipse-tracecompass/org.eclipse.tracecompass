@@ -442,26 +442,6 @@
          version="0.0.0"/>
 
    <plugin
-         id="org.apache.commons.jxpath"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.apache.commons.commons-beanutils"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.apache.commons.collections"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.jdom"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.eclipse.launchbar.core"
-         version="0.0.0"/>
-
-   <plugin
          id="org.eclipse.tracecompass.trace-event-logger"
          version="0.0.0"/>
 
