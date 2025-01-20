@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2016 Ericsson
+ * Copyright (c) 2015, 2025 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -55,8 +55,6 @@ import org.eclipse.tracecompass.analysis.timing.core.segmentstore.IAnalysisProgr
 import org.eclipse.tracecompass.analysis.timing.core.segmentstore.ISegmentStoreProvider;
 import org.eclipse.tracecompass.common.core.NonNullUtils;
 import org.eclipse.tracecompass.common.core.log.TraceCompassLog;
-import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils;
-import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils.ScopeLog;
 import org.eclipse.tracecompass.internal.analysis.timing.ui.Activator;
 import org.eclipse.tracecompass.internal.analysis.timing.ui.views.segmentstore.table.Messages;
 import org.eclipse.tracecompass.internal.analysis.timing.ui.views.segmentstore.table.SegmentStoreContentProvider;
@@ -87,6 +85,8 @@ import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
 import org.eclipse.tracecompass.tmf.core.trace.TmfTraceManager;
 import org.eclipse.tracecompass.tmf.ui.actions.OpenSourceCodeAction;
 import org.eclipse.tracecompass.tmf.ui.viewers.table.TmfSimpleTableViewer;
+import org.eclipse.tracecompass.traceeventlogger.LogUtils;
+import org.eclipse.tracecompass.traceeventlogger.LogUtils.ScopeLog;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.HashMultimap;
@@ -329,7 +329,7 @@ public abstract class AbstractSegmentStoreTableViewer extends TmfSimpleTableView
                     SegmentStoreContentProvider contentProvider = (SegmentStoreContentProvider) getTableViewer().getContentProvider();
                     long segmentCount = contentProvider.getSegmentCount();
                     String contentProviderName = contentProvider.getClass().getSimpleName();
-                    TraceCompassLogUtils.traceCounter(LOGGER, Level.FINE, "SegmentStoreTableViewer#updateModel", contentProviderName, segmentCount); //$NON-NLS-1$
+                    LogUtils.traceCounter(LOGGER, Level.FINE, "SegmentStoreTableViewer#updateModel", contentProviderName, segmentCount); //$NON-NLS-1$
                     if (segmentCount > MAX_ITEMS) {
                         tableViewer.setItemCount(MAX_ITEMS);
                         Activator.getDefault().logWarning("Too many items to display for " + contentProviderName + ". Cannot display " + segmentCount + " in a reasonable timeframe."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2014 Ericsson
+ * Copyright (c) 2009, 2025 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -30,12 +30,12 @@ import java.util.logging.Logger;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.tracecompass.common.core.log.TraceCompassLog;
-import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils;
-import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils.FlowScopeLog;
-import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils.FlowScopeLogBuilder;
 import org.eclipse.tracecompass.internal.tmf.core.TmfCoreTracer;
 import org.eclipse.tracecompass.internal.tmf.core.component.TmfEventThread;
 import org.eclipse.tracecompass.tmf.core.request.ITmfEventRequest.ExecutionType;
+import org.eclipse.tracecompass.traceeventlogger.LogUtils;
+import org.eclipse.tracecompass.traceeventlogger.LogUtils.FlowScopeLog;
+import org.eclipse.tracecompass.traceeventlogger.LogUtils.FlowScopeLogBuilder;
 
 /**
  * The request scheduler works with 5 slots with a specific time. It has 4 slots
@@ -138,7 +138,7 @@ public class TmfRequestExecutor implements Executor {
 
         // We are expecting MyEventThread:s
         if (!(command instanceof TmfEventThread)) {
-            TraceCompassLogUtils.traceInstant(LOGGER, Level.WARNING, "RequestExecutor:NotATmfEventThread", "cmd", command.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+            LogUtils.traceInstant(LOGGER, Level.WARNING, "RequestExecutor:NotATmfEventThread", "cmd", command.toString()); //$NON-NLS-1$ //$NON-NLS-2$
             return;
         }
 

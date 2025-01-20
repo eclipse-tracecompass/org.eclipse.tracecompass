@@ -29,5 +29,6 @@ Import-Package: com.google.common.annotations,
  com.google.common.cache,
  com.google.common.collect,
  com.google.common.hash,
- org.apache.commons.lang3
+ org.apache.commons.lang3,
+ org.eclipse.tracecompass.traceeventlogger
 Automatic-Module-Name: org.eclipse.tracecompass.analysis.graph.core

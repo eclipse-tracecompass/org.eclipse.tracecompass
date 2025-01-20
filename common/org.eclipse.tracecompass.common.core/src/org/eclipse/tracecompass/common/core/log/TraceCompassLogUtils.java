@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016 Ericsson
+ * Copyright (c) 2016, 2025 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -25,6 +25,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.tracecompass.traceeventlogger.LogUtils;
 
 /**
  * Logger helper
@@ -102,7 +103,9 @@ import org.eclipse.jdt.annotation.Nullable;
  * @since 3.0
  * @noinstantiate This class is not intended to be instantiated by clients. It
  *                is a helper class.
+ * @deprecated Use {@link LogUtils} instead.
  */
+@Deprecated
 public final class TraceCompassLogUtils {
 
     private static final Format FORMAT = new DecimalFormat("#.###"); //$NON-NLS-1$

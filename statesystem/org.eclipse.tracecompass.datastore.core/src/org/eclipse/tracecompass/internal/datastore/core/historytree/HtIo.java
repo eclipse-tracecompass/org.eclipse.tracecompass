@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2010, 2017 École Polytechnique de Montréal and others
+ * Copyright (c) 2010, 2025 École Polytechnique de Montréal and others
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -26,13 +26,13 @@ import java.util.logging.Logger;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.common.core.log.TraceCompassLog;
-import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils;
 import org.eclipse.tracecompass.datastore.core.interval.IHTInterval;
 import org.eclipse.tracecompass.datastore.core.interval.IHTIntervalReader;
 import org.eclipse.tracecompass.internal.datastore.core.Activator;
 import org.eclipse.tracecompass.internal.provisional.datastore.core.historytree.AbstractHistoryTree.IHTNodeFactory;
 import org.eclipse.tracecompass.internal.provisional.datastore.core.historytree.HTNode;
 import org.eclipse.tracecompass.internal.provisional.datastore.core.historytree.IHistoryTree;
+import org.eclipse.tracecompass.traceeventlogger.LogUtils;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.cache.CacheBuilder;
@@ -105,7 +105,7 @@ public class HtIo<E extends IHTInterval, N extends HTNode<E>> {
                     HtIo<IHTInterval, HTNode<IHTInterval>> io = key.fHistoryTreeIo;
                     int seqNb = key.fSeqNumber;
 
-                    TraceCompassLogUtils.traceInstant(LOGGER, Level.FINEST, "HtIo:CacheMiss", "seqNum", seqNb); //$NON-NLS-1$ //$NON-NLS-2$
+                    LogUtils.traceInstant(LOGGER, Level.FINEST, "HtIo:CacheMiss", "seqNum", seqNb); //$NON-NLS-1$ //$NON-NLS-2$
 
                     synchronized (io) {
                         io.seekFCToNodePos(io.fFileChannelIn, seqNb);
@@ -239,7 +239,7 @@ public class HtIo<E extends IHTInterval, N extends HTNode<E>> {
     @SuppressWarnings("unchecked")
     public N readNode(int seqNumber) throws ClosedChannelException {
         /* Do a cache lookup. If it's not present it will be loaded from disk */
-        TraceCompassLogUtils.traceInstant(LOGGER, Level.FINEST, "HtIo:CacheLookup", "seqNum", seqNumber); //$NON-NLS-1$ //$NON-NLS-2$
+        LogUtils.traceInstant(LOGGER, Level.FINEST, "HtIo:CacheLookup", "seqNum", seqNumber); //$NON-NLS-1$ //$NON-NLS-2$
         CacheKey key = new CacheKey((HtIo<IHTInterval, HTNode<IHTInterval>>) this, seqNumber);
         try {
             return (N) checkNotNull(NODE_CACHE.get(key));

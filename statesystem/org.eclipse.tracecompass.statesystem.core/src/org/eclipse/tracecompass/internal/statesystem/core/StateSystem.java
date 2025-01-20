@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2017 Ericsson and others
+ * Copyright (c) 2012, 2025 Ericsson and others
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -32,8 +32,6 @@ import java.util.regex.Pattern;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.common.core.log.TraceCompassLog;
-import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils;
-import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils.ScopeLog;
 import org.eclipse.tracecompass.internal.provisional.datastore.core.condition.IntegerRangeCondition;
 import org.eclipse.tracecompass.internal.provisional.datastore.core.condition.TimeRangeCondition;
 import org.eclipse.tracecompass.statesystem.core.ITmfStateSystemBuilder;
@@ -46,6 +44,7 @@ import org.eclipse.tracecompass.statesystem.core.interval.ITmfStateInterval;
 import org.eclipse.tracecompass.statesystem.core.statevalue.ITmfStateValue;
 import org.eclipse.tracecompass.statesystem.core.statevalue.ITmfStateValue.Type;
 import org.eclipse.tracecompass.statesystem.core.statevalue.TmfStateValue;
+import org.eclipse.tracecompass.traceeventlogger.LogUtils.ScopeLog;
 
 import com.google.common.collect.ImmutableCollection.Builder;
 import com.google.common.collect.ImmutableSet;
@@ -596,7 +595,7 @@ public class StateSystem implements ITmfStateSystemBuilder {
         if (isDisposed) {
             throw new StateSystemDisposedException();
         }
-        try (TraceCompassLogUtils.ScopeLog log = new TraceCompassLogUtils.ScopeLog(LOGGER, Level.FINER, "StateSystem:SingleQuery", //$NON-NLS-1$
+        try (ScopeLog log = new ScopeLog(LOGGER, Level.FINER, "StateSystem:SingleQuery", //$NON-NLS-1$
                 "ssid", this.getSSID(), //$NON-NLS-1$
                 "ts", t, //$NON-NLS-1$
                 "attribute", attributeQuark)) { //$NON-NLS-1$

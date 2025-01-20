@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 EfficiOS Inc., Alexandre Montplaisir
+ * Copyright (c) 2015, 2025 EfficiOS Inc., Alexandre Montplaisir and others
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -26,10 +26,9 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.common.core.log.TraceCompassLog;
-import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils;
-import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils.ScopeLog;
 import org.eclipse.tracecompass.common.core.process.ProcessUtils;
 import org.eclipse.tracecompass.tmf.core.event.lookup.TmfCallsite;
+import org.eclipse.tracecompass.traceeventlogger.LogUtils.ScopeLog;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -185,7 +184,7 @@ public final class FileOffsetMapper {
                 .build(new CacheLoader<FileOffset, @NonNull Iterable<Addr2lineInfo>>() {
                     @Override
                     public @NonNull Iterable<Addr2lineInfo> load(FileOffset fo) {
-                        try (ScopeLog sl = new TraceCompassLogUtils.ScopeLog(LOGGER, Level.FINER, "FileOffsetMapper:CacheMiss",  //$NON-NLS-1$
+                        try (ScopeLog sl = new ScopeLog(LOGGER, Level.FINER, "FileOffsetMapper:CacheMiss",  //$NON-NLS-1$
                                 "File", fo.fFilePath,  //$NON-NLS-1$
                                 "Offset", fo.fOffset, //$NON-NLS-1$
                                 "Build id", fo.fBuildId)) { //$NON-NLS-1$
@@ -218,7 +217,7 @@ public final class FileOffsetMapper {
     }
 
     private static @Nullable Iterable<Addr2lineInfo> getAddr2lineInfo(File file, @Nullable String buildId, long offset) {
-        try (ScopeLog sl = new TraceCompassLogUtils.ScopeLog(LOGGER, Level.FINER, "FileOffsetMapper:Addr2lineInfo", //$NON-NLS-1$
+        try (ScopeLog sl = new ScopeLog(LOGGER, Level.FINER, "FileOffsetMapper:Addr2lineInfo", //$NON-NLS-1$
                 "File", file,  //$NON-NLS-1$
                 "Offset", offset, //$NON-NLS-1$
                 "Build id", buildId)) { //$NON-NLS-1$

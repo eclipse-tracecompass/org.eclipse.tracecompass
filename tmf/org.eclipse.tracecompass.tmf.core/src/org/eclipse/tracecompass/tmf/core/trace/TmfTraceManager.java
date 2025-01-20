@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2019 Ericsson and others
+ * Copyright (c) 2013, 2025 Ericsson and others
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -47,7 +47,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.common.core.NonNullUtils;
 import org.eclipse.tracecompass.common.core.log.TraceCompassLog;
-import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils;
 import org.eclipse.tracecompass.internal.tmf.core.Activator;
 import org.eclipse.tracecompass.tmf.core.TmfCommonConstants;
 import org.eclipse.tracecompass.tmf.core.signal.TmfEventFilterAppliedSignal;
@@ -62,6 +61,7 @@ import org.eclipse.tracecompass.tmf.core.signal.TmfWindowRangeUpdatedSignal;
 import org.eclipse.tracecompass.tmf.core.timestamp.ITmfTimestamp;
 import org.eclipse.tracecompass.tmf.core.timestamp.TmfTimeRange;
 import org.eclipse.tracecompass.tmf.core.trace.experiment.TmfExperiment;
+import org.eclipse.tracecompass.traceeventlogger.LogUtils;
 
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.ImmutableSet;
@@ -380,7 +380,7 @@ public final class TmfTraceManager {
             String supplementaryFileDir = TmfTraceManager.getSupplementaryFileDir(trace);
             FileUtils.cleanDirectory(new File(supplementaryFileDir));
             // Needed to audit for privacy concerns
-            TraceCompassLogUtils.traceInstant(LOGGER, Level.CONFIG, "deleteSupplementaryFiles", supplementaryFileDir); //$NON-NLS-1$
+            LogUtils.traceInstant(LOGGER, Level.CONFIG, "deleteSupplementaryFiles", supplementaryFileDir); //$NON-NLS-1$
         } catch (IOException e) {
             Activator.logError("Error deleting supplementary files for trace " + trace.getName(), e); //$NON-NLS-1$
         }
@@ -402,7 +402,7 @@ public final class TmfTraceManager {
             String temporaryDirPath = getTemporaryDirPath();
             deleteFolder(parent, temporaryDirPath);
             // Needed to audit for privacy concerns
-            TraceCompassLogUtils.traceInstant(LOGGER, Level.CONFIG, "deleteSupplementaryFolder", temporaryDirPath); //$NON-NLS-1$
+            LogUtils.traceInstant(LOGGER, Level.CONFIG, "deleteSupplementaryFolder", temporaryDirPath); //$NON-NLS-1$
         } catch (IOException e) {
             Activator.logError("Error deleting supplementary folder for trace " + trace.getName(), e); //$NON-NLS-1$
         }

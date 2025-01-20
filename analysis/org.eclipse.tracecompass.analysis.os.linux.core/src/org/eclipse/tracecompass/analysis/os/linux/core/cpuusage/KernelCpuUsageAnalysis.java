@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, 2015 École Polytechnique de Montréal and others.
+ * Copyright (c) 2014, 2025 École Polytechnique de Montréal and others.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -35,8 +35,6 @@ import org.eclipse.tracecompass.analysis.os.linux.core.trace.IKernelTrace;
 import org.eclipse.tracecompass.analysis.os.linux.core.trace.KernelEventLayoutRequirement;
 import org.eclipse.tracecompass.common.core.NonNullUtils;
 import org.eclipse.tracecompass.common.core.log.TraceCompassLog;
-import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils;
-import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils.ScopeLog;
 import org.eclipse.tracecompass.internal.analysis.os.linux.core.Activator;
 import org.eclipse.tracecompass.internal.analysis.os.linux.core.kernel.Attributes;
 import org.eclipse.tracecompass.statesystem.core.ITmfStateSystem;
@@ -52,6 +50,8 @@ import org.eclipse.tracecompass.tmf.core.statesystem.ITmfStateProvider;
 import org.eclipse.tracecompass.tmf.core.statesystem.TmfStateSystemAnalysisModule;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
 import org.eclipse.tracecompass.tmf.core.trace.TmfTraceUtils;
+import org.eclipse.tracecompass.traceeventlogger.LogUtils;
+import org.eclipse.tracecompass.traceeventlogger.LogUtils.ScopeLog;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableSet;
@@ -274,7 +274,7 @@ public class KernelCpuUsageAnalysis extends TmfStateSystemAnalysisModule {
 
                     long currentCount = countAtEnd - countAtStart;
                     if (currentCount < 0) {
-                        TraceCompassLogUtils.traceInstant(LOGGER, Level.FINE, "Negative count", //$NON-NLS-1$
+                        LogUtils.traceInstant(LOGGER, Level.FINE, "Negative count", //$NON-NLS-1$
                                 "CPU", curCpuName, //$NON-NLS-1$
                                 "tid", curTidName, //$NON-NLS-1$
                                 "startTime", startTime, //$NON-NLS-1$
@@ -283,7 +283,7 @@ public class KernelCpuUsageAnalysis extends TmfStateSystemAnalysisModule {
                                 "countAtEnd", countAtEnd); //$NON-NLS-1$
                         currentCount = 0;
                     } else if (currentCount > endTime - startTime) {
-                        TraceCompassLogUtils.traceInstant(LOGGER, Level.FINE, "CPU usage over 100%", //$NON-NLS-1$
+                        LogUtils.traceInstant(LOGGER, Level.FINE, "CPU usage over 100%", //$NON-NLS-1$
                                 "CPU", curCpuName, //$NON-NLS-1$
                                 "tid", curTidName, //$NON-NLS-1$
                                 "startTime", startTime, //$NON-NLS-1$

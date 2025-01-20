@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017 Ericsson
+ * Copyright (c) 2017, 2025 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -21,7 +21,6 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.tracecompass.analysis.counters.core.aspects.CounterAspect;
 import org.eclipse.tracecompass.analysis.counters.core.aspects.ITmfCounterAspect;
 import org.eclipse.tracecompass.common.core.log.TraceCompassLog;
-import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils;
 import org.eclipse.tracecompass.internal.analysis.counters.core.Activator;
 import org.eclipse.tracecompass.statesystem.core.ITmfStateSystemBuilder;
 import org.eclipse.tracecompass.statesystem.core.StateSystemBuilderUtils;
@@ -33,6 +32,7 @@ import org.eclipse.tracecompass.tmf.core.statesystem.AbstractTmfStateProvider;
 import org.eclipse.tracecompass.tmf.core.statesystem.ITmfStateProvider;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
 import org.eclipse.tracecompass.tmf.core.trace.TmfTraceUtils;
+import org.eclipse.tracecompass.traceeventlogger.LogUtils;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
@@ -192,7 +192,7 @@ public class CounterStateProvider extends AbstractTmfStateProvider {
                         break;
                     }
                 } catch (StateValueTypeException e) {
-                    TraceCompassLogUtils.traceInstant(LOGGER, Level.WARNING, "HandleCounterAspect:Exception", e); //$NON-NLS-1$
+                    LogUtils.traceInstant(LOGGER, Level.WARNING, "HandleCounterAspect:Exception", e); //$NON-NLS-1$
                 }
             } else {
                 ss.modifyAttribute(event.getTimestamp().toNanos(), eventContent, quark);

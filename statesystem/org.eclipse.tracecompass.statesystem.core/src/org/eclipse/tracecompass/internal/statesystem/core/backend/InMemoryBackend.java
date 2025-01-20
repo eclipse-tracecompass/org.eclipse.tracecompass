@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2016 Ericsson
+ * Copyright (c) 2013, 2025 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -28,13 +28,14 @@ import java.util.logging.Logger;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.tracecompass.common.core.log.TraceCompassLog;
-import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils;
 import org.eclipse.tracecompass.internal.provisional.datastore.core.condition.IntegerRangeCondition;
 import org.eclipse.tracecompass.internal.provisional.datastore.core.condition.TimeRangeCondition;
 import org.eclipse.tracecompass.statesystem.core.backend.IStateHistoryBackend;
 import org.eclipse.tracecompass.statesystem.core.exceptions.TimeRangeException;
 import org.eclipse.tracecompass.statesystem.core.interval.ITmfStateInterval;
 import org.eclipse.tracecompass.statesystem.core.interval.TmfStateInterval;
+import org.eclipse.tracecompass.traceeventlogger.LogUtils.ScopeLog;
+
 import com.google.common.collect.Iterables;
 
 /**
@@ -214,7 +215,7 @@ public class InMemoryBackend implements IStateHistoryBackend {
     @Override
     public Iterable<@NonNull ITmfStateInterval> query2D(IntegerRangeCondition quarks, TimeRangeCondition times)
             throws TimeRangeException {
-        try (TraceCompassLogUtils.ScopeLog log = new TraceCompassLogUtils.ScopeLog(LOGGER, Level.FINER, "InMemoryBackend:query2D", //$NON-NLS-1$
+        try (ScopeLog log = new ScopeLog(LOGGER, Level.FINER, "InMemoryBackend:query2D", //$NON-NLS-1$
                 "ssid", getSSID(), //$NON-NLS-1$
                 "quarks", quarks, //$NON-NLS-1$
                 "times", times)) { //$NON-NLS-1$

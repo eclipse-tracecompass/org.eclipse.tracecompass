@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018, 2020 Ericsson
+ * Copyright (c) 2018, 2025 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0 which
@@ -33,12 +33,12 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.common.core.log.TraceCompassLog;
-import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils;
 import org.eclipse.tracecompass.internal.jsontrace.core.Activator;
 import org.eclipse.tracecompass.internal.jsontrace.core.Messages;
 import org.eclipse.tracecompass.internal.provisional.jsontrace.core.trace.JsonTrace;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
 import org.eclipse.tracecompass.tmf.core.trace.TmfTraceManager;
+import org.eclipse.tracecompass.traceeventlogger.LogUtils;
 
 /**
  * On-disk sorting job. It splits a trace into tracelets. Each tracelet is
@@ -269,7 +269,7 @@ public abstract class SortingJob extends Job {
                 tmpParser.close();
             }
         } catch (IOException e) {
-            TraceCompassLogUtils.traceInstant(LOGGER, Level.WARNING, "IOException in sorting job", "trace", fPath, //$NON-NLS-1$ //$NON-NLS-2$
+            LogUtils.traceInstant(LOGGER, Level.WARNING, "IOException in sorting job", "trace", fPath, //$NON-NLS-1$ //$NON-NLS-2$
                     "exception", e); //$NON-NLS-1$
             return new Status(IStatus.WARNING, Activator.PLUGIN_ID, "IOException in sorting job for " + fPath, e); //$NON-NLS-1$
         } finally {
