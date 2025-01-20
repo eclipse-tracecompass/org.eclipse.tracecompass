@@ -1,5 +1,5 @@
 /**********************************************************************
- * Copyright (c) 2013, 2014 Ericsson
+ * Copyright (c) 2013, 2025 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -14,7 +14,6 @@
 package org.eclipse.tracecompass.internal.tracing.rcp.ui;
 
 import java.io.File;
-import java.net.URL;
 import java.text.MessageFormat;
 
 import org.eclipse.core.runtime.Platform;
@@ -68,7 +67,7 @@ public class Application implements IApplication {
 
                 String workspace = TracingRcpPlugin.getWorkspaceRoot() + File.separator + TracingRcpPlugin.WORKSPACE_NAME;
                 // set location to workspace
-                fInstanceLoc.set(new URL("file", null, workspace), false); //$NON-NLS-1$
+                fInstanceLoc.set(new File(workspace).toURI().toURL(), false);
             }
 
             /*

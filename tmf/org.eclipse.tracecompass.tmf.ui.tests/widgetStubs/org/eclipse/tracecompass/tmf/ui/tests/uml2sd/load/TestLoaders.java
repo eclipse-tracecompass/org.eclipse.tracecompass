@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2014 Ericsson
+ * Copyright (c) 2013, 2025 Ericsson
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
@@ -22,6 +22,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.tracecompass.internal.tmf.ui.Activator;
 import org.eclipse.tracecompass.tmf.core.timestamp.TmfTimestamp;
 import org.eclipse.tracecompass.tmf.ui.views.uml2sd.SDView;
 import org.eclipse.tracecompass.tmf.ui.views.uml2sd.core.AsyncMessageReturn;
@@ -47,6 +48,7 @@ import org.eclipse.tracecompass.tmf.ui.views.uml2sd.load.IUml2SDLoader;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
+import org.osgi.framework.Bundle;
 
 /**
  * Test loader class.
@@ -446,8 +448,8 @@ public class TestLoaders implements IUml2SDLoader, ISDFindProvider, ISDFilterPro
         public Image getResourceImage(String _name) {
             ImageDescriptor imgage;
             try {
-                URL BASIC_URL = new URL("platform", "localhost", "plugin");
-                URL url = new URL(BASIC_URL, (new StringBuilder("plugin/org.eclipse.tracecompass.tmf.ui/icons/")).append(_name).toString());
+                Bundle bundle = Activator.getDefault().getBundle();
+                URL url = bundle.getResource(new StringBuilder("icons/").append(_name).toString());
                 imgage = ImageDescriptor.createFromURL(url);
                 return imgage.createImage();
             } catch (Exception e) {
