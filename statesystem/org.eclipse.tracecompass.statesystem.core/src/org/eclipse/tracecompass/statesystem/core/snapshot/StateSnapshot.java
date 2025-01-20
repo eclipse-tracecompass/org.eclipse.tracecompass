@@ -15,6 +15,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -37,7 +38,6 @@ import org.eclipse.tracecompass.statesystem.core.exceptions.StateSystemDisposedE
 import org.eclipse.tracecompass.statesystem.core.interval.ITmfStateInterval;
 import org.eclipse.tracecompass.statesystem.core.interval.TmfStateInterval;
 
-import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -244,7 +244,7 @@ public class StateSnapshot {
         }
         Files.createFile(filePath);
 
-        try (Writer bw = Files.newBufferedWriter(filePath, Charsets.UTF_8)) {
+        try (Writer bw = Files.newBufferedWriter(filePath, StandardCharsets.UTF_8)) {
             String json = GSON.toJson(this);
             bw.write(json);
         }

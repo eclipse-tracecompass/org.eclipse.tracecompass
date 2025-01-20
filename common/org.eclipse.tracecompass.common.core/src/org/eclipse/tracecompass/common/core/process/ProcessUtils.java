@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016 EfficiOS Inc., Alexandre Montplaisir
+ * Copyright (c) 2016, 2025 EfficiOS Inc., Alexandre Montplaisir and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -16,6 +16,7 @@ import static org.eclipse.tracecompass.common.core.NonNullUtils.checkNotNull;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
@@ -31,8 +32,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.common.core.log.TraceCompassLog;
 import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils;
 import org.eclipse.tracecompass.internal.common.core.Activator;
-
-import com.google.common.base.Charsets;
 
 /**
  * Common utility methods for launching external processes and retrieving their
@@ -68,7 +67,7 @@ public final class ProcessUtils {
             builder.redirectErrorStream(true);
 
             Process p = builder.start();
-            try (BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream(), Charsets.UTF_8));) {
+            try (BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream(), StandardCharsets.UTF_8));) {
                 List<String> output = new LinkedList<>();
 
                 /*
@@ -175,7 +174,7 @@ public final class ProcessUtils {
             cancellerThread = new Thread(cancellerRunnable);
             cancellerThread.start();
 
-            try (BufferedReader stdoutReader = new BufferedReader(new InputStreamReader(p.getInputStream(), Charsets.UTF_8));) {
+            try (BufferedReader stdoutReader = new BufferedReader(new InputStreamReader(p.getInputStream(), StandardCharsets.UTF_8));) {
 
                 List<String> lines = readerFunction.readOutput(stdoutReader, monitor);
 
