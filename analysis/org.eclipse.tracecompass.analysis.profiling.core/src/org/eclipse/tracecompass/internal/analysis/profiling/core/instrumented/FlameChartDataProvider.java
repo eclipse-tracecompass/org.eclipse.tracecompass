@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018 École Polytechnique de Montréal
+ * Copyright (c) 2018, 2025 École Polytechnique de Montréal
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -45,8 +45,6 @@ import org.eclipse.tracecompass.analysis.profiling.core.instrumented.EdgeStateVa
 import org.eclipse.tracecompass.analysis.profiling.core.instrumented.IFlameChartProvider;
 import org.eclipse.tracecompass.analysis.profiling.core.model.IHostModel;
 import org.eclipse.tracecompass.common.core.log.TraceCompassLog;
-import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils.FlowScopeLog;
-import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils.FlowScopeLogBuilder;
 import org.eclipse.tracecompass.internal.analysis.profiling.core.instrumented.FlameChartEntryModel.EntryType;
 import org.eclipse.tracecompass.internal.analysis.profiling.core.model.ModelManager;
 import org.eclipse.tracecompass.internal.analysis.profiling.core.model.ProcessStatusInterval;
@@ -77,6 +75,8 @@ import org.eclipse.tracecompass.tmf.core.symbols.SymbolProviderManager;
 import org.eclipse.tracecompass.tmf.core.symbols.SymbolProviderUtils;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
 import org.eclipse.tracecompass.tmf.core.util.Pair;
+import org.eclipse.tracecompass.traceeventlogger.LogUtils.FlowScopeLog;
+import org.eclipse.tracecompass.traceeventlogger.LogUtils.FlowScopeLogBuilder;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;

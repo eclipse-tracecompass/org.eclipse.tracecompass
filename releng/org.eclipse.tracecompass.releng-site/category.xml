@@ -37,6 +37,7 @@
    <feature url="features/org.eclipse.tracecompass.tmf.cli.source_0.0.0.qualifier.jar" id="org.eclipse.tracecompass.tmf.cli.source" version="0.0.0"/>
    <bundle id="org.eclipse.tracecompass.common.core"/>
    <bundle id="org.eclipse.tracecompass.common.core.source"/>
+   <bundle id="org.eclipse.tracecompass.trace-event-logger"/>
    <bundle id="org.apache.commons.lang3"/>
    <bundle id="json"/>
    <category-def name="Trace Compass" label="Trace Compass Main Features"/>

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2018 Ericsson, École Polytechnique de Montréal
+ * Copyright (c) 2012, 2025 Ericsson, École Polytechnique de Montréal
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -31,12 +31,12 @@ import java.util.regex.Pattern;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.swt.SWT;
 import org.eclipse.tracecompass.common.core.log.TraceCompassLog;
-import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils;
 import org.eclipse.tracecompass.internal.tmf.ui.widgets.timegraph.model.TimeGraphLineEntry;
 import org.eclipse.tracecompass.tmf.core.model.ICoreElementResolver;
 import org.eclipse.tracecompass.tmf.core.model.timegraph.ITimeGraphEntryModel;
 import org.eclipse.tracecompass.tmf.core.model.timegraph.TimeGraphEntryModel;
 import org.eclipse.tracecompass.tmf.core.model.tree.ITmfTreeDataModel;
+import org.eclipse.tracecompass.traceeventlogger.LogUtils.ScopeLog;
 
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
@@ -403,7 +403,7 @@ public class TimeGraphEntry implements ITimeGraphEntry, ICoreElementResolver {
      * @since 4.2
      */
     public void updateZoomedEvent(ITimeEvent event) {
-        try (TraceCompassLogUtils.ScopeLog poc = new TraceCompassLogUtils.ScopeLog(LOGGER, Level.FINE, "UpdateZoomedEvent")) { //$NON-NLS-1$
+        try (ScopeLog poc = new ScopeLog(LOGGER, Level.FINE, "UpdateZoomedEvent")) { //$NON-NLS-1$
 
             long start = getStartTime();
             long end = getEndTime();

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018, 2019 Ericsson
+ * Copyright (c) 2018, 2025 Ericsson
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -33,7 +33,7 @@ import javax.xml.validation.Validator;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.common.core.log.TraceCompassLog;
-import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils;
+import org.eclipse.tracecompass.traceeventlogger.LogUtils;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXNotSupportedException;
@@ -157,7 +157,7 @@ public final class XmlUtils {
 
     private static void logException(String feature, ParserConfigurationException e) {
         // This should catch a failed setFeature feature
-        TraceCompassLogUtils.traceInstant(LOGGER, Level.WARNING, "ParserConfigurationException", "feature", feature, "stack", e.getStackTrace()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        LogUtils.traceInstant(LOGGER, Level.WARNING, "ParserConfigurationException", "feature", feature, "stack", e.getStackTrace()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
 
     /**

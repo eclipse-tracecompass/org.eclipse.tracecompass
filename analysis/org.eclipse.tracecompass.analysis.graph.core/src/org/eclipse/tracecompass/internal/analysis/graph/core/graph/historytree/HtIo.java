@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2022 École Polytechnique de Montréal and others
+ * Copyright (c) 2022, 2025 École Polytechnique de Montréal and others
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -26,9 +26,9 @@ import java.util.logging.Logger;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.common.core.log.TraceCompassLog;
-import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils;
 import org.eclipse.tracecompass.datastore.core.interval.IHTIntervalReader;
 import org.eclipse.tracecompass.internal.analysis.graph.core.Activator;
+import org.eclipse.tracecompass.traceeventlogger.LogUtils;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.cache.CacheBuilder;
@@ -101,7 +101,7 @@ public class HtIo {
                     HtIo io = key.fHistoryTreeIo;
                     int seqNb = key.fSeqNumber;
 
-                    TraceCompassLogUtils.traceInstant(LOGGER, Level.FINEST, "HtIo:CacheMiss", "seqNum", seqNb); //$NON-NLS-1$ //$NON-NLS-2$
+                    LogUtils.traceInstant(LOGGER, Level.FINEST, "HtIo:CacheMiss", "seqNum", seqNb); //$NON-NLS-1$ //$NON-NLS-2$
 
                     synchronized (io) {
                         io.seekFCToNodePos(io.fFileChannelIn, seqNb);
@@ -233,7 +233,7 @@ public class HtIo {
      */
     public GraphTreeNode readNode(int seqNumber) throws ClosedChannelException {
         /* Do a cache lookup. If it's not present it will be loaded from disk */
-        TraceCompassLogUtils.traceInstant(LOGGER, Level.FINEST, "HtIo:CacheLookup", "seqNum", seqNumber); //$NON-NLS-1$ //$NON-NLS-2$
+        LogUtils.traceInstant(LOGGER, Level.FINEST, "HtIo:CacheLookup", "seqNum", seqNumber); //$NON-NLS-1$ //$NON-NLS-2$
         CacheKey key = new CacheKey(this, seqNumber);
         try {
             return checkNotNull(NODE_CACHE.get(key));

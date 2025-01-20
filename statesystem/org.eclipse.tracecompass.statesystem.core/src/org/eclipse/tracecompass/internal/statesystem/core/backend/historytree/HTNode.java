@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2010, 2019 Ericsson, École Polytechnique de Montréal, and others
+ * Copyright (c) 2010, 2025 Ericsson, École Polytechnique de Montréal, and others
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -31,13 +31,12 @@ import java.util.logging.Logger;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.tracecompass.common.core.log.TraceCompassLog;
-import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils;
-import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils.ScopeLog;
 import org.eclipse.tracecompass.internal.provisional.datastore.core.condition.IntegerRangeCondition;
 import org.eclipse.tracecompass.internal.provisional.datastore.core.condition.TimeRangeCondition;
 import org.eclipse.tracecompass.internal.statesystem.core.backend.historytree.IHistoryTree.IHTNodeFactory;
 import org.eclipse.tracecompass.statesystem.core.exceptions.TimeRangeException;
 import org.eclipse.tracecompass.statesystem.core.interval.ITmfStateInterval;
+import org.eclipse.tracecompass.traceeventlogger.LogUtils.ScopeLog;
 
 /**
  * The base class for all the types of nodes that go in the History Tree.
@@ -472,7 +471,7 @@ public abstract class HTNode {
      */
     public HTInterval getRelevantInterval(int key, long t) throws TimeRangeException {
         fRwl.readLock().lock();
-        try (TraceCompassLogUtils.ScopeLog log = new TraceCompassLogUtils.ScopeLog(LOGGER, Level.FINEST, "HTNode:singleQuery", //$NON-NLS-1$
+        try (ScopeLog log = new ScopeLog(LOGGER, Level.FINEST, "HTNode:singleQuery", //$NON-NLS-1$
                 "time", t, //$NON-NLS-1$
                 "attribute", key)) { //$NON-NLS-1$
             for (int i = getStartIndexFor(t); i < fIntervals.size(); i++) {
@@ -503,7 +502,7 @@ public abstract class HTNode {
      */
     public Iterable<@NonNull HTInterval> iterable2D(IntegerRangeCondition quarks, TimeRangeCondition times) {
         fRwl.readLock().lock();
-        try (TraceCompassLogUtils.ScopeLog log = new TraceCompassLogUtils.ScopeLog(LOGGER, Level.FINEST, "HTNode:query2D", //$NON-NLS-1$
+        try (ScopeLog log = new ScopeLog(LOGGER, Level.FINEST, "HTNode:query2D", //$NON-NLS-1$
                 "quarks", quarks, //$NON-NLS-1$
                 "times", times)) { //$NON-NLS-1$
             List<@NonNull HTInterval> intervals = new ArrayList<>();

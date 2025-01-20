@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 EfficiOS Inc., Alexandre Montplaisir
+ * Copyright (c) 2015, 2025 EfficiOS Inc., Alexandre Montplaisir and others
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -29,7 +29,6 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.analysis.os.linux.core.event.aspect.LinuxPidAspect;
 import org.eclipse.tracecompass.common.core.log.TraceCompassLog;
-import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils;
 import org.eclipse.tracecompass.common.core.process.ProcessUtils;
 import org.eclipse.tracecompass.internal.lttng2.ust.core.trace.layout.LttngUst28EventLayout;
 import org.eclipse.tracecompass.lttng2.ust.core.trace.LttngUstTrace;
@@ -45,6 +44,7 @@ import org.eclipse.tracecompass.tmf.core.statesystem.AbstractTmfStateProvider;
 import org.eclipse.tracecompass.tmf.core.statesystem.ITmfStateProvider;
 import org.eclipse.tracecompass.tmf.core.trace.TmfTraceUtils;
 import org.eclipse.tracecompass.tmf.core.util.Pair;
+import org.eclipse.tracecompass.traceeventlogger.LogUtils;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
@@ -423,7 +423,7 @@ public class UstDebugInfoStateProvider extends AbstractTmfStateProvider {
                 hasBuildIdValue == null ||
                 hasDebugLinkValue == null ||
                 (statedump && isPicValue == null)) {
-            TraceCompassLogUtils.traceInstant(LOGGER, Level.CONFIG, "UstDebugInfoStateProvider:InvalidBinInfoEvent", "event", event); //$NON-NLS-1$ //$NON-NLS-2$
+            LogUtils.traceInstant(LOGGER, Level.CONFIG, "UstDebugInfoStateProvider:InvalidBinInfoEvent", "event", event); //$NON-NLS-1$ //$NON-NLS-2$
             return;
         }
 
@@ -456,7 +456,7 @@ public class UstDebugInfoStateProvider extends AbstractTmfStateProvider {
         Long baddr = event.getContent().getFieldValue(Long.class, fLayout.fieldBaddr());
 
         if (buildIdArray == null || baddr == null) {
-            TraceCompassLogUtils.traceInstant(LOGGER, Level.CONFIG, "UstDebugInfoStateProvider:InvalidBinIdEvent", "event", event); //$NON-NLS-1$ //$NON-NLS-2$
+            LogUtils.traceInstant(LOGGER, Level.CONFIG, "UstDebugInfoStateProvider:InvalidBinIdEvent", "event", event); //$NON-NLS-1$ //$NON-NLS-2$
             return;
         }
 
@@ -487,7 +487,7 @@ public class UstDebugInfoStateProvider extends AbstractTmfStateProvider {
         String debugLink = event.getContent().getFieldValue(String.class, fLayout.fieldDebugLinkFilename());
 
         if (baddr == null || debugLink == null) {
-            TraceCompassLogUtils.traceInstant(LOGGER, Level.CONFIG, "UstDebugInfoStateProvider:InvalidDebugLinkEvent", "event", event); //$NON-NLS-1$ //$NON-NLS-2$
+            LogUtils.traceInstant(LOGGER, Level.CONFIG, "UstDebugInfoStateProvider:InvalidDebugLinkEvent", "event", event); //$NON-NLS-1$ //$NON-NLS-2$
             return;
         }
 
@@ -511,7 +511,7 @@ public class UstDebugInfoStateProvider extends AbstractTmfStateProvider {
         Long baddr = event.getContent().getFieldValue(Long.class, fLayout.fieldBaddr());
 
         if (baddr == null) {
-            TraceCompassLogUtils.traceInstant(LOGGER, Level.CONFIG, "UstDebugInfoStateProvider:InvalidDlCloseEvent", "event", event); //$NON-NLS-1$ //$NON-NLS-2$
+            LogUtils.traceInstant(LOGGER, Level.CONFIG, "UstDebugInfoStateProvider:InvalidDlCloseEvent", "event", event); //$NON-NLS-1$ //$NON-NLS-2$
             return;
         }
 

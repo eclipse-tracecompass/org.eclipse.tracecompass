@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014 Ericsson
+ * Copyright (c) 2014, 2025 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -21,7 +21,7 @@ import java.util.logging.Logger;
 
 import org.eclipse.tracecompass.common.core.TraceCompassActivator;
 import org.eclipse.tracecompass.common.core.log.TraceCompassLog;
-import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils;
+import org.eclipse.tracecompass.traceeventlogger.LogUtils;
 
 /**
  * Plugin activator
@@ -77,7 +77,7 @@ public class Activator extends TraceCompassActivator {
         }
         long end = System.nanoTime();
         long bogoMips = (long) (1e12 / (end - start));
-        TraceCompassLogUtils.traceInstant(logger, Level.SEVERE, PLUGIN_ID, "HostName", hostName, "OS", os, "Nb Processors", nbCpus, "BogoMips", bogoMips, "Memory", memory); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+        LogUtils.traceInstant(logger, Level.SEVERE, PLUGIN_ID, "HostName", hostName, "OS", os, "Nb Processors", nbCpus, "BogoMips", bogoMips, "Memory", memory); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
     }
 
     @Override

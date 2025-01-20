@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2016, 2022 Ericsson
+ * Copyright (c) 2012, 2016, 2025 Ericsson
  * Copyright (c) 2010, 2011 École Polytechnique de Montréal
  * Copyright (c) 2010, 2011 Alexandre Montplaisir <alexandre.montplaisir@gmail.com>
  *
@@ -28,11 +28,11 @@ import java.util.logging.Logger;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.tracecompass.common.core.log.TraceCompassLog;
-import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils.FlowScopeLog;
-import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils.FlowScopeLogBuilder;
 import org.eclipse.tracecompass.internal.provisional.datastore.core.condition.IntegerRangeCondition;
 import org.eclipse.tracecompass.internal.provisional.datastore.core.condition.TimeRangeCondition;
 import org.eclipse.tracecompass.statesystem.core.interval.ITmfStateInterval;
+import org.eclipse.tracecompass.traceeventlogger.LogUtils.FlowScopeLog;
+import org.eclipse.tracecompass.traceeventlogger.LogUtils.FlowScopeLogBuilder;
 
 class HistoryTreeBackendIterator implements Iterator<@NonNull ITmfStateInterval> {
     private static final @NonNull Logger LOGGER = TraceCompassLog.getLogger(HistoryTreeBackendIterator.class);

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2022 Ericsson
+ * Copyright (c) 2022, 2025 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v1.0 which
@@ -14,6 +14,7 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.internal.common.core.log.TraceCompassMonitor;
+import org.eclipse.tracecompass.traceeventlogger.beans.TraceEventLoggerManager;
 
 /**
  * Trace Compass Monitor, shows the state of every scoped logger
@@ -22,7 +23,9 @@ import org.eclipse.tracecompass.internal.common.core.log.TraceCompassMonitor;
  *
  * @author Matthew Khouzam
  * @since 5.1
+ * @deprecated Use {@link TraceEventLoggerManager} instead.
  */
+@Deprecated
 public final class TraceCompassMonitorManager {
 
     private final Map<String, TraceCompassMonitor> fCounters = new LinkedHashMap<>();

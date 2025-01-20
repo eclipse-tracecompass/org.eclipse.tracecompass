@@ -21,5 +21,7 @@ Export-Package: org.eclipse.tracecompass.common.core,
  org.eclipse.tracecompass.internal.common.core;x-internal:=true,
  org.eclipse.tracecompass.internal.common.core.log;x-friends:="org.eclipse.tracecompass.common.core.tests"
 Import-Package: com.google.common.base,
- com.google.common.collect
+ com.google.common.collect,
+ org.eclipse.tracecompass.traceeventlogger,
+ org.eclipse.tracecompass.traceeventlogger.beans
 Automatic-Module-Name: org.eclipse.tracecompass.common.core

@@ -30,8 +30,8 @@ import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.common.core.log.TraceCompassLog;
-import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils;
 import org.eclipse.tracecompass.internal.common.core.Activator;
+import org.eclipse.tracecompass.traceeventlogger.LogUtils.ScopeLog;
 
 /**
  * Common utility methods for launching external processes and retrieving their
@@ -62,7 +62,7 @@ public final class ProcessUtils {
      * @since 5.0
      */
     public static @Nullable List<String> getOutputFromCommand(List<String> command, boolean orError) {
-        try (TraceCompassLogUtils.ScopeLog sl = new TraceCompassLogUtils.ScopeLog(LOGGER, Level.FINER, "ProcessUtils#getOutputFromComment", "args", command)) { //$NON-NLS-1$ //$NON-NLS-2$
+        try (ScopeLog sl = new ScopeLog(LOGGER, Level.FINER, "ProcessUtils#getOutputFromComment", "args", command)) { //$NON-NLS-1$ //$NON-NLS-2$
             ProcessBuilder builder = new ProcessBuilder(command);
             builder.redirectErrorStream(true);
 
@@ -162,7 +162,7 @@ public final class ProcessUtils {
         CancellableRunnable cancellerRunnable = null;
         Thread cancellerThread = null;
 
-        try (TraceCompassLogUtils.ScopeLog sl = new TraceCompassLogUtils.ScopeLog(LOGGER, Level.FINER, "ProcessUtils#getOutputFromCommandCancellable", "MainTaskName", mainTaskName, "args", command)) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        try (ScopeLog sl = new ScopeLog(LOGGER, Level.FINER, "ProcessUtils#getOutputFromCommandCancellable", "MainTaskName", mainTaskName, "args", command)) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             monitor.beginTask(mainTaskName, PROGRESS_DURATION);
 
             ProcessBuilder builder = new ProcessBuilder(command);

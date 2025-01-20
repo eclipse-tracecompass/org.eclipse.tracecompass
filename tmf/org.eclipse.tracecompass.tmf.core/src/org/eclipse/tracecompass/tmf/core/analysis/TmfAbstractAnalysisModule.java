@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2014 École Polytechnique de Montréal
+ * Copyright (c) 2013, 2025 École Polytechnique de Montréal and others
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -40,8 +40,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.tracecompass.common.core.NonNullUtils;
 import org.eclipse.tracecompass.common.core.log.TraceCompassLog;
-import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils.FlowScopeLog;
-import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils.FlowScopeLogBuilder;
 import org.eclipse.tracecompass.internal.tmf.core.Activator;
 import org.eclipse.tracecompass.internal.tmf.core.TmfCoreTracer;
 import org.eclipse.tracecompass.tmf.core.analysis.requirements.TmfAbstractAnalysisRequirement;
@@ -54,6 +52,8 @@ import org.eclipse.tracecompass.tmf.core.signal.TmfTraceClosedSignal;
 import org.eclipse.tracecompass.tmf.core.signal.TmfTraceSelectedSignal;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
 import org.eclipse.tracecompass.tmf.core.trace.TmfTraceManager;
+import org.eclipse.tracecompass.traceeventlogger.LogUtils.FlowScopeLog;
+import org.eclipse.tracecompass.traceeventlogger.LogUtils.FlowScopeLogBuilder;
 
 /**
  * Base class that analysis modules main class may extend. It provides default
@@ -338,7 +338,7 @@ public abstract class TmfAbstractAnalysisModule extends TmfComponent
     }
 
     private void execute(final ITmfTrace trace) {
-        try (FlowScopeLog analysisLog = new FlowScopeLogBuilder(LOGGER, Level.FINE, "TmfAbstractAnalysis:scheduling", "name", getName()).setCategory(getId()).build()) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        try (FlowScopeLog analysisLog = new FlowScopeLogBuilder(LOGGER, Level.FINE, "TmfAbstractAnalysis:scheduling", "name", getName()).setCategory(getId()).build()) { //$NON-NLS-1$ //$NON-NLS-2$
             /*
              * TODO: The analysis in a job should be done at the analysis
              * manager level instead of depending on this abstract class

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019 École Polytechnique de Montréal
+ * Copyright (c) 2019, 2025 École Polytechnique de Montréal
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -40,14 +40,12 @@ import org.eclipse.tracecompass.analysis.profiling.core.model.IHostModel;
 import org.eclipse.tracecompass.analysis.profiling.core.tree.ITree;
 import org.eclipse.tracecompass.analysis.profiling.core.tree.IWeightedTreeGroupDescriptor;
 import org.eclipse.tracecompass.analysis.profiling.core.tree.IWeightedTreeProvider;
+import org.eclipse.tracecompass.analysis.profiling.core.tree.IWeightedTreeProvider.MetricType;
 import org.eclipse.tracecompass.analysis.profiling.core.tree.IWeightedTreeSet;
 import org.eclipse.tracecompass.analysis.profiling.core.tree.WeightedTree;
 import org.eclipse.tracecompass.analysis.profiling.core.tree.WeightedTreeGroupBy;
-import org.eclipse.tracecompass.analysis.profiling.core.tree.IWeightedTreeProvider.MetricType;
 import org.eclipse.tracecompass.analysis.timing.core.statistics.IStatistics;
 import org.eclipse.tracecompass.common.core.log.TraceCompassLog;
-import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils.FlowScopeLog;
-import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils.FlowScopeLogBuilder;
 import org.eclipse.tracecompass.datastore.core.serialization.ISafeByteBufferWriter;
 import org.eclipse.tracecompass.internal.analysis.profiling.core.instrumented.FlameChartEntryModel;
 import org.eclipse.tracecompass.internal.analysis.profiling.core.instrumented.FlameChartEntryModel.EntryType;
@@ -81,6 +79,8 @@ import org.eclipse.tracecompass.tmf.core.response.TmfModelResponse;
 import org.eclipse.tracecompass.tmf.core.timestamp.TmfTimestamp;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
 import org.eclipse.tracecompass.tmf.core.util.Pair;
+import org.eclipse.tracecompass.traceeventlogger.LogUtils.FlowScopeLog;
+import org.eclipse.tracecompass.traceeventlogger.LogUtils.FlowScopeLogBuilder;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableList;

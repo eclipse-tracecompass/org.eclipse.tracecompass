@@ -18,5 +18,6 @@ Export-Package: org.eclipse.tracecompass.analysis.counters.core,
  org.eclipse.tracecompass.internal.analysis.counters.core;x-friends:="org.eclipse.tracecompass.analysis.counters.ui"
 Import-Package: com.google.common.base,
  com.google.common.collect,
- com.google.common.primitives
+ com.google.common.primitives,
+ org.eclipse.tracecompass.traceeventlogger
 Automatic-Module-Name: org.eclipse.tracecompass.analysis.counters.core

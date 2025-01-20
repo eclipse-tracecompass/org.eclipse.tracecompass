@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2021 Ericsson, École Polytechnique de Montréal and others
+ * Copyright (c) 2012, 2025 Ericsson, École Polytechnique de Montréal and others
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -100,9 +100,6 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.tracecompass.common.core.NonNullUtils;
 import org.eclipse.tracecompass.common.core.log.TraceCompassLog;
-import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils;
-import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils.FlowScopeLog;
-import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils.FlowScopeLogBuilder;
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.filter.parser.FilterCu;
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.filter.parser.IFilterStrings;
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.filters.TmfFilterAppliedSignal;
@@ -179,6 +176,10 @@ import org.eclipse.tracecompass.tmf.ui.widgets.timegraph.model.TimeGraphEntry.Sa
 import org.eclipse.tracecompass.tmf.ui.widgets.timegraph.widgets.TimeGraphControl;
 import org.eclipse.tracecompass.tmf.ui.widgets.timegraph.widgets.Utils;
 import org.eclipse.tracecompass.tmf.ui.widgets.timegraph.widgets.Utils.TimeFormat;
+import org.eclipse.tracecompass.traceeventlogger.LogUtils;
+import org.eclipse.tracecompass.traceeventlogger.LogUtils.FlowScopeLog;
+import org.eclipse.tracecompass.traceeventlogger.LogUtils.FlowScopeLogBuilder;
+import org.eclipse.tracecompass.traceeventlogger.LogUtils.ScopeLog;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.IPartListener2;
@@ -707,7 +708,7 @@ public abstract class AbstractTimeGraphView extends TmfView implements ITmfTimeA
                             fEntries, entry -> !sampling.equals(entry.getSampling()))));
 
             List<ILinkEvent> computedLinks;
-            try (TraceCompassLogUtils.ScopeLog linkLog = new TraceCompassLogUtils.ScopeLog(LOGGER, Level.FINER, "ZoomThread:GettingLinks")) { //$NON-NLS-1$
+            try (ScopeLog linkLog = new ScopeLog(LOGGER, Level.FINER, "ZoomThread:GettingLinks")) { //$NON-NLS-1$
                 /* Refresh the arrows when zooming */
                 computedLinks = getLinkList(zoomStartTime, zoomEndTime, resolution, monitor);
                 ViewFilterDialog filterDialog = getViewFilterDialog();
@@ -721,7 +722,7 @@ public abstract class AbstractTimeGraphView extends TmfView implements ITmfTimeA
             }
             List<ILinkEvent> links = computedLinks;
             /* Refresh the view-specific markers when zooming */
-            try (TraceCompassLogUtils.ScopeLog markerLoglog = new TraceCompassLogUtils.ScopeLog(LOGGER, Level.FINER, "ZoomThread:GettingMarkers")) { //$NON-NLS-1$
+            try (ScopeLog markerLoglog = new ScopeLog(LOGGER, Level.FINER, "ZoomThread:GettingMarkers")) { //$NON-NLS-1$
                 List<IMarkerEvent> newMarkers = new ArrayList<>(getViewMarkerList(incorrectSample, zoomStartTime, zoomEndTime, resolution, monitor));
                 /* Refresh the trace-specific markers when zooming */
                 newMarkers.addAll(getTraceMarkerList(zoomStartTime, zoomEndTime, resolution, monitor));
@@ -747,7 +748,7 @@ public abstract class AbstractTimeGraphView extends TmfView implements ITmfTimeA
                 });
 
             }
-            try (TraceCompassLogUtils.ScopeLog log = new TraceCompassLogUtils.ScopeLog(LOGGER, Level.FINER, "ZoomThread:GettingStates")) { //$NON-NLS-1$
+            try (ScopeLog log = new ScopeLog(LOGGER, Level.FINER, "ZoomThread:GettingStates")) { //$NON-NLS-1$
                 getTimeGraphViewer().setTimeEventFilterApplied(isFilterActive);
 
                 boolean hasSavedFilter = fTimeEventFilterDialog != null && fTimeEventFilterDialog.hasActiveSavedFilters();
@@ -764,7 +765,7 @@ public abstract class AbstractTimeGraphView extends TmfView implements ITmfTimeA
             }
             if (isFilterActive && Thread.currentThread() == fZoomThread) {
                 /* Do a full filter search as a second pass */
-                try (TraceCompassLogUtils.ScopeLog log = new TraceCompassLogUtils.ScopeLog(LOGGER, Level.FINER, "ZoomThread:GettingStatesFullSearch")) { //$NON-NLS-1$
+                try (ScopeLog log = new ScopeLog(LOGGER, Level.FINER, "ZoomThread:GettingStatesFullSearch")) { //$NON-NLS-1$
                     for (TimeGraphEntry entry : fEntries) {
                         if (monitor.isCanceled()) {
                             return;
@@ -1880,7 +1881,7 @@ public abstract class AbstractTimeGraphView extends TmfView implements ITmfTimeA
         }
         fTrace = trace;
 
-        TraceCompassLogUtils.traceInstant(LOGGER, Level.FINE, "TimeGraphView:LoadingTrace", "trace", trace.getName(), "viewId", getViewId()); //$NON-NLS-1$ //$NON-NLS-2$//$NON-NLS-3$
+        LogUtils.traceInstant(LOGGER, Level.FINE, "TimeGraphView:LoadingTrace", "trace", trace.getName(), "viewId", getViewId()); //$NON-NLS-1$ //$NON-NLS-2$//$NON-NLS-3$
 
         restoreViewContext();
         applyHideEmptyRowsFilterContext();
@@ -1936,7 +1937,7 @@ public abstract class AbstractTimeGraphView extends TmfView implements ITmfTimeA
                     Job buildJob = new Job(getTitle() + Messages.AbstractTimeGraphView_BuildJob) {
                         @Override
                         protected IStatus run(IProgressMonitor monitor) {
-                            new BuildRunnable(trace, viewTrace, parentLogger).run(monitor);
+                            new BuildRunnable(trace, viewTrace, Objects.requireNonNull(parentLogger)).run(monitor);
                             monitor.done();
                             return Status.OK_STATUS;
                         }
