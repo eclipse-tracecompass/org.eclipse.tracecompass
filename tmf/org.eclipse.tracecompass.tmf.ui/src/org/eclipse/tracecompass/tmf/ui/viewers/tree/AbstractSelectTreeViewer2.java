@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017, 2020 Ericsson, Draeger Auriga
+ * Copyright (c) 2017, 2025 Ericsson, Draeger Auriga
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
@@ -48,8 +49,6 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.tracecompass.common.core.log.TraceCompassLog;
-import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils.FlowScopeLog;
-import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils.FlowScopeLogBuilder;
 import org.eclipse.tracecompass.internal.tmf.core.model.filters.FetchParametersUtils;
 import org.eclipse.tracecompass.internal.tmf.ui.Activator;
 import org.eclipse.tracecompass.tmf.core.dataprovider.DataProviderManager;
@@ -73,6 +72,8 @@ import org.eclipse.tracecompass.tmf.core.trace.TmfTraceManager;
 import org.eclipse.tracecompass.tmf.ui.viewers.ILegendImageProvider2;
 import org.eclipse.tracecompass.tmf.ui.widgets.timegraph.dialogs.MultiTreePatternFilter;
 import org.eclipse.tracecompass.tmf.ui.widgets.timegraph.dialogs.TriStateFilteredCheckboxTree;
+import org.eclipse.tracecompass.traceeventlogger.LogUtils.FlowScopeLog;
+import org.eclipse.tracecompass.traceeventlogger.LogUtils.FlowScopeLogBuilder;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -323,7 +324,7 @@ public abstract class AbstractSelectTreeViewer2 extends AbstractTmfTreeViewer {
             } else {
                 fCheckboxTree.setFilterText(""); //$NON-NLS-1$
             }
-            refreshTree(refreshTree);
+            refreshTree(Objects.requireNonNull(refreshTree));
         }
     }
 
@@ -342,7 +343,7 @@ public abstract class AbstractSelectTreeViewer2 extends AbstractTmfTreeViewer {
     protected void setCheckedElements(Object[] checkedElements) {
         try (FlowScopeLog checkedElementsFlow = new FlowScopeLogBuilder(LOGGER, Level.FINE, getClass().getSimpleName() + "#setCheckedElements()").setCategory("setChecked").build()) { //$NON-NLS-1$ //$NON-NLS-2$
             internalSetCheckedElements(checkedElements);
-            refreshTree(checkedElementsFlow);
+            refreshTree(Objects.requireNonNull(checkedElementsFlow));
         }
     }
 

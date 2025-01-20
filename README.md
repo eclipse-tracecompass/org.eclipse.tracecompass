@@ -33,6 +33,10 @@ Eclipse IDE, as well as standalone application.
 
 Check [Downloads](https://projects.eclipse.org/projects/tools.tracecompass/downloads) for downloading specific versions of Trace Compass.
 
+## Building and Tracing Trace Compass
+
+Information about building and tracing Trace Compass can be found in the [building guide](BUILDING.md).
+
 ## Contributing to Trace Compass
 
 **👋 Want to help?** Read our [contributor guide](CONTRIBUTING.md) and follow the

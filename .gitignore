@@ -3,6 +3,7 @@
 .DS_Store
 .polyglot.build.properties
 .tycho-consumer-pom.xml
+jsonify.py
 bin/
 target/
 workspace/

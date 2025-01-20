@@ -145,5 +145,6 @@ Import-Package: com.google.common.annotations,
  org.antlr.runtime,
  org.antlr.runtime.tree,
  org.apache.commons.io,
- org.apache.commons.lang3
+ org.apache.commons.lang3,
+ org.eclipse.tracecompass.traceeventlogger
 Automatic-Module-Name: org.eclipse.tracecompass.tmf.core

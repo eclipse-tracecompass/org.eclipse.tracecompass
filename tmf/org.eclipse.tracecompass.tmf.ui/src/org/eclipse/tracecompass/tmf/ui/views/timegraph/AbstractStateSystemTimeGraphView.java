@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2018 Ericsson
+ * Copyright (c) 2015, 2025 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -40,7 +40,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.common.core.log.TraceCompassLog;
-import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils;
 import org.eclipse.tracecompass.internal.provisional.tmf.ui.widgets.ViewFilterDialog;
 import org.eclipse.tracecompass.statesystem.core.ITmfStateSystem;
 import org.eclipse.tracecompass.statesystem.core.exceptions.StateSystemDisposedException;
@@ -54,6 +53,8 @@ import org.eclipse.tracecompass.tmf.ui.widgets.timegraph.model.ITimeEvent;
 import org.eclipse.tracecompass.tmf.ui.widgets.timegraph.model.ITimeGraphEntry;
 import org.eclipse.tracecompass.tmf.ui.widgets.timegraph.model.TimeGraphEntry;
 import org.eclipse.tracecompass.tmf.ui.widgets.timegraph.model.TimeGraphEntry.Sampling;
+import org.eclipse.tracecompass.traceeventlogger.LogUtils;
+import org.eclipse.tracecompass.traceeventlogger.LogUtils.ScopeLog;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.HashMultimap;
@@ -156,7 +157,7 @@ public abstract class AbstractStateSystemTimeGraphView extends AbstractTimeGraph
                     getTimeGraphViewer().setMarkers(markers);
                 });
             } else {
-                TraceCompassLogUtils.traceInstant(LOGGER, Level.FINE, "TimeGraphView:ZoomThreadCanceled"); //$NON-NLS-1$
+                LogUtils.traceInstant(LOGGER, Level.FINE, "TimeGraphView:ZoomThreadCanceled"); //$NON-NLS-1$
             }
         }
 
@@ -206,7 +207,7 @@ public abstract class AbstractStateSystemTimeGraphView extends AbstractTimeGraph
         private void doZoom(final ITmfStateSystem ss, final List<ILinkEvent> links, final List<IMarkerEvent> markers, long resolution, final @NonNull IProgressMonitor monitor, final long start, final long end, Sampling sampling,
                 Iterable<@NonNull TimeGraphEntry> entries, @NonNull Map<@NonNull Integer, @NonNull Predicate<@NonNull Multimap<@NonNull String, @NonNull Object>>> predicates, Map<TimeGraphEntry, List<ITimeEvent>> gaps) {
             queryFullStates(ss, start, end, resolution, monitor, (@NonNull List<List<ITmfStateInterval>> fullStates, @Nullable List<ITmfStateInterval> prevFullState) -> {
-                try (TraceCompassLogUtils.ScopeLog scope = new TraceCompassLogUtils.ScopeLog(LOGGER, Level.FINER, "ZoomThread:GettingStates");) { //$NON-NLS-1$
+                try (ScopeLog scope = new ScopeLog(LOGGER, Level.FINER, "ZoomThread:GettingStates");) { //$NON-NLS-1$
 
                     for (TimeGraphEntry entry : entries) {
                         if (!sampling.equals(entry.getSampling())) {
@@ -215,11 +216,11 @@ public abstract class AbstractStateSystemTimeGraphView extends AbstractTimeGraph
                     }
                 }
                 /* Refresh the arrows when zooming */
-                try (TraceCompassLogUtils.ScopeLog linksLogger1 = new TraceCompassLogUtils.ScopeLog(LOGGER, Level.FINER, "ZoomThread:GettingLinks")) { //$NON-NLS-1$
+                try (ScopeLog linksLogger1 = new ScopeLog(LOGGER, Level.FINER, "ZoomThread:GettingLinks")) { //$NON-NLS-1$
                     links.addAll(getLinkList(ss, fullStates, prevFullState, monitor));
                 }
                 /* Refresh the view-specific markers when zooming */
-                try (TraceCompassLogUtils.ScopeLog linksLogger2 = new TraceCompassLogUtils.ScopeLog(LOGGER, Level.FINER, "ZoomThread:GettingMarkers")) { //$NON-NLS-1$
+                try (ScopeLog linksLogger2 = new ScopeLog(LOGGER, Level.FINER, "ZoomThread:GettingMarkers")) { //$NON-NLS-1$
                     markers.addAll(getViewMarkerList(ss, fullStates, prevFullState, monitor));
                 }
                 refresh();
@@ -263,7 +264,7 @@ public abstract class AbstractStateSystemTimeGraphView extends AbstractTimeGraph
 
         private void doBgSearch(ITmfStateSystem ss, int resolution, @NonNull IProgressMonitor monitor, Map<TimeGraphEntry, List<ITimeEvent>> gaps,
                 @NonNull Map<@NonNull Integer, @NonNull Predicate<@NonNull Multimap<@NonNull String, @NonNull Object>>> predicates) {
-            try (TraceCompassLogUtils.ScopeLog poc = new TraceCompassLogUtils.ScopeLog(LOGGER, Level.FINE, "TimegraphBgSearch")) { //$NON-NLS-1$
+            try (ScopeLog poc = new ScopeLog(LOGGER, Level.FINE, "TimegraphBgSearch")) { //$NON-NLS-1$
 
                 ViewFilterDialog timeEventFilterDialog = getViewFilterDialog();
                 boolean hasActiveSavedFilters = timeEventFilterDialog.hasActiveSavedFilters();

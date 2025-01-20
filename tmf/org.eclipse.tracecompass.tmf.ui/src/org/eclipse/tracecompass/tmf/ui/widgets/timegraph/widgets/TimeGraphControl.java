@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2007, 2024 Intel Corporation and others
+ * Copyright (c) 2007, 2025 Intel Corporation and others
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -90,8 +90,6 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.tracecompass.common.core.log.TraceCompassLog;
-import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils;
-import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils.ScopeLog;
 import org.eclipse.tracecompass.common.core.math.SaturatedArithmetic;
 import org.eclipse.tracecompass.internal.provisional.tmf.ui.model.IStylePresentationProvider;
 import org.eclipse.tracecompass.internal.provisional.tmf.ui.widgets.timegraph.ITimeGraphStylePresentationProvider;
@@ -141,6 +139,8 @@ import org.eclipse.tracecompass.tmf.ui.widgets.timegraph.model.ITimeEvent;
 import org.eclipse.tracecompass.tmf.ui.widgets.timegraph.model.ITimeGraphEntry;
 import org.eclipse.tracecompass.tmf.ui.widgets.timegraph.model.MarkerEvent;
 import org.eclipse.tracecompass.tmf.ui.widgets.timegraph.model.TimeGraphEntry;
+import org.eclipse.tracecompass.traceeventlogger.LogUtils;
+import org.eclipse.tracecompass.traceeventlogger.LogUtils.ScopeLog;
 
 import com.google.common.collect.Iterables;
 
@@ -2254,7 +2254,7 @@ public class TimeGraphControl extends TimeGraphBaseControl
             }
         }
         gc.setClipping((Rectangle) null);
-        TraceCompassLogUtils.traceCounter(LOGGER, Level.FINER, fDrawMarkersCountLabel, size);
+        LogUtils.traceCounter(LOGGER, Level.FINER, fDrawMarkersCountLabel, size);
     }
 
     /**
@@ -2390,7 +2390,7 @@ public class TimeGraphControl extends TimeGraphBaseControl
             Item item = items[i];
             drawItem(item, bounds, timeProvider, i, nameSpace, gc);
         }
-        TraceCompassLogUtils.traceCounter(LOGGER, Level.FINER, fDrawItemsCountLabel, bottomIndex - topIndex);
+        LogUtils.traceCounter(LOGGER, Level.FINER, fDrawItemsCountLabel, bottomIndex - topIndex);
 
         if (gc == null) {
             return;
@@ -2610,7 +2610,7 @@ public class TimeGraphControl extends TimeGraphBaseControl
             drawLink(event, bounds, timeProvider, nameSpace, gc);
         }
         gc.setClipping((Rectangle) null);
-        TraceCompassLogUtils.traceCounter(LOGGER, Level.FINER, fDrawLinksCountLabel, size);
+        LogUtils.traceCounter(LOGGER, Level.FINER, fDrawLinksCountLabel, size);
     }
 
     /**

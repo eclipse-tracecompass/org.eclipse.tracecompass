@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2015 Ericsson
+ * Copyright (c) 2012, 2025 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -15,6 +15,7 @@
 package org.eclipse.tracecompass.tmf.core.statesystem;
 
 import java.util.Comparator;
+import java.util.Objects;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.logging.Level;
@@ -25,8 +26,6 @@ import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.common.core.collect.BufferedBlockingQueue;
 import org.eclipse.tracecompass.common.core.log.TraceCompassLog;
-import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils.FlowScopeLog;
-import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils.FlowScopeLogBuilder;
 import org.eclipse.tracecompass.internal.tmf.core.Activator;
 import org.eclipse.tracecompass.statesystem.core.ITmfStateSystem;
 import org.eclipse.tracecompass.statesystem.core.ITmfStateSystemBuilder;
@@ -34,6 +33,8 @@ import org.eclipse.tracecompass.tmf.core.event.ITmfEvent;
 import org.eclipse.tracecompass.tmf.core.event.TmfEvent;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfContext;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
+import org.eclipse.tracecompass.traceeventlogger.LogUtils.FlowScopeLog;
+import org.eclipse.tracecompass.traceeventlogger.LogUtils.FlowScopeLogBuilder;
 
 import com.google.common.annotations.VisibleForTesting;
 
@@ -144,7 +145,7 @@ public abstract class AbstractTmfStateProvider implements ITmfStateProvider {
             // yet
             // started
             fSafeTime = trace.getStartTime().toNanos() - 1;
-            fEventHandlerThread = new Thread(() -> SafeRunner.run(new EventProcessor(log)), id + " Event Handler"); //$NON-NLS-1$
+            fEventHandlerThread = new Thread(() -> SafeRunner.run(new EventProcessor(Objects.requireNonNull(log))), id + " Event Handler"); //$NON-NLS-1$
         }
     }
 

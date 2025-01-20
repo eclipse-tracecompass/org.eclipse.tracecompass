@@ -32,5 +32,6 @@ Import-Package: com.google.common.annotations;version="15.0.0",
  com.google.gson,
  com.google.gson.annotations,
  com.google.gson.stream,
- org.apache.commons.lang3.builder
+ org.apache.commons.lang3.builder,
+ org.eclipse.tracecompass.traceeventlogger
 Automatic-Module-Name: org.eclipse.tracecompass.statesystem.core

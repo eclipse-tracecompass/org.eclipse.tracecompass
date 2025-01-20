@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2016 Ericsson
+ * Copyright (c) 2012, 2025 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -25,7 +25,6 @@ import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.tracecompass.common.core.log.TraceCompassLog;
-import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils;
 import org.eclipse.tracecompass.internal.tmf.core.Activator;
 import org.eclipse.tracecompass.internal.tmf.core.Messages;
 import org.eclipse.tracecompass.internal.tmf.core.TmfCoreTracer;
@@ -43,6 +42,7 @@ import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTraceKnownSize;
 import org.eclipse.tracecompass.tmf.core.trace.indexer.ITmfTraceIndexer;
 import org.eclipse.tracecompass.tmf.core.trace.location.ITmfLocation;
+import org.eclipse.tracecompass.traceeventlogger.LogUtils;
 
 /**
  * A simple indexer that manages the trace index as an array of trace
@@ -388,7 +388,7 @@ public class TmfCheckpointIndexer implements ITmfTraceIndexer {
                     setName(Messages.TmfCheckpointIndexer_Indexing + ' ' + fTrace.getName() + " (" + String.format("%,d", nbEvents) + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                     // setName doesn't refresh the UI, setTaskName does
                     long rate = (nbEvents - prevNbEvents) * 4;
-                    TraceCompassLogUtils.traceCounter(LOGGER, Level.FINE, fTrace.getName(), "indexed", nbEvents - prevNbEvents); //$NON-NLS-1$
+                    LogUtils.traceCounter(LOGGER, Level.FINE, fTrace.getName(), "indexed", nbEvents - prevNbEvents); //$NON-NLS-1$
                     subMonitor.setTaskName(String.format("%,d", rate) + " " + Messages.TmfCheckpointIndexer_EventsPerSecond); //$NON-NLS-1$ //$NON-NLS-2$
                 } catch (final InterruptedException e) {
                     return Status.OK_STATUS;

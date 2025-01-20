@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2016 EfficiOS Inc., Alexandre Montplaisir
+ * Copyright (c) 2015, 2025 EfficiOS Inc., Alexandre Montplaisir and others
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -41,7 +41,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.tracecompass.common.core.NonNullUtils;
 import org.eclipse.tracecompass.common.core.log.TraceCompassLog;
-import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils;
 import org.eclipse.tracecompass.common.core.process.ProcessUtils;
 import org.eclipse.tracecompass.common.core.process.ProcessUtils.OutputReaderFunction;
 import org.eclipse.tracecompass.internal.analysis.lami.core.Activator;
@@ -68,6 +67,7 @@ import org.eclipse.tracecompass.internal.provisional.analysis.lami.core.types.La
 import org.eclipse.tracecompass.tmf.core.analysis.ondemand.IOnDemandAnalysis;
 import org.eclipse.tracecompass.tmf.core.timestamp.TmfTimeRange;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
+import org.eclipse.tracecompass.traceeventlogger.LogUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -309,18 +309,18 @@ public class LamiAnalysis implements IOnDemandAnalysis {
         final String output = getOutputFromCommand(commandLine);
 
         if (output == null) {
-            TraceCompassLogUtils.traceInstant(LOGGER, Level.INFO, LOG_NO_MI_VERSION, INVALID_MI_VERSION, command);
+            LogUtils.traceInstant(LOGGER, Level.INFO, LOG_NO_MI_VERSION, INVALID_MI_VERSION, command);
             return;
         }
 
         final String versionString = output.trim();
 
         if (!versionString.matches("\\d{1,3}\\.\\d{1,3}")) { //$NON-NLS-1$
-            TraceCompassLogUtils.traceInstant(LOGGER, Level.INFO, LOG_NO_MI_VERSION, COMMAND, command, VERSION, versionString);
+            LogUtils.traceInstant(LOGGER, Level.INFO, LOG_NO_MI_VERSION, COMMAND, command, VERSION, versionString);
             return;
         }
 
-        TraceCompassLogUtils.traceInstant(LOGGER, Level.FINE, LOG_VERSION, COMMAND, command, VERSION, versionString);
+        LogUtils.traceInstant(LOGGER, Level.FINE, LOG_VERSION, COMMAND, command, VERSION, versionString);
 
 
         final String[] parts = versionString.split("\\."); //$NON-NLS-1$
@@ -406,7 +406,7 @@ public class LamiAnalysis implements IOnDemandAnalysis {
          */
         List<String> command = ImmutableList.<@NonNull String> builder()
                 .addAll(fScriptCommand).add(METADATA_FLAG).build();
-        TraceCompassLogUtils.traceInstant(LOGGER, Level.INFO, RUNNING_METADATA_COMMAND, COMMAND, command);
+        LogUtils.traceInstant(LOGGER, Level.INFO, RUNNING_METADATA_COMMAND, COMMAND, command);
         String output = getOutputFromCommand(command);
         if (output == null || output.isEmpty()) {
             fHelpMessage = noMetadata(NonNullUtils.nullToEmptyString(Messages.LamiAnalysis_ErrorNoOutput));
@@ -492,7 +492,7 @@ public class LamiAnalysis implements IOnDemandAnalysis {
 
         } catch (JSONException e) {
             /* Error in the parsing of the JSON, script is broken? */
-            TraceCompassLogUtils.traceInstant(LOGGER, Level.WARNING, ERROR_PARSING_METADATA, e.getMessage());
+            LogUtils.traceInstant(LOGGER, Level.WARNING, ERROR_PARSING_METADATA, e.getMessage());
             fHelpMessage = noMetadata(NonNullUtils.nullToEmptyString(NLS.bind(Messages.LamiAnalysis_ParsingError, e.getMessage())));
             return false;
         }
@@ -699,7 +699,7 @@ public class LamiAnalysis implements IOnDemandAnalysis {
         builder.addAll(extraParams);
         builder.add(tracePath);
         List<String> command = builder.build();
-        TraceCompassLogUtils.traceInstant(LOGGER, Level.INFO, RUNNING_EXECUTE_COMMAND, COMMAND, command);
+        LogUtils.traceInstant(LOGGER, Level.INFO, RUNNING_EXECUTE_COMMAND, COMMAND, command);
         String output = getResultsFromCommand(command, monitor);
 
         if (output.isEmpty()) {
@@ -848,7 +848,7 @@ public class LamiAnalysis implements IOnDemandAnalysis {
             }
 
         } catch (JSONException e) {
-            TraceCompassLogUtils.traceInstant(LOGGER, Level.WARNING, ERROR_PARSING_EXECUTION_OUTPUT, e.getMessage());
+            LogUtils.traceInstant(LOGGER, Level.WARNING, ERROR_PARSING_EXECUTION_OUTPUT, e.getMessage());
             IStatus status = new Status(IStatus.ERROR, Activator.instance().getPluginId(), e.getMessage(), e);
             throw new CoreException(status);
         }
@@ -868,7 +868,7 @@ public class LamiAnalysis implements IOnDemandAnalysis {
 
     @Nullable
     private static String getOutputFromCommand(List<String> command, boolean orError) {
-        TraceCompassLogUtils.traceInstant(LOGGER, Level.FINE, LOG_RUNNING_MESSAGE, COMMAND, command);
+        LogUtils.traceInstant(LOGGER, Level.FINE, LOG_RUNNING_MESSAGE, COMMAND, command);
         List<String> lines = ProcessUtils.getOutputFromCommand(command, orError);
         if (lines == null) {
             return null;

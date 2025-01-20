@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2010, 2018 Ericsson, École Polytechnique de Montréal
+ * Copyright (c) 2010, 2025 Ericsson, École Polytechnique de Montréal
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -49,7 +49,6 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.tracecompass.common.core.log.TraceCompassLog;
-import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils;
 import org.eclipse.tracecompass.internal.tmf.ui.Activator;
 import org.eclipse.tracecompass.internal.tmf.ui.editors.ITmfEventsEditorConstants;
 import org.eclipse.tracecompass.tmf.core.TmfCommonConstants;
@@ -58,6 +57,7 @@ import org.eclipse.tracecompass.tmf.core.project.model.TmfTraceType;
 import org.eclipse.tracecompass.tmf.core.project.model.TmfTraceType.TraceElementType;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
 import org.eclipse.tracecompass.tmf.core.trace.TmfTraceManager;
+import org.eclipse.tracecompass.traceeventlogger.LogUtils;
 import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
@@ -718,7 +718,7 @@ public abstract class TmfCommonProjectElement extends TmfProjectModelElement {
             try {
                 resources[i].delete(true, new NullProgressMonitor());
                 // Needed to audit for privacy concerns
-                TraceCompassLogUtils.traceInstant(LOGGER, Level.CONFIG, "deleteSupplementaryResources", resources[i].getFullPath().toOSString() ); //$NON-NLS-1$
+                LogUtils.traceInstant(LOGGER, Level.CONFIG, "deleteSupplementaryResources", resources[i].getFullPath().toOSString() ); //$NON-NLS-1$
             } catch (CoreException e) {
                 Activator.getDefault().logError("Error deleting supplementary resource " + resources[i], e); //$NON-NLS-1$
             }

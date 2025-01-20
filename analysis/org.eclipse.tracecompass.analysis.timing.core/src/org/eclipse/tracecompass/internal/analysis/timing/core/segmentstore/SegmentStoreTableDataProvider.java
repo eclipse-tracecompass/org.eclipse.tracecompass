@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2022, 2024 Ericsson
+ * Copyright (c) 2022, 2025 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -38,9 +38,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.analysis.timing.core.segmentstore.ISegmentStoreProvider;
 import org.eclipse.tracecompass.common.core.NonNullUtils;
 import org.eclipse.tracecompass.common.core.log.TraceCompassLog;
-import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils;
-import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils.FlowScopeLog;
-import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils.FlowScopeLogBuilder;
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.filters.VirtualTableQueryFilter;
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.table.ITmfVirtualTableDataProvider;
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.table.ITmfVirtualTableModel;
@@ -68,6 +65,9 @@ import org.eclipse.tracecompass.tmf.core.segment.SegmentEndTimeAspect;
 import org.eclipse.tracecompass.tmf.core.segment.SegmentStartNsTimeAspect;
 import org.eclipse.tracecompass.tmf.core.timestamp.TmfTimestamp;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
+import org.eclipse.tracecompass.traceeventlogger.LogUtils;
+import org.eclipse.tracecompass.traceeventlogger.LogUtils.FlowScopeLog;
+import org.eclipse.tracecompass.traceeventlogger.LogUtils.FlowScopeLogBuilder;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -247,7 +247,7 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTableDataProvider 
      */
     public SegmentStoreTableDataProvider(ITmfTrace trace, ISegmentStoreProvider segmentProvider, String analysisId) {
         super(trace);
-        TraceCompassLogUtils.traceObjectCreation(LOGGER, Level.FINE, this);
+        LogUtils.traceObjectCreation(LOGGER, Level.FINE, this);
         fId = analysisId;
         fIsFirstAspect = true;
         fAllIndexes = new HashMap<>();
@@ -257,7 +257,7 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTableDataProvider 
 
     @Override
     public void dispose() {
-        TraceCompassLogUtils.traceObjectDestruction(LOGGER, Level.FINE, this, 10);
+        LogUtils.traceObjectDestruction(LOGGER, Level.FINE, this, 10);
     }
 
     /**
@@ -278,7 +278,7 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTableDataProvider 
         if (segStore != null) {
             synchronized (fAllIndexes) {
                 try (FlowScopeLog scope = new FlowScopeLogBuilder(LOGGER, Level.FINE, "SegmentStoreTableDataProvider#buildIndex.buildingIndexes").build()) { //$NON-NLS-1$
-                    TraceCompassLogUtils.traceObjectCreation(LOGGER, Level.FINE, fAllIndexes);
+                    LogUtils.traceObjectCreation(LOGGER, Level.FINE, fAllIndexes);
                     Iterable<ISegment> sortedSegmentStore = segStore.iterator(comparator);
                     List<SegmentStoreIndex> indexes = getIndexes(sortedSegmentStore);
                     if (fIsFirstAspect) {
@@ -289,9 +289,9 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTableDataProvider 
                         fAllIndexes.put(id, new SegmentIndexesComparatorWrapper(indexes, comparator, aspectName));
                     }
                 } catch (Exception ex) {
-                    TraceCompassLogUtils.traceInstant(LOGGER, Level.SEVERE, "error build index", ex.getMessage()); //$NON-NLS-1$
+                    LogUtils.traceInstant(LOGGER, Level.SEVERE, "error build index", ex.getMessage()); //$NON-NLS-1$
                 } finally {
-                    TraceCompassLogUtils.traceObjectDestruction(LOGGER, Level.FINE, fAllIndexes);
+                    LogUtils.traceObjectDestruction(LOGGER, Level.FINE, fAllIndexes);
                 }
             }
         }
@@ -372,7 +372,7 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTableDataProvider 
 
     @Override
     public TmfModelResponse<ITmfVirtualTableModel<VirtualTableLine>> fetchLines(Map<String, Object> fetchParameters, @Nullable IProgressMonitor monitor) {
-        TraceCompassLogUtils.traceAsyncStart(LOGGER, Level.FINE, "SegmentStoreTableDataProvider#fetchLines", fId, 2); //$NON-NLS-1$
+        LogUtils.traceAsyncStart(LOGGER, Level.FINE, "SegmentStoreTableDataProvider#fetchLines", fId, 2); //$NON-NLS-1$
         fetchParameters.putIfAbsent(DataProviderParameterUtils.REQUESTED_COLUMN_IDS_KEY, Collections.emptyList());
         VirtualTableQueryFilter queryFilter = FetchParametersUtils.createVirtualTableQueryFilter(fetchParameters);
         if (queryFilter == null) {
@@ -394,12 +394,12 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTableDataProvider 
             }
             synchronized (fAllIndexes) {
                 try (FlowScopeLog scope = new FlowScopeLogBuilder(LOGGER, Level.FINE, "SegmentStoreTableDataProvider#fetchLines").build()) { //$NON-NLS-1$
-                    TraceCompassLogUtils.traceObjectCreation(LOGGER, Level.FINER, fAllIndexes);
+                    LogUtils.traceObjectCreation(LOGGER, Level.FINER, fAllIndexes);
                     return extractRequestedLines(queryFilter, fetchParameters, segStore, aspects, indexesComparatorWrapper);
                 } catch (Exception ex) {
-                    TraceCompassLogUtils.traceInstant(LOGGER, Level.SEVERE, "error fetching lines ", ex.getMessage()); //$NON-NLS-1$
+                    LogUtils.traceInstant(LOGGER, Level.SEVERE, "error fetching lines ", ex.getMessage()); //$NON-NLS-1$
                 } finally {
-                    TraceCompassLogUtils.traceObjectDestruction(LOGGER, Level.FINER, fAllIndexes);
+                    LogUtils.traceObjectDestruction(LOGGER, Level.FINER, fAllIndexes);
                 }
             }
         }

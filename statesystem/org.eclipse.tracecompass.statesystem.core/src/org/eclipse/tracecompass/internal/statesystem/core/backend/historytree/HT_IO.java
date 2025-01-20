@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2018 Ericsson
+ * Copyright (c) 2012, 2025 Ericsson
  * Copyright (c) 2010, 2011 École Polytechnique de Montréal
  * Copyright (c) 2010, 2011 Alexandre Montplaisir <alexandre.montplaisir@gmail.com>
  *
@@ -32,9 +32,9 @@ import java.util.logging.Logger;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.common.core.log.TraceCompassLog;
-import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils;
 import org.eclipse.tracecompass.internal.statesystem.core.Activator;
 import org.eclipse.tracecompass.internal.statesystem.core.backend.historytree.IHistoryTree.IHTNodeFactory;
+import org.eclipse.tracecompass.traceeventlogger.LogUtils;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -99,7 +99,7 @@ public class HT_IO {
             HT_IO io = key.fStateHistory;
             int seqNb = key.fSeqNumber;
 
-            TraceCompassLogUtils.traceInstant(LOGGER, Level.FINEST, "Ht_Io:CacheMiss", "seqNum", seqNb); //$NON-NLS-1$ //$NON-NLS-2$
+            LogUtils.traceInstant(LOGGER, Level.FINEST, "Ht_Io:CacheMiss", "seqNum", seqNb); //$NON-NLS-1$ //$NON-NLS-2$
 
             HTConfig config = io.fConfig;
             /* Allocate buffer */
@@ -201,7 +201,7 @@ public class HT_IO {
      */
     public @NonNull HTNode readNode(int seqNumber) throws ClosedChannelException {
         /* Do a cache lookup. If it's not present it will be loaded from disk */
-        TraceCompassLogUtils.traceInstant(LOGGER, Level.FINEST, "Ht_Io:CacheLookup", "seqNum", seqNumber); //$NON-NLS-1$ //$NON-NLS-2$
+        LogUtils.traceInstant(LOGGER, Level.FINEST, "Ht_Io:CacheLookup", "seqNum", seqNumber); //$NON-NLS-1$ //$NON-NLS-2$
         CacheKey key = new CacheKey(this, seqNumber);
         try {
             return Objects.requireNonNull(NODE_CACHE.get(key));
