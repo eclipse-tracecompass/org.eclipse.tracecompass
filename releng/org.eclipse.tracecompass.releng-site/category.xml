@@ -38,5 +38,6 @@
    <bundle id="org.eclipse.tracecompass.common.core"/>
    <bundle id="org.eclipse.tracecompass.common.core.source"/>
    <bundle id="org.apache.commons.lang3"/>
+   <bundle id="json"/>
    <category-def name="Trace Compass" label="Trace Compass Main Features"/>
 </site>
