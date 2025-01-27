@@ -24,7 +24,7 @@ import org.eclipse.tracecompass.tmf.core.config.ITmfDataProviderConfigurator;
  * {@link ITmfDataProviderConfigurator}, which implements the "canCreate" and
  * "canDelete" capabilities.
  *
- * @since 9.5
+ * @since 9.6
  * @author Bernd Hufmann
  */
 public interface IDataProviderCapabilities {

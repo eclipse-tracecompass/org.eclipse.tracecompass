@@ -19,7 +19,7 @@ import org.eclipse.tracecompass.tmf.core.dataprovider.IDataProviderCapabilities;
  * An instance of data provider capabilities, indicating what capabilities a
  * data provider has.
  *
- * @since 9.5
+ * @since 9.6
  * @author Bernd Hufmann
  */
 public class DataProviderCapabilities implements IDataProviderCapabilities {

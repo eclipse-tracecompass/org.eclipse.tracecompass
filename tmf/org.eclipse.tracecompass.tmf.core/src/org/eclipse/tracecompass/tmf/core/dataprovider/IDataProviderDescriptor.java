@@ -119,7 +119,7 @@ public interface IDataProviderDescriptor {
 
     /**
      * @return The data provider capabilities instance
-     * @since 9.5
+     * @since 9.6
      */
     default IDataProviderCapabilities getCapabilities() {
         return DataProviderCapabilities.NULL_INSTANCE;

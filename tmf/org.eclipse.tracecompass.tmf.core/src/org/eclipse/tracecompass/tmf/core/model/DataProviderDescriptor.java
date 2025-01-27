@@ -216,7 +216,7 @@ public class DataProviderDescriptor implements IDataProviderDescriptor {
          * @param capabilities
          *            the capabilities to set
          * @return the builder instance.
-         * @since 9.5
+         * @since 9.6
          */
         public Builder setCapabilities(IDataProviderCapabilities capabilities) {
             fCapabilities = capabilities;
