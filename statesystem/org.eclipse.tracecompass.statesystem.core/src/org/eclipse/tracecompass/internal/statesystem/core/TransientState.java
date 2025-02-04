@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2016 Ericsson
+ * Copyright (c) 2012, 2025 Ericsson
  * Copyright (c) 2010, 2011 École Polytechnique de Montréal
  * Copyright (c) 2010, 2011 Alexandre Montplaisir <alexandre.montplaisir@gmail.com>
  *
@@ -30,13 +30,13 @@ import java.util.logging.Logger;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.common.core.log.TraceCompassLog;
-import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils;
 import org.eclipse.tracecompass.internal.provisional.datastore.core.condition.TimeRangeCondition;
 import org.eclipse.tracecompass.statesystem.core.backend.IStateHistoryBackend;
 import org.eclipse.tracecompass.statesystem.core.exceptions.StateValueTypeException;
 import org.eclipse.tracecompass.statesystem.core.exceptions.TimeRangeException;
 import org.eclipse.tracecompass.statesystem.core.interval.ITmfStateInterval;
 import org.eclipse.tracecompass.statesystem.core.interval.TmfStateInterval;
+import org.eclipse.tracecompass.traceeventlogger.LogUtils.ScopeLog;
 
 /**
  * The Transient State is used to build intervals from punctual state changes.
@@ -401,7 +401,7 @@ public class TransientState {
      */
     public Iterable<ITmfStateInterval> query2D(Collection<Integer> quarks, TimeRangeCondition timeCondition) {
         fRWLock.readLock().lock();
-        try (TraceCompassLogUtils.ScopeLog log = new TraceCompassLogUtils.ScopeLog(LOGGER, Level.FINEST, "TransientState:query2D", //$NON-NLS-1$
+        try (ScopeLog log = new ScopeLog(LOGGER, Level.FINEST, "TransientState:query2D", //$NON-NLS-1$
                 "ssid", fBackend.getSSID(), //$NON-NLS-1$
                 "quarks", quarks, //$NON-NLS-1$
                 "time", timeCondition)) { //$NON-NLS-1$

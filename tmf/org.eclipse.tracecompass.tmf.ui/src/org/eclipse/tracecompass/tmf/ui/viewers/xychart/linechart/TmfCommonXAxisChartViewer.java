@@ -1,5 +1,5 @@
 /**********************************************************************
- * Copyright (c) 2017, 2020 Ericsson, Draeger, Auriga and others
+ * Copyright (c) 2017, 2025 Ericsson, Draeger, Auriga and others
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -49,9 +49,6 @@ import org.eclipse.swtchart.LineStyle;
 import org.eclipse.swtchart.Range;
 import org.eclipse.swtchart.model.DoubleArraySeriesModel;
 import org.eclipse.tracecompass.common.core.log.TraceCompassLog;
-import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils;
-import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils.FlowScopeLog;
-import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils.FlowScopeLogBuilder;
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.filters.TmfFilterAppliedSignal;
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.filters.TraceCompassFilter;
 import org.eclipse.tracecompass.internal.provisional.tmf.ui.viewers.xychart.BaseXYPresentationProvider;
@@ -82,6 +79,9 @@ import org.eclipse.tracecompass.tmf.ui.signal.TmfTimeViewAlignmentSignal;
 import org.eclipse.tracecompass.tmf.ui.viewers.xychart.AxisRange;
 import org.eclipse.tracecompass.tmf.ui.viewers.xychart.TmfChartTimeStampFormat;
 import org.eclipse.tracecompass.tmf.ui.viewers.xychart.TmfXYChartViewer;
+import org.eclipse.tracecompass.traceeventlogger.LogUtils;
+import org.eclipse.tracecompass.traceeventlogger.LogUtils.FlowScopeLog;
+import org.eclipse.tracecompass.traceeventlogger.LogUtils.FlowScopeLogBuilder;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableMap;
@@ -299,7 +299,7 @@ public abstract class TmfCommonXAxisChartViewer extends TmfXYChartViewer {
                     return;
                 }
                 try (FlowScopeLog scope = new FlowScopeLogBuilder(LOGGER, Level.FINE, "CommonXLineChart:CreatingUpdateThread").setParentScope(parentScope).build()) { //$NON-NLS-1$
-                    newUpdateThread(trace, scope);
+                    newUpdateThread(trace, Objects.requireNonNull(scope));
                 }
             });
         }
@@ -338,7 +338,7 @@ public abstract class TmfCommonXAxisChartViewer extends TmfXYChartViewer {
                     dataProvider = initializeDataProvider(fTrace);
                 }
                 if (dataProvider == null) {
-                    TraceCompassLogUtils.traceInstant(LOGGER, Level.WARNING, "Data provider for this viewer is not available"); //$NON-NLS-1$
+                    LogUtils.traceInstant(LOGGER, Level.WARNING, "Data provider for this viewer is not available"); //$NON-NLS-1$
                     return;
                 }
                 try {
@@ -362,7 +362,7 @@ public abstract class TmfCommonXAxisChartViewer extends TmfXYChartViewer {
         }
 
         public void cancel() {
-            TraceCompassLogUtils.traceInstant(LOGGER, Level.FINE, "CommonXLineChart:UpdateThreadCanceled"); //$NON-NLS-1$
+            LogUtils.traceInstant(LOGGER, Level.FINE, "CommonXLineChart:UpdateThreadCanceled"); //$NON-NLS-1$
             fMonitor.setCanceled(true);
         }
 
@@ -395,7 +395,7 @@ public abstract class TmfCommonXAxisChartViewer extends TmfXYChartViewer {
                     isComplete = true;
                 } else if (status == ITmfResponse.Status.FAILED || status == ITmfResponse.Status.CANCELLED) {
                     /* Error occurred, log and return */
-                    TraceCompassLogUtils.traceInstant(LOGGER, Level.WARNING, response.getStatusMessage());
+                    LogUtils.traceInstant(LOGGER, Level.WARNING, response.getStatusMessage());
                     isComplete = true;
                 } else {
                     /**
@@ -409,7 +409,7 @@ public abstract class TmfCommonXAxisChartViewer extends TmfXYChartViewer {
                          * InterruptedException is throw by Thread.Sleep and we
                          * should retry querying the data provider
                          **/
-                        TraceCompassLogUtils.traceInstant(LOGGER, Level.INFO, e.getMessage());
+                        LogUtils.traceInstant(LOGGER, Level.INFO, e.getMessage());
                         Thread.currentThread().interrupt();
                     }
                 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2016 Ericsson
+ * Copyright (c) 2012, 2025 Ericsson
  * Copyright (c) 2010, 2011 École Polytechnique de Montréal
  * Copyright (c) 2010, 2011 Alexandre Montplaisir <alexandre.montplaisir@gmail.com>
  *
@@ -24,14 +24,12 @@ import java.nio.channels.ClosedChannelException;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.tracecompass.common.core.log.TraceCompassLog;
-import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils;
-import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils.FlowScopeLog;
-import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils.FlowScopeLogBuilder;
 import org.eclipse.tracecompass.internal.provisional.datastore.core.condition.IntegerRangeCondition;
 import org.eclipse.tracecompass.internal.provisional.datastore.core.condition.TimeRangeCondition;
 import org.eclipse.tracecompass.internal.statesystem.core.Activator;
@@ -39,6 +37,9 @@ import org.eclipse.tracecompass.statesystem.core.backend.IStateHistoryBackend;
 import org.eclipse.tracecompass.statesystem.core.exceptions.StateSystemDisposedException;
 import org.eclipse.tracecompass.statesystem.core.exceptions.TimeRangeException;
 import org.eclipse.tracecompass.statesystem.core.interval.ITmfStateInterval;
+import org.eclipse.tracecompass.traceeventlogger.LogUtils;
+import org.eclipse.tracecompass.traceeventlogger.LogUtils.FlowScopeLog;
+import org.eclipse.tracecompass.traceeventlogger.LogUtils.FlowScopeLogBuilder;
 
 import com.google.common.annotations.VisibleForTesting;
 
@@ -174,7 +175,7 @@ public class HistoryTreeBackend implements IStateHistoryBackend {
      */
     @VisibleForTesting
     protected @NonNull IHistoryTree initializeSHT(@NonNull HTConfig conf) throws IOException {
-        TraceCompassLogUtils.traceObjectCreation(LOGGER, Level.FINER, this);
+        LogUtils.traceObjectCreation(LOGGER, Level.FINER, this);
         return HistoryTreeFactory.createHistoryTree(conf);
     }
 
@@ -262,8 +263,8 @@ public class HistoryTreeBackend implements IStateHistoryBackend {
     @Override
     public void dispose() {
         if (fFinishedBuilding) {
-            TraceCompassLogUtils.traceInstant(LOGGER, Level.FINE, "HistoryTreeBackend:ClosingFile", "size", getSHT().getFileSize()); //$NON-NLS-1$ //$NON-NLS-2$
-            TraceCompassLogUtils.traceObjectDestruction(LOGGER, Level.FINER, this);
+            LogUtils.traceInstant(LOGGER, Level.FINE, "HistoryTreeBackend:ClosingFile", "size", getSHT().getFileSize()); //$NON-NLS-1$ //$NON-NLS-2$
+            LogUtils.traceObjectDestruction(LOGGER, Level.FINER, this);
             getSHT().closeFile();
         } else {
             /*
@@ -361,7 +362,7 @@ public class HistoryTreeBackend implements IStateHistoryBackend {
                 "ssid", getSSID(), //$NON-NLS-1$
                 "quarks", quarks, //$NON-NLS-1$
                 "timeCondition", times).build()) { //$NON-NLS-1$
-            return () -> new HistoryTreeBackendIterator(getSHT(), quarks, times, reverse, log);
+            return () -> new HistoryTreeBackendIterator(getSHT(), quarks, times, reverse, Objects.requireNonNull(log));
         }
     }
 

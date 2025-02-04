@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017 École Polytechnique de Montréal
+ * Copyright (c) 2017, 2025 École Polytechnique de Montréal
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -18,7 +18,7 @@ import java.util.logging.Logger;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.common.core.log.TraceCompassLog;
-import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils;
+import org.eclipse.tracecompass.traceeventlogger.LogUtils;
 
 /**
  * Utility class to resolve symbols from providers
@@ -75,7 +75,7 @@ public final class SymbolProviderUtils {
         for (ISymbolProvider provider : providers) {
             TmfResolvedSymbol currentSymbol = func.apply(provider);
             if (currentSymbol != null) {
-                TraceCompassLogUtils.traceInstant(LOGGER, Level.FINER, "Symbol found", "address", address, "provider", provider, "found symbol", currentSymbol); //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$//$NON-NLS-4$
+                LogUtils.traceInstant(LOGGER, Level.FINER, "Symbol found", "address", address, "provider", provider, "found symbol", currentSymbol); //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$//$NON-NLS-4$
                 if (resolvedSymbol == null) {
                     resolvedSymbol = currentSymbol;
                 } else {
@@ -84,7 +84,7 @@ public final class SymbolProviderUtils {
             }
         }
         String symbolText = resolvedSymbol != null ? resolvedSymbol.getSymbolName() : "0x" + Long.toHexString(address);//$NON-NLS-1$
-        TraceCompassLogUtils.traceInstant(LOGGER, Level.FINER, "Symbol returned", "address", address, "symbolText", symbolText); //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
+        LogUtils.traceInstant(LOGGER, Level.FINER, "Symbol returned", "address", address, "symbolText", symbolText); //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
         return symbolText;
     }
 
