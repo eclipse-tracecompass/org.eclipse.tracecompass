@@ -34,4 +34,9 @@ public interface ITmfMarker {
     /** Duration marker attribute. The format is the output of Long.toString(). */
     String MARKER_DURATION = "duration"; //$NON-NLS-1$
 
+    /**
+     * Duration marker attribute. The format is the output of Long.toString().
+     * @since 10.2
+     */
+    String MARKER_FOREGROUND = "foreground"; //$NON-NLS-1$
 }
