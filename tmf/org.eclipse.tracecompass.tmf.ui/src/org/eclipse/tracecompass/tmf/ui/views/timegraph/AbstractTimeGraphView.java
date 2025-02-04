@@ -1462,6 +1462,7 @@ public abstract class AbstractTimeGraphView extends TmfView implements ITmfTimeA
                                                 TmfTimestamp.fromNanos(bookmark.getTime())));
                             }
                             marker.setAttribute(ITmfMarker.MARKER_COLOR, bookmark.getColor().toString());
+                            marker.setAttribute(ITmfMarker.MARKER_FOREGROUND, bookmark.isForeground());
                         }
                     }, null);
                 } catch (CoreException e) {
@@ -1679,6 +1680,7 @@ public abstract class AbstractTimeGraphView extends TmfView implements ITmfTimeA
                 String time = marker.getAttribute(ITmfMarker.MARKER_TIME, (String) null);
                 String duration = marker.getAttribute(ITmfMarker.MARKER_DURATION, Long.toString(0));
                 String rgba = marker.getAttribute(ITmfMarker.MARKER_COLOR, (String) null);
+                boolean fg = marker.getAttribute(ITmfMarker.MARKER_FOREGROUND, Boolean.TRUE);
                 if (label != null && time != null && rgba != null) {
                     Matcher matcher = RGBA_PATTERN.matcher(rgba);
                     if (matcher.matches()) {
@@ -1688,7 +1690,7 @@ public abstract class AbstractTimeGraphView extends TmfView implements ITmfTimeA
                             int blue = Integer.valueOf(matcher.group(3));
                             int alpha = Integer.valueOf(matcher.group(4));
                             RGBA color = new RGBA(red, green, blue, alpha);
-                            bookmarks.add(new MarkerEvent(null, Long.valueOf(time), Long.valueOf(duration), IMarkerEvent.BOOKMARKS, color, label, true));
+                            bookmarks.add(new MarkerEvent(null, Long.valueOf(time), Long.valueOf(duration), IMarkerEvent.BOOKMARKS, color, label, fg));
                         } catch (NumberFormatException e) {
                             Activator.getDefault().logError(e.getMessage());
                         }
