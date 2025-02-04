@@ -43,7 +43,7 @@ public class AddBookmarkDialog extends MultiLineInputDialog {
     private Scale fAlphaScale;
     private Label fAlphaLabel;
     private Button fForgroundButton;
-    private int fAlpha = 128;
+    private int fAlpha = 32;
     private boolean fForeground;
 
     /**
