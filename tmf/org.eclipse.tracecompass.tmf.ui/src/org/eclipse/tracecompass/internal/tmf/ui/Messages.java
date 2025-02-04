@@ -23,6 +23,8 @@ public class Messages extends NLS {
 
     public static String AddBookmarkDialog_Alpha;
     public static String AddBookmarkDialog_Color;
+
+    public static String AddBookmarkDialog_Foreground;
     public static String AddBookmarkDialog_Message;
     public static String AddBookmarkDialog_Title;
 
