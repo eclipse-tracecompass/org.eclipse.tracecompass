@@ -395,7 +395,7 @@
         <groupId>org.eclipse.tycho</groupId>
         <artifactId>target-platform-configuration</artifactId>
         <configuration>
-          <executionEnvironment>JavaSE-${jdk.version}</executionEnvironment>
+          <executionEnvironment>org.eclipse.justj.openjdk.hotspot.jre.minimal.stripped-${jdk.version}</executionEnvironment>
           <environments>
             <environment>
                 <os>win32</os>
