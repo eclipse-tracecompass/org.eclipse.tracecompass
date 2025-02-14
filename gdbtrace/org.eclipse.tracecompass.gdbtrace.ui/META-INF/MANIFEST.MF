@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name
 Bundle-Vendor: %Bundle-Vendor
 Bundle-SymbolicName: org.eclipse.tracecompass.gdbtrace.ui;singleton:=true
-Bundle-Version: 1.2.0.qualifier
+Bundle-Version: 1.3.0.qualifier
 Bundle-Localization: plugin
 Bundle-Activator: org.eclipse.tracecompass.internal.gdbtrace.ui.GdbTraceUIPlugin
 Require-Bundle: org.eclipse.core.runtime,
@@ -17,7 +17,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.tracecompass.gdbtrace.core,
  org.eclipse.jdt.annotation;bundle-version="[2.0.0,3.0.0)";resolution:=optional
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-11
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Export-Package: org.eclipse.tracecompass.internal.gdbtrace.ui;x-friends:="org.eclipse.tracecompass.gdbtrace.ui.tests",
  org.eclipse.tracecompass.internal.gdbtrace.ui.views;x-internal:=true,
  org.eclipse.tracecompass.internal.gdbtrace.ui.views.events;x-internal:=true,

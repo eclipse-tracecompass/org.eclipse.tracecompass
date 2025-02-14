@@ -6,7 +6,7 @@ Bundle-Version: 1.0.17.qualifier
 Bundle-Localization: plugin
 Bundle-SymbolicName: org.eclipse.tracecompass.analysis.os.linux.ui.swtbot.tests;singleton:=true
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-11
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Export-Package: org.eclipse.tracecompass.analysis.os.linux.ui.swtbot.tests.latency,
  org.eclipse.tracecompass.analysis.os.linux.ui.swtbot.tests.perf.views
 Require-Bundle: org.eclipse.core.resources,

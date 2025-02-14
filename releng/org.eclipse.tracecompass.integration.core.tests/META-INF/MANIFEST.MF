@@ -6,7 +6,7 @@ Bundle-Version: 1.0.10.qualifier
 Bundle-Localization: plugin
 Bundle-SymbolicName: org.eclipse.tracecompass.integration.core.tests;singleton:=true
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-11
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Export-Package: org.eclipse.tracecompass.integration.core.tests.dataproviders
 Require-Bundle: org.eclipse.core.resources,
  org.eclipse.core.runtime,

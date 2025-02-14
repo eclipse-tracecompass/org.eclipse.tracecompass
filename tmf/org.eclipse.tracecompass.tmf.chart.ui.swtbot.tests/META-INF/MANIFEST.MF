@@ -6,7 +6,7 @@ Bundle-Version: 1.0.7.qualifier
 Bundle-Localization: plugin
 Bundle-SymbolicName: org.eclipse.tracecompass.tmf.chart.ui.swtbot.tests;singleton:=true
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-11
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Export-Package: org.eclipse.tracecompass.tmf.chart.ui.swtbot.stubs,
  org.eclipse.tracecompass.tmf.chart.ui.swtbot.tests.dialog,
  org.eclipse.tracecompass.tmf.chart.ui.swtbot.tests.shared
