@@ -437,4 +437,8 @@
          id="org.tukaani.xz"
          version="0.0.0"/>
 
+   <plugin
+         id="org.eclipse.tracecompass.trace-event-logger"
+         version="0.0.0"/>
+
 </feature>
