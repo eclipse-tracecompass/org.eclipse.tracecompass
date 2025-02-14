@@ -6,4 +6,4 @@ Bundle-Version: 1.0.1.qualifier
 Bundle-Vendor: Eclipse Trace Compass
 Fragment-Host: org.slf4j.api
 Automatic-Module-Name: org.eclipse.tracecompass.slf4j.binding.simple.properties
-Bundle-RequiredExecutionEnvironment: JavaSE-11
+Bundle-RequiredExecutionEnvironment: JavaSE-17

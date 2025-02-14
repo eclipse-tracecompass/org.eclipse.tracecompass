@@ -6,7 +6,7 @@ Bundle-Version: 1.0.7.qualifier
 Bundle-Localization: plugin
 Bundle-SymbolicName: org.eclipse.tracecompass.analysis.lami.ui.swtbot.tests;singleton:=true
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-11
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Fragment-Host: org.eclipse.tracecompass.analysis.lami.ui
 Export-Package: org.eclipse.tracecompass.internal.provisional.analysis.lami.ui.views;x-internal:=true
 Require-Bundle: org.eclipse.core.resources,

@@ -5,7 +5,7 @@ Bundle-Vendor: %Bundle-Vendor
 Bundle-SymbolicName: org.eclipse.tracecompass.analysis.profiling.core.tests;singleton:=true
 Bundle-Version: 1.0.12.qualifier
 Bundle-Localization: plugin
-Bundle-RequiredExecutionEnvironment: JavaSE-11
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Bundle-Activator: org.eclipse.tracecompass.analysis.profiling.core.tests.ActivatorTest
 Bundle-ActivationPolicy: lazy
 Automatic-Module-Name: org.eclipse.tracecompass.analysis.profiling.core.tests
