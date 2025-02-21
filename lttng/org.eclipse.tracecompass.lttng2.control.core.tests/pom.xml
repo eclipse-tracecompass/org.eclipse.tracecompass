@@ -16,11 +16,11 @@
   <parent>
     <groupId>org.eclipse.tracecompass</groupId>
     <artifactId>org.eclipse.tracecompass.lttng-parent</artifactId>
-    <version>10.2.0-SNAPSHOT</version>
+    <version>10.3.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.eclipse.tracecompass.lttng2.control.core.tests</artifactId>
-  <version>1.1.4-SNAPSHOT</version>
+  <version>1.1.5-SNAPSHOT</version>
 
   <properties>
     <skipTests>${skip-tc-core-tests}</skipTests>
