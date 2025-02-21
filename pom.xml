@@ -482,6 +482,23 @@
       <plugins>
         <plugin>
           <groupId>org.eclipse.tycho</groupId>
+          <artifactId>tycho-gpg-plugin</artifactId>
+          <version>${tycho-version}</version>
+          <executions>
+            <execution>
+              <id>pgpsigner</id>
+              <goals>
+                <goal>sign-p2-artifacts</goal>
+              </goals>
+              <configuration>
+                <keyname>FDA6044E56578104</keyname>
+                <skipIfJarsigned>false</skipIfJarsigned>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <groupId>org.eclipse.tycho</groupId>
           <artifactId>tycho-compiler-plugin</artifactId>
           <version>${tycho-version}</version>
           <configuration>
