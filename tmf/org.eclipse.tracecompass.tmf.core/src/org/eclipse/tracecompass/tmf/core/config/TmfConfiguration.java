@@ -17,15 +17,24 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.internal.tmf.core.Activator;
+import org.eclipse.tracecompass.tmf.core.analysis.IAnalysisModule;
+import org.eclipse.tracecompass.tmf.core.exceptions.TmfAnalysisException;
 import org.eclipse.tracecompass.tmf.core.exceptions.TmfConfigurationException;
+import org.eclipse.tracecompass.tmf.core.exceptions.TmfTraceException;
+import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
+import org.eclipse.tracecompass.tmf.core.trace.TmfTraceManager;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
@@ -343,4 +352,109 @@ public class TmfConfiguration implements ITmfConfiguration {
             throw new TmfConfigurationException("Error writing configuration.", e); //$NON-NLS-1$
         }
     }
+
+    @SuppressWarnings("null")
+    private static @NonNull IPath getConfigurationRootFolder(@NonNull ITmfTrace trace, String subFolder) {
+        String supplFolder = TmfTraceManager.getSupplementaryFileDir(trace);
+        IPath supplPath = new Path(supplFolder);
+        supplPath = supplPath.addTrailingSeparator().append(subFolder);
+        return supplPath;
+    }
+
+    /**
+     * Reads the configurations for a given trace
+     *
+     * @param trace
+     *            the trace to read configurations from
+     * @return list of configurations if any
+     * @throws TmfConfigurationException
+     *             if an error occurs
+     */
+    public static @NonNull List<ITmfConfiguration> readConfigurations(@NonNull ITmfTrace trace, String subfolder) throws TmfConfigurationException {
+        IPath rootPath = getConfigurationRootFolder(trace, subfolder);
+        File folder = rootPath.toFile();
+        List<ITmfConfiguration> list = new ArrayList<>();
+        if (folder.exists()) {
+            File[] listOfFiles = folder.listFiles();
+            for (File file : listOfFiles) {
+                IPath path = new Path(file.getName());
+                if (path.getFileExtension().equals(TmfConfiguration.JSON_EXTENSION)) {
+                    ITmfConfiguration config = TmfConfiguration.fromJsonFile(file);
+                    list.add(config);
+                }
+            }
+        }
+        return list;
+    }
+
+    /**
+     * Removes configuration from trace:
+     *  - delete configuration file
+     *  - remove analysis module from trace object
+     *
+     * @param config
+     *          the configuration to remove
+     * @param trace
+     *          the
+     * @throws TmfConfigurationException if an error occurs
+     */
+    public static void remove(ITmfConfiguration config, @NonNull ITmfTrace trace, String baseAnalysisId) throws TmfConfigurationException {
+        IPath traceConfig = getConfigurationRootFolder(trace, config.getSourceTypeId());
+        traceConfig = traceConfig.append(File.separator).append(config.getId()).addFileExtension(TmfConfiguration.JSON_EXTENSION);
+        File configFile = traceConfig.toFile();
+        if ((!configFile.exists()) || !configFile.delete()) {
+            throw new TmfConfigurationException("Configuration file can't be deleted from trace: configId=" + config.getId()); //$NON-NLS-1$
+        }
+
+        // Remove and clear persistent data
+        try {
+            IAnalysisModule module = trace.removeAnalysisModule(baseAnalysisId + config.getId());
+            if (module != null) {
+                module.dispose();
+                module.clearPersistentData();
+            }
+        } catch (TmfTraceException e) {
+            throw new TmfConfigurationException("Error removing analysis module from trace: analysis ID=" + baseAnalysisId + config.getId(), e); //$NON-NLS-1$
+        }
+    }
+
+    /**
+     * Create the InAndOutAnalysisModule for a given configuration and trace
+     *
+     * @param config
+     *            the input {@link ITmfConfiguration}
+     * @param trace
+     *            the trace to apply it to
+     * @param writeConfig
+     *            write the config (do only once)
+     * @return InAndOutAnalysisModule
+     * @throws TmfConfigurationException
+     *             if an error occurs
+     */
+    public static void create(@NonNull ITmfConfiguration config, @NonNull ITmfTrace trace, boolean writeConfig, IAnalysisModule module) throws TmfConfigurationException {
+        /*
+         * Apply configuration to each trace (no need to check trace type here)
+         */
+        module.setConfiguration(config);
+        if (writeConfig) {
+            IPath traceConfigPath = TmfConfiguration.getConfigurationRootFolder(trace, config.getSourceTypeId());
+            TmfConfiguration.writeConfiguration(config, traceConfigPath);
+        }
+        try {
+            if (module.setTrace(trace)) {
+                IAnalysisModule oldModule = trace.addAnalysisModule(module);
+                if (oldModule != null) {
+                    oldModule.dispose();
+                    oldModule.clearPersistentData();
+                }
+            } else {
+                module.dispose();
+                throw new TmfConfigurationException("InAndOut analysis module can't be created"); //$NON-NLS-1$
+            }
+        } catch (TmfAnalysisException | TmfTraceException e) {
+            module.dispose();
+            throw new TmfConfigurationException("Exception when setting trace", e); //$NON-NLS-1$
+        }
+    }
+
 }
