@@ -1,8 +1,16 @@
 package org.eclipse.tracecompass.tmf.core.config;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
+import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.tracecompass.internal.tmf.core.Activator;
 import org.eclipse.tracecompass.tmf.core.dataprovider.IDataProviderDescriptor;
 import org.eclipse.tracecompass.tmf.core.exceptions.TmfConfigurationException;
 import org.eclipse.tracecompass.tmf.core.signal.TmfSignalHandler;
@@ -14,13 +22,27 @@ import org.eclipse.tracecompass.tmf.core.trace.experiment.TmfExperiment;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
+import com.google.gson.Gson;
+import com.google.gson.JsonParseException;
 
 /**
  *
  */
 public abstract class AbstractTmfDataProviderConfigurator implements ITmfDataProviderConfigurator{
+    /**
+     * The json file extension
+     * @since 9.5
+     */
+    public static final String JSON_EXTENSION = "json"; //$NON-NLS-1$
 
     private static final Table<String, ITmfTrace, ITmfConfiguration> fTmfConfigurationTable = HashBasedTable.create();
+
+    /**
+     * @return a table mapping configuration id and trace (exp) to its configuration
+     */
+    protected Table<String, ITmfTrace, ITmfConfiguration> getConfigurationTable(){
+        return fTmfConfigurationTable;
+    }
 
     @Override
     public @NonNull IDataProviderDescriptor createDataProviderDescriptors(ITmfTrace trace, ITmfConfiguration configuration) throws TmfConfigurationException {
@@ -112,12 +134,12 @@ public abstract class AbstractTmfDataProviderConfigurator implements ITmfDataPro
             if (trace instanceof TmfExperiment) {
                 for (ITmfTrace tr : TmfTraceManager.getTraceSet(trace)) {
                    // Read configurations from sub-trace
-                   List<ITmfConfiguration> configs = TmfConfiguration.readConfigurations(tr, subfolder);
+                   List<ITmfConfiguration> configs = readConfigurations(tr, subfolder);
                    readAndApplyConfiguration(trace, configs);
                 }
             } else {
                 // Read configurations trace
-                List<ITmfConfiguration> configs = TmfConfiguration.readConfigurations(trace, subfolder);
+                List<ITmfConfiguration> configs = readConfigurations(trace, subfolder);
                 readAndApplyConfiguration(trace, configs);
             }
        } catch (TmfConfigurationException e) {
@@ -146,5 +168,69 @@ public abstract class AbstractTmfDataProviderConfigurator implements ITmfDataPro
             }
         }
     }
+
+    /**
+     * Reads the configurations for a given trace
+     *
+     * @param trace
+     *            the trace to read configurations from
+     * @return list of configurations if any
+     * @throws TmfConfigurationException
+     *             if an error occurs
+     */
+    private @NonNull List<ITmfConfiguration> readConfigurations(@NonNull ITmfTrace trace, String subfolder) throws TmfConfigurationException {
+        IPath rootPath = getConfigurationRootFolder(trace, subfolder);
+        File folder = rootPath.toFile();
+        List<ITmfConfiguration> list = new ArrayList<>();
+        if (folder.exists()) {
+            File[] listOfFiles = folder.listFiles();
+            for (File file : listOfFiles) {
+                IPath path = new Path(file.getName());
+                if (path.getFileExtension().equals(JSON_EXTENSION)) {
+                    ITmfConfiguration config = TmfConfiguration.fromJsonFile(file);
+                    list.add(config);
+                }
+            }
+        }
+        return list;
+    }
+
+    /**
+     * Serialize {@link ITmfConfiguration} to JSON file with name configId.json
+     *
+     * @param configuration
+     *            the configuration to serialize
+     * @param rootPath
+     *            the root path to store the configuration
+     * @throws TmfConfigurationException
+     *             if an error occurs
+     * @since 9.5
+     */
+    protected static void writeConfiguration(ITmfConfiguration configuration, IPath rootPath) throws TmfConfigurationException {
+        IPath supplPath = rootPath;
+        File folder = supplPath.toFile();
+        if (!folder.exists()) {
+            folder.mkdir();
+        }
+        supplPath = supplPath.addTrailingSeparator().append(configuration.getId()).addFileExtension(JSON_EXTENSION);
+        File file = supplPath.toFile();
+        try (Writer writer = new FileWriter(file)) {
+            writer.append(new Gson().toJson(configuration));
+        } catch (IOException | JsonParseException e) {
+            Activator.logError(e.getMessage(), e);
+            throw new TmfConfigurationException("Error writing configuration.", e); //$NON-NLS-1$
+        }
+    }
+
+//    @SuppressWarnings("null")
+//    protected static @NonNull IPath getConfigurationRootFolder(@NonNull ITmfTrace trace, String subFolder) {
+//        String supplFolder = TmfTraceManager.getSupplementaryFileDir(trace);
+//        IPath supplPath = new Path(supplFolder);
+//        supplPath = supplPath.addTrailingSeparator().append(subFolder);
+//        return supplPath;
+// }
+
+    @SuppressWarnings("null")
+    protected @NonNull abstract IPath getConfigurationRootFolder(@NonNull ITmfTrace trace, String subFolder);
 
 }
