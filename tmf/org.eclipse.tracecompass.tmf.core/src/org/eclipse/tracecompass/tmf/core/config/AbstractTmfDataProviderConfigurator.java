@@ -35,7 +35,7 @@ public abstract class AbstractTmfDataProviderConfigurator implements ITmfDataPro
      */
     public static final String JSON_EXTENSION = "json"; //$NON-NLS-1$
 
-    private static final Table<String, ITmfTrace, ITmfConfiguration> fTmfConfigurationTable = HashBasedTable.create();
+    private Table<String, ITmfTrace, ITmfConfiguration> fTmfConfigurationTable = HashBasedTable.create();
 
     /**
      * @return a table mapping configuration id and trace (exp) to its configuration
