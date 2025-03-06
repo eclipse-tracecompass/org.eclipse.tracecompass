@@ -92,7 +92,6 @@ public abstract class AbstractTmfDataProviderConfigurator implements ITmfDataPro
      */
     protected abstract void applyConfiguration(ITmfTrace trace, ITmfConfiguration config, boolean writeConfig);
 
-    // efrooo: the below move to open source
     @Override
     public void removeDataProviderDescriptor(ITmfTrace trace, IDataProviderDescriptor descriptor) throws TmfConfigurationException {
         ITmfConfiguration creationConfiguration = descriptor.getConfiguration();
@@ -116,7 +115,6 @@ public abstract class AbstractTmfDataProviderConfigurator implements ITmfDataPro
      */
     protected abstract void removeConfiguration(@NonNull ITmfTrace trace, @NonNull ITmfConfiguration config);
 
-    // efroroo: to open source
     /**
      * Signal handler for opened trace signal. Will populate trace
      * configurations
@@ -125,7 +123,7 @@ public abstract class AbstractTmfDataProviderConfigurator implements ITmfDataPro
      *            the signal to handle
      */
     @TmfSignalHandler
-    public void traceOpened(TmfTraceOpenedSignal signal, String subfolder) {
+    public void traceOpened(TmfTraceOpenedSignal signal) {
         ITmfTrace trace = signal.getTrace();
         if (trace == null) {
             return;
@@ -134,12 +132,12 @@ public abstract class AbstractTmfDataProviderConfigurator implements ITmfDataPro
             if (trace instanceof TmfExperiment) {
                 for (ITmfTrace tr : TmfTraceManager.getTraceSet(trace)) {
                    // Read configurations from sub-trace
-                   List<ITmfConfiguration> configs = readConfigurations(tr, subfolder);
+                   List<ITmfConfiguration> configs = readConfigurations(tr);
                    readAndApplyConfiguration(trace, configs);
                 }
             } else {
                 // Read configurations trace
-                List<ITmfConfiguration> configs = readConfigurations(trace, subfolder);
+                List<ITmfConfiguration> configs = readConfigurations(trace);
                 readAndApplyConfiguration(trace, configs);
             }
        } catch (TmfConfigurationException e) {
@@ -178,8 +176,8 @@ public abstract class AbstractTmfDataProviderConfigurator implements ITmfDataPro
      * @throws TmfConfigurationException
      *             if an error occurs
      */
-    private @NonNull List<ITmfConfiguration> readConfigurations(@NonNull ITmfTrace trace, String subfolder) throws TmfConfigurationException {
-        IPath rootPath = getConfigurationRootFolder(trace, subfolder);
+    private @NonNull List<ITmfConfiguration> readConfigurations(@NonNull ITmfTrace trace) throws TmfConfigurationException {
+        IPath rootPath = getConfigurationRootFolder(trace);
         File folder = rootPath.toFile();
         List<ITmfConfiguration> list = new ArrayList<>();
         if (folder.exists()) {
@@ -222,15 +220,7 @@ public abstract class AbstractTmfDataProviderConfigurator implements ITmfDataPro
         }
     }
 
-//    @SuppressWarnings("null")
-//    protected static @NonNull IPath getConfigurationRootFolder(@NonNull ITmfTrace trace, String subFolder) {
-//        String supplFolder = TmfTraceManager.getSupplementaryFileDir(trace);
-//        IPath supplPath = new Path(supplFolder);
-//        supplPath = supplPath.addTrailingSeparator().append(subFolder);
-//        return supplPath;
-// }
-
     @SuppressWarnings("null")
-    protected @NonNull abstract IPath getConfigurationRootFolder(@NonNull ITmfTrace trace, String subFolder);
+    protected @NonNull abstract IPath getConfigurationRootFolder(@NonNull ITmfTrace trace);
 
 }
