@@ -26,7 +26,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 
 /**
- *
+ * This class meant to be extended by data provider factories that want to be
+ * able to handle configurations.
  */
 public abstract class AbstractTmfDataProviderConfigurator implements ITmfDataProviderConfigurator{
     /**
@@ -48,16 +49,16 @@ public abstract class AbstractTmfDataProviderConfigurator implements ITmfDataPro
     public @NonNull IDataProviderDescriptor createDataProviderDescriptors(ITmfTrace trace, ITmfConfiguration configuration) throws TmfConfigurationException {
 
         if (configuration.getName().equals(TmfConfiguration.UNKNOWN)) {
-            throw new TmfConfigurationException("Missing configuration name of InAndOut analysis"); //$NON-NLS-1$
+            throw new TmfConfigurationException("Missing configuration name"); //$NON-NLS-1$
         }
 
         if (configuration.getSourceTypeId().equals(TmfConfiguration.UNKNOWN)) {
-            throw new TmfConfigurationException("Missing configuration type for InAndOut analysis"); //$NON-NLS-1$
+            throw new TmfConfigurationException("Missing configuration type"); //$NON-NLS-1$
         }
 
         String description = configuration.getDescription();
         if (configuration.getDescription().equals(TmfConfiguration.UNKNOWN)) {
-            description = "InAndOut Analysis defined by configuration " + configuration.getName(); //$NON-NLS-1$
+            description = "Data provider defined by configuration " + configuration.getName(); //$NON-NLS-1$
         }
 
         TmfConfiguration.Builder builder = new TmfConfiguration.Builder();
@@ -80,15 +81,22 @@ public abstract class AbstractTmfDataProviderConfigurator implements ITmfDataPro
 
     /**
      * @param config
+     *            a configuration
      * @return A data provider descriptor based on the configuration parameter
      */
     protected abstract IDataProviderDescriptor getDescriptorFromConfig(ITmfConfiguration config);
 
     /**
-     * This is the method that handles what happens when a configuration is applied
+     * This is the method that handles what happens when a configuration is
+     * applied
+     *
      * @param trace
+     *            trace to which the configuration should be applied
      * @param config
+     *            the configuration to be applied
      * @param writeConfig
+     *            true if the configuration should be written to disk, false
+     *            otherwise
      */
     protected abstract void applyConfiguration(ITmfTrace trace, ITmfConfiguration config, boolean writeConfig);
 
@@ -109,9 +117,13 @@ public abstract class AbstractTmfDataProviderConfigurator implements ITmfDataPro
     }
 
     /**
-     * This is the method that handles what happens when a configuration is removed (e.g. remove analysis, dp etc)
+     * This is the method that handles what happens when a configuration is
+     * removed (e.g. remove analysis, dp etc)
+     *
      * @param trace
+     *            trace to which the configuration should be applied
      * @param config
+     *            the configuration to be applied
      */
     protected abstract void removeConfiguration(@NonNull ITmfTrace trace, @NonNull ITmfConfiguration config);
 
@@ -141,8 +153,7 @@ public abstract class AbstractTmfDataProviderConfigurator implements ITmfDataPro
                 readAndApplyConfiguration(trace, configs);
             }
        } catch (TmfConfigurationException e) {
-           // FIXME: use proper logging
-           // Activator.logError("Error applying configurations for trace " + trace.getName(), e); //$NON-NLS-1$
+           Activator.logError("Error applying configurations for trace " + trace.getName(), e); //$NON-NLS-1$
        }
     }
 
@@ -220,6 +231,11 @@ public abstract class AbstractTmfDataProviderConfigurator implements ITmfDataPro
         }
     }
 
+    /**
+     * @param trace
+     *            the trace to which the configuration should be applied to
+     * @return the path where the configuration should be stored
+     */
     @SuppressWarnings("null")
     protected @NonNull abstract IPath getConfigurationRootFolder(@NonNull ITmfTrace trace);
 
