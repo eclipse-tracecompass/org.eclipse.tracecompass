@@ -12,21 +12,17 @@ package org.eclipse.tracecompass.tmf.core.config;
 
 import java.io.File;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
-import java.io.Writer;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.internal.tmf.core.Activator;
 import org.eclipse.tracecompass.tmf.core.exceptions.TmfConfigurationException;
-
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 import com.google.gson.annotations.Expose;
@@ -46,12 +42,6 @@ public class TmfConfiguration implements ITmfConfiguration {
      * @since 9.5
      */
     public static final String UNKNOWN = "---unknown---"; //$NON-NLS-1$
-
-    /**
-     * The json file extension
-     * @since 9.5
-     */
-    public static final String JSON_EXTENSION = "json"; //$NON-NLS-1$
 
     @Expose
     @SerializedName(value = "id")
@@ -317,30 +307,4 @@ public class TmfConfiguration implements ITmfConfiguration {
         }
     }
 
-    /**
-     * Serialize {@link ITmfConfiguration} to JSON file with name configId.json
-     *
-     * @param configuration
-     *            the configuration to serialize
-     * @param rootPath
-     *            the root path to store the configuration
-     * @throws TmfConfigurationException
-     *             if an error occurs
-     * @since 9.5
-     */
-    public static void writeConfiguration(ITmfConfiguration configuration, IPath rootPath) throws TmfConfigurationException {
-        IPath supplPath = rootPath;
-        File folder = supplPath.toFile();
-        if (!folder.exists()) {
-            folder.mkdir();
-        }
-        supplPath = supplPath.addTrailingSeparator().append(configuration.getId()).addFileExtension(JSON_EXTENSION);
-        File file = supplPath.toFile();
-        try (Writer writer = new FileWriter(file)) {
-            writer.append(new Gson().toJson(configuration));
-        } catch (IOException | JsonParseException e) {
-            Activator.logError(e.getMessage(), e);
-            throw new TmfConfigurationException("Error writing configuration.", e); //$NON-NLS-1$
-        }
-    }
 }
