@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017, 2018 Ericsson
+ * Copyright (c) 2017, 2025 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0 which
@@ -26,6 +26,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.internal.tmf.core.Activator;
+import org.eclipse.tracecompass.tmf.core.analysis.TmfAnalysisOutputManager;
 import org.eclipse.tracecompass.tmf.core.component.DataProviderConstants;
 import org.eclipse.tracecompass.tmf.core.model.tree.ITmfTreeDataModel;
 import org.eclipse.tracecompass.tmf.core.model.tree.ITmfTreeDataProvider;
@@ -55,6 +56,7 @@ public class DataProviderManager {
     private static final String ELEMENT_NAME_PROVIDER = "dataProviderFactory"; //$NON-NLS-1$
     private static final String ATTR_CLASS = "class"; //$NON-NLS-1$
     private static final String ATTR_ID = "id"; //$NON-NLS-1$
+    private static final String CONFIG_SEPARATOR_REGEX = "\\" + DataProviderConstants.CONFIG_SEPARATOR; //$NON-NLS-1$
 
     private Map<String, IDataProviderFactory> fDataProviderFactories = new HashMap<>();
 
@@ -222,10 +224,23 @@ public class DataProviderManager {
             return Collections.emptyList();
         }
         List<IDataProviderDescriptor> list = new ArrayList<>();
+        TmfAnalysisOutputManager manager = TmfAnalysisOutputManager.getInstance();
         for (IDataProviderFactory factory : fDataProviderFactories.values()) {
             Collection<IDataProviderDescriptor> descriptors = factory.getDescriptors(trace);
-            if (!descriptors.isEmpty()) {
-                list.addAll(descriptors);
+            for (IDataProviderDescriptor descriptor : descriptors) {
+                String outputId = descriptor.getId().split(CONFIG_SEPARATOR_REGEX)[0];
+                String analysisId = outputId.contains(DataProviderConstants.ID_SEPARATOR) ? outputId.split(DataProviderConstants.ID_SEPARATOR)[1] : "";
+                boolean isHidden = false;
+                for (ITmfTrace expTrace : TmfTraceManager.getTraceSetWithExperiment(trace)) {
+                    String tracetype = expTrace.getTraceTypeId();
+                    if (manager.isHidden(tracetype, analysisId, outputId)) {
+                        isHidden = true;
+                        break;
+                    }
+                }
+                if (!isHidden) {
+                    list.add(descriptor);
+                }
             }
         }
         list.sort(Comparator.comparing(IDataProviderDescriptor::getName));

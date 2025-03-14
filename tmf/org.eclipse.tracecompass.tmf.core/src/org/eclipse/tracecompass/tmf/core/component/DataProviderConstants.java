@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019 Ericsson
+ * Copyright (c) 2019, 2025 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0 which
@@ -25,7 +25,13 @@ public class DataProviderConstants {
      */
     public static final String ID_SEPARATOR = ":"; //$NON-NLS-1$
 
-    private DataProviderConstants() {
+    /**
+     * Separator between base analysis ID and config ID in secondary ID
+     * @since 9.6
+     */
+    public static final String CONFIG_SEPARATOR = "+"; //$NON-NLS-1$
+
+   private DataProviderConstants() {
         // Empty constructor
     }
 }
