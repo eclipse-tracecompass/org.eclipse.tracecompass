@@ -62,6 +62,12 @@ public interface IDataProviderDescriptor {
          */
         DATA_TREE,
         /**
+         * A provider for an image data (e.g., png, jpeg, etc.)
+         *
+         * @since 10.3
+         */
+        IMAGE,
+        /**
          * A provider with no data. Can be used for grouping purposes and/or as data provider configurator.
          * @since 9.5
          */
