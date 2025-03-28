@@ -190,3 +190,22 @@ You can also consult the static analysis results at:
 * Setup environment: export DISPLAY=:2
 * Start the Metacity window manager: metacity --replace &
 * Execute the tests: mvn clean install
+
+# Git commit / tag signing
+
+Here is the `.gitconfig`. To force all commits to be signed. Trace Compass recommends signing commits in order to mitigate impersonation attacks. To enable signing, modify the `.gitconfig` as follows.
+
+cat ~/.gitconfig
+
+```
+[user] 
+  email = user.name@company.com 
+  name = user name 
+  signingkey = /home/username/.ssh/id_rsa.pub 
+[credential] 
+  helper = store 
+[commit] 
+  gpgsign = true 
+[gpg] 
+  format = ssh 
+```
