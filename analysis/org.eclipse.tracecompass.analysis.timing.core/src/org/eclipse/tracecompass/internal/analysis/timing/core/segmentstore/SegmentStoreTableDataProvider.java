@@ -327,9 +327,9 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTableDataProvider 
     public TmfModelResponse<TmfTreeModel<TmfTreeDataModel>> fetchTree(Map<String, Object> fetchParameters, @Nullable IProgressMonitor monitor) {
         if (fSegmentProvider instanceof IAnalysisModule) {
             ((IAnalysisModule) fSegmentProvider).waitForCompletion();
-            ISegmentStore<ISegment> segmentStore = fSegmentProvider.getSegmentStore();
-            fSegmentStoreSize = segmentStore != null ? segmentStore.size() : 0;
         }
+        ISegmentStore<ISegment> segmentStore = fSegmentProvider.getSegmentStore();
+        fSegmentStoreSize = segmentStore != null ? segmentStore.size() : 0;
         List<TmfTreeDataModel> model = new ArrayList<>();
         for (ISegmentAspect aspect : ISegmentStoreProvider.getBaseSegmentAspects()) {
             synchronized (fAspectToIdMap) {
