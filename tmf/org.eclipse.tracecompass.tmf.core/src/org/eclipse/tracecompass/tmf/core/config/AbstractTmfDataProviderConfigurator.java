@@ -66,17 +66,17 @@ public abstract class AbstractTmfDataProviderConfigurator implements ITmfDataPro
         return fTmfConfigurationTable;
     }
 
-    @Override
-    public @NonNull IDataProviderDescriptor createDataProviderDescriptors(ITmfTrace trace, ITmfConfiguration configuration) throws TmfConfigurationException {
-
-        if (configuration.getName().equals(TmfConfiguration.UNKNOWN)) {
-            throw new TmfConfigurationException("Missing configuration name"); //$NON-NLS-1$
-        }
-
-        if (configuration.getSourceTypeId().equals(TmfConfiguration.UNKNOWN)) {
-            throw new TmfConfigurationException("Missing configuration type"); //$NON-NLS-1$
-        }
-
+    /**
+     * Create instances implementing {@link ITmfConfiguration}. Override this
+     * method if the data provider configurator needs another configuration
+     * instead of the default {@link TmfConfiguration}
+     *
+     * @param configuration
+     *            a object implementing implementing {@link ITmfConfiguration}.
+     * @return the instance of the class implementing {@link ITmfConfiguration}.
+     *         Default is {@link TmfConfiguration}.
+     */
+    protected ITmfConfiguration createConfiguration(ITmfConfiguration configuration) {
         String description = configuration.getDescription();
         if (configuration.getDescription().equals(TmfConfiguration.UNKNOWN)) {
             description = "Data provider defined by configuration " + configuration.getName(); //$NON-NLS-1$
@@ -89,8 +89,21 @@ public abstract class AbstractTmfDataProviderConfigurator implements ITmfDataPro
                .setDescription(description)
                .setParameters(configuration.getParameters())
                .build();
+        return builder.build();
+    }
 
-        ITmfConfiguration config = builder.build();
+    @Override
+    public @NonNull IDataProviderDescriptor createDataProviderDescriptors(ITmfTrace trace, ITmfConfiguration configuration) throws TmfConfigurationException {
+
+        if (configuration.getName().equals(TmfConfiguration.UNKNOWN)) {
+            throw new TmfConfigurationException("Missing configuration name"); //$NON-NLS-1$
+        }
+
+        if (configuration.getSourceTypeId().equals(TmfConfiguration.UNKNOWN)) {
+            throw new TmfConfigurationException("Missing configuration type"); //$NON-NLS-1$
+        }
+
+        ITmfConfiguration config = createConfiguration(configuration);
 
         applyConfiguration(trace, config, true);
         if (fTmfConfigurationTable.contains(config.getId(), trace)) {
@@ -168,11 +181,10 @@ public abstract class AbstractTmfDataProviderConfigurator implements ITmfDataPro
                    List<ITmfConfiguration> configs = readConfigurations(tr);
                    readAndApplyConfiguration(trace, configs);
                 }
-            } else {
-                // Read configurations trace
-                List<ITmfConfiguration> configs = readConfigurations(trace);
-                readAndApplyConfiguration(trace, configs);
             }
+            // Read configurations from trace or top level experiment
+            List<ITmfConfiguration> configs = readConfigurations(trace);
+            readAndApplyConfiguration(trace, configs);
        } catch (TmfConfigurationException e) {
            Activator.logError("Error applying configurations for trace " + trace.getName(), e); //$NON-NLS-1$
        }
