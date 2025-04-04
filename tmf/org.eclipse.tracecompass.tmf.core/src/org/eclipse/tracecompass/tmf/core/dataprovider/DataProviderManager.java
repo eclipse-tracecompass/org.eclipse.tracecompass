@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017, 2018 Ericsson
+ * Copyright (c) 2017, 2025 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0 which
@@ -11,6 +11,14 @@
 
 package org.eclipse.tracecompass.tmf.core.dataprovider;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -19,10 +27,18 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
+import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IExtension;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.internal.tmf.core.Activator;
@@ -35,6 +51,7 @@ import org.eclipse.tracecompass.tmf.core.signal.TmfTraceClosedSignal;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
 import org.eclipse.tracecompass.tmf.core.trace.TmfTraceManager;
 
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 
@@ -55,8 +72,19 @@ public class DataProviderManager {
     private static final String ELEMENT_NAME_PROVIDER = "dataProviderFactory"; //$NON-NLS-1$
     private static final String ATTR_CLASS = "class"; //$NON-NLS-1$
     private static final String ATTR_ID = "id"; //$NON-NLS-1$
+    private static final String ELEMENT_NAME_HIDE_DATA_PROVIDER = "hideDataProvider"; //$NON-NLS-1$
+    private static final String ATTR_ID_REGEX = "idRegex"; //$NON-NLS-1$
+    private static final String ATTR_TRACETYPE = "tracetype"; //$NON-NLS-1$
+    private static final URL CONFIG_FILE_TEMPLATE = DataProviderManager.class.getResource("/templates/dataprovider.ini"); //$NON-NLS-1$
+    private static final File CONFIG_FILE = Activator.getDefault().getStateLocation().addTrailingSeparator().append("dataprovider.ini").toFile(); //$NON-NLS-1$
+    private static final Pattern CONFIG_LINE_PATTERN = Pattern.compile("(hide|show):(.+):(.*)"); //$NON-NLS-1$
+    private static final String HIDE = "hide"; //$NON-NLS-1$
+    private static final String SHOW = "show"; //$NON-NLS-1$
+    private static final String WILDCARD = "*"; //$NON-NLS-1$
 
     private Map<String, IDataProviderFactory> fDataProviderFactories = new HashMap<>();
+    private Multimap<String, Pattern> fHideDataProviders = HashMultimap.create();
+    private Multimap<String, Pattern> fShowDataProviders = HashMultimap.create();
 
     private final Multimap<ITmfTrace, ITmfTreeDataProvider<? extends ITmfTreeDataModel>> fInstances = LinkedHashMultimap.create();
 
@@ -96,6 +124,7 @@ public class DataProviderManager {
      */
     private DataProviderManager() {
         loadDataProviders();
+        loadHiddenDataProviders();
         TmfSignalManager.register(this);
     }
 
@@ -113,6 +142,60 @@ public class DataProviderManager {
                     Activator.logError("Unable to load extensions", e); //$NON-NLS-1$
                 }
             }
+        }
+    }
+
+    /**
+     * Load hidden data providers from the registry and configuration file
+     */
+    private void loadHiddenDataProviders() {
+        IConfigurationElement[] configElements = Platform.getExtensionRegistry().getConfigurationElementsFor(EXTENSION_POINT_ID);
+        for (IConfigurationElement cElement : configElements) {
+            if (cElement != null && cElement.getName().equals(ELEMENT_NAME_HIDE_DATA_PROVIDER)) {
+                String idRegex = cElement.getAttribute(ATTR_ID_REGEX);
+                String tracetype = cElement.getAttribute(ATTR_TRACETYPE);
+                tracetype = (tracetype == null || tracetype.isBlank()) ? WILDCARD : tracetype;
+                try {
+                    fHideDataProviders.put(tracetype, Pattern.compile(idRegex));
+                    String pluginId = ((IExtension) cElement.getParent()).getNamespaceIdentifier();
+                    Activator.log(new Status(IStatus.INFO, Activator.PLUGIN_ID, String.format("plugin: %s is hiding data providers matching regex:\"%s\" for tracetype:%s", pluginId, idRegex, tracetype))); //$NON-NLS-1$
+                } catch (PatternSyntaxException e) {
+                    Activator.logError("Invalid hideDataProvider regex pattern", e); //$NON-NLS-1$
+                }
+            }
+        }
+        if (!CONFIG_FILE.exists()) {
+            try {
+                File defaultConfigFile = new File(FileLocator.toFileURL(CONFIG_FILE_TEMPLATE).toURI());
+                Files.copy(defaultConfigFile.toPath(), CONFIG_FILE.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            } catch (URISyntaxException | IOException e) {
+                Activator.logError("Error copying " + CONFIG_FILE_TEMPLATE + " to " + CONFIG_FILE.getAbsolutePath(), e); //$NON-NLS-1$ //$NON-NLS-2$
+            }
+        }
+        try (BufferedReader reader = new BufferedReader(new FileReader(CONFIG_FILE))) {
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                Matcher matcher = CONFIG_LINE_PATTERN.matcher(line);
+                if (matcher.matches()) {
+                    String oper = matcher.group(1);
+                    String idRegex = matcher.group(2);
+                    String tracetype = matcher.group(3);
+                    tracetype = (tracetype == null || tracetype.isBlank()) ? WILDCARD : tracetype;
+                    try {
+                        if (oper.equals(HIDE)) {
+                            fHideDataProviders.put(tracetype, Pattern.compile(idRegex));
+                            Activator.log(new Status(IStatus.INFO, Activator.PLUGIN_ID, String.format("dataprovider.ini is hiding data providers matching regex:\"%s\" for tracetype:%s", idRegex, tracetype))); //$NON-NLS-1$
+                        } else if (oper.equals(SHOW)) {
+                            fShowDataProviders.put(tracetype, Pattern.compile(idRegex));
+                            Activator.log(new Status(IStatus.INFO, Activator.PLUGIN_ID, String.format("dataprovider.ini is showing data providers matching regex:\"%s\" for tracetype:%s", idRegex, tracetype))); //$NON-NLS-1$
+                        }
+                    } catch (PatternSyntaxException e) {
+                        Activator.logError("Invalid dataprovider.ini regex pattern", e); //$NON-NLS-1$
+                    }
+                }
+            }
+        } catch (IOException e) {
+            Activator.logError("Error reading " + CONFIG_FILE.getAbsolutePath(), e); //$NON-NLS-1$
         }
     }
 
@@ -139,6 +222,9 @@ public class DataProviderManager {
         ITmfTreeDataProvider<? extends ITmfTreeDataModel> dataProvider = getExistingDataProvider(trace, id, dataProviderClass);
         if (dataProvider != null) {
             return dataProviderClass.cast(dataProvider);
+        }
+        if (isHidden(id, trace)) {
+            return null;
         }
         String[] ids = id.split(DataProviderConstants.ID_SEPARATOR, 2);
         for (ITmfTrace opened : TmfTraceManager.getInstance().getOpenedTraces()) {
@@ -183,7 +269,7 @@ public class DataProviderManager {
      */
     public synchronized @Nullable <T extends ITmfTreeDataProvider<? extends ITmfTreeDataModel>> T getExistingDataProvider(@NonNull ITmfTrace trace, String id, Class<T> dataProviderClass) {
         for (ITmfTreeDataProvider<? extends ITmfTreeDataModel> dataProvider : fInstances.get(trace)) {
-            if (id.equals(dataProvider.getId()) && dataProviderClass.isAssignableFrom(dataProvider.getClass())) {
+            if (id.equals(dataProvider.getId()) && dataProviderClass.isAssignableFrom(dataProvider.getClass()) && !isHidden(id, trace)) {
                 return dataProviderClass.cast(dataProvider);
             }
         }
@@ -224,12 +310,35 @@ public class DataProviderManager {
         List<IDataProviderDescriptor> list = new ArrayList<>();
         for (IDataProviderFactory factory : fDataProviderFactories.values()) {
             Collection<IDataProviderDescriptor> descriptors = factory.getDescriptors(trace);
-            if (!descriptors.isEmpty()) {
-                list.addAll(descriptors);
+            for (IDataProviderDescriptor descriptor : descriptors) {
+                if (!isHidden(descriptor.getId(), trace)) {
+                    list.add(descriptor);
+                }
             }
         }
         list.sort(Comparator.comparing(IDataProviderDescriptor::getName));
         return list;
+    }
+
+    private boolean isHidden(String id, @Nullable ITmfTrace trace) {
+        return isMatching(fHideDataProviders, id, trace) && !isMatching(fShowDataProviders, id, trace);
+    }
+
+    private static boolean isMatching(Multimap<String, Pattern> multimap, String id, @Nullable ITmfTrace trace) {
+        for (Pattern pattern : multimap.get(WILDCARD)) {
+            if (pattern.matcher(id).matches()) {
+                return true;
+            }
+        }
+        for (ITmfTrace expTrace : TmfTraceManager.getTraceSet(trace)) {
+            String tracetype = expTrace.getTraceTypeId();
+            for (Pattern pattern : multimap.get(tracetype)) {
+                if (pattern.matcher(id).matches()) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**
@@ -259,7 +368,7 @@ public class DataProviderManager {
      * @since 9.4
      */
     public synchronized Collection<IDataProviderFactory> getFactories() {
-        return List.copyOf(fDataProviderFactories.values());
+        return fDataProviderFactories.entrySet().stream().filter(e -> !isHidden(e.getKey(), null)).map(Map.Entry::getValue).collect(Collectors.toList());
     }
 
     /**
@@ -274,7 +383,7 @@ public class DataProviderManager {
      */
     public synchronized @Nullable IDataProviderFactory getFactory(String id) {
         String factoryId = extractFactoryId(id);
-        return fDataProviderFactories.get(factoryId);
+        return isHidden(factoryId, null) ? null : fDataProviderFactories.get(factoryId);
     }
 
     /**

@@ -17,8 +17,9 @@
          </appinfo>
       </annotation>
       <complexType>
-         <sequence minOccurs="1" maxOccurs="unbounded">
+         <sequence minOccurs="0" maxOccurs="unbounded">
             <element ref="dataProviderFactory"/>
+            <element ref="hideDataProvider"/>
          </sequence>
          <attribute name="point" type="string" use="required">
             <annotation>
@@ -69,6 +70,30 @@
       </complexType>
    </element>
 
+   <element name="hideDataProvider">
+      <annotation>
+         <documentation>
+            Hide data providers with id matching the given regex for an optionally given trace type. Can be overridden by dataprovider.ini configuration file.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="idRegex" type="string" use="required">
+            <annotation>
+               <documentation>
+                  A regular expression for matching data provider IDs to be hidden.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="tracetype" type="string">
+            <annotation>
+               <documentation>
+                  The optional trace type ID of the data providers to be hidden. If empty, absent or *, the data provider will be hidden for all trace types.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
    <annotation>
       <appinfo>
          <meta.section type="since"/>
@@ -100,7 +125,7 @@
          <meta.section type="copyright"/>
       </appinfo>
       <documentation>
-         Copyright (c) 2017 Ericsson
+         Copyright (c) 2017, 2025 Ericsson
 
 All rights reserved. This program and the accompanying materials are made available under the terms of the Eclipse Public License 2.0 which accompanies this distribution, and is available at &amp;lt;a href=&amp;quot;https://www.eclipse.org/legal/epl-2.0/&amp;quot;&amp;gt;https://www.eclipse.org/legal/epl-2.0/&amp;lt;/a&amp;gt;
 

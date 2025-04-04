@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.tracecompass.tmf.core.dataprovider">
+      <dataProviderFactory
+            class="org.eclipse.tracecompass.integration.core.tests.dataproviders.HiddenDataProviderFactory"
+            id="org.eclipse.tracecompass.integration.core.tests.hidden.dataprovider">
+      </dataProviderFactory>
+      <hideDataProvider
+            idRegex="org.eclipse.tracecompass.integration.core.tests.hidden.dataprovider"
+            tracetype="*">
+      </hideDataProvider>
+   </extension>
+
+</plugin>
