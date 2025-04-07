@@ -287,7 +287,7 @@
 
    <plugin
          id="org.mortbay.jasper.apache-jsp"
-         version="9.0.96"/>
+         version="0.0.0"/>
 
    <plugin
          id="com.google.guava.failureaccess"
@@ -407,7 +407,7 @@
 
    <plugin
          id="org.mortbay.jasper.apache-el"
-         version="9.0.96"/>
+         version="0.0.0"/>
 
    <plugin
          id="jakarta.el-api"
