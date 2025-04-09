@@ -13,10 +13,12 @@ package org.eclipse.tracecompass.integration.swtbot.tests.projectexplorer;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -91,6 +93,7 @@ public class ProjectExplorerTracesFolderTest {
 
     private static final String PROP_LAST_MODIFIED_PROPERTY = "last modified";
     private static final String TEXT_EDITOR_ID = "org.eclipse.ui.DefaultTextEditor";
+    private static final String GENERIC_EDITOR_ID = "org.eclipse.ui.genericeditor.GenericEditor";
 
     private static final String GENERIC_CTF_TRACE_TYPE = "Common Trace Format : Generic CTF Trace";
     private static final String LTTNG_KERNEL_TRACE_TYPE = "Common Trace Format : Linux Kernel Trace";
@@ -1524,7 +1527,7 @@ public class ProjectExplorerTracesFolderTest {
             // If there is no trace type, make sure it can be opened with the text editor
             fBot.waitUntil(ConditionHelpers.isEditorOpened(fBot, traceName));
             SWTBotEditor editor = fBot.editorByTitle(traceName);
-            assertEquals(TEXT_EDITOR_ID, editor.getReference().getId());
+            assertTrue(editor.getReference().getId(), Arrays.asList(TEXT_EDITOR_ID, GENERIC_EDITOR_ID).contains(editor.getReference().getId()));
         }
         checkTraceLinked(traceItem, (importOptionFlags & ImportTraceWizardPage.OPTION_CREATE_LINKS_IN_WORKSPACE) != 0);
     }

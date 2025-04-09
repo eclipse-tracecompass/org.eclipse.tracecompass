@@ -1,5 +1,5 @@
 /**********************************************************************
- * Copyright (c) 2017, 2020 Ericsson
+ * Copyright (c) 2017, 2025 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -329,7 +329,7 @@ public class TimeGraphViewTest {
         resetTimeRange();
         Rectangle bounds = fBounds;
 
-        ImageHelper ref = ImageHelper.grabImage(bounds);
+        ImageHelper ref = ImageHelper.waitForNewImage(bounds, null);
 
         // Set the widths to 0.25
 
@@ -550,7 +550,7 @@ public class TimeGraphViewTest {
         resetTimeRange();
         Rectangle bounds = fBounds;
 
-        ImageHelper ref = ImageHelper.grabImage(bounds);
+        ImageHelper ref = ImageHelper.waitForNewImage(bounds, null);
 
         // Set the widths to 0.25
 
@@ -721,7 +721,7 @@ public class TimeGraphViewTest {
         SWTBotTimeGraph timegraph = fTimeGraph;
         Rectangle bounds = fBounds;
 
-        ImageHelper ref = ImageHelper.grabImage(bounds);
+        ImageHelper ref = ImageHelper.waitForNewImage(bounds, null);
 
         fireKeyAndWait(timegraph, bounds, false, '+', SWT.CTRL);
         fireKeyAndWait(timegraph, bounds, false, '-', SWT.CTRL);
@@ -1088,7 +1088,7 @@ public class TimeGraphViewTest {
 
         Rectangle bounds = fBounds;
 
-        ImageHelper ref = ImageHelper.grabImage(bounds);
+        ImageHelper ref = ImageHelper.waitForNewImage(bounds, null);
 
         timegraph.setFocus();
         // Move mouse to middle of the timegraph
