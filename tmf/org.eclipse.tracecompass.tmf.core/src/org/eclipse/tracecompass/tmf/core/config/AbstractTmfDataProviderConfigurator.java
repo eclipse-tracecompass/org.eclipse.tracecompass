@@ -60,9 +60,11 @@ public abstract class AbstractTmfDataProviderConfigurator implements ITmfDataPro
     private Table<String, ITmfTrace, ITmfConfiguration> fTmfConfigurationTable = HashBasedTable.create();
 
     /**
+     * Return the configuration table
+     *
      * @return a table mapping configuration id and trace (exp) to its configuration
      */
-    protected Table<String, ITmfTrace, ITmfConfiguration> getConfigurationTable(){
+    public Table<String, ITmfTrace, ITmfConfiguration> getConfigurationTable(){
         return fTmfConfigurationTable;
     }
 
@@ -114,6 +116,8 @@ public abstract class AbstractTmfDataProviderConfigurator implements ITmfDataPro
     }
 
     /**
+     * Return a data provider descriptor based on the configuration parameter
+     *
      * @param config
      *            a configuration
      * @return A data provider descriptor based on the configuration parameter
@@ -265,6 +269,8 @@ public abstract class AbstractTmfDataProviderConfigurator implements ITmfDataPro
     }
 
     /**
+     * Return the path where the configuration for a trace is stored
+     *
      * @param trace
      *            the trace to which the configuration should be applied to
      * @return the path where the configuration should be stored
