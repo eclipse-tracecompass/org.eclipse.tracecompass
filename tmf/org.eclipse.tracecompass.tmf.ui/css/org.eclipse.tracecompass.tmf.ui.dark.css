@@ -102,6 +102,11 @@ IEclipsePreferences#org-eclipse-ui-workbench:org-eclipse-tracecompass-tmf-ui {
 		'org.eclipse.tracecompass.tmf.ui.color.eventtable.highlight=0,128,0'
 }
 
+.CLabelThemeTag, Scale {
+	background-color:'#org-eclipse-ui-workbench-DARK_BACKGROUND'; 
+	    color:'#org-eclipse-ui-workbench-DARK_FOREGROUND'; 
+}
+
 TimeGraphControl {
 	background-color:#353636;
 	color:#eeeeee

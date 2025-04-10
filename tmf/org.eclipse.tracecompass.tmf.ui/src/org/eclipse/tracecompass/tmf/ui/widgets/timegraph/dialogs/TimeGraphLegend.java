@@ -391,6 +391,7 @@ public class TimeGraphLegend extends TitleAreaDialog {
             });
 
             fBar.setLayoutData(GridDataFactory.swtDefaults().hint(30, 20).create());
+
             CLabel label = new CLabel(this, SWT.NONE) {
                 @Override
                 protected String shortenText(GC gc, String t, int w) {
@@ -402,6 +403,9 @@ public class TimeGraphLegend extends TitleAreaDialog {
             label.setData(LEGEND_ENTRY_KEY, name);
             label.setText(name);
             label.setLayoutData(GridDataFactory.fillDefaults().hint(160, SWT.DEFAULT).align(SWT.FILL, SWT.CENTER).grab(true, false).create());
+            //Without this the class created by overriding CLabel with @Override won't inherit theming
+            label.setData("org.eclipse.e4.ui.css.CssClassName", "CLabelThemeTag"); //$NON-NLS-1$ //$NON-NLS-2$
+
             fScale = new Scale(this, SWT.NONE);
             if (si.getStyleMap().get(StyleProperties.WIDTH) instanceof Integer) {
                 fScale.setMinimum(1);
