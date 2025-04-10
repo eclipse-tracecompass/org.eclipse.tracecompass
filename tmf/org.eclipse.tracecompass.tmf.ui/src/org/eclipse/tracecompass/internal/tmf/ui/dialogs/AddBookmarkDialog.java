@@ -14,13 +14,17 @@
 
 package org.eclipse.tracecompass.internal.tmf.ui.dialogs;
 
+
+import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.preference.ColorSelector;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.RGBA;
-import org.eclipse.swt.layout.RowLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
@@ -38,7 +42,9 @@ public class AddBookmarkDialog extends MultiLineInputDialog {
     private ColorSelector fColorSelector;
     private Scale fAlphaScale;
     private Label fAlphaLabel;
-    private int fAlpha = 128;
+    private Button fForgroundButton;
+    private int fAlpha = 32;
+    private boolean fForeground;
 
     /**
      * Constructor
@@ -46,7 +52,8 @@ public class AddBookmarkDialog extends MultiLineInputDialog {
      * @param parentShell
      *            the parent shell
      * @param initialValue
-     *            the initial input value, or <code>null</code> if none (equivalent to the empty string)
+     *            the initial input value, or <code>null</code> if none
+     *            (equivalent to the empty string)
      */
     public AddBookmarkDialog(Shell parentShell, String initialValue) {
         super(parentShell, Messages.AddBookmarkDialog_Title, Messages.AddBookmarkDialog_Message, initialValue);
@@ -56,17 +63,26 @@ public class AddBookmarkDialog extends MultiLineInputDialog {
     protected Control createDialogArea(Composite parent) {
         Composite areaComposite = (Composite) super.createDialogArea(parent);
         Composite colorComposite = new Composite(areaComposite, SWT.NONE);
-        RowLayout layout = new RowLayout();
-        layout.center = true;
+        colorComposite.setLayoutData(GridDataFactory.fillDefaults().grab(true, false).create());
+        GridLayout layout = new GridLayout(1, false);
         colorComposite.setLayout(layout);
         colorComposite.moveBelow(getText());
-        Label colorLabel = new Label(colorComposite, SWT.NONE);
+
+        Composite colorPicker = new Composite(colorComposite, SWT.NONE);
+        colorPicker.setLayout(new GridLayout(2, false));
+        Label colorLabel = new Label(colorPicker, SWT.NONE);
         colorLabel.setText(Messages.AddBookmarkDialog_Color);
-        fColorSelector = new ColorSelector(colorComposite);
+        fColorSelector = new ColorSelector(colorPicker);
         fColorSelector.setColorValue(new RGB(255, 0, 0));
-        Label alphaLabel = new Label(colorComposite, SWT.NONE);
+
+        Composite alphaComposite = new Composite(colorComposite, SWT.NONE);
+        alphaComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false)); // Ensure it expands
+        alphaComposite.setLayout(new GridLayout(3, false));
+
+        Label alphaLabel = new Label(alphaComposite, SWT.NONE);
         alphaLabel.setText(Messages.AddBookmarkDialog_Alpha);
-        fAlphaScale = new Scale(colorComposite, SWT.NONE);
+
+        fAlphaScale = new Scale(alphaComposite, SWT.NONE);
         fAlphaScale.setMaximum(255);
         fAlphaScale.setSelection(fAlpha);
         fAlphaScale.setIncrement(1);
@@ -78,8 +94,27 @@ public class AddBookmarkDialog extends MultiLineInputDialog {
                 fAlphaLabel.setText(Integer.toString(fAlpha));
             }
         });
-        fAlphaLabel = new Label(colorComposite, SWT.NONE);
+
+        // Make the scale take all available horizontal space
+        fAlphaScale.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+
+        fAlphaLabel = new Label(alphaComposite, SWT.NONE);
         fAlphaLabel.setText(Integer.toString(fAlpha));
+
+        Composite fgComposite = new Composite(colorComposite, SWT.NONE);
+        fgComposite.setLayout(new GridLayout(2, false));
+        fForgroundButton = new Button(fgComposite, SWT.CHECK);
+        fForgroundButton.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                fForeground = fForgroundButton.getSelection();
+                super.widgetSelected(e);
+            }
+        });
+        fForeground = true;
+        fForgroundButton.setSelection(fForeground);
+        new Label(fgComposite, SWT.NONE).setText(Messages.AddBookmarkDialog_Foreground);
+
         return areaComposite;
     }
 
@@ -91,5 +126,14 @@ public class AddBookmarkDialog extends MultiLineInputDialog {
     public RGBA getColorValue() {
         RGB rgb = fColorSelector.getColorValue();
         return new RGBA(rgb.red, rgb.green, rgb.blue, fAlpha);
+    }
+
+    /**
+     * Returns if the marker is in the foreground.
+     *
+     * @return true if foreground
+     */
+    public boolean getForeground() {
+        return fForeground;
     }
 }
