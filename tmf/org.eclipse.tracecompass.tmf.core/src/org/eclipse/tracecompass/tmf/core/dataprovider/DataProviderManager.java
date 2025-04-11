@@ -362,6 +362,28 @@ public class DataProviderManager {
     }
 
     /**
+     * Remove a data provider from the instances by Id. This method will also dispose
+     * the data provider.
+     *
+     * @param trace
+     *            The trace for which to remove the data provider
+     * @param id
+     *            The id of the data provider to remove
+     * @since 9.6
+     */
+    public void removeDataProvider(ITmfTrace trace, String id) {
+        Iterator<ITmfTreeDataProvider<? extends ITmfTreeDataModel>> iter = fInstances.get(trace).iterator();
+        while (iter.hasNext()) {
+            ITmfTreeDataProvider<? extends ITmfTreeDataModel> dp = iter.next();
+            if (dp.getId().equals(id)) {
+                dp.dispose();
+                iter.remove();
+            }
+            break;
+        }
+    }
+
+    /**
      * Get all registered data provider factories.
      *
      * @return a collection of existing data provider factories

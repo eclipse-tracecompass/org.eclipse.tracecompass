@@ -51,8 +51,6 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.google.common.collect.ImmutableList;
-
 /**
  * Unit test for testing the data provider manager.
  */
@@ -431,50 +429,85 @@ public class DataProviderManagerTest {
        assertEquals(1, count);
    }
 
-   /**
-    * Test different add/remove methods
-    */
-   @Test
-  public void testAddRemoveFactoryMethods() {
-      String myId = "my-id";
-      IDataProviderFactory testFactory = new IDataProviderFactory() {
-          @Override
-          public @Nullable ITmfTreeDataProvider<? extends ITmfTreeDataModel> createProvider(@NonNull ITmfTrace trace) {
+    /**
+     * Test different factory add/remove methods
+     */
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testAddRemoveFactoryMethods() {
+        String myId = "my-id";
+        IDataProviderFactory testFactory = createCustomFactory(myId);
+        ITmfTrace trace = fKernelTrace;
+        assertNotNull(trace);
+        DataProviderManager.getInstance().addDataProviderFactory(myId, testFactory);
+        assertEquals(testFactory, DataProviderManager.getInstance().getFactory(myId));
+        List<IDataProviderDescriptor> kernelDescriptors = DataProviderManager.getInstance().getAvailableProviders(trace);
+        assertEquals(1, kernelDescriptors.stream().filter(desc -> desc.getId().equals(myId)).count());
 
-              KernelAnalysisModule module = TmfTraceUtils.getAnalysisModuleOfClass(trace, KernelAnalysisModule.class, KernelAnalysisModule.ID);
-              if (module != null) {
-                  return new ThreadStatusDataProvider(trace, module) {
-                      @Override
-                      public @NonNull String getId() {
-                          return myId;
-                      }
-                  };
-              }
+        ITimeGraphDataProvider<?> dp = DataProviderManager.getInstance().getOrCreateDataProvider(trace, myId, ITimeGraphDataProvider.class);
+        assertNotNull(dp);
 
-              return null;
-          }
-          @Override
-          public @NonNull Collection<IDataProviderDescriptor> getDescriptors(@NonNull ITmfTrace trace) {
-              return ImmutableList.of(new DataProviderDescriptor.Builder()
-                      .setId(myId)
-                      .setName(Objects.requireNonNull(""))
-                      .setDescription(Objects.requireNonNull(""))
-                      .setProviderType(ProviderType.TIME_GRAPH)
-                      .build());
-          }
-      };
-      ITmfTrace trace = fKernelTrace;
-      assertNotNull(trace);
-      DataProviderManager.getInstance().addDataProviderFactory(myId, testFactory);
-      assertEquals(testFactory, DataProviderManager.getInstance().getFactory(myId));
-      List<IDataProviderDescriptor> kernelDescriptors = DataProviderManager.getInstance().getAvailableProviders(trace);
-      assertEquals(1, kernelDescriptors.stream().filter(desc -> desc.getId().equals(myId)).count());
+        DataProviderManager.getInstance().removeDataProviderFactory(myId);
+        assertNull(DataProviderManager.getInstance().getFactory(myId));
+        assertNull(DataProviderManager.getInstance().getExistingDataProvider(trace, myId, ITimeGraphDataProvider.class));
+    }
 
-      @SuppressWarnings("unchecked")
-      ITimeGraphDataProvider<?> dp = DataProviderManager.getInstance().getOrCreateDataProvider(trace, myId, ITimeGraphDataProvider.class);
-      assertNotNull(dp);
+    /**
+     * Test different data provider add/remove methods
+     */
+     @SuppressWarnings("unchecked")
+     @Test
+     public void testRemoveDataProviderMethods() {
+         String myId = "my-id";
+         IDataProviderFactory testFactory = createCustomFactory(myId);
+         ITmfTrace trace = fKernelTrace;
+         assertNotNull(trace);
+         DataProviderManager.getInstance().addDataProviderFactory(myId, testFactory);
 
-      DataProviderManager.getInstance().removeDataProviderFactory(myId);
-      assertNull(DataProviderManager.getInstance().getFactory(myId));
-  }
+         ITimeGraphDataProvider<?> dp = DataProviderManager.getInstance().getOrCreateDataProvider(trace, myId, ITimeGraphDataProvider.class);
+         assertNotNull(dp);
+
+         // test remove by ID
+         DataProviderManager.getInstance().removeDataProvider(trace, myId);
+         assertNull(DataProviderManager.getInstance().getExistingDataProvider(trace, myId, ITimeGraphDataProvider.class));
+
+         // test remove by dp instance
+         dp = DataProviderManager.getInstance().getOrCreateDataProvider(trace, myId, ITimeGraphDataProvider.class);
+         assertNotNull(dp);
+
+         assertTrue(DataProviderManager.getInstance().removeDataProvider(trace, dp));
+         assertNull(DataProviderManager.getInstance().getExistingDataProvider(trace, myId, ITimeGraphDataProvider.class));
+         DataProviderManager.getInstance().removeDataProviderFactory(myId);
+     }
+
+    private static IDataProviderFactory createCustomFactory(@NonNull String myId) {
+        return new IDataProviderFactory() {
+            @SuppressWarnings("restriction")
+            @Override
+            public @Nullable ITmfTreeDataProvider<? extends ITmfTreeDataModel> createProvider(@NonNull ITmfTrace trace) {
+
+                KernelAnalysisModule module = TmfTraceUtils.getAnalysisModuleOfClass(trace, KernelAnalysisModule.class, KernelAnalysisModule.ID);
+                if (module != null) {
+                    return new ThreadStatusDataProvider(trace, module) {
+                        @Override
+                        public @NonNull String getId() {
+                            return myId;
+                        }
+                    };
+                }
+                return null;
+            }
+
+            @SuppressWarnings("null")
+            @Override
+            public @NonNull Collection<IDataProviderDescriptor> getDescriptors(@NonNull ITmfTrace trace) {
+                return List.of(new DataProviderDescriptor.Builder()
+                        .setId(myId)
+                        .setName(Objects.requireNonNull(""))
+                        .setDescription(Objects.requireNonNull(""))
+                        .setProviderType(ProviderType.TIME_GRAPH)
+                        .build());
+            }
+        };
+    }
 }
