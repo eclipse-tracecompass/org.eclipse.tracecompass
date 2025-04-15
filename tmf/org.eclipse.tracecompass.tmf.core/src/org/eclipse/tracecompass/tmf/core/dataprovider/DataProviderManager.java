@@ -369,7 +369,7 @@ public class DataProviderManager {
      *            The trace for which to remove the data provider
      * @param id
      *            The id of the data provider to remove
-     * @since 9.6
+     * @since 9.7
      */
     public void removeDataProvider(ITmfTrace trace, String id) {
         Iterator<ITmfTreeDataProvider<? extends ITmfTreeDataModel>> iter = fInstances.get(trace).iterator();
