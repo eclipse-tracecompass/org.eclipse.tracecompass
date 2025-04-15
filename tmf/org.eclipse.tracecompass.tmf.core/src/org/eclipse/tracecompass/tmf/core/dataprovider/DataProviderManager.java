@@ -378,8 +378,8 @@ public class DataProviderManager {
             if (dp.getId().equals(id)) {
                 dp.dispose();
                 iter.remove();
+                break;
             }
-            break;
         }
     }
 
