@@ -27,7 +27,7 @@ public class DataProviderConstants {
 
     /**
      * Separator between base analysis ID and config ID in secondary ID
-     * @since 9.6
+     * @since 9.7
      */
     public static final String CONFIG_SEPARATOR = "+"; //$NON-NLS-1$
 
