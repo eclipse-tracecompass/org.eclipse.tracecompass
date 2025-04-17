@@ -17,6 +17,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -31,6 +32,8 @@ import org.eclipse.tracecompass.lttng2.lttng.kernel.core.tests.shared.LttngKerne
 import org.eclipse.tracecompass.lttng2.ust.core.tests.shared.LttngUstTestTraceUtils;
 import org.eclipse.tracecompass.lttng2.ust.core.trace.LttngUstTrace;
 import org.eclipse.tracecompass.testtraces.ctf.CtfTestTrace;
+import org.eclipse.tracecompass.tmf.core.config.ITmfConfiguration;
+import org.eclipse.tracecompass.tmf.core.config.TmfConfiguration;
 import org.eclipse.tracecompass.tmf.core.dataprovider.DataProviderManager;
 import org.eclipse.tracecompass.tmf.core.dataprovider.IDataProviderDescriptor;
 import org.eclipse.tracecompass.tmf.core.dataprovider.IDataProviderDescriptor.ProviderType;
@@ -62,6 +65,14 @@ public class DataProviderManagerTest {
     private static final Set<IDataProviderDescriptor> EXPECTED_KERNEL_DP_DESCRIPTORS = new HashSet<>();
     private static final Set<IDataProviderDescriptor> EXPECTED_UST_DP_DESCRIPTORS = new HashSet<>();
     private static final String SEGMENTSTORE_SCATTER_FUTEX_DP_ID = "org.eclipse.tracecompass.internal.analysis.timing.core.segmentstore.scatter.dataprovider:lttng.analysis.futex";
+
+    private static final String PATH = "/tmp/my-test.xml";
+    private static final String ID = "my-test.xml";
+    private static final String DESC = "descriptor";
+    private static final String SOURCE_ID = "my-source-id";
+
+    private static ITmfConfiguration sfCconfig;
+    private static ITmfConfiguration sfCconfig2;
 
     private static final String CPU_USAGE_DP_ID = "org.eclipse.tracecompass.analysis.os.linux.core.cpuusage.CpuUsageDataProvider";
 
@@ -350,6 +361,16 @@ public class DataProviderManagerTest {
         TmfTraceOpenedSignal openTraceSignal = new TmfTraceOpenedSignal(fExperiment, fExperiment, null);
         TmfSignalManager.dispatchSignal(openTraceSignal);
         fExperiment.indexTrace(true);
+
+        TmfConfiguration.Builder builder = new TmfConfiguration.Builder()
+                .setName(PATH)
+                .setId(ID)
+                .setDescription(DESC)
+                .setSourceTypeId(SOURCE_ID)
+                .setParameters(Collections.emptyMap());
+        sfCconfig = builder.build();
+        builder.setSourceTypeId(SOURCE_ID + "-1");
+        sfCconfig2 = builder.build();
     }
 
     /**
@@ -467,6 +488,10 @@ public class DataProviderManagerTest {
          ITimeGraphDataProvider<?> dp = DataProviderManager.getInstance().getOrCreateDataProvider(trace, myId, ITimeGraphDataProvider.class);
          assertNotNull(dp);
 
+         List<IDataProviderDescriptor> configDescriptors = DataProviderManager.getInstance().getAvailableProviders(trace, sfCconfig);
+         assertEquals(1, configDescriptors.size());
+         assertEquals(myId, configDescriptors.get(0).getId());
+
          // test remove by ID
          DataProviderManager.getInstance().removeDataProvider(trace, myId);
          assertNull(DataProviderManager.getInstance().getExistingDataProvider(trace, myId, ITimeGraphDataProvider.class));
@@ -501,12 +526,17 @@ public class DataProviderManagerTest {
             @SuppressWarnings("null")
             @Override
             public @NonNull Collection<IDataProviderDescriptor> getDescriptors(@NonNull ITmfTrace trace) {
-                return List.of(new DataProviderDescriptor.Builder()
+                DataProviderDescriptor.Builder builder = new DataProviderDescriptor.Builder()
                         .setId(myId)
                         .setName(Objects.requireNonNull(""))
                         .setDescription(Objects.requireNonNull(""))
                         .setProviderType(ProviderType.TIME_GRAPH)
-                        .build());
+                        .setConfiguration(sfCconfig);
+                IDataProviderDescriptor desc1 = builder.build();
+                builder.setId(myId + "-1");
+                builder.setConfiguration(sfCconfig2);
+                IDataProviderDescriptor desc2 = builder.build();
+                return List.of(desc1, desc2);
             }
         };
     }
