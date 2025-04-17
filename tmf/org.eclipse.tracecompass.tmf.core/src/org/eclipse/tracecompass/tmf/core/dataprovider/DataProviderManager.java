@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -43,6 +44,7 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.internal.tmf.core.Activator;
 import org.eclipse.tracecompass.tmf.core.component.DataProviderConstants;
+import org.eclipse.tracecompass.tmf.core.config.ITmfConfiguration;
 import org.eclipse.tracecompass.tmf.core.model.tree.ITmfTreeDataModel;
 import org.eclipse.tracecompass.tmf.core.model.tree.ITmfTreeDataProvider;
 import org.eclipse.tracecompass.tmf.core.signal.TmfSignalHandler;
@@ -307,11 +309,39 @@ public class DataProviderManager {
         if (trace == null) {
             return Collections.emptyList();
         }
+        return getAvailableProviders(trace, desc -> true);
+    }
+
+    /**
+     * Get the list of available providers for this trace / experiment without
+     * triggering the analysis or creating the provider
+     *
+     * @param trace
+     *            queried trace
+     * @param configuration
+     *            a configuration used to create data providers (and descriptors)
+     * @return list of the available providers for this trace / experiment
+     * @since 9.7
+     */
+    public List<IDataProviderDescriptor> getAvailableProviders(@Nullable ITmfTrace trace, @Nullable ITmfConfiguration configuration) {
+        if (trace == null || configuration == null) {
+            return Collections.emptyList();
+        }
+        Predicate<IDataProviderDescriptor> predicate = desc -> {
+            ITmfConfiguration cfg = desc.getConfiguration();
+            return cfg != null &&
+                   cfg.getSourceTypeId().equals(configuration.getSourceTypeId()) &&
+                   cfg.getId().equals(configuration.getId());
+        };
+        return getAvailableProviders(trace, predicate);
+    }
+
+    private List<IDataProviderDescriptor> getAvailableProviders(@NonNull ITmfTrace trace, @NonNull Predicate<IDataProviderDescriptor> predicate) {
         List<IDataProviderDescriptor> list = new ArrayList<>();
         for (IDataProviderFactory factory : fDataProviderFactories.values()) {
             Collection<IDataProviderDescriptor> descriptors = factory.getDescriptors(trace);
             for (IDataProviderDescriptor descriptor : descriptors) {
-                if (!isHidden(descriptor.getId(), trace)) {
+                if (!isHidden(descriptor.getId(), trace) && predicate.test(descriptor)) {
                     list.add(descriptor);
                 }
             }
