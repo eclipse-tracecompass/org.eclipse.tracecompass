@@ -202,8 +202,6 @@ cat ~/.gitconfig
   email = user.name@company.com 
   name = user name 
   signingkey = /home/username/.ssh/id_rsa.pub 
-[credential] 
-  helper = store 
 [commit] 
   gpgsign = true 
 [gpg] 
