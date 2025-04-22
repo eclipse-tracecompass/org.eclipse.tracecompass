@@ -45,6 +45,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.internal.tmf.core.Activator;
 import org.eclipse.tracecompass.tmf.core.component.DataProviderConstants;
 import org.eclipse.tracecompass.tmf.core.config.ITmfConfiguration;
+import org.eclipse.tracecompass.tmf.core.model.ITmfDataProvider;
 import org.eclipse.tracecompass.tmf.core.model.tree.ITmfTreeDataModel;
 import org.eclipse.tracecompass.tmf.core.model.tree.ITmfTreeDataProvider;
 import org.eclipse.tracecompass.tmf.core.signal.TmfSignalHandler;
@@ -88,7 +89,7 @@ public class DataProviderManager {
     private Multimap<String, Pattern> fHideDataProviders = HashMultimap.create();
     private Multimap<String, Pattern> fShowDataProviders = HashMultimap.create();
 
-    private final Multimap<ITmfTrace, ITmfTreeDataProvider<? extends ITmfTreeDataModel>> fInstances = LinkedHashMultimap.create();
+    private final Multimap<ITmfTrace, ITmfDataProvider> fInstances = LinkedHashMultimap.create();
 
     /**
      * Get the instance of the manager
@@ -219,14 +220,37 @@ public class DataProviderManager {
      * @return the data provider or null if no data provider is found for the
      *         input parameter.
      * @since 8.0
+     *
+     * @deprecated As of version 9.7, use {@link #fetchOrCreateDataProvider(ITmfTrace, String, Class)} instead
      */
+    @Deprecated(since = "9.7", forRemoval = true)
     public synchronized @Nullable <T extends ITmfTreeDataProvider<? extends ITmfTreeDataModel>> T getOrCreateDataProvider(@NonNull ITmfTrace trace, String id, Class<T> dataProviderClass) {
-        ITmfTreeDataProvider<? extends ITmfTreeDataModel> dataProvider = getExistingDataProvider(trace, id, dataProviderClass);
+        return fetchOrCreateDataProvider(trace, id, dataProviderClass);
+    }
+
+    /**
+     * Gets or creates the data provider for the given trace.
+     * <p>
+     * This method should never be called from within a
+     * {@link TmfSignalHandler}.
+     *
+     * @param trace
+     *            An instance of {@link ITmfTrace}. Note, that trace can be an
+     *            instance of TmfExperiment, too.
+     * @param id
+     *            Id of the data provider. This ID can be the concatenation of a
+     *            provider ID + ':' + a secondary ID used to differentiate
+     *            multiple instances of a same provider.
+     * @param dataProviderClass
+     *            Returned data provider must extend this class
+     * @return the data provider or null if no data provider is found for the
+     *         input parameter.
+     * @since 9.7
+     */
+    public synchronized @Nullable <T extends ITmfDataProvider> T fetchOrCreateDataProvider(@NonNull ITmfTrace trace, String id, Class<T> dataProviderClass) {
+        ITmfDataProvider dataProvider = fetchExistingDataProvider(trace, id, dataProviderClass);
         if (dataProvider != null) {
             return dataProviderClass.cast(dataProvider);
-        }
-        if (isHidden(id, trace)) {
-            return null;
         }
         String[] ids = id.split(DataProviderConstants.ID_SEPARATOR, 2);
         for (ITmfTrace opened : TmfTraceManager.getInstance().getOpenedTraces()) {
@@ -236,7 +260,7 @@ public class DataProviderManager {
                  */
                 IDataProviderFactory providerFactory = fDataProviderFactories.get(ids[0]);
                 if (providerFactory != null) {
-                    dataProvider = ids.length > 1 ? providerFactory.createProvider(trace, String.valueOf(ids[1])) : providerFactory.createProvider(trace);
+                    dataProvider = ids.length > 1 ? providerFactory.createDataProvider(trace, String.valueOf(ids[1])) : providerFactory.createDataProvider(trace);
                     if (dataProvider != null && id.equals(dataProvider.getId()) && dataProviderClass.isAssignableFrom(dataProvider.getClass())) {
                         fInstances.put(trace, dataProvider);
                         return dataProviderClass.cast(dataProvider);
@@ -268,9 +292,36 @@ public class DataProviderManager {
      *            Returned data provider must extend this class
      * @return the data provider or null
      * @since 8.0
+     * @deprecated As of version 9.7, use {@link #fetchExistingDataProvider(ITmfTrace, String, Class)} instead
      */
+    @Deprecated(since = "9.7", forRemoval = true)
     public synchronized @Nullable <T extends ITmfTreeDataProvider<? extends ITmfTreeDataModel>> T getExistingDataProvider(@NonNull ITmfTrace trace, String id, Class<T> dataProviderClass) {
-        for (ITmfTreeDataProvider<? extends ITmfTreeDataModel> dataProvider : fInstances.get(trace)) {
+        return fetchExistingDataProvider(trace, id, dataProviderClass);
+    }
+
+    /**
+     * Get a data provider for the given trace if it already exists due to
+     * calling {@link #fetchOrCreateDataProvider(ITmfTrace, String, Class)}
+     * before.
+     *
+     * <p>
+     * This method should never be called from within a
+     * {@link TmfSignalHandler}.
+     *
+     * @param trace
+     *            An instance of {@link ITmfTrace}. Note, that trace can be an
+     *            instance of TmfExperiment, too.
+     * @param id
+     *            Id of the data provider. This ID can be the concatenation of a
+     *            provider ID + ':' + a secondary ID used to differentiate
+     *            multiple instances of a same provider.
+     * @param dataProviderClass
+     *            Returned data provider must extend this class
+     * @return the data provider or null
+     * @since 9.7
+     */
+    public synchronized @Nullable <T extends ITmfDataProvider> T fetchExistingDataProvider(@NonNull ITmfTrace trace, String id, Class<T> dataProviderClass) {
+        for (ITmfDataProvider dataProvider : fInstances.get(trace)) {
             if (id.equals(dataProvider.getId()) && dataProviderClass.isAssignableFrom(dataProvider.getClass()) && !isHidden(id, trace)) {
                 return dataProviderClass.cast(dataProvider);
             }
@@ -290,7 +341,7 @@ public class DataProviderManager {
         new Thread(() -> {
             synchronized (DataProviderManager.this) {
                 for (ITmfTrace trace : TmfTraceManager.getTraceSetWithExperiment(signal.getTrace())) {
-                    fInstances.removeAll(trace).forEach(ITmfTreeDataProvider::dispose);
+                    fInstances.removeAll(trace).forEach(ITmfDataProvider::dispose);
                 }
             }
         }).start();
@@ -402,9 +453,9 @@ public class DataProviderManager {
      * @since 9.7
      */
     public void removeDataProvider(ITmfTrace trace, String id) {
-        Iterator<ITmfTreeDataProvider<? extends ITmfTreeDataModel>> iter = fInstances.get(trace).iterator();
+        Iterator<ITmfDataProvider> iter = fInstances.get(trace).iterator();
         while (iter.hasNext()) {
-            ITmfTreeDataProvider<? extends ITmfTreeDataModel> dp = iter.next();
+            ITmfDataProvider dp = iter.next();
             if (dp.getId().equals(id)) {
                 dp.dispose();
                 iter.remove();
@@ -487,9 +538,9 @@ public class DataProviderManager {
     private void removeExistingDataProviders(IDataProviderFactory factory, String passedFactoryId) {
         if (factory != null) {
             for (ITmfTrace trace : fInstances.keySet()) {
-                Iterator<ITmfTreeDataProvider<? extends ITmfTreeDataModel>> iter = fInstances.get(trace).iterator();
+                Iterator<ITmfDataProvider> iter = fInstances.get(trace).iterator();
                 while (iter.hasNext()) {
-                    ITmfTreeDataProvider<? extends ITmfTreeDataModel> dp = iter.next();
+                    ITmfDataProvider dp = iter.next();
                     String factoryId = extractFactoryId(dp.getId());
                     if (passedFactoryId.equals(factoryId)) {
                         dp.dispose();
