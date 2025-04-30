@@ -15,6 +15,7 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.tracecompass.tmf.core.model.ITmfDataProvider;
 import org.eclipse.tracecompass.tmf.core.response.TmfModelResponse;
 
 /**
@@ -26,7 +27,7 @@ import org.eclipse.tracecompass.tmf.core.response.TmfModelResponse;
  *            Tree model extending {@link ITmfTreeDataModel}
  * @since 4.0
  */
-public interface ITmfTreeDataProvider<T extends ITmfTreeDataModel> {
+public interface ITmfTreeDataProvider<T extends ITmfTreeDataModel> extends ITmfDataProvider{
 
     /**
      * This methods computes a tree model. Then, it returns a
@@ -42,19 +43,6 @@ public interface ITmfTreeDataProvider<T extends ITmfTreeDataModel> {
      * @since 5.0
      */
     TmfModelResponse<TmfTreeModel<T>> fetchTree(Map<String, Object> fetchParameters, @Nullable IProgressMonitor monitor);
-
-    /**
-     * This method return the extension point ID of this provider
-     *
-     * @return The ID
-     */
-    String getId();
-
-    /**
-     * Dispose of the provider to avoid resource leakage.
-     *
-     * @since 4.0
-     */
-    public default void dispose() {
-    }
 }
+
+

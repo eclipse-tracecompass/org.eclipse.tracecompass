@@ -415,17 +415,45 @@ public class DataProviderManagerTest {
     public void testGetter() {
         ITmfTrace trace = fKernelTrace;
         assertNotNull(trace);
-        ITmfTreeXYDataProvider<@NonNull ITmfTreeDataModel> dp = DataProviderManager.getInstance().getExistingDataProvider(trace, CPU_USAGE_DP_ID, ITmfTreeXYDataProvider.class);
-        assertNull(dp);
-        dp = DataProviderManager.getInstance().getOrCreateDataProvider(trace, CPU_USAGE_DP_ID, ITmfTreeXYDataProvider.class);
-        assertNotNull(dp);
-        ITmfTreeXYDataProvider<@NonNull ITmfTreeDataModel> dp2 = DataProviderManager.getInstance().getExistingDataProvider(trace, CPU_USAGE_DP_ID, ITmfTreeXYDataProvider.class);
-        assertNotNull(dp2);
-        assertTrue(dp == dp2);
-        ITmfTreeXYDataProvider<@NonNull ITmfTreeDataModel> dp3 = DataProviderManager.getInstance().getOrCreateDataProvider(trace, CPU_USAGE_DP_ID, ITmfTreeXYDataProvider.class);
-        assertNotNull(dp3);
-        assertTrue(dp == dp3);
-        assertTrue(dp == dp2);
+        try {
+            ITmfTreeXYDataProvider<@NonNull ITmfTreeDataModel> dp = DataProviderManager.getInstance().getExistingDataProvider(trace, CPU_USAGE_DP_ID, ITmfTreeXYDataProvider.class);
+            assertNull(dp);
+            dp = DataProviderManager.getInstance().getOrCreateDataProvider(trace, CPU_USAGE_DP_ID, ITmfTreeXYDataProvider.class);
+            assertNotNull(dp);
+            ITmfTreeXYDataProvider<@NonNull ITmfTreeDataModel> dp2 = DataProviderManager.getInstance().getExistingDataProvider(trace, CPU_USAGE_DP_ID, ITmfTreeXYDataProvider.class);
+            assertNotNull(dp2);
+            assertTrue(dp == dp2);
+            ITmfTreeXYDataProvider<@NonNull ITmfTreeDataModel> dp3 = DataProviderManager.getInstance().getOrCreateDataProvider(trace, CPU_USAGE_DP_ID, ITmfTreeXYDataProvider.class);
+            assertNotNull(dp3);
+            assertTrue(dp == dp3);
+            assertTrue(dp == dp2);
+        } finally {
+            DataProviderManager.getInstance().removeDataProvider(trace, CPU_USAGE_DP_ID);
+        }
+    }
+
+    /**
+     * Test different get methods
+     */
+    @Test
+    public void testGetterNew() {
+        ITmfTrace trace = fKernelTrace;
+        assertNotNull(trace);
+        try {
+            ITmfTreeXYDataProvider<@NonNull ITmfTreeDataModel> dp = DataProviderManager.getInstance().fetchExistingDataProvider(trace, CPU_USAGE_DP_ID, ITmfTreeXYDataProvider.class);
+            assertNull(dp);
+            dp = DataProviderManager.getInstance().fetchOrCreateDataProvider(trace, CPU_USAGE_DP_ID, ITmfTreeXYDataProvider.class);
+            assertNotNull(dp);
+            ITmfTreeXYDataProvider<@NonNull ITmfTreeDataModel> dp2 = DataProviderManager.getInstance().fetchExistingDataProvider(trace, CPU_USAGE_DP_ID, ITmfTreeXYDataProvider.class);
+            assertNotNull(dp2);
+            assertTrue(dp == dp2);
+            ITmfTreeXYDataProvider<@NonNull ITmfTreeDataModel> dp3 = DataProviderManager.getInstance().fetchOrCreateDataProvider(trace, CPU_USAGE_DP_ID, ITmfTreeXYDataProvider.class);
+            assertNotNull(dp3);
+            assertTrue(dp == dp3);
+            assertTrue(dp == dp2);
+        } finally {
+            DataProviderManager.getInstance().removeDataProvider(trace, CPU_USAGE_DP_ID);
+        }
     }
 
     /**
