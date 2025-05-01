@@ -29,7 +29,7 @@ import org.eclipse.tracecompass.tmf.core.trace.experiment.TmfExperiment;
 /**
  * Example data provider factory
  */
-public class ExampleEventsStatisticsDataProviderFactory implements IDataProviderFactory {
+public class ExampleDataTreeDataProviderFactory implements IDataProviderFactory {
     private static final String ID = "org.eclipse.tracecompass.examples.nomodulestats"; //$NON-NLS-1$
 
     private static final IDataProviderDescriptor DESCRIPTOR = new DataProviderDescriptor.Builder()
@@ -44,7 +44,7 @@ public class ExampleEventsStatisticsDataProviderFactory implements IDataProvider
         if (trace instanceof TmfExperiment) {
             return TmfTreeCompositeDataProvider.create(TmfTraceManager.getTraceSet(trace), ID);
         }
-        return new ExampleEventsStatisticsDataProvider(trace);
+        return new ExampleDataTreeDataProvider(trace);
     }
 
     @SuppressWarnings("null")
