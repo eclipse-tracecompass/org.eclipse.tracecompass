@@ -8,7 +8,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
-package org.eclipse.tracecompass.examples.core.data.provider;
+package org.eclipse.tracecompass.examples.core.data.provider.config;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,8 +21,13 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.tracecompass.tmf.core.component.DataProviderConstants;
+import org.eclipse.tracecompass.tmf.core.config.ITmfConfiguration;
 import org.eclipse.tracecompass.tmf.core.event.ITmfEvent;
 import org.eclipse.tracecompass.tmf.core.event.ITmfLostEvent;
+import org.eclipse.tracecompass.tmf.core.event.aspect.TmfBaseAspects;
+import org.eclipse.tracecompass.tmf.core.filter.ITmfFilter;
+import org.eclipse.tracecompass.tmf.core.filter.model.TmfFilterMatchesNode;
 import org.eclipse.tracecompass.tmf.core.model.CommonStatusMessage;
 import org.eclipse.tracecompass.tmf.core.model.tree.ITmfTreeDataProvider;
 import org.eclipse.tracecompass.tmf.core.model.tree.TmfTreeDataModel;
@@ -35,6 +40,11 @@ import org.eclipse.tracecompass.tmf.core.response.TmfModelResponse;
 import org.eclipse.tracecompass.tmf.core.timestamp.TmfTimeRange;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Simple events statistics data provider
  * 
@@ -42,25 +52,44 @@ import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
  */
 @SuppressWarnings("null")
 @NonNullByDefault
-public class ExampleEventsStatisticsDataProvider implements ITmfTreeDataProvider<TmfTreeDataModel> {
+public class ExampleConfigurableDataTreeDataProvider implements ITmfTreeDataProvider<TmfTreeDataModel> {
+    private static final String BASE_ID = "org.eclipse.tracecompass.examples.nomodulestats.config"; //$NON-NLS-1$;
+    
     private static long fCount = 0;
-
+    
     private @Nullable ITmfTrace fTrace;
     private @Nullable StatsPerTypeRequest fRequest;
     private @Nullable List<TmfTreeDataModel> fCachedResult = null;
+    private @Nullable ITmfConfiguration fConfiguration;
+    private String fId = BASE_ID;
 
     /**
      * Constructor
      * @param trace
      *          the trace (not experiment)
      */
-    public ExampleEventsStatisticsDataProvider(ITmfTrace trace) {
+    public ExampleConfigurableDataTreeDataProvider(ITmfTrace trace) {
+        this(trace, null);
+    }
+
+    /**
+     * Constructor with configuration
+     * @param trace
+     *      the trace (not experiment)
+     * @param configuration
+     *      the configuration
+     */
+    public ExampleConfigurableDataTreeDataProvider(ITmfTrace trace, @Nullable ITmfConfiguration configuration) {
         fTrace = trace;
+        fConfiguration = configuration;
+        if (configuration != null) {
+            fId = BASE_ID + DataProviderConstants.ID_SEPARATOR + configuration.getId();
+        }
     }
 
     @Override
     public @NonNull String getId() {
-        return "org.eclipse.tracecompass.examples.nomodulestats"; //$NON-NLS-1$
+        return fId;
     }
 
     @Override
@@ -108,16 +137,31 @@ public class ExampleEventsStatisticsDataProvider implements ITmfTreeDataProvider
         return new TmfModelResponse<>(model, Status.COMPLETED, CommonStatusMessage.COMPLETED);
     }
 
-
     private class StatsPerTypeRequest extends TmfEventRequest {
 
         /* Map in which the results are saved */
         private final Map<@NonNull String, @NonNull Long> stats;
+        private @Nullable ITmfFilter fFilter = null;
 
         public StatsPerTypeRequest(ITmfTrace trace, TmfTimeRange range) {
             super(trace.getEventType(), range, 0, ITmfEventRequest.ALL_DATA,
                     ITmfEventRequest.ExecutionType.BACKGROUND);
             this.stats = new HashMap<>();
+            
+            if (fConfiguration != null) {
+                try {
+                    String jsonParameters = new Gson().toJson(fConfiguration.getParameters(), Map.class);
+                    String regEx = new Gson().fromJson(jsonParameters, InternalConfiguration.class).getFilter();
+                    if (regEx != null) {
+                        TmfFilterMatchesNode filter = new TmfFilterMatchesNode(null);
+                        filter.setEventAspect(TmfBaseAspects.getEventTypeAspect());
+                        filter.setRegex(regEx);
+                        fFilter = filter;
+                    }
+                } catch (JsonSyntaxException e) {
+                    fFilter = null;
+                }
+            }
         }
 
         public Map<@NonNull String, @NonNull Long> getResults() {
@@ -128,19 +172,21 @@ public class ExampleEventsStatisticsDataProvider implements ITmfTreeDataProvider
         public void handleData(final ITmfEvent event) {
             super.handleData(event);
             if (event.getTrace() == fTrace) {
-                String eventType = event.getName();
-                /*
-                 * Special handling for lost events: instead of counting just
-                 * one, we will count how many actual events it represents.
-                 */
-                if (event instanceof ITmfLostEvent) {
-                    ITmfLostEvent le = (ITmfLostEvent) event;
-                    incrementStats(eventType, le.getNbLostEvents());
-                    return;
-                }
+                if (fFilter == null || (fFilter != null && fFilter.matches(event))) {
+                    String eventType = event.getName();
+                    /*
+                     * Special handling for lost events: instead of counting just
+                     * one, we will count how many actual events it represents.
+                     */
+                    if (event instanceof ITmfLostEvent) {
+                        ITmfLostEvent le = (ITmfLostEvent) event;
+                        incrementStats(eventType, le.getNbLostEvents());
+                        return;
+                    }
 
-                /* For standard event types, just increment by one */
-                incrementStats(eventType, 1L);
+                    /* For standard event types, just increment by one */
+                    incrementStats(eventType, 1L);
+                }
             }
         }
 
@@ -154,4 +200,15 @@ public class ExampleEventsStatisticsDataProvider implements ITmfTreeDataProvider
         fRequest = null;
         fCachedResult = null;
     }
+
+    private static class InternalConfiguration {
+        @Expose
+        @SerializedName(value = "filter")
+        private @Nullable String fFilter = null;
+
+        public @Nullable String getFilter() {
+            return fFilter;
+        }
+    }
+
 }
