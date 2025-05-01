@@ -12,6 +12,15 @@
                class="org.eclipse.tracecompass.tmf.core.trace.TmfTrace">
          </tracetype>
       </module>
+      <module
+         id="org.eclipse.tracecompass.examples.state.system.module.config"
+         name="Example State System Module"
+         analysis_module="org.eclipse.tracecompass.examples.core.analysis.config.ExampleConfigurableStateSystemAnalysisModule"
+         automatic="false">
+         <tracetype
+               class="org.eclipse.tracecompass.tmf.core.trace.TmfTrace">
+         </tracetype>
+      </module>
    </extension>
    <extension point="org.eclipse.tracecompass.tmf.core.dataprovider">
       <dataProviderFactory
@@ -23,8 +32,16 @@
          id="org.eclipse.tracecompass.examples.xy.dataprovider">
       </dataProviderFactory>
       <dataProviderFactory
-            class="org.eclipse.tracecompass.examples.core.data.provider.ExampleEventsStatisticsDataProviderFactory"
+            class="org.eclipse.tracecompass.examples.core.data.provider.ExampleDataTreeDataProviderFactory"
             id="org.eclipse.tracecompass.examples.nomodulestats">
+      </dataProviderFactory>
+      <dataProviderFactory
+            class="org.eclipse.tracecompass.examples.core.data.provider.config.ExampleConfigurableDataTreeDataProviderFactory"
+            id="org.eclipse.tracecompass.examples.nomodulestats.config">
+      </dataProviderFactory>
+      <dataProviderFactory
+         class="org.eclipse.tracecompass.examples.core.data.provider.config.ExampleConfigurableTimeGraphProviderFactory"
+         id="org.eclipse.tracecompass.examples.timegraph.dataprovider.config">
       </dataProviderFactory>
    </extension>
 </plugin>
