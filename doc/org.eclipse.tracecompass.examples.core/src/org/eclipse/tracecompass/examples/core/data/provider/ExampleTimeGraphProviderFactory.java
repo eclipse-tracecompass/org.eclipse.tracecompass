@@ -21,9 +21,9 @@ import org.eclipse.tracecompass.tmf.core.dataprovider.IDataProviderDescriptor;
 import org.eclipse.tracecompass.tmf.core.dataprovider.IDataProviderDescriptor.ProviderType;
 import org.eclipse.tracecompass.tmf.core.dataprovider.IDataProviderFactory;
 import org.eclipse.tracecompass.tmf.core.model.DataProviderDescriptor;
+import org.eclipse.tracecompass.tmf.core.model.timegraph.TmfTimeGraphCompositeDataProvider;
 import org.eclipse.tracecompass.tmf.core.model.tree.ITmfTreeDataModel;
 import org.eclipse.tracecompass.tmf.core.model.tree.ITmfTreeDataProvider;
-import org.eclipse.tracecompass.tmf.core.model.xy.TmfTreeXYCompositeDataProvider;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
 import org.eclipse.tracecompass.tmf.core.trace.TmfTraceManager;
 import org.eclipse.tracecompass.tmf.core.trace.TmfTraceUtils;
@@ -51,7 +51,7 @@ public class ExampleTimeGraphProviderFactory implements IDataProviderFactory {
         if (traces.size() == 1) {
             return ExampleTimeGraphDataProvider.create(trace);
         }
-        return TmfTreeXYCompositeDataProvider.create(traces, "Example time graph data provider", ExampleTimeGraphDataProvider.ID); //$NON-NLS-1$
+        return TmfTimeGraphCompositeDataProvider.create(traces, ExampleTimeGraphDataProvider.ID);
     }
 
     @Override

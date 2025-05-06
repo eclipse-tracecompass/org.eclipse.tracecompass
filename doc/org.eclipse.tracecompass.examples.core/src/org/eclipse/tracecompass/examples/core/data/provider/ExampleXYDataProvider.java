@@ -90,7 +90,11 @@ public class ExampleXYDataProvider extends AbstractTreeDataProvider<ExampleState
      */
     public static @Nullable ITmfTreeDataProvider<? extends ITmfTreeDataModel> create(ITmfTrace trace) {
         ExampleStateSystemAnalysisModule module = TmfTraceUtils.getAnalysisModuleOfClass(trace, ExampleStateSystemAnalysisModule.class, ExampleStateSystemAnalysisModule.ID);
-        return module != null ? new ExampleXYDataProvider(trace, module) : null;
+        if (module != null) {
+            module.schedule();
+            return new ExampleXYDataProvider(trace, module);
+        }
+        return null;
     }
 
 
