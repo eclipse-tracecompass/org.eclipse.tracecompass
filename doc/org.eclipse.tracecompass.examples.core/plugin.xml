@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.linuxtools.tmf.core.analysis">
+      <module
+         id="org.eclipse.tracecompass.examples.state.system.module"
+         name="Example State System Module"
+         analysis_module="org.eclipse.tracecompass.examples.core.analysis.ExampleStateSystemAnalysisModule"
+         automatic="false">
+         <tracetype
+               class="org.eclipse.tracecompass.tmf.core.trace.TmfTrace">
+         </tracetype>
+      </module>
+   </extension>
+   <extension point="org.eclipse.tracecompass.tmf.core.dataprovider">
+      <dataProviderFactory
+         class="org.eclipse.tracecompass.examples.core.data.provider.ExampleTimeGraphProviderFactory"
+         id="org.eclipse.tracecompass.examples.timegraph.dataprovider">
+      </dataProviderFactory>
+      <dataProviderFactory
+         class="org.eclipse.tracecompass.examples.core.data.provider.ExampleXYDataProviderFactory"
+         id="org.eclipse.tracecompass.examples.xy.dataprovider">
+      </dataProviderFactory>
+   </extension>
+</plugin>

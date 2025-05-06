@@ -4782,13 +4782,13 @@ Data providers are queried with a filter object, which usually contains a time r
 * RUNNING if the response was returned before the underlying analysis was completed, and querying the provider again with the same parameters can return a different model.
 * COMPLETED if the underlying analysis is finished and we do not expect a different response for the query parameters.
 
-''Note that a complete example of analysis, data provider and views can be found in the [https://github.com/eclipse-tracecompass/org.eclipse.tracecompass/blob/master/doc/org.eclipse.tracecompass.examples org.eclipse.tracecompass.examples plugin sources].''
+''Note that a complete example of analysis and data provider can be found in the [https://github.com/eclipse-tracecompass/org.eclipse.tracecompass/blob/master/doc/org.eclipse.tracecompass.examples.core org.eclipse.tracecompass.examples.core plugin sources] and [https://github.com/eclipse-tracecompass/org.eclipse.tracecompass/blob/master/doc/org.eclipse.tracecompass.examples.ui org.eclipse.tracecompass.examples.ui plugin sources] respectively.''
 
 == Data provider types ==
 
-The base data provider returns a tree, as a list of '''TmfTreeDataModel''', with a name, ID and parent ID. The ID is unique to a provider type and the parent ID indicates which element from the list is the entry's parent to rebuild the tree hierarchy from the list of models.
+The base data provider '''ITmfDataProvider''' is the interface each data provider type has to implement. The data provider factories create instances of such provider type. Tree data providers are of type '''ITmfTreeDataProvider''' extend the '''ITmfDataProvider''' interface and returns a tree, as a list of '''TmfTreeDataModel''', with a name, ID and parent ID. The ID is unique to a provider type and the parent ID indicates which element from the list is the entry's parent to rebuild the tree hierarchy from the list of models. Note such tree need to have limited size to not exceed the available memory.
 
-The base '''TimeGraphEntryModel''' class extends this with a start time and end time. Concrete classes are free to add other fields, as long as the model is serializable.
+The base '''TimeGraphEntryModel''' class extends this with a start time and end time. Concrete classes are free to add other fields, which can be used in the Eclipse Trace Context where the UI code can access the model type. However, in Trace Compass server context only fields defined in the Trace Server protocol will be serialized.
 
 === XY ===
 
@@ -4796,7 +4796,7 @@ The XY data provider type is used to associate an XY series to an entry from the
 
 Each XY series can have its own x axis ('''ISeriesModel''' / '''SeriesModel''' - encapsulated in an '''ITmfXyModel''' / '''TmfXyModel''') or they can be shared by all models ('''IYModel''' / '''YModel''' encapsulated in an '''ITmfCommonXAxisModel''' / '''TmfCommonXAxisModel'''). The X axis is an array of longs, which makes it useful for a time axis or time buckets, but it can be used for any XY content.
 
-The interface to implement is '''ITmfTreeXYDataProvider'''.
+The interface to implement is '''ITmfTreeXYDataProvider'''. Abstract base classes exist for common use case, e.g. '''AbstractTreeDataProvider''' for tree data providers that are using a state system. Extend those classes if applicable.
 
 Here is a simple example of XY data provider, retrieving data from a simple state system displaying the child attributes of the root attributes.
 
