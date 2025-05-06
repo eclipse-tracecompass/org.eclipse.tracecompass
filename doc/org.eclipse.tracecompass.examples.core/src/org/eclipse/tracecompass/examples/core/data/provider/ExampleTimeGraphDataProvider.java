@@ -24,7 +24,6 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Predicate;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.examples.core.analysis.ExampleStateSystemAnalysisModule;
@@ -72,7 +71,7 @@ import com.google.common.collect.Multimap;
  * @author Geneviève Bastien
  */
 @NonNullByDefault
-public class ExampleTimeGraphDataProvider extends AbstractTmfTraceDataProvider implements ITimeGraphDataProvider<@NonNull ITimeGraphEntryModel>, IOutputStyleProvider {
+public class ExampleTimeGraphDataProvider extends AbstractTmfTraceDataProvider implements ITimeGraphDataProvider<ITimeGraphEntryModel>, IOutputStyleProvider {
 
     /**
      * Provider unique ID.
@@ -117,6 +116,7 @@ public class ExampleTimeGraphDataProvider extends AbstractTmfTraceDataProvider i
         STYLE_MAP = builder.build();
     }
 
+    @SuppressWarnings("null")
     private final BiMap<Long, Integer> fIDToDisplayQuark = HashBiMap.create();
     private ExampleStateSystemAnalysisModule fModule;
 
@@ -142,11 +142,15 @@ public class ExampleTimeGraphDataProvider extends AbstractTmfTraceDataProvider i
      */
     public static @Nullable ITmfTreeDataProvider<? extends ITmfTreeDataModel> create(ITmfTrace trace) {
         ExampleStateSystemAnalysisModule module = TmfTraceUtils.getAnalysisModuleOfClass(trace, ExampleStateSystemAnalysisModule.class, ExampleStateSystemAnalysisModule.ID);
-        return module != null ? new ExampleTimeGraphDataProvider(trace, module) : null;
+        if (module != null) {
+            module.schedule();
+            return new ExampleTimeGraphDataProvider(trace, module);
+        }
+        return null;
     }
 
     @Override
-    public TmfModelResponse<TmfTreeModel<@NonNull ITimeGraphEntryModel>> fetchTree(Map<String, Object> fetchParameters, @Nullable IProgressMonitor monitor) {
+    public TmfModelResponse<TmfTreeModel<ITimeGraphEntryModel>> fetchTree(Map<String, Object> fetchParameters, @Nullable IProgressMonitor monitor) {
         fModule.waitForInitialization();
         ITmfStateSystem ss = fModule.getStateSystem();
         if (ss == null) {
@@ -169,19 +173,19 @@ public class ExampleTimeGraphDataProvider extends AbstractTmfTraceDataProvider i
     }
 
     @Override
-    public @NonNull String getId() {
+    public String getId() {
         return ID;
     }
 
     @Override
-    public @NonNull TmfModelResponse<TimeGraphModel> fetchRowModel(Map<String, Object> fetchParameters, @Nullable IProgressMonitor monitor) {
+    public TmfModelResponse<TimeGraphModel> fetchRowModel(Map<String, Object> fetchParameters, @Nullable IProgressMonitor monitor) {
         ITmfStateSystem ss = fModule.getStateSystem();
         if (ss == null) {
             return new TmfModelResponse<>(null, ITmfResponse.Status.FAILED, CommonStatusMessage.ANALYSIS_INITIALIZATION_FAILED);
         }
 
         try {
-            List<@NonNull ITimeGraphRowModel> rowModels = getDefaultRowModels(fetchParameters, ss, monitor);
+            List<ITimeGraphRowModel> rowModels = getDefaultRowModels(fetchParameters, ss, monitor);
             if (rowModels == null) {
                 rowModels = Collections.emptyList();
             }
@@ -208,8 +212,8 @@ public class ExampleTimeGraphDataProvider extends AbstractTmfTraceDataProvider i
 
         // This regex map automatically filters or highlights the entry
         // according to the global filter entered by the user
-        Map<@NonNull Integer, @NonNull Predicate<@NonNull Multimap<@NonNull String, @NonNull Object>>> predicates = new HashMap<>();
-        Multimap<@NonNull Integer, @NonNull String> regexesMap = DataProviderParameterUtils.extractRegexFilter(fetchParameters);
+        Map<Integer, Predicate<Multimap<String, Object>>> predicates = new HashMap<>();
+        Multimap<Integer, String> regexesMap = DataProviderParameterUtils.extractRegexFilter(fetchParameters);
         if (regexesMap != null) {
             predicates.putAll(computeRegexPredicate(regexesMap));
         }
@@ -222,7 +226,7 @@ public class ExampleTimeGraphDataProvider extends AbstractTmfTraceDataProvider i
             }
             ITimeGraphRowModel row = quarkToRow.get(interval.getAttribute());
             if (row != null) {
-                List<@NonNull ITimeGraphState> states = row.getStates();
+                List<ITimeGraphState> states = row.getStates();
                 ITimeGraphState timeGraphState = getStateFromInterval(interval, currentEndTime);
                 // This call will compare the state with the filter predicate
                 applyFilterAndAddState(states, timeGraphState, row.getEntryID(), predicates, monitor);
@@ -251,7 +255,7 @@ public class ExampleTimeGraphDataProvider extends AbstractTmfTraceDataProvider i
         if (list == null) {
             return Collections.emptySet();
         }
-        Set<@NonNull Long> times = new HashSet<>();
+        Set<Long> times = new HashSet<>();
         for (long t : list) {
             if (key.getStartTime() <= t && t <= key.getCurrentEndTime()) {
                 times.add(t);
@@ -261,7 +265,7 @@ public class ExampleTimeGraphDataProvider extends AbstractTmfTraceDataProvider i
     }
 
     @Override
-    public @NonNull TmfModelResponse<List<ITimeGraphArrow>> fetchArrows(Map<String, Object> fetchParameters, @Nullable IProgressMonitor monitor) {
+    public TmfModelResponse<List<ITimeGraphArrow>> fetchArrows(Map<String, Object> fetchParameters, @Nullable IProgressMonitor monitor) {
         /**
          * If there were arrows to be drawn, this is where they would be defined
          */
@@ -269,7 +273,7 @@ public class ExampleTimeGraphDataProvider extends AbstractTmfTraceDataProvider i
     }
 
     @Override
-    public @NonNull TmfModelResponse<Map<String, String>> fetchTooltip(Map<String, Object> fetchParameters, @Nullable IProgressMonitor monitor) {
+    public TmfModelResponse<Map<String, String>> fetchTooltip(Map<String, Object> fetchParameters, @Nullable IProgressMonitor monitor) {
         /**
          * If there were tooltips to be drawn, this is where they would be
          * defined
