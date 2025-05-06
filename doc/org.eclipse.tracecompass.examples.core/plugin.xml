@@ -22,5 +22,9 @@
          class="org.eclipse.tracecompass.examples.core.data.provider.ExampleXYDataProviderFactory"
          id="org.eclipse.tracecompass.examples.xy.dataprovider">
       </dataProviderFactory>
+      <dataProviderFactory
+            class="org.eclipse.tracecompass.examples.core.data.provider.ExampleEventsStatisticsDataProviderFactory"
+            id="org.eclipse.tracecompass.examples.nomodulestats">
+      </dataProviderFactory>
    </extension>
 </plugin>
