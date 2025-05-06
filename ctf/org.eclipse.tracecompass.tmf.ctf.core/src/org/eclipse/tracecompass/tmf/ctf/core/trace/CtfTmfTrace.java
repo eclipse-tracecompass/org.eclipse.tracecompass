@@ -110,15 +110,6 @@ public class CtfTmfTrace extends TmfTrace
     // -------------------------------------------
 
     /**
-     * Clock offset property
-     *
-     * @since 1.2
-     * @deprecated use {@link CTFTrace#CLOCK_OFFSET} instead
-     */
-    @Deprecated
-    public static final String CLOCK_OFFSET = "clock_offset"; //$NON-NLS-1$
-
-    /**
      * Default cache size for CTF traces
      */
     protected static final int DEFAULT_CACHE_SIZE = 50000;
