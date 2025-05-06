@@ -41,9 +41,9 @@ public interface IDataProviderFactory extends IAdaptable {
      *            A trace
      * @return {@link ITmfTreeDataProvider} that can be use for the given trace
      * @since 4.0
-     * @deprecated As of version 9.7, use {@link #createDataProvider(ITmfTrace)} instead
+     * @deprecated As of version 10.0, use {@link #createDataProvider(ITmfTrace)} instead
      */
-    @Deprecated(since = "9.7", forRemoval = true)
+    @Deprecated(since = "10.0", forRemoval = true)
     @Nullable default ITmfTreeDataProvider<? extends ITmfTreeDataModel> createProvider(@NonNull ITmfTrace trace) {
         return null;
     }
@@ -55,7 +55,7 @@ public interface IDataProviderFactory extends IAdaptable {
      * @param trace
      *            A trace
      * @return {@link ITmfDataProvider} that can be use for the given trace
-     * @since 9.7
+     * @since 10.0
      */
     @Nullable default ITmfDataProvider createDataProvider(@NonNull ITmfTrace trace) {
         return createProvider(trace);
@@ -77,9 +77,9 @@ D     * Create a {@link ITmfTreeDataProvider} for the given trace. If this facto
      *         ID <provider ID>:<secondaryId>, or <code>null</code> if no provider
      *         is available for this trace and ID
      * @since 4.0
-     * @deprecated As of version 9.7, use {@link #createDataProvider(ITmfTrace)} instead
+     * @deprecated As of version 10.0, use {@link #createDataProvider(ITmfTrace)} instead
      */
-    @Deprecated(since = "9.7", forRemoval = true)
+    @Deprecated(since = "10.0", forRemoval = true)
     default @Nullable ITmfTreeDataProvider<? extends ITmfTreeDataModel> createProvider(@NonNull ITmfTrace trace, @NonNull String secondaryId) {
         return createProvider(trace);
     }
@@ -99,7 +99,7 @@ D     * Create a {@link ITmfTreeDataProvider} for the given trace. If this facto
      * @return {@link ITmfDataProvider} that can be use for the given trace with
      *         ID <provider ID>:<secondaryId>, or <code>null</code> if no provider
      *         is available for this trace and ID
-     * @since 9.7
+     * @since 10.0
      */
     default @Nullable ITmfDataProvider createDataProvider(@NonNull ITmfTrace trace, @NonNull String secondaryId) {
         return createProvider(trace, secondaryId);
