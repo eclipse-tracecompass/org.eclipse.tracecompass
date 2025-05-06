@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.math.BigInteger;
 import java.nio.ByteOrder;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -138,100 +137,6 @@ public final class IntegerDeclaration extends Declaration implements ISimpleData
     // ------------------------------------------------------------------------
     // Constructors
     // ------------------------------------------------------------------------
-
-    /**
-     * Factory, some common types cached
-     *
-     * @deprecated use
-     *             {@link #createDeclaration(int, boolean, int, ByteOrder, Encoding, String, long, String)}
-     *             instead
-     *
-     * @param len
-     *            The length in bits
-     * @param signed
-     *            Is the integer signed? false == unsigned
-     * @param base
-     *            The base (10-16 are most common)
-     * @param byteOrder
-     *            Big-endian little-endian or other
-     * @param encoding
-     *            ascii, utf8 or none.
-     * @param clock
-     *            The clock path, can be null
-     * @param alignment
-     *            The minimum alignment. Should be >= 1
-     * @return the integer declaration
-     * @deprecated use
-     *             {@link #createDeclaration(int, boolean, int, ByteOrder, Encoding, String, long, String)}
-     */
-    @Deprecated
-    public static IntegerDeclaration createDeclaration(int len, boolean signed, int base,
-            @Nullable ByteOrder byteOrder, Encoding encoding, String clock, long alignment) {
-        if (encoding.equals(Encoding.NONE) && (clock.equals("")) && base == BASE_10 && byteOrder != null) { //$NON-NLS-1$
-            if (alignment == BYTE_ALIGN) {
-                switch (len) {
-                case SIZE_8:
-                    return signed ? INT_8_DECL : UINT_8_DECL;
-                case SIZE_16:
-                    if (!signed) {
-                        if (isBigEndian(byteOrder)) {
-                            return UINT_16B_DECL;
-                        }
-                        return UINT_16L_DECL;
-                    }
-                    break;
-                case SIZE_32:
-                    if (signed) {
-                        if (isBigEndian(byteOrder)) {
-                            return INT_32B_DECL;
-                        }
-                        return INT_32L_DECL;
-                    }
-                    if (isBigEndian(byteOrder)) {
-                        return UINT_32B_DECL;
-                    }
-                    return UINT_32L_DECL;
-                case SIZE_64:
-                    if (signed) {
-                        if (isBigEndian(byteOrder)) {
-                            return INT_64B_DECL;
-                        }
-                        return INT_64L_DECL;
-                    }
-                    if (isBigEndian(byteOrder)) {
-                        return UINT_64B_DECL;
-                    }
-                    return UINT_64L_DECL;
-
-                default:
-
-                }
-
-            } else if (alignment == 1) {
-                switch (len) {
-                case SIZE_5:
-                    if (!signed) {
-                        if (isBigEndian(byteOrder)) {
-                            return UINT_5B_DECL;
-                        }
-                        return UINT_5L_DECL;
-                    }
-                    break;
-                case SIZE_27:
-                    if (!signed) {
-                        if (isBigEndian(byteOrder)) {
-                            return UINT_27B_DECL;
-                        }
-                        return UINT_27L_DECL;
-                    }
-                    break;
-                default:
-                    break;
-                }
-            }
-        }
-        return new IntegerDeclaration(len, signed, base, byteOrder, encoding, clock, alignment);
-    }
 
     /**
      * Alternate create method for CTF2 integers which have roles
