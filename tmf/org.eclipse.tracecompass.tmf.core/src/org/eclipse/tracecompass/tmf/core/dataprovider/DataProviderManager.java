@@ -221,9 +221,9 @@ public class DataProviderManager {
      *         input parameter.
      * @since 8.0
      *
-     * @deprecated As of version 9.7, use {@link #fetchOrCreateDataProvider(ITmfTrace, String, Class)} instead
+     * @deprecated As of version 10.0, use {@link #fetchOrCreateDataProvider(ITmfTrace, String, Class)} instead
      */
-    @Deprecated(since = "9.7", forRemoval = true)
+    @Deprecated(since = "10.0", forRemoval = true)
     public synchronized @Nullable <T extends ITmfTreeDataProvider<? extends ITmfTreeDataModel>> T getOrCreateDataProvider(@NonNull ITmfTrace trace, String id, Class<T> dataProviderClass) {
         return fetchOrCreateDataProvider(trace, id, dataProviderClass);
     }
@@ -245,7 +245,7 @@ public class DataProviderManager {
      *            Returned data provider must extend this class
      * @return the data provider or null if no data provider is found for the
      *         input parameter.
-     * @since 9.7
+     * @since 10.0
      */
     public synchronized @Nullable <T extends ITmfDataProvider> T fetchOrCreateDataProvider(@NonNull ITmfTrace trace, String id, Class<T> dataProviderClass) {
         ITmfDataProvider dataProvider = fetchExistingDataProvider(trace, id, dataProviderClass);
@@ -292,9 +292,9 @@ public class DataProviderManager {
      *            Returned data provider must extend this class
      * @return the data provider or null
      * @since 8.0
-     * @deprecated As of version 9.7, use {@link #fetchExistingDataProvider(ITmfTrace, String, Class)} instead
+     * @deprecated As of version 10.0, use {@link #fetchExistingDataProvider(ITmfTrace, String, Class)} instead
      */
-    @Deprecated(since = "9.7", forRemoval = true)
+    @Deprecated(since = "10.0", forRemoval = true)
     public synchronized @Nullable <T extends ITmfTreeDataProvider<? extends ITmfTreeDataModel>> T getExistingDataProvider(@NonNull ITmfTrace trace, String id, Class<T> dataProviderClass) {
         return fetchExistingDataProvider(trace, id, dataProviderClass);
     }
@@ -318,7 +318,7 @@ public class DataProviderManager {
      * @param dataProviderClass
      *            Returned data provider must extend this class
      * @return the data provider or null
-     * @since 9.7
+     * @since 10.0
      */
     public synchronized @Nullable <T extends ITmfDataProvider> T fetchExistingDataProvider(@NonNull ITmfTrace trace, String id, Class<T> dataProviderClass) {
         for (ITmfDataProvider dataProvider : fInstances.get(trace)) {
@@ -372,7 +372,7 @@ public class DataProviderManager {
      * @param configuration
      *            a configuration used to create data providers (and descriptors)
      * @return list of the available providers for this trace / experiment
-     * @since 9.7
+     * @since 10.0
      */
     public List<IDataProviderDescriptor> getAvailableProviders(@Nullable ITmfTrace trace, @Nullable ITmfConfiguration configuration) {
         if (trace == null || configuration == null) {
@@ -450,7 +450,7 @@ public class DataProviderManager {
      *            The trace for which to remove the data provider
      * @param id
      *            The id of the data provider to remove
-     * @since 9.7
+     * @since 10.0
      */
     public void removeDataProvider(ITmfTrace trace, String id) {
         Iterator<ITmfDataProvider> iter = fInstances.get(trace).iterator();

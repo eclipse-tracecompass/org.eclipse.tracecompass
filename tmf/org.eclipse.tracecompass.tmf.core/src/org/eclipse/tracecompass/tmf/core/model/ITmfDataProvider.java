@@ -54,7 +54,7 @@ package org.eclipse.tracecompass.tmf.core.model;
  * }</pre>
  *
  *
- * @since 9.7
+ * @since 10.0
  * @author Matthew Khouzam
  * @auther Bernd Hufmann
  *
