@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, 2020 Ericsson
+ * Copyright (c) 2014, 2025 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -65,6 +65,7 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
@@ -141,7 +142,7 @@ import com.google.common.collect.Lists;
 public final class SWTBotUtils {
 
     private static final String WINDOW_MENU = "Window";
-    private static final String PREFERENCES_MENU_ITEM = "Preferences";
+    private static final String[] PREFERENCES_MENU_ITEM = { "Preferences...", "Preferences" };
     private static final String PREFERENCES_SHELL = "Preferences";
     private static boolean fPrintedEnvironment = false;
     private static Logger log = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
@@ -1148,7 +1149,8 @@ public final class SWTBotUtils {
                 fail();
             }
         } else {
-            mainShell.bot().menu(WINDOW_MENU).menu(PREFERENCES_MENU_ITEM).click();
+            SWTBotMenu windowMenu = mainShell.bot().menu(WINDOW_MENU);
+            anyMenuOf(windowMenu, PREFERENCES_MENU_ITEM).click();
         }
 
         if (text != null) {
@@ -1203,6 +1205,23 @@ public final class SWTBotUtils {
         Matcher<Widget> anyOf = anyOf(Lists.transform(Arrays.asList(texts), text -> withText(text)));
         Iterable<Matcher<? extends Widget>> matchers = Arrays.asList(widgetOfType(Shell.class), anyOf);
         return new SWTBotShell((Shell) bot.widget(allOf(matchers), 0), allOf(matchers));
+    }
+
+    /**
+     * Get the first menu that has any one of the specified texts. Useful when
+     * menus change text between releases, or when one of many menus could appear.
+     *
+     * @param bot
+     *            a given menu bot
+     * @param texts
+     *            the possible menu texts
+     * @return a SWTBotMenu
+     * @throws WidgetNotFoundException
+     *             if the widget is not found or is disposed.
+     */
+    public static SWTBotMenu anyMenuOf(SWTBotMenu bot, String... texts) {
+        Matcher<MenuItem> anyOf = anyOf(Lists.transform(Arrays.asList(texts), text -> withMnemonic(text)));
+        return bot.menu(anyOf, false, 0);
     }
 
     /**
