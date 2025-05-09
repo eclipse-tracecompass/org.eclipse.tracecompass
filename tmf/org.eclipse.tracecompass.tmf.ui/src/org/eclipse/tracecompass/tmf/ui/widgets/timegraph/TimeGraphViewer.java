@@ -2498,7 +2498,8 @@ public class TimeGraphViewer extends Viewer implements ITimeDataProvider, IMarke
                         if (dialog.open() == Window.OK) {
                             final String label = dialog.getValue();
                             final RGBA rgba = dialog.getColorValue();
-                            IMarkerEvent bookmark = new MarkerEvent(null, time, duration, IMarkerEvent.BOOKMARKS, rgba, label, true);
+                            final boolean foreground = dialog.getForeground();
+                            IMarkerEvent bookmark = new MarkerEvent(null, time, duration, IMarkerEvent.BOOKMARKS, rgba, label, foreground);
                             fBookmarks.add(bookmark);
                             updateMarkerList();
                             updateMarkerActions();
