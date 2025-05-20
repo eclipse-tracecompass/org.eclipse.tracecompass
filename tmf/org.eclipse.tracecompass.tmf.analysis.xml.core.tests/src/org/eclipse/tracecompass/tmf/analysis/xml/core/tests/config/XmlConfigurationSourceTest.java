@@ -121,7 +121,7 @@ public class XmlConfigurationSourceTest {
     @Test
     public void testConstructor() throws TmfConfigurationException {
         // Make sure that an xml file is loaded
-        ITmfConfiguration config =  sfXmlConfigSource.create(VALID_PARAM);
+        ITmfConfiguration config =  sfXmlConfigSource.create(createConfig("valid params", VALID_PARAM));
 
         XmlConfigurationSource instance = new XmlConfigurationSource();
         List<ITmfConfiguration> configurations = instance.getConfigurations();
@@ -155,7 +155,7 @@ public class XmlConfigurationSourceTest {
         // Test missing path
         Map<String, Object> param = Collections.emptyMap();
         try {
-            sfXmlConfigSource.create(param);
+            sfXmlConfigSource.create(createConfig("empty params", param));
         } catch (TmfConfigurationException e) {
             // success
             assertEquals(EXPECTED_MESSAGE_NO_PATH, e.getMessage());
@@ -164,7 +164,7 @@ public class XmlConfigurationSourceTest {
         // Test XML file doesn't exist
         param = ImmutableMap.of(EXPECTED_KEY_NAME, XmlUtils.getXmlFilesPath().append(UNKNOWN_TYPE).toOSString());
         try {
-            sfXmlConfigSource.create(param);
+            sfXmlConfigSource.create(createConfig("xml not exists params", param));
         } catch (TmfConfigurationException e) {
             // success
             assertEquals(EXPECTED_MESSAGE_FILE_NOT_FOUND, e.getMessage());
@@ -172,13 +172,13 @@ public class XmlConfigurationSourceTest {
 
         // Test invalid XML file
         try {
-            sfXmlConfigSource.create(INVALID_PARAM);
+            sfXmlConfigSource.create(createConfig("invalid params", INVALID_PARAM));
         } catch (TmfConfigurationException e) {
             // success
         }
 
         try {
-            ITmfConfiguration config = sfXmlConfigSource.create(VALID_PARAM);
+            ITmfConfiguration config = sfXmlConfigSource.create(createConfig("valid params", VALID_PARAM));
             validateConfig(PATH_TO_VALID_FILE, config);
         } catch (TmfConfigurationException e) {
             fail();
@@ -248,7 +248,7 @@ public class XmlConfigurationSourceTest {
         // Test missing path
         Map<String, Object> param = Collections.emptyMap();
         try {
-            sfXmlConfigSource.update(config.getId(), param);
+            sfXmlConfigSource.update(config.getId(), createConfig("missing path params", param));
         } catch (TmfConfigurationException e) {
             // success
             assertEquals(EXPECTED_MESSAGE_NO_PATH, e.getMessage());
@@ -256,7 +256,7 @@ public class XmlConfigurationSourceTest {
 
         // Test config doesn't exist
         try {
-            sfXmlConfigSource.update(UNKNOWN_TYPE, param);
+            sfXmlConfigSource.update(UNKNOWN_TYPE, createConfig("config doesn't exists params", param));
         } catch (TmfConfigurationException e) {
             // success
             assertEquals(EXPECTED_MESSAGE_INVALID_CONFIG, e.getMessage());
@@ -265,7 +265,7 @@ public class XmlConfigurationSourceTest {
         // Test XML file doesn't exist
         param = ImmutableMap.of(EXPECTED_KEY_NAME, XmlUtils.getXmlFilesPath().append(UNKNOWN_TYPE).toOSString());
         try {
-            sfXmlConfigSource.update(config.getId(), param);
+            sfXmlConfigSource.update(config.getId(), createConfig("xml file doesn't exists params", param));
         } catch (TmfConfigurationException e) {
             // success
             assertEquals(EXPECTED_MESSAGE_FILE_NOT_FOUND, e.getMessage());
@@ -273,7 +273,7 @@ public class XmlConfigurationSourceTest {
 
         // Test invalid XML file
         try {
-            sfXmlConfigSource.update(EXPECTED_CONFIG_ID, INVALID_PARAM);
+            sfXmlConfigSource.update(EXPECTED_CONFIG_ID, createConfig("invalid params", INVALID_PARAM));
         } catch (TmfConfigurationException e) {
             // success
 
@@ -281,13 +281,13 @@ public class XmlConfigurationSourceTest {
 
         // Test file name mismatch... not allowed to use different xmlfile name
         try {
-            sfXmlConfigSource.update(config.getId(), VALID_PARAM2);
+            sfXmlConfigSource.update(config.getId(), createConfig("valid params 2", VALID_PARAM2));
         } catch (TmfConfigurationException e) {
             assertEquals(EXPECTED_MESSAGE_FILE_MISMATCH, e.getMessage());
         }
 
         try {
-            ITmfConfiguration configUpdated = sfXmlConfigSource.update(config.getId(), VALID_PARAM);
+            ITmfConfiguration configUpdated = sfXmlConfigSource.update(config.getId(), createConfig("valid params", VALID_PARAM));
             validateConfig(PATH_TO_VALID_FILE, configUpdated);
         } catch (TmfConfigurationException e) {
             fail();
@@ -333,7 +333,7 @@ public class XmlConfigurationSourceTest {
     private static ITmfConfiguration createConfig(String path) {
         Map<String, Object> param = ImmutableMap.of("path", path);
         try {
-            return sfXmlConfigSource.create(param);
+            return sfXmlConfigSource.create(createConfig("valid params with path", param));
         } catch (TmfConfigurationException e) {
             // Nothing to do
         }
@@ -354,5 +354,15 @@ public class XmlConfigurationSourceTest {
         File file = path.toFile();
         assertTrue(file.exists());
         return Objects.requireNonNull(file.getAbsolutePath());
+    }
+
+    private static ITmfConfiguration createConfig(String name, Map<String, Object> param) {
+        return new TmfConfiguration.Builder()
+                .setName(name)
+                .setDescription(name + " description")
+                .setSourceTypeId(XML_ANALYSIS_TYPE_ID)
+                .setParameters(param)
+                .build();
+
     }
 }
