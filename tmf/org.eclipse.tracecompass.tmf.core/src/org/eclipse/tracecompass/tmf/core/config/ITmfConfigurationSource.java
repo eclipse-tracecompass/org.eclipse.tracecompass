@@ -41,7 +41,9 @@ public interface ITmfConfigurationSource {
      * @return a new {@link ITmfConfiguration} if successful
      * @throws TmfConfigurationException
      *             If the creation of the configuration fails
+     * @deprecated As of version 10.0, use {@link #create(ITmfConfiguration)} instead
      */
+    @Deprecated(since = "10.0", forRemoval = true)
     ITmfConfiguration create(Map<String, Object> parameters) throws TmfConfigurationException;
 
     /**
@@ -78,7 +80,9 @@ public interface ITmfConfigurationSource {
      * @return a new {@link ITmfConfiguration} if successful
      * @throws TmfConfigurationException
      *             If the update of the configuration fails
+     * @deprecated As of version 10.0, use {@link #update(String, ITmfConfiguration)} instead
      */
+    @Deprecated(since = "10.0", forRemoval = true)
     ITmfConfiguration update(String id, Map<String, Object> parameters) throws TmfConfigurationException;
 
     /**
