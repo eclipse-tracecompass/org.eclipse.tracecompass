@@ -13,6 +13,10 @@ An `analysis` module in Trace Compass is an entity that consumes trace events of
 
 A `configuration` is the data structure to configure and customize the trace server back-end globally (e.g. load XML analysis) or to configure data providers with parameters.
 
+### Configuration source
+
+A configuration source is a source of configurations. It is responsible to manage global configurations (e.g. create, delete, update etc).
+
 ### Configuration source type
 
 A configuration source type describes the input parameters to provide when creating a new data provider or to configure the trace server globally.
@@ -224,6 +228,238 @@ A trace type defines a parser for the raw trace file(s). It will parse the raw t
 
 Trace compass provides a mechanism for different components to interact with each other using signals. The signals can carry information that is specific to each signal. In the Trace Server only uses a subset of the available signals, where `TmfTraceOpenedSignal` and `TmfTraceClosedSignal` are the most important signals, some other signals are not applicable when running in the trace server context. See the [Trace Compass Developer Guide for Eclipse](https://archive.eclipse.org/tracecompass/doc/nightly/org.eclipse.tracecompass.doc.dev/Component-Interaction.html#Component_Interaction) for more information about signals and how to send and receive them.
 
+## Implementing a global configuration
+
+Global configurations are used to load configuration parameters that configures the trace server application. For example, one can load XML analysis defintions using the global configuartion interface.
+
+### Implementing a configuration source
+
+To implement a configuration source use the extension point for configuration source with id `org.eclipse.tracecompass.tmf.core.config`. The following example explains for the XML anlaysis available in the Trace Compass core code base.
+
+```xml
+<extension
+         point="org.eclipse.tracecompass.tmf.core.config">
+      <source
+            id="org.eclipse.tracecompass.tmf.core.config.xmlsourcetype"
+            class="org.eclipse.tracecompass.internal.tmf.analysis.xml.core.config.XmlConfigurationSource">
+      </source>
+   </extension>
+</extension>
+```
+
+After that implement the `ITmfConfigurationSource` interface. Implement the following methods:
+
+- `ITmfConfigurationSourceType getConfigurationSourceType()`
+Return the configuration source type that this configuration source can handle. The configuration source type descibes the input parameter to pass when creating a global configuration. See chapter [Implementing a configuration source type](#implementing-a-configuration-source-type) about the class to return.
+- `ITmfConfiguration create(ITmfConfiguration configuration)`
+    This method is called to create a global configuration base on the input configuration. It returns a `ITmfConfiguration` instance. It is repsonsible to persist the configuration in memory and on disk so that it is available after a server restart. To persist to disk the plug-in state location of workspace can be used which is accessible using Eclipse platform APIs.
+- `ITmfConfiguration update(String id, ITmfConfiguration configuration)`
+    This method is called to update an existing configuration with new parameters.
+- `ITmfConfiguration remove(String id)`
+    This method is called to remove an existing configuration by ID. If the configuration exisits, this method is responsible to clean-up the peristed data. If, for example, analysis modules with state systems or other persisted data were created as result of an configuration, this method needs to make sure that those are clean-up.
+- `List<ITmfConfiguration> getConfigurations()`
+    Gets all configuration instances.
+- `boolean contains(String id)`
+    Method to check if a configuration with given ID exists 
+- `ITmfConfiguration get(String id)` 
+    Returns a configuration with given ID if it exists 
+- `void dispose()`
+    Disposes the configuration source
+
+The below the code for the `XmlConfigurationSource`. Note it reuses utilities that already existed for the integration with Eclipse Trace Compass.
+
+```java
+/*******************************************************************************
+ * Copyright (c) 2023 Ericsson
+ *
+ * All rights reserved. This program and the accompanying materials are
+ * made available under the terms of the Eclipse Public License 2.0 which
+ * accompanies this distribution, and is available at
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *******************************************************************************/
+package org.eclipse.tracecompass.internal.tmf.analysis.xml.core.config;
+
+import static org.eclipse.tracecompass.common.core.NonNullUtils.nullToEmptyString;
+
+import java.io.File;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
+
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.osgi.util.NLS;
+import org.eclipse.tracecompass.internal.tmf.analysis.xml.core.module.XmlAnalysisModuleSource;
+import org.eclipse.tracecompass.internal.tmf.analysis.xml.core.module.XmlUtils;
+import org.eclipse.tracecompass.tmf.core.config.ITmfConfiguration;
+import org.eclipse.tracecompass.tmf.core.config.ITmfConfigurationSource;
+import org.eclipse.tracecompass.tmf.core.config.ITmfConfigurationSourceType;
+import org.eclipse.tracecompass.tmf.core.config.TmfConfigParamDescriptor;
+import org.eclipse.tracecompass.tmf.core.config.TmfConfiguration;
+import org.eclipse.tracecompass.tmf.core.config.TmfConfigurationSourceType;
+import org.eclipse.tracecompass.tmf.core.exceptions.TmfConfigurationException;
+
+import com.google.common.collect.ImmutableList;
+
+/**
+ * Implementation of {@link ITmfConfigurationSource} for managing data
+ * driven-analysis in XML files.
+ *
+ * @author Bernd Hufmann
+ */
+public class XmlConfigurationSource implements ITmfConfigurationSource {
+
+    private static final ITmfConfigurationSourceType fType;
+
+    private static final String XML_ANALYSIS_TYPE_ID = "org.eclipse.tracecompass.tmf.core.config.xmlsourcetype"; //$NON-NLS-1$
+    private static final String NAME = nullToEmptyString(Messages.XmlConfigurationSource_Name);
+    private static final String DESCRIPTION = nullToEmptyString(Messages.XmlConfigurationSource_Description);
+    private static final String PATH_KEY = "path"; //$NON-NLS-1$
+    private static final String PATH_DESCRIPTION = nullToEmptyString(Messages.XmlConfigurationSource_PathDescription);
+    private Map<String, ITmfConfiguration> fConfigurations = new ConcurrentHashMap<>();
+
+    static {
+        TmfConfigParamDescriptor.Builder descriptorBuilder = new TmfConfigParamDescriptor.Builder()
+                .setKeyName(PATH_KEY)
+                .setDescription(PATH_DESCRIPTION);
+
+        fType = new TmfConfigurationSourceType.Builder()
+                .setId(XML_ANALYSIS_TYPE_ID)
+                .setDescription(DESCRIPTION)
+                .setName(NAME)
+                .setConfigParamDescriptors(ImmutableList.of(descriptorBuilder.build())).build();
+    }
+
+    /**
+     * Default Constructor
+     */
+    @SuppressWarnings("null")
+    public XmlConfigurationSource() {
+        for (Entry<@NonNull String, @NonNull File> entry : XmlUtils.listFiles().entrySet()) {
+            ITmfConfiguration config = createConfiguration(entry.getValue());
+            fConfigurations.put(config.getId(), config);
+        }
+    }
+
+    @Override
+    public ITmfConfigurationSourceType getConfigurationSourceType() {
+        return fType;
+    }
+
+    @Override
+    public ITmfConfiguration create(Map<String, Object> parameters) throws TmfConfigurationException {
+        return createOrUpdateXml(null, parameters);
+    }
+
+    @Override
+    public @Nullable ITmfConfiguration get(String id) {
+        return fConfigurations.get(id);
+    }
+
+    @Override
+    public ITmfConfiguration update(String id, Map<String, Object> parameters) throws TmfConfigurationException {
+        ITmfConfiguration config = fConfigurations.get(id);
+        if (config == null) {
+            throw new TmfConfigurationException("No such configuration with ID: " + id); //$NON-NLS-1$
+        }
+        return createOrUpdateXml(config, parameters);
+    }
+
+    @Override
+    public @Nullable ITmfConfiguration remove(String id) {
+        if (fConfigurations.get(id) == null) {
+            return null;
+        }
+
+        if (!XmlUtils.listFiles().containsKey(id)) {
+            return null;
+        }
+
+        XmlUtils.deleteFiles(ImmutableList.of(id));
+        XmlUtils.saveFilesStatus();
+        XmlAnalysisModuleSource.notifyModuleChange();
+        return fConfigurations.remove(id);
+    }
+
+    @Override
+    public List<ITmfConfiguration> getConfigurations() {
+        return ImmutableList.copyOf(fConfigurations.values());
+    }
+
+    @Override
+    public boolean contains(String id) {
+        return fConfigurations.containsKey(id);
+    }
+
+    @Override
+    public void dispose() {
+        fConfigurations.clear();
+    }
+
+    private static @Nullable File getFile(Map<String, Object> parameters) {
+        String path = (String) parameters.get(PATH_KEY);
+        if (path == null) {
+            return null;
+        }
+        return new File(path);
+    }
+
+    private ITmfConfiguration createOrUpdateXml(@Nullable ITmfConfiguration existingConfig, Map<String, Object> parameters) throws TmfConfigurationException {
+        File file = getFile(parameters);
+        if (file == null) {
+            throw new TmfConfigurationException("Missing path"); //$NON-NLS-1$
+        }
+
+        ITmfConfiguration config = createConfiguration(file);
+
+        IStatus status = XmlUtils.xmlValidate(file);
+        if (status.isOK()) {
+            if (existingConfig == null) {
+                status = XmlUtils.addXmlFile(file);
+            } else {
+                if (!existingConfig.getId().equals(config.getId())) {
+                    throw new TmfConfigurationException("File mismatch"); //$NON-NLS-1$
+                }
+                XmlUtils.updateXmlFile(file);
+            }
+            if (status.isOK()) {
+                XmlAnalysisModuleSource.notifyModuleChange();
+                XmlUtils.saveFilesStatus();
+                fConfigurations.put(config.getId(), config);
+                return config;
+            }
+        }
+        String statusMessage = status.getMessage();
+        String message = statusMessage != null? statusMessage : "Failed to update xml analysis configuration"; //$NON-NLS-1$
+        if (status.getException() != null) {
+            throw new TmfConfigurationException(message, status.getException());
+        }
+        throw new TmfConfigurationException(message);
+    }
+
+    @SuppressWarnings("null")
+    private static String getName(String file) {
+        return new Path(file).removeFileExtension().toString();
+    }
+
+    private static ITmfConfiguration createConfiguration(File file) {
+        String id = file.getName();
+        String name = getName(file.getName());
+        String description = NLS.bind(Messages.XmlConfigurationSource_ConfigDescription, name);
+        TmfConfiguration.Builder builder = new TmfConfiguration.Builder()
+                .setName(name)
+                .setId(id)
+                .setDescription(description.toString())
+                .setSourceTypeId(XML_ANALYSIS_TYPE_ID);
+       return builder.build();
+    }
+}
+```
 
 ## Implementing an analysis module
 
@@ -1285,7 +1521,7 @@ Using data provider configurators this is possible. Note that this interface is 
 A data provider configurator needs to implement the `ITmfDataProviderConfigurator` interface. Implement the following methods
 
 - `List<ITmfConfigurationSourceType> getConfigurationSourceTypes()`
-   Return one or more configuration source type that this configurator can handle. The configuration source type descibes the input parameter to pass when creating a data provider
+   Return one or more configuration source type that this configurator can handle. The configuration source type describes the input parameter to pass when creating a data provider
 - `IDataProviderDescriptor createDataProviderDescriptors(ITmfTrace trace, ITmfConfiguration configuration)`
   This method is called to create derived data providers base on the input configuration. It returns a data provider descriptor of the derived data provider. The descriptor has to have the configuration set, has to have the capability of `canDelete` (so that it can be deleted) as well as it has to have an ID that has the configuration ID appended, which will be used by the corresponding data provider factory to create an instance of the data provider. It is responsible to create and manage analysis modules (e.g. add to ITmfTrace object) and persist the configuration in memory and disk so that it available after a server restart.
 - `removeDataProviderDescriptor(ITmfTrace trace, IDataProviderDescriptor descriptor) throws TmfConfigurationException`
@@ -1306,7 +1542,11 @@ The actual data provider needs to apply the configuration. The easiest way is to
 
 ### Implementing a configuration source type
 
+<<<<<<< HEAD
 The configuration source type describes the input parameters to provide when to pass when creating a new data provider or global configuration.
+=======
+The configuration source type descibes the input parameters to provide when to pass when creating a new data provider or global configuration.
+>>>>>>> 222504c42f (doc: Add global configuration to trace-server developer guide)
 
 The interface to implement is `ITmfConfigurationSourceType`. You can use the `TmfConfigurationSourceType.Builder` class to build such type. It has name, description, unique ID, an optional JSON schema file or a list of simple `TmfConfigurationParameter` instances. Use schema as much as you can. The schema will describe the JSON parameters, that `ITmfConfiguration.getParameters()` will return when passed to the configurator.
 
@@ -1322,7 +1562,6 @@ The interface to implement is `ITmfConfigurationSourceType`. You can use the `Tm
                 .build());
     }
 ```
-
 
 ### Implementing a configurable data provider without analysis module
 
@@ -2912,7 +3151,6 @@ The interfaces for configurable data providers gives the developer the freedom t
 
 ## To Do
 Provide guides for other features relevant for developing a custom trace server using Trace Compass core APIs, e.g.
-- Global configuration
 - Trace annotation provider (Marker sets, requested_marker_set etc)
 - Time Range columns (e.g. for data tree)
 - Data Types in general (e.g. in data tree, events table)
