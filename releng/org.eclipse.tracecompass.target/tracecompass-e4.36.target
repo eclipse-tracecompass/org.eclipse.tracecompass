@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><?pde version="3.8"?><target name="tracecompass-e4.36" sequenceNumber="2">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><?pde version="3.8"?><target name="tracecompass-e4.36" sequenceNumber="3">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <repository location="https://download.eclipse.org/justj/jres/21/updates/release/21.0.6/"/>
@@ -11,7 +11,7 @@
 <unit id="org.eclipse.remote.ui" version="0.0.0"/>
 <unit id="org.eclipse.remote.jsch.core" version="0.0.0"/>
 <unit id="org.eclipse.remote.jsch.ui" version="0.0.0"/>
-<repository location="https://download.eclipse.org/tools/cdt/builds/12.1/cdt-12.1.0-m2/"/>
+<repository location="https://download.eclipse.org/tools/cdt/builds/cdt/m3-deps-for-platform/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.swtbot.eclipse.feature.group" version="0.0.0"/>
@@ -44,7 +44,7 @@
 <unit id="org.osgi.service.component.annotations" version="0.0.0"/>
 <unit id="slf4j.api" version="0.0.0"/>
 <unit id="slf4j.simple" version="0.0.0"/>
-<repository location="https://download.eclipse.org/tools/orbit/simrel/orbit-aggregation/milestone/S202505070543/"/>
+<repository location="https://download.eclipse.org/tools/orbit/simrel/orbit-aggregation/milestone/S202505200825/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.mozilla.javascript" version="0.0.0"/>
@@ -72,7 +72,7 @@
 <unit id="org.eclipse.jdt.junit4.runtime" version="0.0.0"/>
 <unit id="org.eclipse.e4.ui.progress" version="0.0.0"/>
 <unit id="org.eclipse.osgi.services" version="0.0.0"/>
-<repository location="https://download.eclipse.org/eclipse/updates/4.36-I-builds/I20250507-1010/"/>
+<repository location="https://download.eclipse.org/eclipse/updates/4.36-I-builds/I20250515-1800/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.tracecompass.testtraces.tracecompass-test-traces-ctf" version="1.7.2"/>
@@ -82,7 +82,7 @@
 <unit id="org.eclipse.wst.xml.core" version="0.0.0"/>
 <unit id="org.eclipse.wst.xml.ui" version="0.0.0"/>
 <unit id="org.eclipse.wst.xsd.core" version="0.0.0"/>
-<repository location="https://download.eclipse.org/webtools/CI/3.38.0/20250423073756/repository/"/>
+<repository location="https://download.eclipse.org/webtools/downloads/drops/R3.38.0/S-3.38M3-20250518070143/repository/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.xsd" version="0.0.0"/>
@@ -105,7 +105,7 @@
         <dependency>
             <groupId>org.eclipse.tracecompass</groupId>
             <artifactId>trace-event-logger</artifactId>
-            <version>0.5.0</version>
+            <version>0.5.1</version>
             <type>jar</type>
         </dependency>
     </dependencies>
