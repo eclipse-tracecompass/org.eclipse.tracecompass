@@ -381,4 +381,10 @@ public class XmlPatternAnalysis extends TmfAbstractAnalysisModule implements ITm
         return properties;
     }
 
+    @Override
+    public void clearPersistentData() {
+        super.clearPersistentData();
+        fSegmentStoreModule.clearPersistentData();
+        fStateSystemModule.clearPersistentData();
+    }
 }
