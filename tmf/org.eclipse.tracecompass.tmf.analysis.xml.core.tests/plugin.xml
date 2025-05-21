@@ -16,5 +16,14 @@
             class="org.eclipse.tracecompass.tmf.analysis.xml.core.tests.stubs.XmlSchemaParserStub">
       </schemaParser>
    </extension>
-
+   <!-- Define tracing nature here to be able to use it in tests -->
+   <extension
+         id="org.eclipse.linuxtools.tmf.project.nature"
+         point="org.eclipse.core.resources.natures">
+      <runtime>
+         <run
+               class="org.eclipse.tracecompass.tmf.core.TmfProjectNature">
+         </run>
+      </runtime>
+   </extension>
 </plugin>
