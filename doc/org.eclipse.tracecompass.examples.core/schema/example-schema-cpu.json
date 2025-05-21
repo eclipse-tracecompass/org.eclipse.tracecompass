@@ -1,0 +1,14 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://org.eclipse.tracecompass/example-schema.json",
+    "title": "Example Schema",
+    "description": "Example Schema for event statistics",
+    "type": "object",
+    "properties": {
+        "filter": {
+            "description": "filter regular expressions",
+            "type": "string"
+        }
+    },
+    "required": ["filter"]
+}
