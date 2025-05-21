@@ -108,7 +108,7 @@ public class XmlConfigurationSource implements ITmfConfigurationSource {
         if (!XmlUtils.listFiles().containsKey(id)) {
             return null;
         }
-
+        XmlUtils.deleteSupplementaryResources(id, null);
         XmlUtils.deleteFiles(ImmutableList.of(id));
         XmlUtils.saveFilesStatus();
         XmlAnalysisModuleSource.notifyModuleChange();

@@ -42,12 +42,20 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
 import org.apache.commons.io.FilenameUtils;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IResourceVisitor;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.ISafeRunnable;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.SafeRunner;
@@ -61,6 +69,11 @@ import org.eclipse.tracecompass.internal.tmf.analysis.xml.core.Activator;
 import org.eclipse.tracecompass.tmf.analysis.xml.core.module.ITmfXmlSchemaParser;
 import org.eclipse.tracecompass.tmf.analysis.xml.core.module.TmfXmlStrings;
 import org.eclipse.tracecompass.tmf.analysis.xml.core.module.TmfXmlUtils;
+import org.eclipse.tracecompass.tmf.core.TmfCommonConstants;
+import org.eclipse.tracecompass.tmf.core.TmfProjectNature;
+import org.eclipse.tracecompass.tmf.core.analysis.IAnalysisModule;
+import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
+import org.eclipse.tracecompass.tmf.core.trace.TmfTraceManager;
 import org.osgi.framework.Bundle;
 import org.osgi.service.prefs.BackingStoreException;
 import org.w3c.dom.Document;
@@ -722,4 +735,65 @@ public final class XmlUtils {
         });
         return enabledFiles;
     }
+
+    /**
+     * Deletes all supplementary resources created by an XML analysis file
+     *
+     * @param xmlFileName
+     *          the file name of xml analysis
+     * @param monitor
+     *          a progress monitor
+     */
+    public static void deleteSupplementaryResources(String xmlFileName, @Nullable IProgressMonitor monitor) {
+        final IProgressMonitor mon = (monitor == null ? new NullProgressMonitor() : monitor);
+        // Get unique list of analysis IDs
+        Set<String> analysisIds = new HashSet<>();
+        analysisIds.addAll(XmlUtils.getAnalysisIdsFromFile(xmlFileName));
+
+        // Delete persistent data of all open traces (this will close the file before deleting it)
+        for (ITmfTrace trace : TmfTraceManager.getInstance().getOpenedTraces()) {
+            for (ITmfTrace tr : TmfTraceManager.getTraceSetWithExperiment(trace)) {
+                analysisIds.forEach(analysisId -> {
+                    IAnalysisModule module = tr.getAnalysisModule(analysisId);
+                    if (module != null) {
+                        module.clearPersistentData();
+                    }
+                });
+            }
+            if (mon.isCanceled()) {
+                return;
+            }
+        }
+        // Delete applicable persistent data of non-opened traces
+        for (IProject project : ResourcesPlugin.getWorkspace().getRoot().getProjects()) {
+            try {
+                if (project.hasNature(TmfProjectNature.ID)) {
+                    project.refreshLocal(IResource.DEPTH_INFINITE, monitor);
+                    IFolder supplFolder = project.getFolder(TmfCommonConstants.TRACE_SUPPLEMENTARY_FOLDER_NAME);
+                    if (supplFolder != null && supplFolder.exists()) {
+                        supplFolder.accept((IResourceVisitor) resource -> {
+                            if (mon.isCanceled()) {
+                                return false;
+                            }
+                            if (resource instanceof IFile) {
+                                analysisIds.forEach(analysisId -> {
+                                    if (resource.getName().startsWith(analysisId)) {
+                                        try {
+                                            resource.delete(true, null);
+                                        } catch (CoreException e) {
+                                            Activator.logError("Can't delete supplementary resource " + resource.getName(), e); //$NON-NLS-1$
+                                        }
+                                    }
+                                });
+                            }
+                            return true;
+                        }, IResource.DEPTH_INFINITE, IResource.NONE);
+                    }
+                }
+            } catch (CoreException e) {
+                Activator.logError("Can't delete supplementary resources for XML analyses", e); //$NON-NLS-1$
+            }
+        }
+    }
+
 }
