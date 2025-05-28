@@ -238,6 +238,10 @@
          version="0.0.0"/>
 
    <plugin
+         id="org.apache.commons.jxpath"
+         version="0.0.0"/>
+
+   <plugin
          id="com.sun.jna"
          version="0.0.0"/>
 
@@ -290,7 +294,7 @@
          version="0.0.0"/>
 
    <plugin
-         id="org.apache.commons.commons-logging"
+         id="org.apache.commons.logging"
          version="0.0.0"/>
 
    <plugin
@@ -438,11 +442,23 @@
          version="0.0.0"/>
 
    <plugin
-         id="org.eclipse.launchbar.core"
+         id="org.apache.commons.jxpath"
          version="0.0.0"/>
 
    <plugin
-         id="com.github.weisj.jsvg"
+         id="org.apache.commons.commons-beanutils"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.apache.commons.collections"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.jdom"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipse.launchbar.core"
          version="0.0.0"/>
 
    <plugin
