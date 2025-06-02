@@ -17,7 +17,7 @@ for example, should not have to worry about the concepts explained here.
 
 = Trace Compass Trace Server =
 
-For information on developing for the '''Trace Compass Trace Server''' see the [https://github.com/eclipse-tracecompass/org.eclipse.tracecompass/blob/master/doc/trace-server/trace-server-dev-guide.md | Trace Server Developer Guide].
+For information on developing for the '''Trace Compass Trace Server''' see the [https://github.com/eclipse-tracecompass/org.eclipse.tracecompass/blob/master/doc/trace-server/trace-server-dev-guide.md Trace Server Developer Guide].
 
 = Implementing a New Trace Type =
 
@@ -2645,8 +2645,8 @@ This interface can be used to provide property information. A property provider 
 To use the property provider, first the interface method of the ''ISDPropertiesProvider'' has to be implemented by a class. Typically, this is implemented in the loader class. Add the ''ISDPropertiesProvider'' to the list of implemented interfaces, implement the method ''getPropertySheetEntry()'' and set the provider in the ''setViewer()'' method as well as remove the provider in the ''dispose()'' method of the loader class. Please note that no example is provided here.
 
 Please refer to the following Eclipse articles for more information about properties and tabed properties.
-*[http://www.eclipse.org/articles/Article-Properties-View/properties-view.html | Take control of your properties]
-*[http://www.eclipse.org/articles/Article-Tabbed-Properties/tabbed_properties_view.html | The Eclipse Tabbed Properties View]
+*[http://www.eclipse.org/articles/Article-Properties-View/properties-view.html Take control of your properties]
+*[http://www.eclipse.org/articles/Article-Tabbed-Properties/tabbed_properties_view.html The Eclipse Tabbed Properties View]
 
 ==== Using the Collapse Provider Interface ====
 
@@ -4788,7 +4788,7 @@ Data providers are queried with a filter object, which usually contains a time r
 
 ''Note that a complete example of analysis, data provider and views can be found in the [https://github.com/eclipse-tracecompass/org.eclipse.tracecompass/blob/master/doc/org.eclipse.tracecompass.examples org.eclipse.tracecompass.examples plugin sources].''
 
-The chapters below describe key concepts and how to create data providers. For more details, other data provider types and complementary information about data providers see also the '''Data Provider''' chapters in the [https://github.com/eclipse-tracecompass/org.eclipse.tracecompass/blob/master/doc/trace-server/trace-server-dev-guide.md | Trace Server Developer Guide]. This guide describes as well how data providers are used in the Trace Compass Trace Server.
+The chapters below describe key concepts and how to create data providers. For more details, other data provider types and complementary information about data providers see also the '''Data Provider''' chapters in the [https://github.com/eclipse-tracecompass/org.eclipse.tracecompass/blob/master/doc/trace-server/trace-server-dev-guide.md Trace Server Developer Guide]. This guide describes as well how data providers are used in the Trace Compass Trace Server.
 
 == Data provider types ==
 
