@@ -15,9 +15,9 @@ should help developers trying to add new capabilities (support for new trace
 type, new analysis or views, etc.) to the framework. End-users, using the RCP
 for example, should not have to worry about the concepts explained here.
 
-= Trace Compass Server =
+= Trace Compass Trace Server =
 
-For development for `Trace Compass Trace Server` see the [https://github.com/eclipse-tracecompass/org.eclipse.tracecompass/blob/master/doc/trace-server/trace-server-dev-guide.md | Trace Server Developer Guide].
+For information on developing for the '''Trace Compass Trace Server''' see the [https://github.com/eclipse-tracecompass/org.eclipse.tracecompass/blob/master/doc/trace-server/trace-server-dev-guide.md | Trace Server Developer Guide].
 
 = Implementing a New Trace Type =
 
@@ -4787,6 +4787,8 @@ Data providers are queried with a filter object, which usually contains a time r
 * COMPLETED if the underlying analysis is finished and we do not expect a different response for the query parameters.
 
 ''Note that a complete example of analysis, data provider and views can be found in the [https://github.com/eclipse-tracecompass/org.eclipse.tracecompass/blob/master/doc/org.eclipse.tracecompass.examples org.eclipse.tracecompass.examples plugin sources].''
+
+The chapters below describe key concepts and how to create data providers. For more details, other data provider types and complementary information about data providers see also the '''Data Provider''' chapters in the [https://github.com/eclipse-tracecompass/org.eclipse.tracecompass/blob/master/doc/trace-server/trace-server-dev-guide.md | Trace Server Developer Guide]. This guide describes as well how data providers are used in the Trace Compass Trace Server.
 
 == Data provider types ==
 
