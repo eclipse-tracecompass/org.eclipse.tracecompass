@@ -1,5 +1,5 @@
 /**********************************************************************
- * Copyright (c) 2020, 2025 Ericsson
+ * Copyright (c) 2020 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -41,6 +41,8 @@ public class TmfTreeModelTest {
     private static final String TOOLTIP_PREFIX = "tooltip";
     private static final String LABEL_PREFIX = "label";
     private static final String TEST_SCOPE = "scope";
+    private static final int ALL_LEVELS = -1;
+    private static final int TEST_LEVEL = 1;
     private static List<ITmfTreeDataModel> fTestEntries = new ArrayList<>();
     private static List<String> fTestHeaders = new ArrayList<>();
     private static List<String> fExpectedEmptyTooltips = new ArrayList<>();
@@ -82,13 +84,13 @@ public class TmfTreeModelTest {
     @Test
     public void testTmfTreeModelConstructor() {
         TmfTreeModel<ITmfTreeDataModel> testInstance = new TmfTreeModel<>(fTestHeaders, fTestEntries);
-        verifyInstance(testInstance, fExpectedEmptyTooltips, null);
+        verifyInstance(testInstance, fExpectedEmptyTooltips, null, ALL_LEVELS);
 
         testInstance = new TmfTreeModel<>(fTestHeaders, fTestEntries, TEST_SCOPE);
-        verifyInstance(testInstance, fExpectedEmptyTooltips, TEST_SCOPE);
+        verifyInstance(testInstance, fExpectedEmptyTooltips, TEST_SCOPE, ALL_LEVELS);
     }
 
-    private static void verifyInstance(TmfTreeModel<ITmfTreeDataModel> testInstance, List<String> tooltips, @Nullable String scope) {
+    private static void verifyInstance(TmfTreeModel<ITmfTreeDataModel> testInstance, List<String> tooltips, @Nullable String scope, int autoExpandLevel) {
         assertEquals("Incorrect list of entries", fTestEntries, testInstance.getEntries());
         assertEquals("Incorrect list of entries", fTestHeaders, testInstance.getHeaders());
 
@@ -101,6 +103,7 @@ public class TmfTreeModelTest {
             assertEquals("Incorrect Collumn descriptor header tooltip", tooltips.get(i), columnDescriptors.get(i).getTooltip());
         }
         assertEquals("Incorrect scope", scope, testInstance.getScope());
+        assertEquals("Incorrect autoExpandLevel", autoExpandLevel, testInstance.getAutoExpandLevel());
     }
 
     /**
@@ -112,13 +115,17 @@ public class TmfTreeModelTest {
         TmfTreeModel.Builder<ITmfTreeDataModel> builder = new TmfTreeModel.Builder<>();
         builder.setColumnDescriptors(fTestDescriptors).setEntries(fTestEntries);
         TmfTreeModel<ITmfTreeDataModel> testInstance = builder.build();
-        verifyInstance(testInstance, fExpectedTooltips, null);
+        verifyInstance(testInstance, fExpectedTooltips, null, ALL_LEVELS);
 
         builder = new TmfTreeModel.Builder<>();
         builder.setColumnDescriptors(fTestDescriptors).setEntries(fTestEntries).setScope(TEST_SCOPE);
-
         testInstance = builder.build();
-        verifyInstance(testInstance, fExpectedTooltips, TEST_SCOPE);
+        verifyInstance(testInstance, fExpectedTooltips, TEST_SCOPE, ALL_LEVELS);
+
+        builder = new TmfTreeModel.Builder<>();
+        builder.setColumnDescriptors(fTestDescriptors).setEntries(fTestEntries).setScope(TEST_SCOPE).setAutoExpandLevel(TEST_LEVEL);
+        testInstance = builder.build();
+        verifyInstance(testInstance, fExpectedTooltips, TEST_SCOPE, TEST_LEVEL);
 
         builder = new TmfTreeModel.Builder<>();
         testInstance = builder.build();
