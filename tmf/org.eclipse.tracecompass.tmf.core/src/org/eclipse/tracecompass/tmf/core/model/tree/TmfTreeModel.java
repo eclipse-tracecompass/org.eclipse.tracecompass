@@ -35,6 +35,7 @@ public class TmfTreeModel<T extends ITmfTreeDataModel> {
     private List<ITableColumnDescriptor> fColumnDescriptors;
     private List<T> fEntries;
     private @Nullable String fScope;
+    private boolean fCollapseChildren = false;
 
     /**
      * Constructor
@@ -88,6 +89,7 @@ public class TmfTreeModel<T extends ITmfTreeDataModel> {
         fColumnDescriptors = builder.fColumnDescriptors;
         fEntries = builder.fEntries;
         fScope = builder.fScope;
+        fCollapseChildren = builder.fCollapseChildren;
     }
 
     /**
@@ -119,6 +121,20 @@ public class TmfTreeModel<T extends ITmfTreeDataModel> {
     }
 
     /**
+     * @return
+     */
+    public boolean isCollapseChildren() {
+        return fCollapseChildren;
+    }
+
+    /**
+     * @param collapseChildren
+     */
+    public void setCollapseChildren(boolean collapseChildren) {
+        this.fCollapseChildren = collapseChildren;
+    }
+
+    /**
      *
      * A builder class to build instances implementing interface
      * {@link TmfTreeModel}
@@ -131,6 +147,7 @@ public class TmfTreeModel<T extends ITmfTreeDataModel> {
         private List<ITableColumnDescriptor> fColumnDescriptors = new ArrayList<>();
         private List<T> fEntries;
         private @Nullable String fScope;
+        private boolean fCollapseChildren = false;
 
         /**
          * Constructor
@@ -172,6 +189,18 @@ public class TmfTreeModel<T extends ITmfTreeDataModel> {
          */
         public Builder<T> setScope(String scope) {
             fScope = scope;
+            return this;
+        }
+
+        /**
+         * Sets whether children should be collapsed
+         *
+         * @param collapseChildren
+         *            true if children should be collapsed, false otherwise
+         * @return this {@link Builder} object
+         */
+        public Builder<T> setCollapseChildren(boolean collapseChildren) {
+            fCollapseChildren = collapseChildren;
             return this;
         }
 
