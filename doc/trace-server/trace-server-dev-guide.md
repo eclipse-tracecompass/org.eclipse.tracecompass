@@ -42,19 +42,18 @@
       - [Supported query parameters](#supported-query-parameters-2)
     - [Virtual Table](#virtual-table)
       - [Supported query parameters](#supported-query-parameters-3)
-  - [Using the data provider manager to access data providers](#using-the-data-provider-manager-to-access-data-providers)
-    - [Implementing a Data Provider Factory](#implementing-a-data-provider-factory)
-    - [Extension point](#extension-point)
-    - [Using data provider factories with experiments](#using-data-provider-factories-with-experiments)
     - [Utilities](#utilities)
-    - [Registering a data provider factory programmatically](#registering-a-data-provider-factory-programmatically)
-      - [Implementing a facotry for single-instance data providers](#implementing-a-facotry-for-single-instance-data-providers)
+    - [Using the data provider manager to access data providers](#using-the-data-provider-manager-to-access-data-providers)
+    - [Implementing a Data Provider Factory](#implementing-a-data-provider-factory)
+      - [Extension point](#extension-point)
+      - [Using data provider factories with experiments](#using-data-provider-factories-with-experiments)
+      - [Registering a data provider factory programmatically](#registering-a-data-provider-factory-programmatically)
+      - [Implementing a factory for single-instance data providers](#implementing-a-factory-for-single-instance-data-providers)
       - [Implementing a facotry for multi-instance data providers](#implementing-a-facotry-for-multi-instance-data-providers)
       - [Grouping of data providers](#grouping-of-data-providers)
       - [Implementing a data provider without analysis module](#implementing-a-data-provider-without-analysis-module)
-  - [Implementing a configurable data provider](#implementing-a-configurable-data-provider)
+    - [Implementing a configurable data provider](#implementing-a-configurable-data-provider)
     - [Implementing a configuration source type](#implementing-a-configuration-source-type)
-- [The configuration source type describes the input parameters to provide when to pass when creating a new data provider or global configuration.](#the-configuration-source-type-describes-the-input-parameters-to-provide-when-to-pass-when-creating-a-new-data-provider-or-global-configuration)
     - [Implementing a configurable data provider without analysis module](#implementing-a-configurable-data-provider-without-analysis-module)
       - [Implementing an `ITmfDataProviderConfigurator` without analysis module](#implementing-an-itmfdataproviderconfigurator-without-analysis-module)
       - [Updating data provider factory for configurable data provider (without analysis module)](#updating-data-provider-factory-for-configurable-data-provider-without-analysis-module)
@@ -1312,7 +1311,11 @@ No parameters need to be added. Just pass an empty map.
 | `table_search_expressions` | For searching providing a map <columnId, regular expression> Returned lines that match the search expression will be taggged by setting the highlight bit (8) in the properties bit mask of the return line model |
 | `table_search_direction` | Optional, the search direction string NEXT or PREVIOUS. If omitted and `table_search_expressions` exists then NEXT will be used|
 
-## Using the data provider manager to access data providers
+### Utilities
+
+Abstract base classes are provided for TreeXY and time graph data providers based on `TmfStateSystemAnalysisModule`s (`AbstractTreeCommonXDataProvider` and `AbstractTimeGraphDataProvider`, respectively). They handle concurrency, mapping of state system attributes to unique IDs, exceptions, caching and encapsulating the model in a response with the correct status.
+
+### Using the data provider manager to access data providers
 
 Data providers can be managed by the `DataProviderManager` class, which uses an [extension point](#extension-point) and factories for data providers. Factories can also programatically be registered (and deregistered) to (from) the `DataProviderManager`, see [here](#registering-a-data-provider-factory-programmatically for more details.
 
@@ -1399,7 +1402,7 @@ public class ExampleTimeGraphProviderFactory implements IDataProviderFactory {
     }
 }
 ```
-### Extension point
+#### Extension point
 This extension needs to be added to the plugin's plugin.xml file:
 
 ```xml
@@ -1415,7 +1418,7 @@ This extension needs to be added to the plugin's plugin.xml file:
 </extension>
 ```
 
-### Using data provider factories with experiments
+#### Using data provider factories with experiments
 
 The Trace Compass framework allows to use the `DataProviderFactory` with single traces or experiments. The trace server will always create experiments even if a trace is a single trace.
 
@@ -1425,11 +1428,7 @@ In the data provider manager, experiments also get a unique instance of a data p
 - the getDescriptor(ITmfTrace) returns only a single data provider descriptor for the same type
 - it creates composite data provider instances (e.g. `TmfTimeGraphCompositeDataProvider`) with an array of data providers for each applicable sub-trace
 
-### Utilities
-
-Abstract base classes are provided for TreeXY and time graph data providers based on `TmfStateSystemAnalysisModule`s (`AbstractTreeCommonXDataProvider` and `AbstractTimeGraphDataProvider`, respectively). They handle concurrency, mapping of state system attributes to unique IDs, exceptions, caching and encapsulating the model in a response with the correct status.
-
-### Registering a data provider factory programmatically
+#### Registering a data provider factory programmatically
 
 The most common way to register data provider factories is using the extension point as described above. However, the `DataProviderManager` has APIs to register and deregister factories programmatically. This allows to manage the lifecycle of custom data provider factories from extension code.
 
@@ -1445,7 +1444,7 @@ The most common way to register data provider factories is using the extension p
     //..
 ```
 
-#### Implementing a facotry for single-instance data providers
+#### Implementing a factory for single-instance data providers
 If you would like to create a `DataProviderFactory` for a data provider that is using one single analysis module, you can get the analysis module from the trace as shown in the example below.
 
 ```java
@@ -1582,7 +1581,7 @@ Data providers can be grouped under a common parent. A common parent is indicate
 
 Data providers can use analysis modules, but they don't have to. For example, you can implement a data provider that gets the event statistics for the whole trace by reading all the events of a trace. See [Creating a Data Tree Data Provider](#creating-a-data-tree-data-provider) for an example.
 
-## Implementing a configurable data provider
+### Implementing a configurable data provider
 
 Defining data providers statically as described in the previous chapters is not always flexible enough for user's needs. It's often required to create derived data providers from an existing data provider or data providers based on some configuration parameters. For example, it might be interesting to derive a CPU usage data provider from the original CPU usage data provider, that shows the CPU usage for a given CPU only. Another use case is to derive a virtual table data provider from the events table data provider, that shows only trace events with a certain event type.
 
@@ -1612,11 +1611,7 @@ The actual data provider needs to apply the configuration. The easiest way is to
 
 ### Implementing a configuration source type
 
-<<<<<<< HEAD
 The configuration source type describes the input parameters to provide when to pass when creating a new data provider or global configuration.
-=======
-The configuration source type descibes the input parameters to provide when to pass when creating a new data provider or global configuration.
->>>>>>> 222504c42f (doc: Add global configuration to trace-server developer guide)
 
 The interface to implement is `ITmfConfigurationSourceType`. You can use the `TmfConfigurationSourceType.Builder` class to build such type. It has name, description, unique ID, an optional JSON schema file or a list of simple `TmfConfigurationParameter` instances. Use schema as much as you can. The schema will describe the JSON parameters, that `ITmfConfiguration.getParameters()` will return when passed to the configurator.
 
