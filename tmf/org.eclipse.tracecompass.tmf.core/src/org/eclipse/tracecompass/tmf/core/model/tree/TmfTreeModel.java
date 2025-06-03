@@ -1,5 +1,5 @@
 /**********************************************************************
- * Copyright (c) 2019 Ericsson
+ * Copyright (c) 2019, 2025 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -31,10 +31,23 @@ import org.eclipse.tracecompass.tmf.core.model.ITableColumnDescriptor;
  * @since 5.0
  */
 public class TmfTreeModel<T extends ITmfTreeDataModel> {
+
+    /**
+     * Expand level to indicate that all tree levels are expanded. (default)
+     *
+     * @since 10.1
+     */
+    public static final int ALL_LEVELS = -1;
+
     private List<String> fHeaders;
     private List<ITableColumnDescriptor> fColumnDescriptors;
     private List<T> fEntries;
     private @Nullable String fScope;
+
+    /**
+     * Indicates which level of the tree should be expanded.
+     */
+    private int fAutoExpandLevel = ALL_LEVELS;
 
     /**
      * Constructor
@@ -88,6 +101,7 @@ public class TmfTreeModel<T extends ITmfTreeDataModel> {
         fColumnDescriptors = builder.fColumnDescriptors;
         fEntries = builder.fEntries;
         fScope = builder.fScope;
+        fAutoExpandLevel = builder.fAutoExpandLevel;
     }
 
     /**
@@ -119,6 +133,36 @@ public class TmfTreeModel<T extends ITmfTreeDataModel> {
     }
 
     /**
+     * Returns the auto-expand level.
+     *
+     * @return non-negative level, or <code>ALL_LEVELS</code> if all levels of
+     *         the tree are expanded automatically
+     * @see #setAutoExpandLevel
+     * @since 10.1
+     */
+    public int getAutoExpandLevel() {
+        return fAutoExpandLevel;
+    }
+
+    /**
+     * Sets the auto-expand level to be used for the input of the tree. The
+     * value 0 means that there is no auto-expand; 1 means that top-level
+     * elements are expanded, but not their children; 2 means that top-level
+     * elements are expanded, and their children, but not grand-children; and so
+     * on.
+     * <p>
+     * The value {@link #ALL_LEVELS} means that all subtrees should be expanded.
+     * </p>
+     *
+     * @param autoExpandLevel
+     *            The auto expand level to set
+     * @since 10.1
+     */
+    public void setAutoExpandLevel(int autoExpandLevel) {
+        this.fAutoExpandLevel = autoExpandLevel;
+    }
+
+    /**
      *
      * A builder class to build instances implementing interface
      * {@link TmfTreeModel}
@@ -131,6 +175,7 @@ public class TmfTreeModel<T extends ITmfTreeDataModel> {
         private List<ITableColumnDescriptor> fColumnDescriptors = new ArrayList<>();
         private List<T> fEntries;
         private @Nullable String fScope;
+        private int fAutoExpandLevel = ALL_LEVELS;
 
         /**
          * Constructor
@@ -172,6 +217,20 @@ public class TmfTreeModel<T extends ITmfTreeDataModel> {
          */
         public Builder<T> setScope(String scope) {
             fScope = scope;
+            return this;
+        }
+
+        /**
+         * Sets which level of the tree should be expanded
+         *
+         * @param autoExpandLevel
+         *            expand level of the tree model
+         * @return this {@link Builder} object
+         * @see TmfTreeModel#setAutoExpandLevel(int)
+         * @since 10.1
+         */
+        public Builder<T> setAutoExpandLevel(int autoExpandLevel) {
+            fAutoExpandLevel = autoExpandLevel;
             return this;
         }
 

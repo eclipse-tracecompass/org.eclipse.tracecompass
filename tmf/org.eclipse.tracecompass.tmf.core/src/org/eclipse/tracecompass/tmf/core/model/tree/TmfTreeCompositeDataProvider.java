@@ -1,5 +1,5 @@
 /**********************************************************************
- * Copyright (c) 2017, 2021 Ericsson
+ * Copyright (c) 2017, 2025 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -106,6 +106,7 @@ public class TmfTreeCompositeDataProvider<M extends ITmfTreeDataModel, P extends
         boolean isComplete = true;
         List<Entry<M, Object>> entries = new ArrayList<>();
         List<ITableColumnDescriptor> columnDescriptor = null;
+        int autoExpandLevel = TmfTreeModel.ALL_LEVELS;
 
         Table<Object, Long, @NonNull M> scopedEntries = HashBasedTable.create();
         for (P dataProvider : fProviders) {
@@ -155,6 +156,8 @@ public class TmfTreeCompositeDataProvider<M extends ITmfTreeDataModel, P extends
                 if (columnDescriptor == null) {
                     columnDescriptor = model.getColumnDescriptors();
                 }
+                // All autoExpandLevel are supposed to be the same
+                autoExpandLevel = model.getAutoExpandLevel();
             }
             if (monitor != null && monitor.isCanceled()) {
                 return new TmfModelResponse<>(null, ITmfResponse.Status.CANCELLED, CommonStatusMessage.TASK_CANCELLED);
@@ -166,7 +169,8 @@ public class TmfTreeCompositeDataProvider<M extends ITmfTreeDataModel, P extends
             columnDescriptor = Collections.emptyList();
         }
         treeModelBuilder.setColumnDescriptors(columnDescriptor)
-                        .setEntries(Lists.transform(entries, e -> e.getKey()));
+                        .setEntries(Lists.transform(entries, e -> e.getKey()))
+                        .setAutoExpandLevel(autoExpandLevel);
 
         if (isComplete) {
             return new TmfModelResponse<>(treeModelBuilder.build(), ITmfResponse.Status.COMPLETED, CommonStatusMessage.COMPLETED);
