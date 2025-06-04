@@ -35,7 +35,12 @@ public class TmfTreeModel<T extends ITmfTreeDataModel> {
     private List<ITableColumnDescriptor> fColumnDescriptors;
     private List<T> fEntries;
     private @Nullable String fScope;
-    private boolean fCollapseChildren = false;
+    /*
+     * Indicates which level of the tree should be expanded. If expandLevel is missing or has value of -1 it
+     * would mean that all the levels are expanded (default behaviour). If the expandLevel is set to 1 for
+     * example, it will expand to the first nodes under the root.
+     */
+    private int fExpandLevel = -1;
 
     /**
      * Constructor
@@ -89,7 +94,7 @@ public class TmfTreeModel<T extends ITmfTreeDataModel> {
         fColumnDescriptors = builder.fColumnDescriptors;
         fEntries = builder.fEntries;
         fScope = builder.fScope;
-        fCollapseChildren = builder.fCollapseChildren;
+        fExpandLevel = builder.fExpandLevel;
     }
 
     /**
@@ -123,15 +128,15 @@ public class TmfTreeModel<T extends ITmfTreeDataModel> {
     /**
      * @return
      */
-    public boolean isCollapseChildren() {
-        return fCollapseChildren;
+    public boolean getExpandLevel() {
+        return fExpandLevel;
     }
 
     /**
-     * @param collapseChildren
+     * @param expandLevel
      */
-    public void setCollapseChildren(boolean collapseChildren) {
-        this.fCollapseChildren = collapseChildren;
+    public void setExpandLevel(int expandLevel) {
+        this.fExpandLevel = expandLevel;
     }
 
     /**
@@ -147,7 +152,7 @@ public class TmfTreeModel<T extends ITmfTreeDataModel> {
         private List<ITableColumnDescriptor> fColumnDescriptors = new ArrayList<>();
         private List<T> fEntries;
         private @Nullable String fScope;
-        private boolean fCollapseChildren = false;
+        private int fExpandLevel = -1;
 
         /**
          * Constructor
@@ -193,14 +198,14 @@ public class TmfTreeModel<T extends ITmfTreeDataModel> {
         }
 
         /**
-         * Sets whether children should be collapsed
+         * Sets which level of the tree should be expanded
          *
-         * @param collapseChildren
-         *            true if children should be collapsed, false otherwise
+         * @param expandLevel
+         *            expand level of the tree model
          * @return this {@link Builder} object
          */
-        public Builder<T> setCollapseChildren(boolean collapseChildren) {
-            fCollapseChildren = collapseChildren;
+        public Builder<T> setExpandLevel(boolean expandLevel) {
+            fExpandLevel = expandLevel;
             return this;
         }
 
