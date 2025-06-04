@@ -35,6 +35,12 @@ public class TmfTreeModel<T extends ITmfTreeDataModel> {
     private List<ITableColumnDescriptor> fColumnDescriptors;
     private List<T> fEntries;
     private @Nullable String fScope;
+    /*
+     * Indicates which level of the tree should be expanded. If expandLevel is missing or has value of -1 it
+     * would mean that all the levels are expanded (default behaviour). If the expandLevel is set to 1 for
+     * example, it will expand to the first nodes under the root.
+     */
+    private int fExpandLevel = -1;
 
     /**
      * Constructor
@@ -88,6 +94,7 @@ public class TmfTreeModel<T extends ITmfTreeDataModel> {
         fColumnDescriptors = builder.fColumnDescriptors;
         fEntries = builder.fEntries;
         fScope = builder.fScope;
+        fExpandLevel = builder.fExpandLevel;
     }
 
     /**
@@ -119,6 +126,20 @@ public class TmfTreeModel<T extends ITmfTreeDataModel> {
     }
 
     /**
+     * @return
+     */
+    public int getExpandLevel() {
+        return fExpandLevel;
+    }
+
+    /**
+     * @param expandLevel
+     */
+    public void setExpandLevel(int expandLevel) {
+        this.fExpandLevel = expandLevel;
+    }
+
+    /**
      *
      * A builder class to build instances implementing interface
      * {@link TmfTreeModel}
@@ -131,6 +152,7 @@ public class TmfTreeModel<T extends ITmfTreeDataModel> {
         private List<ITableColumnDescriptor> fColumnDescriptors = new ArrayList<>();
         private List<T> fEntries;
         private @Nullable String fScope;
+        private int fExpandLevel = -1;
 
         /**
          * Constructor
@@ -172,6 +194,18 @@ public class TmfTreeModel<T extends ITmfTreeDataModel> {
          */
         public Builder<T> setScope(String scope) {
             fScope = scope;
+            return this;
+        }
+
+        /**
+         * Sets which level of the tree should be expanded
+         *
+         * @param expandLevel
+         *            expand level of the tree model
+         * @return this {@link Builder} object
+         */
+        public Builder<T> setExpandLevel(int expandLevel) {
+            fExpandLevel = expandLevel;
             return this;
         }
 

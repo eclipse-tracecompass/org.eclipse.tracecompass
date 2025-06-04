@@ -106,6 +106,7 @@ public class TmfTreeCompositeDataProvider<M extends ITmfTreeDataModel, P extends
         boolean isComplete = true;
         List<Entry<M, Object>> entries = new ArrayList<>();
         List<ITableColumnDescriptor> columnDescriptor = null;
+        int expandLevel = -1;
 
         Table<Object, Long, @NonNull M> scopedEntries = HashBasedTable.create();
         for (P dataProvider : fProviders) {
@@ -155,6 +156,7 @@ public class TmfTreeCompositeDataProvider<M extends ITmfTreeDataModel, P extends
                 if (columnDescriptor == null) {
                     columnDescriptor = model.getColumnDescriptors();
                 }
+                expandLevel = model.getExpandLevel();
             }
             if (monitor != null && monitor.isCanceled()) {
                 return new TmfModelResponse<>(null, ITmfResponse.Status.CANCELLED, CommonStatusMessage.TASK_CANCELLED);
@@ -166,7 +168,8 @@ public class TmfTreeCompositeDataProvider<M extends ITmfTreeDataModel, P extends
             columnDescriptor = Collections.emptyList();
         }
         treeModelBuilder.setColumnDescriptors(columnDescriptor)
-                        .setEntries(Lists.transform(entries, e -> e.getKey()));
+                        .setEntries(Lists.transform(entries, e -> e.getKey()))
+                        .setExpandLevel(expandLevel);
 
         if (isComplete) {
             return new TmfModelResponse<>(treeModelBuilder.build(), ITmfResponse.Status.COMPLETED, CommonStatusMessage.COMPLETED);
