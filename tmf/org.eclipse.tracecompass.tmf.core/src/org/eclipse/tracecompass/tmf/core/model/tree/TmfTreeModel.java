@@ -128,7 +128,7 @@ public class TmfTreeModel<T extends ITmfTreeDataModel> {
     /**
      * @return
      */
-    public boolean getExpandLevel() {
+    public int getExpandLevel() {
         return fExpandLevel;
     }
 
@@ -204,7 +204,7 @@ public class TmfTreeModel<T extends ITmfTreeDataModel> {
          *            expand level of the tree model
          * @return this {@link Builder} object
          */
-        public Builder<T> setExpandLevel(boolean expandLevel) {
+        public Builder<T> setExpandLevel(int expandLevel) {
             fExpandLevel = expandLevel;
             return this;
         }
