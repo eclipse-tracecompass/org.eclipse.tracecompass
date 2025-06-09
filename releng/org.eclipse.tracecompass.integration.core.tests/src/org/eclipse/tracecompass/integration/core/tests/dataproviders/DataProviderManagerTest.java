@@ -341,6 +341,11 @@ public class DataProviderManagerTest {
                 .setProviderType(ProviderType.TREE_TIME_XY)
                 .setId("org.eclipse.tracecompass.internal.analysis.timing.core.segmentstore.scatter.dataprovider:org.eclipse.tracecompass.lttng2.ust.core.analysis.callstack");
         EXPECTED_UST_DP_DESCRIPTORS.add(builder.build());
+        builder.setName("LTTng-UST CallStack (new) - Flame Graph")
+                .setDescription("Show Flame Graph provided by Analysis module: LTTng-UST CallStack (new)")
+                .setProviderType(ProviderType.GANTT_CHART)
+                .setId("org.eclipse.tracecompass.analysis.profiling.core.flamegraph:org.eclipse.tracecompass.lttng2.ust.core.analysis.callstack");
+        EXPECTED_UST_DP_DESCRIPTORS.add(builder.build());
     }
 
     /**
