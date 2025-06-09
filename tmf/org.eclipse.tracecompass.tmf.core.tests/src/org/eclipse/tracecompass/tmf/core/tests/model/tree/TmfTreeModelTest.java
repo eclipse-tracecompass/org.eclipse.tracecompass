@@ -1,5 +1,5 @@
 /**********************************************************************
- * Copyright (c) 2020 Ericsson
+ * Copyright (c) 2020, 2025 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -16,7 +16,6 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.TableColumnDescriptor;
@@ -42,11 +41,11 @@ public class TmfTreeModelTest {
     private static final String TOOLTIP_PREFIX = "tooltip";
     private static final String LABEL_PREFIX = "label";
     private static final String TEST_SCOPE = "scope";
-    private static List<@NonNull ITmfTreeDataModel> fTestEntries = new ArrayList<>();
-    private static List<@NonNull String> fTestHeaders = new ArrayList<>();
-    private static List<@NonNull String> fExpectedEmptyTooltips = new ArrayList<>();
-    private static List<@NonNull String> fExpectedTooltips = new ArrayList<>();
-    private static List<@NonNull ITableColumnDescriptor> fTestDescriptors = new ArrayList<>();
+    private static List<ITmfTreeDataModel> fTestEntries = new ArrayList<>();
+    private static List<String> fTestHeaders = new ArrayList<>();
+    private static List<String> fExpectedEmptyTooltips = new ArrayList<>();
+    private static List<String> fExpectedTooltips = new ArrayList<>();
+    private static List<ITableColumnDescriptor> fTestDescriptors = new ArrayList<>();
 
     /**
      * Run once
@@ -82,14 +81,14 @@ public class TmfTreeModelTest {
      */
     @Test
     public void testTmfTreeModelConstructor() {
-        TmfTreeModel<@NonNull ITmfTreeDataModel> testInstance = new TmfTreeModel<>(fTestHeaders, fTestEntries);
+        TmfTreeModel<ITmfTreeDataModel> testInstance = new TmfTreeModel<>(fTestHeaders, fTestEntries);
         verifyInstance(testInstance, fExpectedEmptyTooltips, null);
 
         testInstance = new TmfTreeModel<>(fTestHeaders, fTestEntries, TEST_SCOPE);
         verifyInstance(testInstance, fExpectedEmptyTooltips, TEST_SCOPE);
     }
 
-    private static void verifyInstance(TmfTreeModel<@NonNull ITmfTreeDataModel> testInstance, List<String> tooltips, @Nullable String scope) {
+    private static void verifyInstance(TmfTreeModel<ITmfTreeDataModel> testInstance, List<String> tooltips, @Nullable String scope) {
         assertEquals("Incorrect list of entries", fTestEntries, testInstance.getEntries());
         assertEquals("Incorrect list of entries", fTestHeaders, testInstance.getHeaders());
 
@@ -110,9 +109,9 @@ public class TmfTreeModelTest {
     @SuppressWarnings("javadoc")
     @Test
     public void testTmfTreeModelConstructor2() {
-        TmfTreeModel.Builder<@NonNull ITmfTreeDataModel> builder = new TmfTreeModel.Builder<>();
+        TmfTreeModel.Builder<ITmfTreeDataModel> builder = new TmfTreeModel.Builder<>();
         builder.setColumnDescriptors(fTestDescriptors).setEntries(fTestEntries);
-        TmfTreeModel<@NonNull ITmfTreeDataModel> testInstance = builder.build();
+        TmfTreeModel<ITmfTreeDataModel> testInstance = builder.build();
         verifyInstance(testInstance, fExpectedTooltips, null);
 
         builder = new TmfTreeModel.Builder<>();
