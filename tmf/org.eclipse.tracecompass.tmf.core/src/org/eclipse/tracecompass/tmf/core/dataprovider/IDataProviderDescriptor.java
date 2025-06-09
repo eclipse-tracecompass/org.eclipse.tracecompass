@@ -65,7 +65,12 @@ public interface IDataProviderDescriptor {
          * A provider with no data. Can be used for grouping purposes and/or as data provider configurator.
          * @since 9.5
          */
-        NONE
+        NONE,
+
+        /**
+         * @since 10.1
+         */
+        GANTT_CHART
     }
 
     /**
