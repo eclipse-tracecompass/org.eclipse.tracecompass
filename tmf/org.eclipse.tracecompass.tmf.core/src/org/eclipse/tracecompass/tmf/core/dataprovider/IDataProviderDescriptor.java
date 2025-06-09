@@ -65,7 +65,15 @@ public interface IDataProviderDescriptor {
          * A provider with no data. Can be used for grouping purposes and/or as data provider configurator.
          * @since 9.5
          */
-        NONE
+        NONE,
+        /**
+         * A provider for a generic GANTT_CHART model. It uses the same data
+         * provider interface than TIME_GRAPH, but has a different x-axis other
+         * than time, e.g. durations.
+         *
+         * @since 10.2
+         */
+        GANTT_CHART
     }
 
     /**

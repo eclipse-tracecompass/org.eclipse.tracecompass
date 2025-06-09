@@ -14,18 +14,28 @@ package org.eclipse.tracecompass.internal.analysis.profiling.core.flamegraph;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.osgi.util.NLS;
+import org.eclipse.tracecompass.analysis.profiling.core.instrumented.IFlameChartProvider;
 import org.eclipse.tracecompass.analysis.profiling.core.tree.IWeightedTreeProvider;
 import org.eclipse.tracecompass.tmf.core.analysis.IAnalysisModule;
+import org.eclipse.tracecompass.tmf.core.component.DataProviderConstants;
+import org.eclipse.tracecompass.tmf.core.dataprovider.IDataProviderDescriptor;
+import org.eclipse.tracecompass.tmf.core.dataprovider.IDataProviderDescriptor.ProviderType;
 import org.eclipse.tracecompass.tmf.core.dataprovider.IDataProviderFactory;
+import org.eclipse.tracecompass.tmf.core.model.DataProviderDescriptor;
 import org.eclipse.tracecompass.tmf.core.model.timegraph.TmfTimeGraphCompositeDataProvider;
 import org.eclipse.tracecompass.tmf.core.model.tree.ITmfTreeDataModel;
 import org.eclipse.tracecompass.tmf.core.model.tree.ITmfTreeDataProvider;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
 import org.eclipse.tracecompass.tmf.core.trace.TmfTraceManager;
+import org.eclipse.tracecompass.tmf.core.trace.TmfTraceUtils;
 
 import com.google.common.annotations.VisibleForTesting;
 
@@ -97,4 +107,27 @@ public class FlameGraphDataProviderFactory implements IDataProviderFactory {
         }
         INSTANCES.put(id, dataProvider);
     }
+    @Override
+    public Collection<IDataProviderDescriptor> getDescriptors(ITmfTrace trace) {
+        Iterable<IFlameChartProvider> modules = TmfTraceUtils.getAnalysisModulesOfClass(trace, IFlameChartProvider.class);
+        List<IDataProviderDescriptor> descriptors = new ArrayList<>();
+        Set<String> existingModules = new HashSet<>();
+        for (IFlameChartProvider module : modules) {
+            IAnalysisModule analysis = module;
+            // Only add analysis once per trace (which could be an experiment)
+            if (!existingModules.contains(analysis.getId())) {
+                DataProviderDescriptor.Builder builder = new DataProviderDescriptor.Builder();
+                builder.setId(FlameGraphDataProvider.ID + DataProviderConstants.ID_SEPARATOR + analysis.getId())
+                        .setParentId(analysis.getConfiguration() != null ? analysis.getId() : null)
+                        .setName(Objects.requireNonNull(analysis.getName() + " - " + Messages.FlameGraphDataProvider_Title)) //$NON-NLS-1$
+                        .setDescription(Objects.requireNonNull(NLS.bind(Messages.FlameGraphDataProvider_Description, analysis.getHelpText())))
+                        .setProviderType(ProviderType.GANTT_CHART)
+                        .setConfiguration(analysis.getConfiguration());
+                descriptors.add(builder.build());
+                existingModules.add(analysis.getId());
+            }
+        }
+        return descriptors;
+    }
+
 }
