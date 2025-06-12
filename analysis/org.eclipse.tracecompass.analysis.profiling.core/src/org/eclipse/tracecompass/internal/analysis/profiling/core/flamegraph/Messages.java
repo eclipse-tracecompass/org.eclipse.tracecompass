@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016 Ericsson
+ * Copyright (c) 2016, 2025 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -12,6 +12,7 @@
 package org.eclipse.tracecompass.internal.analysis.profiling.core.flamegraph;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.osgi.util.NLS;
 
 /**
@@ -39,6 +40,13 @@ public class Messages extends NLS {
     public static String FlameGraph_GoToMin;
     /** Label for the goto max action */
     public static String FlameGraph_GoToMax;
+
+    /** Title of the dataprovider */
+    public static @Nullable String FlameGraphDataProvider_Title;
+
+    /** Description of the dataprovider */
+    public static @Nullable String FlameGraphDataProvider_Description;
+
 
     static {
         // initialize resource bundle
