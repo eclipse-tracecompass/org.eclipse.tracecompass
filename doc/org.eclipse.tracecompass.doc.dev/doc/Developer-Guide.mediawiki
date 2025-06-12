@@ -3599,7 +3599,7 @@ To obtain an '''IRemoteConnection''' instance use the method '''TmfRemoteConnect
 IRemoteConnection connection = TmfRemoteConnectionFactory.getRemoteConnection("org.eclipse.remote.JSch", "My Connection");
 </pre>
 
-Note that the connection needs to be created beforehand using the Remote Connection wizard implementation ('''Window -> Preferences -> Remote Development -> Remote Connection''') in the Eclipse application that executes this plug-in. For more information about creating connections using the Remote Connections feature of PTP refer to [http://help.eclipse.org/luna/index.jsp?topic=%2Forg.eclipse.ptp.doc.user%2Fhtml%2FremoteTools.html&anchor=remote link]. Alternatively it can be created programmatically using the corresponding API of TMF ([[#Creating an IRemoteConnection instance]]).
+Note that the connection needs to be created beforehand using the Remote Connection wizard implementation ('''Window -> Preferences -> Remote Development -> Remote Connection''') in the Eclipse application that executes this plug-in. For more information about creating connections using the Remote Connections feature of CDT refer to this [https://help.eclipse.org/latest/index.jsp?topic=%2Forg.eclipse.remote.doc.isv%2Fhtml%2Ftoc.html&cp%3D20 link]. Alternatively it can be created programmatically using the corresponding API of TMF ([[#Creating an IRemoteConnection instance]]).
 
 To obtain an '''IRemoteConnection''' instance use method '''TmfRemoteConnectionFactory.getLocalConnection()'''.
 <pre>
