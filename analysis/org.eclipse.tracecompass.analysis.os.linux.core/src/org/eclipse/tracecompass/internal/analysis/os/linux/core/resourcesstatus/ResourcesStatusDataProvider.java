@@ -274,7 +274,11 @@ public class ResourcesStatusDataProvider extends AbstractTimeGraphDataProvider<@
         }
         Collections.sort(builder, COMPARATOR);
 
-        return new TmfTreeModel<>(Collections.emptyList(), ImmutableList.copyOf(builder));
+        TmfTreeModel.Builder<@NonNull ResourcesEntryModel> treeModelBuilder = new TmfTreeModel.Builder<@NonNull ResourcesEntryModel>()
+                .setAutoExpandLevel(1) // only expand top level
+                .setEntries(ImmutableList.copyOf(builder));
+
+        return treeModelBuilder.build();
     }
 
     private static long getCpuFrequency(@NonNull ITmfStateSystem ss, int cpuQuark, @NonNull String freqAttribute) throws StateSystemDisposedException {
