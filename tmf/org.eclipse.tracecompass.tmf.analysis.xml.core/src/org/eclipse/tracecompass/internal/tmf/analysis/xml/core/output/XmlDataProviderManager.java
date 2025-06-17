@@ -14,6 +14,7 @@ package org.eclipse.tracecompass.internal.tmf.analysis.xml.core.output;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -374,6 +375,7 @@ public class XmlDataProviderManager {
      */
     public List<IDataProviderDescriptor> getXmlDataProviderDescriptors(ITmfTrace trace, Set<OutputType> types) {
         List<IDataProviderDescriptor> descriptors = new ArrayList<>();
+        Set<String> existingDps = new HashSet<>();
         for (ITmfTrace tr : TmfTraceManager.getTraceSetWithExperiment(trace)) {
             Map<String, IAnalysisModuleHelper> modules = TmfAnalysisManager.getAnalysisModules(tr.getClass());
             for (OutputType viewType : types) {
@@ -392,11 +394,12 @@ public class XmlDataProviderManager {
                         builder.setProviderType(ProviderType.TIME_GRAPH);
                     }
                     for (String id : element.getAnalyses()) {
-                        if (modules.containsKey(id)) {
+                        if (modules.containsKey(id) && !existingDps.contains(elemId)) {
                             String analysisName = Objects.requireNonNull(modules.get(id)).getName();
                             builder.setName(analysisName + ": " + label); //$NON-NLS-1$
                             builder.setDescription(label + " provided by Analysis module: " + analysisName); //$NON-NLS-1$
                             descriptors.add(builder.build());
+                            existingDps.add(elemId);
                             break;
                         }
                     }
