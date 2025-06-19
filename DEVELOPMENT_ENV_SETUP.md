@@ -126,7 +126,7 @@ Since `Trace Compass` is out of incubation with its 1.0 release, all API changes
 
 To set up the API baseline, follow these steps:
 
-* Select ``Window -> Preferences`. In the window that opens, select `Plug-in Development -> API Baselines` on the left pane.
+* Select `Window -> Preferences`. In the window that opens, select `Plug-in Development -> API Baselines` on the left pane.
 * Click on `Add Baseline...`
 * Choose `A target platform` and click `Next`.
 * In the next page check the box next to the target which contains "baseline" in its name, like `tracecompass-baseline-9.2`. Use the version of `Trace Compass` that you're are developing against, which is usually the latest release.
