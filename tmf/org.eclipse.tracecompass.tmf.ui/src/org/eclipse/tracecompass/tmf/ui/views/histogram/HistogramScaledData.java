@@ -20,6 +20,7 @@
 package org.eclipse.tracecompass.tmf.ui.views.histogram;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * Convenience class/struct for scaled histogram data.
@@ -231,5 +232,34 @@ public class HistogramScaledData {
      */
     public long getBucketEndTime(int index) {
         return getBucketStartTime(index + 1);
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + Arrays.hashCode(fData);
+        result = prime * result + Arrays.hashCode(fLostEventsData);
+        result = prime * result
+                + Objects.hash(fBarWidth, fBucketDuration, fFirstBucketTime, fFirstEventTime, fHeight, fLastBucket, fMaxCombinedValue, fMaxValue, fScalingFactor, fScalingFactorCombined, fSelectionBeginBucket, fSelectionEndBucket, fWidth);
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        HistogramScaledData other = (HistogramScaledData) obj;
+        return fBarWidth == other.fBarWidth && Double.doubleToLongBits(fBucketDuration) == Double.doubleToLongBits(other.fBucketDuration) && Arrays.equals(fData, other.fData) && fFirstBucketTime == other.fFirstBucketTime
+                && fFirstEventTime == other.fFirstEventTime && fHeight == other.fHeight && fLastBucket == other.fLastBucket && Arrays.equals(fLostEventsData, other.fLostEventsData) && fMaxCombinedValue == other.fMaxCombinedValue
+                && fMaxValue == other.fMaxValue && Double.doubleToLongBits(fScalingFactor) == Double.doubleToLongBits(other.fScalingFactor) && Double.doubleToLongBits(fScalingFactorCombined) == Double.doubleToLongBits(other.fScalingFactorCombined)
+                && fSelectionBeginBucket == other.fSelectionBeginBucket && fSelectionEndBucket == other.fSelectionEndBucket && fWidth == other.fWidth;
     }
 }
