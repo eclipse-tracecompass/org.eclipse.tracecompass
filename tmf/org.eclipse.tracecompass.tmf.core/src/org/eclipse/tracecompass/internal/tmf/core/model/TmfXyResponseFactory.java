@@ -1,5 +1,5 @@
 /**********************************************************************
- * Copyright (c) 2017 Ericsson
+ * Copyright (c) 2017, 2025 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -19,9 +19,11 @@ import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.tracecompass.tmf.core.model.CommonStatusMessage;
+import org.eclipse.tracecompass.tmf.core.model.ISampling;
 import org.eclipse.tracecompass.tmf.core.model.SeriesModel.SeriesModelBuilder;
 import org.eclipse.tracecompass.tmf.core.model.TmfXyModel;
 import org.eclipse.tracecompass.tmf.core.model.xy.ISeriesModel;
+import org.eclipse.tracecompass.tmf.core.model.xy.ISeriesModel.DisplayType;
 import org.eclipse.tracecompass.tmf.core.model.xy.ITmfXyModel;
 import org.eclipse.tracecompass.tmf.core.model.xy.IYModel;
 import org.eclipse.tracecompass.tmf.core.model.xy.TmfXYAxisDescription;
@@ -60,7 +62,9 @@ public final class TmfXyResponseFactory {
      *            Tells whether the computed model is complete or partial
      * @return A {@link TmfModelResponse} with either a running status or a
      *         completed status
+     * @deprecated Use {@link ISampling} for xValues instead.
      */
+    @Deprecated(since = "10.2", forRemoval = true)
     public static TmfModelResponse<ITmfXyModel> create(String title, long[] xValues, Collection<IYModel> yModels, boolean isComplete) {
         List<ISeriesModel> series = Lists.transform(new ArrayList<>(yModels), model -> {
             SeriesModelBuilder builder = new SeriesModelBuilder(model.getId(), model.getName(), xValues, model.getData());
@@ -68,6 +72,114 @@ public final class TmfXyResponseFactory {
             if (yAxis != null) {
                 builder.yAxisDescription(yAxis);
             }
+            return builder.build();
+        });
+        ITmfXyModel model = new TmfXyModel(title, series);
+
+        if (isComplete) {
+            return new TmfModelResponse<>(model, ITmfResponse.Status.COMPLETED, Objects.requireNonNull(CommonStatusMessage.COMPLETED));
+        }
+        return new TmfModelResponse<>(model, ITmfResponse.Status.RUNNING, Objects.requireNonNull(CommonStatusMessage.RUNNING));
+    }
+
+    /**
+     * Create a {@link TmfModelResponse} for values with common sampling values,
+     * with a either RUNNING or COMPLETED status. Model is not null, it's either
+     * partial or full.
+     *
+     * @param title
+     *            Chart title
+     * @param samples
+     *            The samples requested by the viewer
+     * @param yModels
+     *            Collection of IYModel
+     * @param isComplete
+     *            Tells whether the computed model is complete or partial
+     * @return A {@link TmfModelResponse} with either a running status or a
+     *         completed status
+     */
+    public static TmfModelResponse<ITmfXyModel> create(String title, ISampling samples, Collection<IYModel> yModels, boolean isComplete) {
+        List<ISeriesModel> series = Lists.transform(new ArrayList<>(yModels), model -> {
+            SeriesModelBuilder builder = new SeriesModelBuilder(model.getId(), model.getName(), samples, model.getData());
+            TmfXYAxisDescription yAxis = model.getYAxisDescription();
+            if (yAxis != null) {
+                builder.yAxisDescription(yAxis);
+            }
+            return builder.build();
+        });
+        ITmfXyModel model = new TmfXyModel(title, series);
+
+        if (isComplete) {
+            return new TmfModelResponse<>(model, ITmfResponse.Status.COMPLETED, Objects.requireNonNull(CommonStatusMessage.COMPLETED));
+        }
+        return new TmfModelResponse<>(model, ITmfResponse.Status.RUNNING, Objects.requireNonNull(CommonStatusMessage.RUNNING));
+    }
+
+    /**
+     * Create a {@link TmfModelResponse} for values with common sampling values,
+     * with a either RUNNING or COMPLETED status. Model is not null, it's either
+     * partial or full.
+     *
+     * @param title
+     *            Chart title
+     * @param samples
+     *            The samples requested by the viewer
+     * @param yModels
+     *            Collection of IYModel
+     * @param displayType
+     *            The type of display, see {@link DisplayType}
+     * @param isComplete
+     *            Tells whether the computed model is complete or partial
+     * @return A {@link TmfModelResponse} with either a running status or a
+     *         completed status
+     */
+    public static TmfModelResponse<ITmfXyModel> create(String title, ISampling samples, Collection<IYModel> yModels, DisplayType displayType, boolean isComplete) {
+        List<ISeriesModel> series = Lists.transform(new ArrayList<>(yModels), model -> {
+            SeriesModelBuilder builder = new SeriesModelBuilder(model.getId(), model.getName(), samples, model.getData());
+            TmfXYAxisDescription yAxis = model.getYAxisDescription();
+            if (yAxis != null) {
+                builder.yAxisDescription(yAxis);
+            }
+            builder.seriesDisplayType(displayType);
+            return builder.build();
+        });
+        ITmfXyModel model = new TmfXyModel(title, series);
+
+        if (isComplete) {
+            return new TmfModelResponse<>(model, ITmfResponse.Status.COMPLETED, Objects.requireNonNull(CommonStatusMessage.COMPLETED));
+        }
+        return new TmfModelResponse<>(model, ITmfResponse.Status.RUNNING, Objects.requireNonNull(CommonStatusMessage.RUNNING));
+    }
+
+    /**
+     * Create a {@link TmfModelResponse} for values with common sampling values
+     * and x axis descriptions, with a either RUNNING or COMPLETED status. Model
+     * is not null, it's either partial or full.
+     *
+     * @param title
+     *            Chart title
+     * @param samples
+     *            The samples requested by the viewer
+     * @param yModels
+     *            Collection of IYModel
+     * @param displayType
+     *            The type of display, see {@link DisplayType}
+     * @param xAxisDescription
+     *            The description for x axis
+     * @param isComplete
+     *            Tells whether the computed model is complete or partial
+     * @return A {@link TmfModelResponse} with either a running status or a
+     *         completed status
+     */
+    public static TmfModelResponse<ITmfXyModel> create(String title, ISampling samples, Collection<IYModel> yModels, DisplayType displayType, TmfXYAxisDescription xAxisDescription, boolean isComplete) {
+        List<ISeriesModel> series = Lists.transform(new ArrayList<>(yModels), model -> {
+            SeriesModelBuilder builder = new SeriesModelBuilder(model.getId(), model.getName(), samples, model.getData());
+            builder.xAxisDescription(xAxisDescription);
+            TmfXYAxisDescription yAxis = model.getYAxisDescription();
+            if (yAxis != null) {
+                builder.yAxisDescription(yAxis);
+            }
+            builder.seriesDisplayType(displayType);
             return builder.build();
         });
         ITmfXyModel model = new TmfXyModel(title, series);

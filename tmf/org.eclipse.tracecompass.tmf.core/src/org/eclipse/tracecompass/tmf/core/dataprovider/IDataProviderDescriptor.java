@@ -73,7 +73,12 @@ public interface IDataProviderDescriptor {
          *
          * @since 10.1
          */
-        GANTT_CHART
+        GANTT_CHART,
+        /**
+         * A provider for generic xy charts with a time-less x-axis
+         * @since 10.1
+         */
+        TREE_GENERIC_XY
     }
 
     /**
