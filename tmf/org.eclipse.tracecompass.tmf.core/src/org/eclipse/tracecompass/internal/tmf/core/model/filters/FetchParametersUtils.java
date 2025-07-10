@@ -1,5 +1,5 @@
 /**********************************************************************
- * Copyright (c) 2019 Ericsson
+ * Copyright (c) 2019, 2025 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -59,6 +59,23 @@ public class FetchParametersUtils {
         List<Long> timeRequested = DataProviderParameterUtils.extractTimeRequested(parameters);
         List<Long> selectedItems = DataProviderParameterUtils.extractSelectedItems(parameters);
         return (timeRequested == null || selectedItems == null) ? null : new SelectionTimeQueryFilter(timeRequested, selectedItems);
+    }
+
+    /**
+     * Create a {@link SelectionTimeQueryFilter} with the given map of
+     * parameters with number of samples specified.
+     *
+     * @param parameters
+     *            Map of parameters
+     * @return A {@link SelectionTimeQueryFilter} or null if the parameters are
+     *         invalid
+     */
+    public static @Nullable SelectionTimeQueryFilter createSelectionTimeQueryWithSamples(Map<String, Object> parameters) {
+        DataProviderParameterUtils.TimeRangeWithSamples timeRange = DataProviderParameterUtils.extractTimeRangeWithSamples(parameters);
+        List<Long> selectedItems = DataProviderParameterUtils.extractSelectedItems(parameters);
+        return (timeRange == null || selectedItems == null)
+                ? null
+                : new SelectionTimeQueryFilter(timeRange.start(), timeRange.end(), timeRange.nbSamples(), selectedItems);
     }
 
     /**

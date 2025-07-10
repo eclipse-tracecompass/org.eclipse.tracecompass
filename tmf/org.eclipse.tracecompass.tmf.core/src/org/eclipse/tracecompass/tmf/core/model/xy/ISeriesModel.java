@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017 École Polytechnique de Montréal
+ * Copyright (c) 2017, 2025 École Polytechnique de Montréal
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -14,6 +14,7 @@ package org.eclipse.tracecompass.tmf.core.model.xy;
 import org.eclipse.tracecompass.common.core.NonNullUtils;
 import org.eclipse.tracecompass.internal.tmf.core.model.xy.Messages;
 import org.eclipse.tracecompass.tmf.core.model.CoreFilterProperty;
+import org.eclipse.tracecompass.tmf.core.model.ISampling;
 
 /**
  * This represents a model for a series in a XY chart. I should be used to
@@ -34,13 +35,18 @@ public interface ISeriesModel {
      */
     public enum DisplayType {
         /**
-         * Line
+         * Line (only for XY line charts)
          */
         LINE,
         /**
-         * Scatter
+         * Scatter (only for XY line charts)
          */
-        SCATTER
+        SCATTER,
+        /**
+         * Bars (only for generic XY charts)
+         * @since 10.1
+         */
+        BAR
     }
 
     /**
@@ -91,8 +97,21 @@ public interface ISeriesModel {
      * Get the X values
      *
      * @return The x values
+     * @deprecated Use {@link #getSampling()} instead for support of categorical axes.
      */
+    @Deprecated(since = "10.1", forRemoval = true)
     long[] getXAxis();
+
+    /**
+     * Sampling points for the X-axis, supporting both time-based and categorical domains.
+     *
+     * @return the X-axis sampling representation
+     * @since 10.1
+     */
+    default ISampling getSampling() {
+        long[] legacy = getXAxis();
+        return new ISampling.Timestamps(legacy);
+    }
 
     /**
      * Get the y values

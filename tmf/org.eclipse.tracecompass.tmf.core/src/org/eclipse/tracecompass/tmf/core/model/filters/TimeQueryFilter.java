@@ -1,5 +1,5 @@
 /**********************************************************************
- * Copyright (c) 2017 Ericsson
+ * Copyright (c) 2017, 2025 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -13,6 +13,7 @@ package org.eclipse.tracecompass.tmf.core.model.filters;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.internal.tmf.core.Activator;
@@ -33,7 +34,10 @@ import com.google.common.primitives.Longs;
  */
 public class TimeQueryFilter {
 
-    private final long[] fTimesRequested;
+    private long @Nullable[] fTimesRequested;
+    private long fStart;
+    private long fEnd;
+    private int fNbSamples;
 
     /**
      * Constructor. Given a start value, end value and n entries, this
@@ -48,7 +52,9 @@ public class TimeQueryFilter {
      *            The number of entries
      **/
     public TimeQueryFilter(long start, long end, int n) {
-        fTimesRequested = splitRangeIntoEqualParts(start, end, n);
+        fStart = start;
+        fEnd = end;
+        fNbSamples = n;
     }
 
     /**
@@ -58,6 +64,9 @@ public class TimeQueryFilter {
      *            sorted list of times to query.
      */
     public TimeQueryFilter(List<Long> times) {
+        if (times.isEmpty()) {
+            throw new IllegalArgumentException("The requested times is empty"); //$NON-NLS-1$
+        }
         if (!Ordering.natural().isOrdered(times)) {
             throw new IllegalArgumentException("List of times is not sorted"); //$NON-NLS-1$
         }
@@ -70,7 +79,10 @@ public class TimeQueryFilter {
      * @return The array of requested times
      */
     public long[] getTimesRequested() {
-        return fTimesRequested;
+        if (fTimesRequested == null) {
+            fTimesRequested = splitRangeIntoEqualParts(fStart, fEnd, fNbSamples);
+        }
+        return Objects.requireNonNull(fTimesRequested);
     }
 
     /**
@@ -79,7 +91,10 @@ public class TimeQueryFilter {
      * @return The first time
      */
     public long getStart() {
-        return fTimesRequested[0];
+        if (fTimesRequested != null) {
+            return fTimesRequested[0];
+        }
+        return fStart;
     }
 
     /**
@@ -88,7 +103,23 @@ public class TimeQueryFilter {
      * @return The last time
      */
     public long getEnd() {
-        return fTimesRequested[Integer.max(0, fTimesRequested.length - 1)];
+        if (fTimesRequested != null) {
+            return fTimesRequested[Integer.max(0, Objects.requireNonNull(fTimesRequested).length - 1)];
+        }
+        return fEnd;
+    }
+
+    /**
+     * Gets the number of samples
+     *
+     * @return The the number of samples
+     * @since 10.1
+     */
+    public int getNumberOfSamples() {
+        if (fTimesRequested != null) {
+            return Objects.requireNonNull(fTimesRequested).length;
+        }
+        return fNbSamples;
     }
 
     /**

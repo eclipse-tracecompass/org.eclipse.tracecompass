@@ -1,5 +1,5 @@
 /**********************************************************************
- * Copyright (c) 2019 Ericsson
+ * Copyright (c) 2019, 2025 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -15,6 +15,7 @@ import java.util.Objects;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.tmf.core.dataprovider.DataType;
+import org.eclipse.tracecompass.tmf.core.model.IAxisDomain;
 
 /**
  * Represent a XY Axis description
@@ -26,6 +27,7 @@ public class TmfXYAxisDescription {
     private String fLabel;
     private String fUnit;
     private DataType fDataType;
+    @Nullable private IAxisDomain fAxisDomain;
 
     /**
      * Constructor
@@ -58,6 +60,27 @@ public class TmfXYAxisDescription {
     }
 
     /**
+     * Constructor
+     *
+     * @param label
+     *            Label for the axis
+     * @param unit
+     *            Unit type
+     * @param dataType
+     *            The type of data this series represents
+     * @param axisDomain
+     *            The available values for this axis
+     * @since 10.1
+     */
+    public TmfXYAxisDescription(String label, String unit, DataType dataType, IAxisDomain axisDomain) {
+        super();
+        fLabel = label;
+        fUnit = unit;
+        fDataType = dataType;
+        fAxisDomain = axisDomain;
+    }
+
+    /**
      * Get the axis label
      *
      * @return Label
@@ -85,6 +108,16 @@ public class TmfXYAxisDescription {
         return fDataType;
     }
 
+    /**
+     * Get the available values for this axis
+     *
+     * @return The available values for this axis
+     * @since 10.1
+     */
+    public @Nullable IAxisDomain getAxisDomain() {
+        return fAxisDomain;
+    }
+
     @Override
     public boolean equals(@Nullable Object obj) {
         if (this == obj) {
@@ -99,11 +132,12 @@ public class TmfXYAxisDescription {
         TmfXYAxisDescription other = (TmfXYAxisDescription) obj;
         return fLabel.equals(other.getLabel())
                 && fUnit.equals(other.getUnit())
-                && Objects.equals(fDataType, other.fDataType);
+                && Objects.equals(fDataType, other.fDataType)
+                && Objects.equals(fAxisDomain, other.fAxisDomain);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(fLabel, fUnit, fDataType);
+        return Objects.hash(fLabel, fUnit, fDataType, fAxisDomain);
     }
 }

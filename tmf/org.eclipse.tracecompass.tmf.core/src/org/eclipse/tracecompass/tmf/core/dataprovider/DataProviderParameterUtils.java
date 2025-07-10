@@ -1,5 +1,5 @@
 /**********************************************************************
- * Copyright (c) 2019 Ericsson
+ * Copyright (c) 2019, 2025 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -40,6 +40,12 @@ public class DataProviderParameterUtils {
      * Time requested key
      */
     public static final String REQUESTED_TIME_KEY = "requested_times"; //$NON-NLS-1$
+
+    /**
+     * Time range requested with the numbers of samples key
+     * @since 10.1
+     */
+    public static final String REQUESTED_TIMERANGE_KEY = "requested_timerange"; //$NON-NLS-1$
 
     /**
      * Selected items key
@@ -187,6 +193,38 @@ public class DataProviderParameterUtils {
      */
     public static @Nullable List<Long> extractTimeRequested(Map<String, Object> parameters) {
         return extractLongList(parameters, REQUESTED_TIME_KEY);
+    }
+
+    /**
+     * Represents a time range with a number of samples.
+     *
+     * @param start
+     *            Start time
+     * @param end
+     *            End time
+     * @param nbSamples
+     *            Number of samples
+     * @since 10.1
+     */
+    public record TimeRangeWithSamples(long start, long end, int nbSamples) {}
+
+    /**
+     * Extract a {@link TimeRangeWithSamples} from the parameters map.
+     *
+     * @param parameters
+     *            The map of parameters
+     * @return A {@link TimeRangeWithSamples} object or {@code null} if the parameters are invalid
+     * @since 10.1
+     */
+    public static @Nullable TimeRangeWithSamples extractTimeRangeWithSamples(Map<String, Object> parameters) {
+        List<Long> timeRequested = extractLongList(parameters, REQUESTED_TIMERANGE_KEY);
+        if (timeRequested == null || timeRequested.size() < 3) {
+            return null;
+        }
+        return new TimeRangeWithSamples(
+                timeRequested.get(0),
+                timeRequested.get(1),
+                timeRequested.get(2).intValue());
     }
 
     /**
