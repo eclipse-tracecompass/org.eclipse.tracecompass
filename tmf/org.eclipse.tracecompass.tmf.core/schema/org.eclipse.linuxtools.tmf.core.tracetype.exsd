@@ -63,6 +63,9 @@
                <documentation>
                   a translatable name that will be used in the UI for this category
                </documentation>
+               <appinfo>
+                  <meta.attribute translatable="true"/>
+               </appinfo>
             </annotation>
          </attribute>
       </complexType>
@@ -82,6 +85,9 @@
                <documentation>
                   The type name as it is displayed to the end user.
                </documentation>
+               <appinfo>
+                  <meta.attribute translatable="true"/>
+               </appinfo>
             </annotation>
          </attribute>
          <attribute name="category" type="string">
@@ -138,6 +144,9 @@
                <documentation>
                   The type name as it is displayed to the end user.
                </documentation>
+               <appinfo>
+                  <meta.attribute translatable="true"/>
+               </appinfo>
             </annotation>
          </attribute>
          <attribute name="category" type="string">
