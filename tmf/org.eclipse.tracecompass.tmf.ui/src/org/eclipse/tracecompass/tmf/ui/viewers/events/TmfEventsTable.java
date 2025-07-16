@@ -20,14 +20,21 @@
 
 package org.eclipse.tracecompass.tmf.ui.viewers.events;
 
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -43,6 +50,7 @@ import org.eclipse.core.commands.common.NotDefinedException;
 import org.eclipse.core.expressions.IEvaluationContext;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -167,16 +175,20 @@ import org.eclipse.tracecompass.tmf.ui.views.colors.ColorSettingsManager;
 import org.eclipse.tracecompass.tmf.ui.views.colors.IColorSettingsListener;
 import org.eclipse.tracecompass.tmf.ui.widgets.rawviewer.TmfRawEventViewer;
 import org.eclipse.tracecompass.tmf.ui.widgets.virtualtable.TmfVirtualTable;
+import org.eclipse.ui.IEditorRegistry;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPartSite;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.commands.ICommandService;
 import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.ide.IGotoMarker;
+import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.themes.ColorUtil;
 import org.eclipse.ui.themes.IThemeManager;
+import org.json.JSONObject;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.HashMultimap;
@@ -1282,6 +1294,106 @@ public class TmfEventsTable extends TmfComponent implements IGotoMarker, IColorS
                         builder -> builder.setSynchronized(isChecked()));
             }
         };
+        String ollamaUrl = "http://localhost:11434";
+        final IAction lookupInLLMAction = new Action("Lookup in local LLM", IAction.AS_PUSH_BUTTON) {
+            @Override
+            public void run() {
+                ITmfTrace trace = fTrace;
+                if (trace == null || (fSelectedRank == -1 && fSelectedBeginRank == -1)) {
+                    return;
+                }
+                Map<String, String> values = new HashMap<>();
+                for (int i : fTable.getColumnOrder()) {
+                    TableColumn column = fTable.getColumns()[i];
+                    // Omit the margin column and hidden columns
+                    if (isVisibleEventColumn(column)) {
+                        values.put(column.getText(), fTable.getSelection()[0].getText(i));
+                    }
+                }
+                Job jerb = new Job("llm") {
+
+                    @Override
+                    protected IStatus run(IProgressMonitor monitor) {
+                        String urlString = ollamaUrl + "/api/generate";
+
+                        try {
+                            // Create the URL object
+                            URL url = new URL(urlString);
+                            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                            connection.setRequestMethod("POST");
+                            connection.setRequestProperty("Content-Type", "application/json");
+                            connection.setDoOutput(true);
+
+                            // Create the JSON payload
+                            JSONObject jsonPayload = new JSONObject();
+                            jsonPayload.put("model", "llama3.2"); // Specify the
+                                                                  // model
+                            jsonPayload.put("prompt", "I have an event from a trace of type " + trace.getTraceTypeId() + " in that there is an event content " + values.toString() + " explain it."); // Your
+                            jsonPayload.put("stream", false); // input
+                            // prompt
+
+                            // Send the request
+                            try (DataOutputStream wr = new DataOutputStream(connection.getOutputStream())) {
+                                wr.writeBytes(jsonPayload.toString());
+                                wr.flush();
+                            }
+
+                            // Get the response
+                            int responseCode = connection.getResponseCode();
+                            if (responseCode == HttpURLConnection.HTTP_OK) {
+                                try (BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));) {
+                                    String inputLine;
+                                    StringBuilder response = new StringBuilder();
+
+                                    while ((inputLine = in.readLine()) != null) {
+                                        response.append(inputLine);
+                                    }
+
+                                    // Print the response
+                                    JSONObject jsonObj = new JSONObject(response.toString());
+                                    String data = String.valueOf(jsonObj.get("response"));
+                                    IProject project = fTrace.getResource().getProject();
+                                    IFile file = project.getFile("event.txt");
+                                    String fullPath = file.getFullPath().makeAbsolute().toOSString();
+                                    try {
+                                        file.create(data.getBytes(), IResource.FORCE, monitor);
+                                    } catch (CoreException e) {
+                                        // TODO Auto-generated catch block
+                                        e.printStackTrace();
+                                    }
+
+                                    if (file.exists()) {
+                                        Display.getDefault().asyncExec(() -> {
+                                            // Get the active workbench page
+                                            IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+                                            // Open the file in the Markdown editor
+                                            try {
+                                                page.openEditor(
+                                                        new FileEditorInput(file),
+                                                        IEditorRegistry.SYSTEM_EXTERNAL_EDITOR_ID);
+                                            } catch (PartInitException e) {
+                                                e.printStackTrace();
+                                            } // Replace
+
+                                        });
+
+                                    } else {
+                                        System.out.println("File does not exist: " + fullPath);
+                                    }
+                                }
+                            } else {
+                                System.out.println("POST request failed");
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                        return Status.OK_STATUS;
+                    }
+                };
+                jerb.schedule();
+            }
+        };
 
         class ToggleBookmarkAction extends Action {
             private final Long fRank;
@@ -1360,6 +1472,17 @@ public class TmfEventsTable extends TmfComponent implements IGotoMarker, IColorS
                 fTablePopupMenuManager.add(showTableAction);
             } else if (!fRawViewer.isVisible()) {
                 fTablePopupMenuManager.add(showRawAction);
+            }
+            URL url;
+            try {
+                url = new URL(ollamaUrl);
+                HttpURLConnection huc = (HttpURLConnection) url.openConnection();
+
+                if (huc.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                    fTablePopupMenuManager.add(lookupInLLMAction);
+                }
+            } catch (IOException e) {
+                // ignore
             }
             fTablePopupMenuManager.add(exportToTextAction);
             fTablePopupMenuManager.add(new Separator());
