@@ -71,7 +71,7 @@ public interface IDataProviderDescriptor {
          * provider interface than TIME_GRAPH, but has a different x-axis other
          * than time, e.g. durations.
          *
-         * @since 10.2
+         * @since 10.1
          */
         GANTT_CHART
     }
