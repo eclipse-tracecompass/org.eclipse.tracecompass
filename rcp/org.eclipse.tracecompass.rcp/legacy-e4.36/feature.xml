@@ -386,6 +386,10 @@
          version="0.0.0"/>
 
    <plugin
+         id="com.sun.el.javax.el"
+         version="0.0.0"/>
+
+   <plugin
          id="com.ibm.icu"
          version="0.0.0"/>
 
