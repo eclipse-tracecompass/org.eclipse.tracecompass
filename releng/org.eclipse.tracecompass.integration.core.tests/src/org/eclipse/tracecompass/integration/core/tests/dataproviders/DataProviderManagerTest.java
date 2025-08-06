@@ -273,6 +273,12 @@ public class DataProviderManagerTest {
                 .setId("org.eclipse.tracecompass.internal.analysis.profiling.callstack.provider.CallStackDataProvider");
         EXPECTED_UST_DP_DESCRIPTORS.add(builder.build());
         builder = new DataProviderDescriptor.Builder();
+        builder.setName("Function Density View")
+                .setDescription("Shows the distribution of function execution time")
+                .setProviderType(ProviderType.TREE_GENERIC_XY)
+                .setId("org.eclipse.tracecompass.analysis.profiling.core.callstack.functiondensity.provider");
+        EXPECTED_UST_DP_DESCRIPTORS.add(builder.build());
+        builder = new DataProviderDescriptor.Builder();
         builder.setName("Function Duration Statistics")
                 .setDescription("Show the function duration statistics")
                 .setProviderType(ProviderType.DATA_TREE)

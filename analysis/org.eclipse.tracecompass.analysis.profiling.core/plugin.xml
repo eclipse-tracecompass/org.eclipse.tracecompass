@@ -19,6 +19,10 @@
             class="org.eclipse.tracecompass.internal.analysis.profiling.core.instrumented.FlameChartDataProviderFactory"
             id="org.eclipse.tracecompass.analysis.profiling.core.flamechart">
       </dataProviderFactory>
+      <dataProviderFactory
+            class="org.eclipse.tracecompass.internal.analysis.profiling.core.callstack.provider.CallStackFunctionDensityDataProviderFactory"
+            id="org.eclipse.tracecompass.analysis.profiling.core.callstack.functiondensity.provider">
+      </dataProviderFactory>
    </extension>
    <extension
          point="org.eclipse.linuxtools.tmf.core.analysis">

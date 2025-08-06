@@ -203,15 +203,14 @@ public abstract class AbstractTreeDataProvider<A extends TmfStateSystemAnalysisM
     }
 
     /**
-     * Get selected entries from the filter for this provider
+     * Get selected entries from the filter for this provider.
      *
-     * @param filter
-     *            {@link SelectionTimeQueryFilter}.
-     * @return a map of the valid entries' ID from the filter to their respective
-     *         quark
+     * @param selectedItems
+     *            the collection of selected item IDs
+     * @return a map of the valid entries' ID to their respective quark
      */
-    protected Map<Long, Integer> getSelectedEntries(SelectionTimeQueryFilter filter) {
-        return getSelectedEntries(filter.getSelectedItems());
+    protected Map<Long, Integer> getSelectedEntries(SelectionTimeQueryFilter selectedItems) {
+        return getSelectedEntries(selectedItems.getSelectedItems());
     }
 
     /**

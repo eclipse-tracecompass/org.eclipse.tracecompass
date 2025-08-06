@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2014 Ericsson
+ * Copyright (c) 2013, 2025 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -47,6 +47,15 @@ public class Messages extends NLS {
      * Help text for the data descriptor
      */
     public static @Nullable String CallStackDataProviderFactory_descriptionText;
+
+    /**
+     * Name of the data provider shown to the user for function density view
+     */
+    public static @Nullable String CallStackFunctionDensityDataProviderFactory_title;
+    /**
+     * Help text for the data descriptor for function density view
+     */
+    public static @Nullable String CallStackFunctionDensityDataProviderFactory_descriptionText;
 
     static {
         // initialize resource bundle
