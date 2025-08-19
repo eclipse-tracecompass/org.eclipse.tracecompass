@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><?pde version="3.8"?><target name="tracecompass-eStaging" sequenceNumber="256">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><?pde version="3.8"?><target name="tracecompass-eStaging" sequenceNumber="257">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <repository location="https://download.eclipse.org/justj/jres/21/updates/release/21.0.6/"/>
@@ -11,7 +11,7 @@
 <unit id="org.eclipse.remote.ui" version="0.0.0"/>
 <unit id="org.eclipse.remote.jsch.core" version="0.0.0"/>
 <unit id="org.eclipse.remote.jsch.ui" version="0.0.0"/>
-<repository location="https://download.eclipse.org/tools/cdt/builds/12.2/cdt-12.2.0-m2a/"/>
+<repository location="https://download.eclipse.org/tools/cdt/builds/12.2/cdt-12.2.0-m3/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.swtbot.eclipse.feature.group" version="0.0.0"/>
@@ -45,7 +45,7 @@
 <unit id="org.osgi.service.component.annotations" version="0.0.0"/>
 <unit id="slf4j.api" version="0.0.0"/>
 <unit id="slf4j.simple" version="0.0.0"/>
-<repository location="https://download.eclipse.org/tools/orbit/simrel/orbit-aggregation/milestone/S202507280623/"/>
+<repository location="https://download.eclipse.org/tools/orbit/simrel/orbit-aggregation/milestone/S202508170657/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.mozilla.javascript" version="0.0.0"/>
@@ -62,7 +62,6 @@
 <unit id="org.eclipse.pde.junit.runtime" version="0.0.0"/>
 <unit id="org.eclipse.equinox.p2.discovery.feature.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.equinox.p2.sdk.feature.group" version="0.0.0"/>
-<unit id="org.eclipse.equinox.p2.core.feature.source.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.test.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.jdt.annotation" version="0.0.0"/>
 <unit id="org.eclipse.jdt.core" version="0.0.0"/>
@@ -73,7 +72,7 @@
 <unit id="org.eclipse.jdt.junit4.runtime" version="0.0.0"/>
 <unit id="org.eclipse.e4.ui.progress" version="0.0.0"/>
 <unit id="org.eclipse.osgi.services" version="0.0.0"/>
-<repository location="https://download.eclipse.org/eclipse/updates/4.37-I-builds/I20250724-1800/"/>
+<repository location="https://download.eclipse.org/eclipse/updates/4.37-I-builds/I20250814-1800/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.tracecompass.testtraces.tracecompass-test-traces-ctf" version="1.7.2"/>
@@ -83,13 +82,13 @@
 <unit id="org.eclipse.wst.xml.core" version="0.0.0"/>
 <unit id="org.eclipse.wst.xml.ui" version="0.0.0"/>
 <unit id="org.eclipse.wst.xsd.core" version="0.0.0"/>
-<repository location="https://download.eclipse.org/webtools/downloads/drops/R3.38.0/R-3.38.0-20250601070120/repository/"/>
+<repository location="https://download.eclipse.org/webtools/downloads/drops/R3.39.0/S-3.39M3-20250818070719/repository/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.emf.common.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.emf.ecore.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.xsd" version="0.0.0"/>
-<repository location="https://download.eclipse.org/modeling/emf/emf/builds/milestone/S202506291444/"/>
+<repository location="https://download.eclipse.org/modeling/emf/emf/builds/milestone/S202508121310/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.ecf.core.feature.feature.group" version="0.0.0"/>
