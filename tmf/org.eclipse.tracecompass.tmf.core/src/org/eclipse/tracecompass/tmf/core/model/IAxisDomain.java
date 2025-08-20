@@ -17,7 +17,7 @@ import org.eclipse.jdt.annotation.Nullable;
 
 
 /**
- * Shows the available values of X axis.
+ * Shows the available values of an axis.
  *
  * @author Siwei Zhang
  * @since 10.1
@@ -28,7 +28,7 @@ public sealed interface IAxisDomain permits IAxisDomain.Categorical, IAxisDomain
      * Categorical axis domain (e.g., names or labels).
      *
      * @param categories
-     *            the category labels for the X axis
+     *            the category labels for the axis
      */
     record Categorical(List<String> categories) implements IAxisDomain {
         @Override
@@ -49,7 +49,7 @@ public sealed interface IAxisDomain permits IAxisDomain.Categorical, IAxisDomain
 
         @Override
         public String toString() {
-            return "AxisDomain.Categorical{categories=" + categories + "}"; //$NON-NLS-1$ //$NON-NLS-2$
+            return "IAxisDomain.Categorical{categories=" + categories + "}"; //$NON-NLS-1$ //$NON-NLS-2$
         }
     }
 
@@ -81,7 +81,7 @@ public sealed interface IAxisDomain permits IAxisDomain.Categorical, IAxisDomain
 
         @Override
         public String toString() {
-            return "AxisDomain.TimeRange{start=" + start + ", end=" + end + "}"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            return "IAxisDomain.Range{start=" + start + ", end=" + end + "}"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         }
     }
 }
