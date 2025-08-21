@@ -128,5 +128,9 @@ public interface MetadataStrings {
     String VARIANT = "variant";
     /** enum */
     String ENUM = "enum";
+    /** typealias */
+    String TYPE_ALIAS = "typealias";
+    /** env */
+    String ENV = "env";
 
 }
