@@ -51,6 +51,7 @@ import org.eclipse.tracecompass.ctf.core.CTFException;
 import org.eclipse.tracecompass.ctf.parser.CTFLexer;
 import org.eclipse.tracecompass.ctf.parser.CTFParser;
 import org.eclipse.tracecompass.ctf.parser.CTFParser.parse_return;
+import org.eclipse.tracecompass.internal.ctf.core.CtfCoreLoggerUtil;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.CTFAntlrMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.CTFJsonMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.CtfAntlrException;
@@ -63,6 +64,7 @@ import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonEventRecord
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonFieldClassAliasMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonPreambleMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonTraceMetadataNode;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.MetadataStrings;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.trace.TraceDeclarationParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
@@ -89,6 +91,8 @@ public class Metadata {
     private static final Charset ASCII_CHARSET = Charset.forName("ASCII"); //$NON-NLS-1$
 
     private static final String TEXT_ONLY_METADATA_HEADER_PREFIX = "/* CTF"; //$NON-NLS-1$
+
+    private static final List<String> TEXT_ONLY_METADATA_HEADER_PREFIXES = List.of(MetadataStrings.TYPE_ALIAS, MetadataStrings.TRACE, MetadataStrings.ENV);
 
     private static final int PREVALIDATION_SIZE = 8;
 
@@ -349,7 +353,17 @@ public class Metadata {
             }
             try (BufferedReader br = new BufferedReader(new FileReader(metadataFile))) {
                 String text = br.readLine();
-                return text.startsWith(TEXT_ONLY_METADATA_HEADER_PREFIX);
+                if (text.startsWith(TEXT_ONLY_METADATA_HEADER_PREFIX)) {
+                    return true;
+                }
+                if (TEXT_ONLY_METADATA_HEADER_PREFIXES.stream().anyMatch(text::startsWith)) {
+                    CtfCoreLoggerUtil.logWarning("Text-only metadata of trace " + path + " does not start with the required prefix: " + //$NON-NLS-1$ //$NON-NLS-2$
+                            TEXT_ONLY_METADATA_HEADER_PREFIX + ". Trace will be parsed as CTF because metadata starts with one of the supported keywords: " + //$NON-NLS-1$
+                            TEXT_ONLY_METADATA_HEADER_PREFIXES + "."); //$NON-NLS-1$
+                    return true;
+                }
+                return false;
+
             } catch (IOException e) {
                 throw new CTFException(e.getMessage(), e);
             }
