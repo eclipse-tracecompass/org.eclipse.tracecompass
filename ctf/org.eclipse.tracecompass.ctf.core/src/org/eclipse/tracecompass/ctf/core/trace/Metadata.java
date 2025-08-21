@@ -63,6 +63,7 @@ import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonEventRecord
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonFieldClassAliasMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonPreambleMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonTraceMetadataNode;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.MetadataStrings;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.trace.TraceDeclarationParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
@@ -89,6 +90,9 @@ public class Metadata {
     private static final Charset ASCII_CHARSET = Charset.forName("ASCII"); //$NON-NLS-1$
 
     private static final String TEXT_ONLY_METADATA_HEADER_PREFIX = "/* CTF"; //$NON-NLS-1$
+
+    private static final List<String> TEXT_ONLY_METADATA_HEADER_PREFIXES = List.of(TEXT_ONLY_METADATA_HEADER_PREFIX,
+            MetadataStrings.TYPE_ALIAS, MetadataStrings.TRACE, MetadataStrings.ENV);
 
     private static final int PREVALIDATION_SIZE = 8;
 
@@ -349,7 +353,7 @@ public class Metadata {
             }
             try (BufferedReader br = new BufferedReader(new FileReader(metadataFile))) {
                 String text = br.readLine();
-                return text.startsWith(TEXT_ONLY_METADATA_HEADER_PREFIX);
+                return TEXT_ONLY_METADATA_HEADER_PREFIXES.stream().anyMatch(text::startsWith);
             } catch (IOException e) {
                 throw new CTFException(e.getMessage(), e);
             }

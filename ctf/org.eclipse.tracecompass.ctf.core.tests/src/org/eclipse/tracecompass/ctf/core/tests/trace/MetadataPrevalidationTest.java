@@ -180,7 +180,82 @@ public class MetadataPrevalidationTest {
     }
 
     /**
-     * Test a valid trace with text invalid metadata should return false
+     * Test a valid trace with text metedata missing TSDL header, but with allowed "trace"
+     * strings should return true
+     *
+     * @throws IOException
+     *             A file error occurs, shouldn't happen
+     * @throws CTFException
+     *             if an exception occurs, shouldn't happen
+     */
+    @Test
+    public void testTraceDirectoryWithAllowedStartStringMetadata1() throws IOException, CTFException {
+        Path dir = Files.createTempDirectory("trace");
+        Path f = Files.createFile(dir.resolve("metadata"));
+        try (PrintWriter pw = new PrintWriter(f.toFile())) {
+            // no header
+            pw.println("trace { major =1 ; minor = 8 ; byte_order = le;};");
+        }
+        assertTrue(Metadata.preValidate(dir.toAbsolutePath().toString()));
+    }
+
+    /**
+     * Test a valid trace with text metedata missing TSDL header, but with allowed "typealias"
+     * strings should return true
+     *
+     * @throws IOException
+     *             A file error occurs, shouldn't happen
+     * @throws CTFException
+     *             if an exception occurs, shouldn't happen
+     */
+    @Test
+    public void testTraceDirectoryWithAllowedStartStringMetadata2() throws IOException, CTFException {
+        Path dir = Files.createTempDirectory("trace");
+        Path f = Files.createFile(dir.resolve("metadata"));
+        try (PrintWriter pw = new PrintWriter(f.toFile())) {
+            // no header
+            pw.println("typealias integer { size = 8; align = 8; signed = false; } := uint8_t;");
+        }
+        assertTrue(Metadata.preValidate(dir.toAbsolutePath().toString()));
+    }
+
+    /**
+     * Test a valid trace with text metedata missing TSDL header, but with allowed "typealias"
+     * strings should return true
+     *
+     * @throws IOException
+     *             A file error occurs, shouldn't happen
+     * @throws CTFException
+     *             if an exception occurs, shouldn't happen
+     */
+    @Test
+    public void testTraceDirectoryWithAllowedStartStringMetadata3() throws IOException, CTFException {
+        Path dir = Files.createTempDirectory("trace");
+        Path f = Files.createFile(dir.resolve("metadata"));
+        try (PrintWriter pw = new PrintWriter(f.toFile())) {
+            // no header
+            pw.println("env {\n"
+                    + "    hostname = \"localhost.localdomain\";\n"
+                    + "    domain = \"kernel\";\n"
+                    + "    sysname = \"Linux\";\n"
+                    + "    kernel_release = \"4.18.16-rt9\";\n"
+                    + "    kernel_version = \"#1 SMP PREEMPT RT Thu Jun 23 10:43:50 EDT 2022\";\n"
+                    + "    tracer_name = \"lttng-modules\";\n"
+                    + "    tracer_major = 2;\n"
+                    + "    tracer_minor = 14;\n"
+                    + "    tracer_patchlevel = 0;\n"
+                    + "    trace_buffering_scheme = \"global\";\n"
+                    + "    trace_name = \"default-k-20250724-093844\";\n"
+                    + "    trace_creation_datetime = \"20250724T093844-0400\";\n"
+                    + "    product_uuid = \"03000200-0400-0500-0006-000700080009\";\n"
+                    + "};");
+        }
+        assertTrue(Metadata.preValidate(dir.toAbsolutePath().toString()));
+    }
+
+    /**
+     * Test a valid trace with text metedata missing TSDL header, but with allowed "typealias"
+     * strings should return true
      *
      * @throws IOException
      *             A file error occurs, shouldn't happen
@@ -193,7 +268,14 @@ public class MetadataPrevalidationTest {
         Path f = Files.createFile(dir.resolve("metadata"));
         try (PrintWriter pw = new PrintWriter(f.toFile())) {
             // no header
-            pw.println("trace { major =1 ; minor = 8 ; byte_order = le;};");
+            pw.println("clock {\n"
+                    + "    name = \"monotonic\";\n"
+                    + "    uuid = \"e7602765-7075-4f0b-814a-87c901e6837f\";\n"
+                    + "    description = \"Monotonic Clock\";\n"
+                    + "    freq = 1000000000; /* Frequency, in Hz */\n"
+                    + "    /* clock value offset from Epoch is: offset * (1/freq) */\n"
+                    + "    offset = 1753351888197109407;\n"
+                    + "};");
         }
         assertFalse(Metadata.preValidate(dir.toAbsolutePath().toString()));
     }
