@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="Trace Compass" uid="org.eclipse.tracecompass.rcp" id="org.eclipse.tracecompass.rcp.branding.product" application="org.eclipse.tracecompass.rcp.ui.application" version="11.0.0.qualifier" type="features" includeLaunchers="true" autoIncludeRequirements="true">
+<product name="Trace Compass" uid="org.eclipse.tracecompass.rcp" id="org.eclipse.tracecompass.rcp.branding.product" application="org.eclipse.tracecompass.rcp.ui.application" version="11.1.0.qualifier" type="features" includeLaunchers="true" autoIncludeRequirements="true">
 
    <aboutInfo>
       <image path="/org.eclipse.tracecompass.rcp.branding/icons/tc_about.png"/>
       <text>
          Trace Compass
 
-Version: 11.0.0
+Version: 11.1.0
 
 Copyright (c) 2013, 2025 Ericsson and others.
 

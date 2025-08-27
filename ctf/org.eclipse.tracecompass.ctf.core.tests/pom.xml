@@ -23,7 +23,7 @@
 
   <name>Trace Compass CTF Core Tests Plug-in</name>
   <artifactId>org.eclipse.tracecompass.ctf.core.tests</artifactId>
-  <version>1.0.18-SNAPSHOT</version>
+  <version>1.0.19-SNAPSHOT</version>
   <packaging>eclipse-test-plugin</packaging>
 
   <properties>
