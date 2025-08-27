@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><?pde version="3.8"?><target name="tracecompass-eStaging" sequenceNumber="257">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><?pde version="3.8"?><target name="tracecompass-eStaging" sequenceNumber="258">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <repository location="https://download.eclipse.org/justj/jres/21/updates/release/21.0.6/"/>
@@ -45,7 +45,7 @@
 <unit id="org.osgi.service.component.annotations" version="0.0.0"/>
 <unit id="slf4j.api" version="0.0.0"/>
 <unit id="slf4j.simple" version="0.0.0"/>
-<repository location="https://download.eclipse.org/tools/orbit/simrel/orbit-aggregation/milestone/S202508170657/"/>
+<repository location="https://download.eclipse.org/tools/orbit/simrel/orbit-aggregation/release/4.37.0/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.mozilla.javascript" version="0.0.0"/>
@@ -72,7 +72,7 @@
 <unit id="org.eclipse.jdt.junit4.runtime" version="0.0.0"/>
 <unit id="org.eclipse.e4.ui.progress" version="0.0.0"/>
 <unit id="org.eclipse.osgi.services" version="0.0.0"/>
-<repository location="https://download.eclipse.org/eclipse/updates/4.37-I-builds/I20250814-1800/"/>
+<repository location="https://download.eclipse.org/eclipse/updates/4.37-I-builds/I20250820-1800/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.tracecompass.testtraces.tracecompass-test-traces-ctf" version="1.7.2"/>
@@ -82,13 +82,13 @@
 <unit id="org.eclipse.wst.xml.core" version="0.0.0"/>
 <unit id="org.eclipse.wst.xml.ui" version="0.0.0"/>
 <unit id="org.eclipse.wst.xsd.core" version="0.0.0"/>
-<repository location="https://download.eclipse.org/webtools/downloads/drops/R3.39.0/S-3.39M3-20250818070719/repository/"/>
+<repository location="https://download.eclipse.org/webtools/downloads/drops/R3.39.0/S-3.39RC1-20250825070829/repository/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.emf.common.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.emf.ecore.feature.group" version="0.0.0"/>
 <unit id="org.eclipse.xsd" version="0.0.0"/>
-<repository location="https://download.eclipse.org/modeling/emf/emf/builds/milestone/S202508121310/"/>
+<repository location="https://download.eclipse.org/modeling/emf/emf/builds/release/2.43.0/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.ecf.core.feature.feature.group" version="0.0.0"/>
