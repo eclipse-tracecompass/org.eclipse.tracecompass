@@ -209,12 +209,12 @@ public class LTTngControlService implements ILttngControlService {
 
         // Output:
         // Tracing session mysession2: [inactive]
-        // Trace path: /home/eedbhu/lttng-traces/mysession2-20120123-110330
+        // Trace path: /home/user/lttng-traces/mysession2-20120123-110330
         ISessionInfo sessionInfo = new SessionInfo(sessionName);
 
         while (index < result.getOutput().size()) {
             // Tracing session mysession2: [inactive]
-            // Trace path: /home/eedbhu/lttng-traces/mysession2-20120123-110330
+            // Trace path: /home/user/lttng-traces/mysession2-20120123-110330
             //
             // === Domain: Kernel ===
             //
