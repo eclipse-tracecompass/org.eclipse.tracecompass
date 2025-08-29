@@ -286,6 +286,16 @@ public interface IAnalysisModule extends ITmfComponent, IAnalysisRequirementProv
         // Do nothing by default.
     }
 
+    /**
+     * Gets the error cause in case of failure
+     *
+     * @return the error cause
+     * @since 10.1
+     */
+    default @Nullable Throwable getFailureCause() {
+        return null;
+    }
+
     // -----------------------------------------------------
     // Utilities
     // -----------------------------------------------------

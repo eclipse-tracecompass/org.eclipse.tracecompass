@@ -331,7 +331,7 @@ public class AnalysisModuleTest {
         final TestAnalysis depModule = new TestAnalysis() {
 
             @Override
-            protected boolean executeAnalysis(IProgressMonitor monitor) {
+            protected boolean executeAnalysis(IProgressMonitor monitor) throws TmfAnalysisException {
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
@@ -458,6 +458,70 @@ public class AnalysisModuleTest {
         moduleC.dispose();
         trace.dispose();
 
+    }
+
+    /**
+     * Test that the failure of the dependent analysis is propagated to the
+     * parent analysis by the {@link TmfAbstractAnalysisModule}
+     */
+    @Test
+    public void testFailedDependentAnalyses() {
+
+        ITmfTrace trace = TmfTestTrace.A_TEST_10K.getTrace();
+        int paramAndResult = 5;
+
+        /* Setup the dependent module */
+        final String suffix = " dep";
+        final TestAnalysis depModule = new TestAnalysis() {
+
+            @Override
+            protected boolean executeAnalysis(IProgressMonitor monitor) throws TmfAnalysisException {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    return false;
+                }
+                return super.executeAnalysis(monitor);
+            }
+
+        };
+        depModule.setName(MODULE_GENERIC_NAME + suffix);
+        depModule.setId(MODULE_GENERIC_ID + suffix);
+        depModule.addParameter(TestAnalysis.PARAM_TEST);
+        depModule.setParameter(TestAnalysis.PARAM_TEST, 1999);
+
+        /* Prepare the main analysis with a dependent analysis */
+        TestAnalysis module = new TestAnalysis() {
+
+            @Override
+            protected Iterable<IAnalysisModule> getDependentAnalyses() {
+                Set<IAnalysisModule> modules = new HashSet<>();
+                modules.add(depModule);
+                return modules;
+            }
+
+        };
+
+        module.setName(MODULE_GENERIC_NAME);
+        module.setId(MODULE_GENERIC_ID);
+        module.addParameter(TestAnalysis.PARAM_TEST);
+        module.setParameter(TestAnalysis.PARAM_TEST, paramAndResult);
+
+        try {
+            assertTrue(depModule.setTrace(trace));
+            assertTrue(module.setTrace(trace));
+        } catch (TmfAnalysisException e) {
+            fail(e.getMessage());
+        }
+
+        module.schedule();
+
+        /* Verify that failure of the dependent analysis is propagated to the parent */
+        assertFalse(module.waitForCompletion());
+
+        module.dispose();
+        depModule.dispose();
+        trace.dispose();
     }
 
     /**
