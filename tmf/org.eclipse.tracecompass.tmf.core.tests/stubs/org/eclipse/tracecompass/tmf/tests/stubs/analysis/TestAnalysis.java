@@ -17,6 +17,7 @@ package org.eclipse.tracecompass.tmf.tests.stubs.analysis;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.tracecompass.tmf.core.analysis.TmfAbstractAnalysisModule;
+import org.eclipse.tracecompass.tmf.core.exceptions.TmfAnalysisException;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
 
 /**
@@ -44,7 +45,7 @@ public class TestAnalysis extends TmfAbstractAnalysisModule {
     }
 
     @Override
-    protected boolean executeAnalysis(final IProgressMonitor monitor) {
+    protected boolean executeAnalysis(final IProgressMonitor monitor) throws TmfAnalysisException {
         Object parameter = getParameter(PARAM_TEST);
         if (!(parameter instanceof Integer)) {
             throw new RuntimeException("The parameter should be set");
@@ -64,6 +65,8 @@ public class TestAnalysis extends TmfAbstractAnalysisModule {
                 }
             }
             return !monitor.isCanceled();
+        } else if (integer == 1999) {
+            throw new TmfAnalysisException("Failure");
         }
         return true;
     }

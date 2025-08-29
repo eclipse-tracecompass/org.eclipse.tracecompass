@@ -300,6 +300,14 @@ public abstract class TmfAbstractAnalysisModule extends TmfComponent
     }
 
     /**
+     * @since 10.1
+     */
+    @Override
+    public @Nullable Throwable getFailureCause() {
+        return fFailureCause;
+    }
+
+    /**
      * Method executed when the analysis has failed, so that analysis can
      * rectify their state. For instance, if the analysis had not been
      * initialized when the exception occurred, this method could mark the
@@ -383,7 +391,7 @@ public abstract class TmfAbstractAnalysisModule extends TmfComponent
              * Actual analysis will be run on a separate thread
              */
             String jobName = checkNotNull(NLS.bind(Messages.TmfAbstractAnalysisModule_RunningAnalysis, getName()));
-            fJob = new Job(jobName) {
+            Job job = new Job(jobName) {
                 @Override
                 protected @Nullable IStatus run(final @Nullable IProgressMonitor monitor) {
                     try (FlowScopeLog jobLog = new FlowScopeLogBuilder(LOGGER, Level.FINE, "TmfAbstractAnalysis:executing").setParentScope(analysisLog).build()) { //$NON-NLS-1$
@@ -393,11 +401,16 @@ public abstract class TmfAbstractAnalysisModule extends TmfComponent
                             TmfCoreTracer.traceAnalysis(TmfAbstractAnalysisModule.this.getId(), TmfAbstractAnalysisModule.this.getTrace(), "started"); //$NON-NLS-1$
                             fAnalysisCancelled = !executeAnalysis(mon);
                             for (IAnalysisModule module : dependentAnalyses) {
-                                module.waitForCompletion(mon);
+                                boolean isModuleCancelled = !module.waitForCompletion(mon);
+                                if (isModuleCancelled) {
+                                    Throwable cause = module.getFailureCause();
+                                    if (cause != null) {
+                                        throw new TmfAnalysisException("Dependent analysis '" + module.getName() + "' failed.", cause); //$NON-NLS-1$ //$NON-NLS-2$
+                                    }
+                                    fAnalysisCancelled |= isModuleCancelled;
+                                }
                             }
                             TmfCoreTracer.traceAnalysis(TmfAbstractAnalysisModule.this.getId(), TmfAbstractAnalysisModule.this.getTrace(), "finished"); //$NON-NLS-1$
-                        } catch (TmfAnalysisException e) {
-                            Activator.logError("Error executing analysis with trace " + trace.getName(), e); //$NON-NLS-1$
                         } catch (OperationCanceledException e) {
                             // Analysis was canceled
                         } catch (Exception e) {
@@ -428,6 +441,7 @@ public abstract class TmfAbstractAnalysisModule extends TmfComponent
                 }
 
             };
+            fJob = job;
             fJob.schedule();
         }
     }
