@@ -20,7 +20,7 @@
   </parent>
 
   <artifactId>org.eclipse.tracecompass.lttng2.control.ui.swtbot.tests</artifactId>
-  <version>1.0.10-SNAPSHOT</version>
+  <version>1.0.11-SNAPSHOT</version>
 
   <properties>
     <skipTests>${skip-long-tc-ui-tests}</skipTests>
