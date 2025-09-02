@@ -44,6 +44,12 @@ public class Messages extends NLS {
     public static @Nullable String CommonStatusMessage_AnalysisInitializationFailed;
 
     /**
+     * Detailed message for failed status cause by an analysis initialization failure
+     * @since 10.1
+     */
+    public static @Nullable String CommonStatusMessage_AnalysisExecutionFailed;
+
+    /**
      * Detailed message for failed status cause by trying to access to statesystem
      */
     public static @Nullable String CommonStatusMessage_StateSystemFailed;
