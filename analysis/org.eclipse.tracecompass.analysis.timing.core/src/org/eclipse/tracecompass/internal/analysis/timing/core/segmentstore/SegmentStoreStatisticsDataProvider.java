@@ -21,6 +21,7 @@ import java.util.WeakHashMap;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.tracecompass.analysis.timing.core.segmentstore.SegmentStoreStatisticsModel;
 import org.eclipse.tracecompass.analysis.timing.core.segmentstore.statistics.AbstractSegmentStatisticsAnalysis;
 import org.eclipse.tracecompass.analysis.timing.core.statistics.IStatistics;
@@ -116,17 +117,26 @@ public class SegmentStoreStatisticsDataProvider extends AbstractSegmentStoreStat
         fModule = provider instanceof IAnalysisModule ? (IAnalysisModule) provider : null;
     }
 
+    @SuppressWarnings("null")
     @Override
     public TmfModelResponse<TmfTreeModel<SegmentStoreStatisticsModel>> fetchTree(Map<String, Object> fetchParameters, @Nullable IProgressMonitor monitor) {
         IAnalysisModule module = fModule;
+        boolean success = true;
         if (module != null) {
             if (monitor != null) {
-                module.waitForCompletion(monitor);
-                if (monitor.isCanceled()) {
+                success = module.waitForCompletion(monitor);
+                if (monitor.isCanceled() && module.getFailureCause() == null) {
                     return new TmfModelResponse<>(null, Status.CANCELLED, CommonStatusMessage.TASK_CANCELLED);
                 }
             } else {
-                module.waitForCompletion();
+                success = module.waitForCompletion();
+                if (!success && module.getFailureCause() == null) {
+                    return new TmfModelResponse<>(null, Status.CANCELLED, CommonStatusMessage.TASK_CANCELLED);
+                }
+            }
+
+            if (!success && module.getFailureCause() != null) {
+                return new TmfModelResponse<>(null, Status.FAILED, NLS.bind(CommonStatusMessage.ANALYSIS_EXECUTION_FAILED, module.getFailureCause()));
             }
         }
 

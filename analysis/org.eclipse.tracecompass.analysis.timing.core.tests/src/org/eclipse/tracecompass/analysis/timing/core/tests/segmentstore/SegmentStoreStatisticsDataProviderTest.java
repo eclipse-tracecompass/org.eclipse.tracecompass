@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
@@ -37,6 +38,7 @@ import org.eclipse.tracecompass.tmf.core.exceptions.TmfAnalysisException;
 import org.eclipse.tracecompass.tmf.core.model.ITableColumnDescriptor;
 import org.eclipse.tracecompass.tmf.core.model.filters.FilterTimeQueryFilter;
 import org.eclipse.tracecompass.tmf.core.model.tree.TmfTreeModel;
+import org.eclipse.tracecompass.tmf.core.response.ITmfResponse;
 import org.eclipse.tracecompass.tmf.core.response.TmfModelResponse;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
 import org.eclipse.tracecompass.tmf.tests.stubs.trace.xml.TmfXmlTraceStub;
@@ -74,14 +76,14 @@ public class SegmentStoreStatisticsDataProviderTest extends AbstractSegmentStore
 
     private static final @NonNull List<@NonNull StatisticsHolder> EXPECTED_STATS_FULL = Arrays.asList(
             new StatisticsHolder("", 0, -1, 0, 65534, 32767.0, 18918.46, 65535, 2147385345.0, 0, 0, 65534, 131068),
-            new StatisticsHolder("Total", 3, 0, 0, 65534, 32767.0, 18918.46, 65535, 2147385345.0, 0, 0, 65534, 131068),
-            new StatisticsHolder("even", 4, 3, 0, 65534, 32767.0, 18918.90, 32768, 1073709056.0, 0, 0, 65534, 131068),
-            new StatisticsHolder("odd", 5, 3, 1, 65533, 32767.0, 18918.32, 32767, 1073676289.0, 1, 2, 65533, 131066));
+            new StatisticsHolder("Total", 4, 0, 0, 65534, 32767.0, 18918.46, 65535, 2147385345.0, 0, 0, 65534, 131068),
+            new StatisticsHolder("even", 5, 4, 0, 65534, 32767.0, 18918.90, 32768, 1073709056.0, 0, 0, 65534, 131068),
+            new StatisticsHolder("odd", 6, 4, 1, 65533, 32767.0, 18918.32, 32767, 1073676289.0, 1, 2, 65533, 131066));
 
     private static final @NonNull List<@NonNull StatisticsHolder> EXPECTED_STATS_SELECTION = Arrays.asList(
-            new StatisticsHolder("Selection", 6, 0, 512, 4096, 2304.0, 1035.04, 3585, 8259840.0, 512, 1024, 4096, 8192),
-            new StatisticsHolder("even", 7, 6, 512, 4096, 2304.0, 1035.48, 1793, 4131072.0, 512, 1024, 4096, 8192),
-            new StatisticsHolder("odd", 8, 6, 513, 4095, 2304.0, 1034.9, 1792, 4128768.0, 513, 1026, 4095, 8190));
+            new StatisticsHolder("Selection", 7, 0, 512, 4096, 2304.0, 1035.04, 3585, 8259840.0, 512, 1024, 4096, 8192),
+            new StatisticsHolder("even", 8, 7, 512, 4096, 2304.0, 1035.48, 1793, 4131072.0, 512, 1024, 4096, 8192),
+            new StatisticsHolder("odd", 9, 7, 513, 4095, 2304.0, 1034.9, 1792, 4128768.0, 513, 1026, 4095, 8190));
 
     private static final List<@NonNull List<@NonNull String>> LIST_OF_EXPECTED_LABELS_WITH_MAPPER_FULL = Arrays.asList(
             Arrays.asList("My", "0", "65534", "32767.0", "18918.46928268775", "65535", "2.147385345E9", "[0,0]", "[65534,131068]"),
@@ -91,9 +93,9 @@ public class SegmentStoreStatisticsDataProviderTest extends AbstractSegmentStore
 
     private static final @NonNull List<@NonNull StatisticsHolder> EXPECTED_STATS_WITH_MAPPER_FULL = Arrays.asList(
             new StatisticsHolder("My", 1, -1, 0, 65534, 32767.0, 18918.46, 65535, 2147385345.0, 0, 0, 65534, 131068),
-            new StatisticsHolder("MyTotal", 9, 1, 0, 65534, 32767.0, 18918.46, 65535, 2147385345.0, 0, 0, 65534, 131068),
-            new StatisticsHolder("Myeven", 10, 9, 0, 65534, 32767.0, 18918.90, 32768, 1073709056.0, 0, 0, 65534, 131068),
-            new StatisticsHolder("Myodd", 11, 9, 1, 65533, 32767.0, 18918.32, 32767, 1073676289.0, 1, 2, 65533, 131066));
+            new StatisticsHolder("MyTotal", 10, 1, 0, 65534, 32767.0, 18918.46, 65535, 2147385345.0, 0, 0, 65534, 131068),
+            new StatisticsHolder("Myeven", 11, 10, 0, 65534, 32767.0, 18918.90, 32768, 1073709056.0, 0, 0, 65534, 131068),
+            new StatisticsHolder("Myodd", 12, 10, 1, 65533, 32767.0, 18918.32, 32767, 1073676289.0, 1, 2, 65533, 131066));
 
     private static final String USER_DEFINED_EXTRA_HEADER = "userDefinedHeader";
     private static final String USER_DEFINED_EXTRA_VALUE = "userDefinedValue";
@@ -107,9 +109,9 @@ public class SegmentStoreStatisticsDataProviderTest extends AbstractSegmentStore
             .collect(Collectors.toList());
     private static final @NonNull List<@NonNull StatisticsHolderUserDefined> EXPECTED_STATS_FULL_USER_DEFINED = Arrays.asList(
             new StatisticsHolderUserDefined("", 2, -1, 0, 65534, 32767.0, 18918.46, 65535, 2147385345.0, 0, 0, 65534, 131068, USER_DEFINED_EXTRA_VALUE),
-            new StatisticsHolderUserDefined("Total", 12, 2, 0, 65534, 32767.0, 18918.46, 65535, 2147385345.0, 0, 0, 65534, 131068, USER_DEFINED_EXTRA_VALUE),
-            new StatisticsHolderUserDefined("even", 13, 12, 0, 65534, 32767.0, 18918.90, 32768, 1073709056.0, 0, 0, 65534, 131068, USER_DEFINED_EXTRA_VALUE),
-            new StatisticsHolderUserDefined("odd", 14, 12, 1, 65533, 32767.0, 18918.32, 32767, 1073676289.0, 1, 2, 65533, 131066, USER_DEFINED_EXTRA_VALUE));
+            new StatisticsHolderUserDefined("Total", 13, 2, 0, 65534, 32767.0, 18918.46, 65535, 2147385345.0, 0, 0, 65534, 131068, USER_DEFINED_EXTRA_VALUE),
+            new StatisticsHolderUserDefined("even", 14, 13, 0, 65534, 32767.0, 18918.90, 32768, 1073709056.0, 0, 0, 65534, 131068, USER_DEFINED_EXTRA_VALUE),
+            new StatisticsHolderUserDefined("odd", 15, 13, 1, 65533, 32767.0, 18918.32, 32767, 1073676289.0, 1, 2, 65533, 131066, USER_DEFINED_EXTRA_VALUE));
 
     private static List<ITableColumnDescriptor> fExpectedDescriptors;
     private static List<ITableColumnDescriptor> fExpectedDescriptorsUserDefined;
@@ -117,6 +119,7 @@ public class SegmentStoreStatisticsDataProviderTest extends AbstractSegmentStore
     private static SegmentStoreStatisticsDataProvider fTestDataProvider;
     private static SegmentStoreStatisticsDataProvider fTestDataProvider2;
     private static SegmentStoreStatisticsDataProvider fTestDataProviderWithUserDefinedAspect;
+    private static SegmentStoreStatisticsDataProvider fTestDataProviderWithModuleError;
 
     private static TmfXmlTraceStub fTrace;
 
@@ -170,6 +173,10 @@ public class SegmentStoreStatisticsDataProviderTest extends AbstractSegmentStore
             }
         };
         fTestDataProviderWithUserDefinedAspect = new SegmentStoreStatisticsDataProvider(trace, fixture, "org.eclipse.tracecompass.analysis.timing.core.tests.segmentstore", Arrays.asList(userDefinedAspect));
+
+        fixture = getValidSegmentStats(fTrace, true);
+        fTestDataProviderWithModuleError = new SegmentStoreStatisticsDataProvider(trace, fixture, "org.eclipse.tracecompass.analysis.timing.core.tests.segmentstore");
+
     }
 
     /**
@@ -187,6 +194,10 @@ public class SegmentStoreStatisticsDataProviderTest extends AbstractSegmentStore
 
         if (fTestDataProviderWithUserDefinedAspect != null) {
             fTestDataProviderWithUserDefinedAspect.dispose();
+        }
+
+        if (fTestDataProviderWithModuleError != null) {
+            fTestDataProviderWithModuleError.dispose();
         }
 
         if (fTrace != null) {
@@ -341,11 +352,40 @@ public class SegmentStoreStatisticsDataProviderTest extends AbstractSegmentStore
                 EXPECTED_STATS_FULL_USER_DEFINED.size());
     }
 
+    /**
+     * Verify that data provider query returns FAILED if analysis failed.
+     */
+    @Test
+    public void testModuleExecutionError() {
+        long start = 1024;
+        long end = 4096;
+        FilterTimeQueryFilter filter = new FilterTimeQueryFilter(start, end, 2, true);
+        Map<@NonNull String, @NonNull Object> fetchParameters = FetchParametersUtils.filteredTimeQueryToMap(filter);
+        TmfModelResponse<@NonNull TmfTreeModel<@NonNull SegmentStoreStatisticsModel>> response = fTestDataProviderWithModuleError.fetchTree(fetchParameters, new NullProgressMonitor());
+        assertNotNull(response);
+        assertEquals(ITmfResponse.Status.FAILED, response.getStatus());
+        TmfTreeModel<@NonNull SegmentStoreStatisticsModel> treeModel = response.getModel();
+        assertNull(treeModel);
+    }
+
+
     // ------------------------------------------------------------------------
     // Helpers
     // ------------------------------------------------------------------------
     private static @NonNull StubSegmentStatisticsAnalysis getValidSegmentStats(@NonNull ITmfTrace trace) throws TmfAnalysisException {
-        StubSegmentStatisticsAnalysis fixture = new StubSegmentStatisticsAnalysis();
+        return getValidSegmentStats(trace, false);
+    }
+
+    private static @NonNull StubSegmentStatisticsAnalysis getValidSegmentStats(@NonNull ITmfTrace trace, boolean moduleError) throws TmfAnalysisException {
+        StubSegmentStatisticsAnalysis fixture = new StubSegmentStatisticsAnalysis() {
+            @Override
+            public boolean executeAnalysis(@NonNull IProgressMonitor monitor) throws TmfAnalysisException {
+                if (moduleError) {
+                    throw new TmfAnalysisException("Failure");
+                }
+                return super.executeAnalysis(monitor);
+            }
+        };
         fixture.setTrace(trace);
         fixture.getDependentAnalyses();
         fixture.schedule();
