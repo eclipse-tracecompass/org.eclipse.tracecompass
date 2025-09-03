@@ -51,7 +51,6 @@ public final class CommonStatusMessage {
      * A possible detailed message for a
      * {@link org.eclipse.tracecompass.tmf.core.response.ITmfResponse.Status#FAILED}
      * status
-     * @since 10.1
      */
     public static final String ANALYSIS_INITIALIZATION_FAILED = Objects.requireNonNull(Messages.CommonStatusMessage_AnalysisInitializationFailed);
 
@@ -59,6 +58,7 @@ public final class CommonStatusMessage {
      * A possible detailed message for a
      * {@link org.eclipse.tracecompass.tmf.core.response.ITmfResponse.Status#FAILED}
      * status with error cause for failed analysis execution
+     * @since 10.1
      */
     public static final String ANALYSIS_EXECUTION_FAILED = Objects.requireNonNull(Messages.CommonStatusMessage_AnalysisExecutionFailed);
 
