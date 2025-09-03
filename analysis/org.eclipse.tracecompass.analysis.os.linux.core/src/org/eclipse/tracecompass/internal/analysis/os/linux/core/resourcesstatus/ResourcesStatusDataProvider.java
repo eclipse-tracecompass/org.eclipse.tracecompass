@@ -317,11 +317,12 @@ public class ResourcesStatusDataProvider extends AbstractTimeGraphDataProvider<@
             ResourcesEntryModel cpuEntry, List<Integer> irqQuarks, Type type, List<ResourcesEntryModel> builder) {
         for (Integer irqQuark : irqQuarks) {
             String resourceName = ssq.getAttributeName(irqQuark);
-            int resourceId = Integer.parseInt(resourceName);
+            String[] resourceNames = resourceName.split("/"); //$NON-NLS-1$
+            int resourceId = Integer.parseInt(resourceNames[0]);
             long irqId = getId(irqQuark);
 
             builder.add(new ResourcesEntryModel(irqId, cpuEntry.getId(),
-                    computeEntryName(type, resourceId), startTime, endTime, resourceId, type));
+                    computeEntryName(type, resourceName), startTime, endTime, resourceId, type));
 
             fEntryModelTypes.put(irqQuark, type);
 
@@ -337,7 +338,7 @@ public class ResourcesStatusDataProvider extends AbstractTimeGraphDataProvider<@
             long aggregateId = getId(aggregateQuark);
             if (!Iterables.any(builder, entry -> entry.getId() == aggregateId)) {
                 builder.add(new ResourcesEntryModel(aggregateId, cpuEntry.getParentId(),
-                        computeEntryName(type, resourceId),
+                        computeEntryName(type, resourceName),
                         startTime, endTime, resourceId, type));
             }
             fEntryModelTypes.put(aggregateQuark, type);
@@ -354,9 +355,9 @@ public class ResourcesStatusDataProvider extends AbstractTimeGraphDataProvider<@
         }
     }
 
-    private static @NonNull List<@NonNull String> computeEntryName(Type type, int id) {
+    private static @NonNull List<@NonNull String> computeEntryName(Type type, Object id) {
         if (type == Type.SOFT_IRQ) {
-            return Collections.singletonList(type.toString() + ' ' + id + ' ' + SoftIrqLabelProvider.getSoftIrq(id));
+            return Collections.singletonList(type.toString() + ' ' + id + ' ' + SoftIrqLabelProvider.getSoftIrq(Integer.parseInt((String) id)));
         } else if (type == Type.CURRENT_THREAD) {
             String threadEntryName = NLS.bind(Messages.ThreadEntry, id);
             if (threadEntryName != null) {

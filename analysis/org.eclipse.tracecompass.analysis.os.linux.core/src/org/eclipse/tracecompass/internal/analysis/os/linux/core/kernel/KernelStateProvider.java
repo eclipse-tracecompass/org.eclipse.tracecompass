@@ -87,7 +87,7 @@ public class KernelStateProvider extends AbstractTmfStateProvider {
      * Version number of this state provider. Please bump this if you modify the
      * contents of the generated state history in some way.
      */
-    private static final int VERSION = 30;
+    private static final int VERSION = 31;
 
     // ------------------------------------------------------------------------
     // Fields

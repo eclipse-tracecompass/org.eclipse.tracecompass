@@ -45,12 +45,12 @@ public class IrqEntryHandler extends KernelEventHandler {
             return;
         }
         Integer irqId = ((Long) event.getContent().getField(getLayout().fieldIrq()).getValue()).intValue();
-
+        String name = event.getContent().getField(getLayout().fieldName()).getValue().toString();
         /*
          * Mark this IRQ as active in the resource tree. The state value = the
          * CPU on which this IRQ is sitting
          */
-        int quark = ss.getQuarkRelativeAndAdd(KernelEventHandlerUtils.getNodeIRQs(cpu, ss), irqId.toString());
+        int quark = ss.getQuarkRelativeAndAdd(KernelEventHandlerUtils.getNodeIRQs(cpu, ss), irqId.toString() + "/" + name); //$NON-NLS-1$
 
         long timestamp = KernelEventHandlerUtils.getTimestamp(event);
         ss.modifyAttribute(timestamp, cpu.intValue(), quark);
@@ -64,7 +64,7 @@ public class IrqEntryHandler extends KernelEventHandler {
         ss.modifyAttribute(timestamp, StateValues.CPU_STATUS_IRQ_VALUE.unboxValue(), quark);
 
         /* Update the aggregate IRQ entry to set it to this CPU */
-        int aggregateQuark = ss.getQuarkAbsoluteAndAdd(Attributes.IRQS, irqId.toString());
+        int aggregateQuark = ss.getQuarkAbsoluteAndAdd(Attributes.IRQS, irqId.toString() + "/" + name); //$NON-NLS-1$
         ss.modifyAttribute(timestamp, cpu, aggregateQuark);
     }
 
