@@ -38,6 +38,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.analysis.timing.core.segmentstore.ISegmentStoreProvider;
 import org.eclipse.tracecompass.common.core.NonNullUtils;
 import org.eclipse.tracecompass.common.core.log.TraceCompassLog;
+import org.eclipse.tracecompass.internal.provisional.tmf.core.model.TableColumnDescriptor;
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.filters.VirtualTableQueryFilter;
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.table.ITmfVirtualTableDataProvider;
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.table.ITmfVirtualTableModel;
@@ -55,7 +56,8 @@ import org.eclipse.tracecompass.tmf.core.dataprovider.DataProviderParameterUtils
 import org.eclipse.tracecompass.tmf.core.dataprovider.DataProviderParameterUtils.Direction;
 import org.eclipse.tracecompass.tmf.core.model.CommonStatusMessage;
 import org.eclipse.tracecompass.tmf.core.model.CoreFilterProperty;
-import org.eclipse.tracecompass.tmf.core.model.tree.TmfTreeDataModel;
+import org.eclipse.tracecompass.tmf.core.model.ITableColumnDescriptor;
+import org.eclipse.tracecompass.tmf.core.model.tree.ITmfTreeDataModel;
 import org.eclipse.tracecompass.tmf.core.model.tree.TmfTreeModel;
 import org.eclipse.tracecompass.tmf.core.response.ITmfResponse;
 import org.eclipse.tracecompass.tmf.core.response.TmfModelResponse;
@@ -79,7 +81,7 @@ import com.google.common.collect.HashBiMap;
  *
  * @author: Kyrollos Bekhet
  */
-public class SegmentStoreTableDataProvider extends AbstractTmfTableDataProvider implements ITmfVirtualTableDataProvider<TmfTreeDataModel, VirtualTableLine> {
+public class SegmentStoreTableDataProvider extends AbstractTmfTableDataProvider implements ITmfVirtualTableDataProvider<ITmfTreeDataModel, VirtualTableLine> {
 
     /**
      * A simple class to create checkpoints to index the segments of a segment
@@ -324,13 +326,13 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTableDataProvider 
 
     @SuppressWarnings("unchecked")
     @Override
-    public TmfModelResponse<TmfTreeModel<TmfTreeDataModel>> fetchTree(Map<String, Object> fetchParameters, @Nullable IProgressMonitor monitor) {
+    public TmfModelResponse<TmfTreeModel<ITmfTreeDataModel>> fetchTree(Map<String, Object> fetchParameters, @Nullable IProgressMonitor monitor) {
         if (fSegmentProvider instanceof IAnalysisModule) {
             ((IAnalysisModule) fSegmentProvider).waitForCompletion();
         }
         ISegmentStore<ISegment> segmentStore = fSegmentProvider.getSegmentStore();
         fSegmentStoreSize = segmentStore != null ? segmentStore.size() : 0;
-        List<TmfTreeDataModel> model = new ArrayList<>();
+        List<ITableColumnDescriptor> columns = new ArrayList<>();
         for (ISegmentAspect aspect : ISegmentStoreProvider.getBaseSegmentAspects()) {
             synchronized (fAspectToIdMap) {
                 long id = fAspectToIdMap.computeIfAbsent(aspect, a -> createColumnId());
@@ -341,7 +343,7 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTableDataProvider 
                 if (comparator != null) {
                     buildIndex(id, comparator, aspect.getName());
                 }
-                model.add(new TmfTreeDataModel(id, -1, Collections.singletonList(aspect.getName()), aspect.getDataType()));
+                columns.add(new TableColumnDescriptor.Builder().setId(id).setText(aspect.getName()).setTooltip(aspect.getHelpText()).setDataType(aspect.getDataType()).build());
             }
         }
         for (ISegmentAspect aspect : fSegmentProvider.getSegmentAspects()) {
@@ -351,7 +353,7 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTableDataProvider 
                 if (comparator != null) {
                     buildIndex(id, comparator, aspect.getName());
                 }
-                model.add(new TmfTreeDataModel(id, -1, Collections.singletonList(aspect.getName()), aspect.getDataType()));
+                columns.add(new TableColumnDescriptor.Builder().setId(id).setText(aspect.getName()).setTooltip(aspect.getHelpText()).setDataType(aspect.getDataType()).build());
             }
         }
 
@@ -365,9 +367,11 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTableDataProvider 
             if (comparator != null) {
                 buildIndex(id, comparator, aspect.getName());
             }
-            model.add(new TmfTreeDataModel(id, -1, Collections.singletonList(aspect.getName())));
+            columns.add(new TableColumnDescriptor.Builder().setId(id).setText(aspect.getName()).setTooltip(aspect.getHelpText()).setDataType(aspect.getDataType()).build());
         }
-        return new TmfModelResponse<>(new TmfTreeModel<>(Collections.emptyList(), model), ITmfResponse.Status.COMPLETED, CommonStatusMessage.COMPLETED);
+        TmfTreeModel.Builder<ITmfTreeDataModel> builder = new TmfTreeModel.Builder<>();
+        builder.setColumnDescriptors(columns);
+        return new TmfModelResponse<>(builder.build(), ITmfResponse.Status.COMPLETED, CommonStatusMessage.COMPLETED);
     }
 
     @Override
@@ -693,12 +697,12 @@ public class SegmentStoreTableDataProvider extends AbstractTmfTableDataProvider 
             return aspects;
         }
         // Get all columnIds using fetchTree
-        TmfModelResponse<TmfTreeModel<TmfTreeDataModel>> response = this.fetchTree(Collections.emptyMap(), monitor);
+        TmfModelResponse<TmfTreeModel<ITmfTreeDataModel>> response = this.fetchTree(Collections.emptyMap(), monitor);
         if (response.getStatus() == ITmfResponse.Status.COMPLETED) {
-            TmfTreeModel<TmfTreeDataModel> model = response.getModel();
-            if (model != null && !model.getEntries().isEmpty()) {
+            TmfTreeModel<ITmfTreeDataModel> model = response.getModel();
+            if (model != null && !model.getColumnDescriptors().isEmpty()) {
                 Collector<? super Long, ?, List<Long>> list = Collectors.toList();
-                return getAspectsFromColumnId(model.getEntries().stream().map(TmfTreeDataModel::getId).collect(list), monitor);
+                return getAspectsFromColumnId(model.getColumnDescriptors().stream().map(ITableColumnDescriptor::getId).collect(list), monitor);
             }
         }
         return Objects.requireNonNull(fAspectToIdMap.inverse());
