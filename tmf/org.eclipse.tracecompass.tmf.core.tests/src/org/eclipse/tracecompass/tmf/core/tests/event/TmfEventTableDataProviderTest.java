@@ -1,5 +1,5 @@
 /**********************************************************************
- * Copyright (c) 2018 Ericsson
+ * Copyright (c) 2018, 2025 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -28,7 +28,7 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.tracecompass.internal.provisional.tmf.core.model.events.TmfEventTableColumnDataModel;
+import org.eclipse.tracecompass.internal.provisional.tmf.core.model.TableColumnDescriptor;
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.events.TmfEventTableDataProvider;
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.events.TmfEventTableFilterModel;
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.filters.EventTableQueryFilter;
@@ -43,7 +43,9 @@ import org.eclipse.tracecompass.tmf.core.dataprovider.DataType;
 import org.eclipse.tracecompass.tmf.core.exceptions.TmfTraceException;
 import org.eclipse.tracecompass.tmf.core.model.CommonStatusMessage;
 import org.eclipse.tracecompass.tmf.core.model.CoreFilterProperty;
+import org.eclipse.tracecompass.tmf.core.model.ITableColumnDescriptor;
 import org.eclipse.tracecompass.tmf.core.model.filters.TimeQueryFilter;
+import org.eclipse.tracecompass.tmf.core.model.tree.ITmfTreeDataModel;
 import org.eclipse.tracecompass.tmf.core.model.tree.TmfTreeModel;
 import org.eclipse.tracecompass.tmf.core.response.ITmfResponse.Status;
 import org.eclipse.tracecompass.tmf.core.response.TmfModelResponse;
@@ -67,7 +69,7 @@ public class TmfEventTableDataProviderTest {
     private static final TmfTestTrace TEST_TRACE = TmfTestTrace.A_TEST_10K;
 
     private static ITmfTrace fTrace = new TmfTraceStub();
-    private static ITmfVirtualTableDataProvider<TmfEventTableColumnDataModel, EventTableLine> fProvider = new TmfEventTableDataProvider(fTrace);
+    private static ITmfVirtualTableDataProvider<ITmfTreeDataModel, EventTableLine> fProvider = new TmfEventTableDataProvider(fTrace);
 
     private static final String TIMESTAMP_COLUMN_NAME = "Timestamp";
     private static final String TIMESTAMP_NS_COLUMN_NAME = "Timestamp ns";
@@ -104,21 +106,21 @@ public class TmfEventTableDataProviderTest {
     }
 
     private static Map<String, Long> fetchColumnId() {
-        TmfTreeModel<TmfEventTableColumnDataModel> columns = fProvider.fetchTree(FetchParametersUtils.timeQueryToMap(new TimeQueryFilter(0, 0, 1)), null).getModel();
-        if (columns == null) {
+        TmfTreeModel<ITmfTreeDataModel> treeModel = fProvider.fetchTree(Collections.emptyMap(), null).getModel();
+        if (treeModel == null) {
             return Collections.emptyMap();
         }
 
-        List<TmfEventTableColumnDataModel> columnEntries = columns.getEntries();
+        List<ITableColumnDescriptor> columnDescriptors = treeModel.getColumnDescriptors();
         // Order should be timestamp, event type and contents
-        assertEquals(TIMESTAMP_COLUMN_NAME, columnEntries.get(0).getName());
-        assertEquals(EVENT_TYPE_COLUMN_NAME, columnEntries.get(1).getName());
-        assertEquals(CONTENTS_COLUMN_NAME, columnEntries.get(2).getName());
-        assertEquals(TIMESTAMP_NS_COLUMN_NAME, columnEntries.get(3).getName());
+        assertEquals(TIMESTAMP_COLUMN_NAME, columnDescriptors.get(0).getText());
+        assertEquals(EVENT_TYPE_COLUMN_NAME, columnDescriptors.get(1).getText());
+        assertEquals(CONTENTS_COLUMN_NAME, columnDescriptors.get(2).getText());
+        assertEquals(TIMESTAMP_NS_COLUMN_NAME, columnDescriptors.get(3).getText());
 
         Map<String, Long> expectedColumns = new LinkedHashMap<>();
-        for (TmfEventTableColumnDataModel column : columnEntries) {
-            expectedColumns.put(column.getName(), column.getId());
+        for (ITableColumnDescriptor column : columnDescriptors) {
+            expectedColumns.put(column.getText(), column.getId());
         }
         return expectedColumns;
     }
@@ -156,17 +158,17 @@ public class TmfEventTableDataProviderTest {
         assertNotNull(eventTypeColumnId);
         assertNotNull(contentsColumnId);
         assertNotNull(timestampNsColumnId);
-        List<TmfEventTableColumnDataModel> expectedColumnEntries = Arrays.asList(
-                new TmfEventTableColumnDataModel(timestampColumnId, -1, Collections.singletonList(TIMESTAMP_COLUMN_NAME), "", false, DataType.TIMESTAMP),
-                new TmfEventTableColumnDataModel(eventTypeColumnId, -1, Collections.singletonList(EVENT_TYPE_COLUMN_NAME), "The type of this event. This normally determines the field layout.", false, DataType.STRING),
-                new TmfEventTableColumnDataModel(contentsColumnId, -1, Collections.singletonList(CONTENTS_COLUMN_NAME), "The fields (or payload) of this event", false, DataType.STRING),
-                new TmfEventTableColumnDataModel(timestampNsColumnId, -1, Collections.singletonList(TIMESTAMP_NS_COLUMN_NAME), "Timestamp in nanoseconds, normalized and useful for calculations", true, DataType.STRING));
+        List<ITableColumnDescriptor> expectedColumns = Arrays.asList(
+                new TableColumnDescriptor.Builder().setId(timestampColumnId).setText(TIMESTAMP_COLUMN_NAME).setTooltip("").setDataType(DataType.TIMESTAMP).build(),
+                new TableColumnDescriptor.Builder().setId(eventTypeColumnId).setText(EVENT_TYPE_COLUMN_NAME).setTooltip("The type of this event. This normally determines the field layout.").setDataType(DataType.STRING).build(),
+                new TableColumnDescriptor.Builder().setId(contentsColumnId).setText(CONTENTS_COLUMN_NAME).setTooltip("The fields (or payload) of this event").setDataType(DataType.STRING).build(),
+                new TableColumnDescriptor.Builder().setId(timestampNsColumnId).setText(TIMESTAMP_NS_COLUMN_NAME).setTooltip("Timestamp in nanoseconds, normalized and useful for calculations").setDataType(DataType.NUMBER).build());
 
-        TmfModelResponse<TmfTreeModel<TmfEventTableColumnDataModel>> response = fProvider.fetchTree(FetchParametersUtils.timeQueryToMap(new TimeQueryFilter(0, 0, 1)), null);
-        TmfTreeModel<TmfEventTableColumnDataModel> currentColumnModel = response.getModel();
+        TmfModelResponse<TmfTreeModel<ITmfTreeDataModel>> response = fProvider.fetchTree(FetchParametersUtils.timeQueryToMap(new TimeQueryFilter(0, 0, 1)), null);
+        TmfTreeModel<ITmfTreeDataModel> currentColumnModel = response.getModel();
         assertNotNull(currentColumnModel);
-        List<TmfEventTableColumnDataModel> currentColumnEntries = currentColumnModel.getEntries();
-        assertEquals(expectedColumnEntries, currentColumnEntries);
+        List<ITableColumnDescriptor> currentColumns = currentColumnModel.getColumnDescriptors();
+        assertEquals(expectedColumns, currentColumns);
     }
 
     /**

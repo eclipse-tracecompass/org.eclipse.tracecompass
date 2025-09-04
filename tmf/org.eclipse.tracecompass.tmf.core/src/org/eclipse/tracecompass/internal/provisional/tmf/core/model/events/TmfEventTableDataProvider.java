@@ -27,6 +27,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.common.core.NonNullUtils;
+import org.eclipse.tracecompass.internal.provisional.tmf.core.model.TableColumnDescriptor;
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.filters.VirtualTableQueryFilter;
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.table.EventTableLine;
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.table.ITmfFilterModel;
@@ -55,6 +56,8 @@ import org.eclipse.tracecompass.tmf.core.filter.model.TmfFilterNode;
 import org.eclipse.tracecompass.tmf.core.filter.model.TmfFilterRootNode;
 import org.eclipse.tracecompass.tmf.core.model.CommonStatusMessage;
 import org.eclipse.tracecompass.tmf.core.model.CoreFilterProperty;
+import org.eclipse.tracecompass.tmf.core.model.ITableColumnDescriptor;
+import org.eclipse.tracecompass.tmf.core.model.tree.ITmfTreeDataModel;
 import org.eclipse.tracecompass.tmf.core.model.tree.TmfTreeModel;
 import org.eclipse.tracecompass.tmf.core.request.ITmfEventRequest;
 import org.eclipse.tracecompass.tmf.core.request.ITmfEventRequest.ExecutionType;
@@ -80,7 +83,7 @@ import com.google.common.collect.Lists;
  * @author Yonni Chen
  * @since 4.0
  */
-public class TmfEventTableDataProvider extends AbstractTmfTableDataProvider implements ITmfVirtualTableDataProvider<TmfEventTableColumnDataModel, EventTableLine> {
+public class TmfEventTableDataProvider extends AbstractTmfTableDataProvider implements ITmfVirtualTableDataProvider<ITmfTreeDataModel, EventTableLine> {
 
     /**
      * Key for table filters
@@ -142,8 +145,8 @@ public class TmfEventTableDataProvider extends AbstractTmfTableDataProvider impl
     }
 
     @Override
-    public TmfModelResponse<TmfTreeModel<TmfEventTableColumnDataModel>> fetchTree(Map<String, Object> fetchParameters, @Nullable IProgressMonitor monitor) {
-        List<TmfEventTableColumnDataModel> model = new ArrayList<>();
+    public TmfModelResponse<TmfTreeModel<ITmfTreeDataModel>> fetchTree(Map<String, Object> fetchParameters, @Nullable IProgressMonitor monitor) {
+        List<ITableColumnDescriptor> columns = new ArrayList<>();
         boolean hasTs = false;
         Map<String, ITmfEventAspect<?>> aspects = new LinkedHashMap<>();
         for (ITmfEventAspect<?> aspect : getTraceAspects(getTrace())) {
@@ -154,7 +157,7 @@ public class TmfEventTableDataProvider extends AbstractTmfTableDataProvider impl
         for (ITmfEventAspect<?> aspect : aspects.values()) {
             synchronized (fAspectToIdMap) {
                 long id = fAspectToIdMap.computeIfAbsent(aspect, a -> createColumnId());
-                model.add(new TmfEventTableColumnDataModel(id, -1, Collections.singletonList(aspect.getName()), aspect.getHelpText(), aspect.isHiddenByDefault(), aspect.getDataType()));
+                columns.add(new TableColumnDescriptor.Builder().setId(id).setText(aspect.getName()).setTooltip(aspect.getHelpText()).setDataType(aspect.getDataType()).build());
                 hasTs |= (aspect == TmfBaseAspects.getTimestampAspect());
             }
         }
@@ -162,10 +165,12 @@ public class TmfEventTableDataProvider extends AbstractTmfTableDataProvider impl
             synchronized (fAspectToIdMap) {
                 ITmfEventAspect<Long> aspect = TmfBaseAspects.getTimestampNsAspect();
                 long id = fAspectToIdMap.computeIfAbsent(aspect, a -> createColumnId());
-                model.add(new TmfEventTableColumnDataModel(id, -1, Collections.singletonList(aspect.getName()), aspect.getHelpText(), aspect.isHiddenByDefault(), aspect.getDataType()));
+                columns.add(new TableColumnDescriptor.Builder().setId(id).setText(aspect.getName()).setTooltip(aspect.getHelpText()).setDataType(aspect.getDataType()).build());
             }
         }
-        return new TmfModelResponse<>(new TmfTreeModel<>(Collections.emptyList(), model), ITmfResponse.Status.COMPLETED, CommonStatusMessage.COMPLETED);
+        TmfTreeModel.Builder<ITmfTreeDataModel> builder = new TmfTreeModel.Builder<>();
+        builder.setColumnDescriptors(columns);
+        return new TmfModelResponse<>(builder.build(), ITmfResponse.Status.COMPLETED, CommonStatusMessage.COMPLETED);
     }
 
     @Override
