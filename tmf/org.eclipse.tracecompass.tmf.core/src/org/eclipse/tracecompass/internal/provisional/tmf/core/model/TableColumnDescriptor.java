@@ -1,5 +1,5 @@
 /**********************************************************************
- * Copyright (c) 2020 Ericsson
+ * Copyright (c) 2020, 2025 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -24,9 +24,11 @@ import com.google.common.base.Objects;
  */
 public class TableColumnDescriptor implements ITableColumnDescriptor {
 
+    private final long fId;
     private final String fText;
     private final String fTooltipText;
     private final DataType fDataType;
+    private final boolean fHiddenByDefault;
 
     /**
      * Constructor
@@ -35,9 +37,16 @@ public class TableColumnDescriptor implements ITableColumnDescriptor {
      *            Column header
      */
     private TableColumnDescriptor(Builder builder) {
+        fId = builder.fId;
         fText = builder.fText;
         fTooltipText = builder.fTooltipText;
         fDataType = builder.fDataType;
+        fHiddenByDefault = builder.fHiddenByDefault;
+    }
+
+    @Override
+    public long getId() {
+        return fId;
     }
 
     @Override
@@ -51,17 +60,8 @@ public class TableColumnDescriptor implements ITableColumnDescriptor {
     }
 
     @Override
-    public boolean equals(@Nullable Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (!(obj instanceof ITableColumnDescriptor)) {
-            return false;
-        }
-        ITableColumnDescriptor other = (ITableColumnDescriptor) obj;
-        return Objects.equal(fText, other.getText()) &&
-                Objects.equal(fTooltipText, other.getTooltip()) &&
-                Objects.equal(fDataType, other.getDataType());
+    public boolean isHiddenByDefault() {
+        return fHiddenByDefault;
     }
 
     @Override
@@ -70,21 +70,41 @@ public class TableColumnDescriptor implements ITableColumnDescriptor {
     }
 
     @Override
+    public boolean equals(@Nullable Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof ITableColumnDescriptor)) {
+            return false;
+        }
+        ITableColumnDescriptor other = (ITableColumnDescriptor) obj;
+        return Objects.equal(fId, other.getId()) &&
+                Objects.equal(fText, other.getText()) &&
+                Objects.equal(fTooltipText, other.getTooltip()) &&
+                Objects.equal(fDataType, other.getDataType()) &&
+                Objects.equal(fHiddenByDefault, other.isHiddenByDefault());
+    }
+
+    @Override
     public int hashCode() {
-        return Objects.hashCode(fText, fTooltipText, fDataType);
+        return Objects.hashCode(fId, fText, fTooltipText, fDataType, fHiddenByDefault);
     }
 
     @SuppressWarnings("nls")
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("[text=")
-               .append(fText)
-               .append(" tooltip=")
-               .append(fTooltipText)
-               .append(" dataType=")
-               .append(fDataType.toString())
-               .append("]");
+        builder.append("[");
+        if (fId != -1) {
+            builder.append("id=").append(fId).append(" ");
+        }
+        builder.append("text=").append(fText)
+                .append(" tooltip=").append(fTooltipText)
+                .append(" dataType=").append(fDataType.toString());
+        if (fHiddenByDefault) {
+            builder.append(" hiddenByDefault=").append(fHiddenByDefault);
+        }
+        builder.append("]");
         return builder.toString();
     }
 
@@ -96,15 +116,30 @@ public class TableColumnDescriptor implements ITableColumnDescriptor {
      * @author Bernd Hufmann
      */
     public static class Builder {
+        private long fId = -1;
         private String fText = ""; //$NON-NLS-1$
         private String fTooltipText = ""; //$NON-NLS-1$
         private DataType fDataType = DataType.STRING;
+        private boolean fHiddenByDefault = false;
 
         /**
          * Constructor
          */
         public Builder() {
             // Empty constructor
+        }
+
+        /**
+         * Sets the id of the header
+         *
+         * @param id
+         *            the header id to set
+         * @return this {@link Builder} object
+         * @since 10.1
+         */
+        public Builder setId(long id) {
+            fId = id;
+            return this;
         }
 
         /**
@@ -141,6 +176,19 @@ public class TableColumnDescriptor implements ITableColumnDescriptor {
          */
         public Builder setDataType(DataType dataType) {
             fDataType = dataType;
+            return this;
+        }
+
+        /**
+         * Sets whether the column should be hidden by default
+         *
+         * @param hiddenByDefault
+         *            {@code true} if the column should be hidden by default
+         * @return this {@link Builder} object
+         * @since 10.1
+         */
+        public Builder setHiddenByDefault(boolean hiddenByDefault) {
+            fHiddenByDefault = hiddenByDefault;
             return this;
         }
 
