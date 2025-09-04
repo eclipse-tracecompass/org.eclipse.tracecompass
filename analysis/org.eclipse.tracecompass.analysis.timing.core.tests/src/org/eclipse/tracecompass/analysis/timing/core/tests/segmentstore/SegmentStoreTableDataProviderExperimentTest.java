@@ -1,5 +1,5 @@
 /**********************************************************************
- * Copyright (c) 2022, 2024 Ericsson
+ * Copyright (c) 2022, 2025 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.annotation.NonNull;
@@ -33,6 +32,7 @@ import org.eclipse.tracecompass.analysis.timing.core.segmentstore.ISegmentStoreP
 import org.eclipse.tracecompass.analysis.timing.core.segmentstore.SegmentStoreAnalysisModule;
 import org.eclipse.tracecompass.analysis.timing.core.tests.stubs.segmentstore.StubSegmentStoreProvider;
 import org.eclipse.tracecompass.internal.analysis.timing.core.segmentstore.SegmentStoreTableDataProvider;
+import org.eclipse.tracecompass.internal.provisional.tmf.core.model.TableColumnDescriptor;
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.filters.VirtualTableQueryFilter;
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.table.ITmfVirtualTableDataProvider;
 import org.eclipse.tracecompass.internal.provisional.tmf.core.model.table.ITmfVirtualTableModel;
@@ -44,12 +44,12 @@ import org.eclipse.tracecompass.segmentstore.core.BasicSegment;
 import org.eclipse.tracecompass.segmentstore.core.ISegment;
 import org.eclipse.tracecompass.segmentstore.core.ISegmentStore;
 import org.eclipse.tracecompass.tmf.core.analysis.IAnalysisModule;
+import org.eclipse.tracecompass.tmf.core.dataprovider.DataType;
 import org.eclipse.tracecompass.tmf.core.exceptions.TmfAnalysisException;
 import org.eclipse.tracecompass.tmf.core.exceptions.TmfTraceException;
 import org.eclipse.tracecompass.tmf.core.model.CoreFilterProperty;
-import org.eclipse.tracecompass.tmf.core.model.filters.TimeQueryFilter;
-import org.eclipse.tracecompass.tmf.core.model.tree.TmfTreeDataModel;
-import org.eclipse.tracecompass.tmf.core.model.tree.TmfTreeModel;
+import org.eclipse.tracecompass.tmf.core.model.ITableColumnDescriptor;
+import org.eclipse.tracecompass.tmf.core.model.tree.ITmfTreeDataModel;
 import org.eclipse.tracecompass.tmf.core.response.ITmfResponse;
 import org.eclipse.tracecompass.tmf.core.response.TmfModelResponse;
 import org.eclipse.tracecompass.tmf.core.timestamp.TmfTimestamp;
@@ -114,9 +114,9 @@ public class SegmentStoreTableDataProviderExperimentTest {
         }
     }
 
-    private static ITmfVirtualTableDataProvider<@NonNull TmfTreeDataModel, @NonNull VirtualTableLine> fMainDataProvider;
-    private static ITmfVirtualTableDataProvider<@NonNull TmfTreeDataModel, @NonNull VirtualTableLine> fDataProvider;
-    private static ITmfVirtualTableDataProvider<@NonNull TmfTreeDataModel, @NonNull VirtualTableLine> fInvalidDataProvider;
+    private static ITmfVirtualTableDataProvider<@NonNull ITmfTreeDataModel, @NonNull VirtualTableLine> fMainDataProvider;
+    private static ITmfVirtualTableDataProvider<@NonNull ITmfTreeDataModel, @NonNull VirtualTableLine> fDataProvider;
+    private static ITmfVirtualTableDataProvider<@NonNull ITmfTreeDataModel, @NonNull VirtualTableLine> fInvalidDataProvider;
 
     private static final String START_TIME_COLUMN_NAME = "Start Time";
     private static final String END_TIME_COLUMN_NAME = "End Time";
@@ -175,45 +175,43 @@ public class SegmentStoreTableDataProviderExperimentTest {
     }
 
     private static Map<String, Long> fetchColumnId() {
-        TmfTreeModel<@NonNull TmfTreeDataModel> columns = fMainDataProvider.fetchTree(FetchParametersUtils.timeQueryToMap(new TimeQueryFilter(0, 0, 1)), null).getModel();
+        List<@NonNull ITableColumnDescriptor> columns = fMainDataProvider.fetchColumns(Collections.emptyMap(), null).getModel();
         if (columns == null) {
             return Collections.emptyMap();
         }
-        List<@NonNull TmfTreeDataModel> columnEntries = columns.getEntries();
-        assertEquals(START_TIME_COLUMN_NAME, columnEntries.get(0).getName());
-        assertEquals(END_TIME_COLUMN_NAME, columnEntries.get(1).getName());
-        assertEquals(DURATION_COLUMN_NAME, columnEntries.get(2).getName());
-        assertEquals(StubSegmentStoreProvider.STUB_COLUMN_NAME, columnEntries.get(3).getName());
-        assertEquals(TRACE_COLUMN_NAME, columnEntries.get(4).getName());
-        assertEquals(NS_TIME_COLUMN_NAME, columnEntries.get(5).getName());
+        assertEquals(START_TIME_COLUMN_NAME, columns.get(0).getText());
+        assertEquals(END_TIME_COLUMN_NAME, columns.get(1).getText());
+        assertEquals(DURATION_COLUMN_NAME, columns.get(2).getText());
+        assertEquals(StubSegmentStoreProvider.STUB_COLUMN_NAME, columns.get(3).getText());
+        assertEquals(TRACE_COLUMN_NAME, columns.get(4).getText());
+        assertEquals(NS_TIME_COLUMN_NAME, columns.get(5).getText());
 
         Map<String, Long> expectedColumns = new LinkedHashMap<>();
-        for (TmfTreeDataModel column : columnEntries) {
-            expectedColumns.put(column.getName(), column.getId());
+        for (ITableColumnDescriptor column : columns) {
+            expectedColumns.put(column.getText(), column.getId());
         }
         return expectedColumns;
     }
 
     private static Map<String, Long> fetchSingleTraceColumnId() {
-        TmfTreeModel<@NonNull TmfTreeDataModel> columns = fDataProvider.fetchTree(FetchParametersUtils.timeQueryToMap(new TimeQueryFilter(0, 0, 1)), null).getModel();
+        List<@NonNull ITableColumnDescriptor> columns = fDataProvider.fetchColumns(Collections.emptyMap(), null).getModel();
         if (columns == null) {
             return Collections.emptyMap();
         }
-        List<@NonNull TmfTreeDataModel> columnEntries = columns.getEntries();
-        assertEquals(START_TIME_COLUMN_NAME, columnEntries.get(0).getName());
-        assertEquals(END_TIME_COLUMN_NAME, columnEntries.get(1).getName());
-        assertEquals(DURATION_COLUMN_NAME, columnEntries.get(2).getName());
-        assertEquals(StubSegmentStoreProvider.STUB_COLUMN_NAME, columnEntries.get(3).getName());
-        assertEquals(NS_TIME_COLUMN_NAME, columnEntries.get(4).getName());
+        assertEquals(START_TIME_COLUMN_NAME, columns.get(0).getText());
+        assertEquals(END_TIME_COLUMN_NAME, columns.get(1).getText());
+        assertEquals(DURATION_COLUMN_NAME, columns.get(2).getText());
+        assertEquals(StubSegmentStoreProvider.STUB_COLUMN_NAME, columns.get(3).getText());
+        assertEquals(NS_TIME_COLUMN_NAME, columns.get(4).getText());
 
         Map<String, Long> expectedColumns = new LinkedHashMap<>();
-        for (TmfTreeDataModel column : columnEntries) {
-            expectedColumns.put(column.getName(), column.getId());
+        for (ITableColumnDescriptor column : columns) {
+            expectedColumns.put(column.getText(), column.getId());
         }
         return expectedColumns;
     }
 
-    private static ITmfVirtualTableDataProvider<@NonNull TmfTreeDataModel, @NonNull VirtualTableLine> getDataProvider(@NonNull TmfExperimentStub experiment) throws TmfAnalysisException {
+    private static ITmfVirtualTableDataProvider<@NonNull ITmfTreeDataModel, @NonNull VirtualTableLine> getDataProvider(@NonNull TmfExperimentStub experiment) throws TmfAnalysisException {
         IAnalysisModule m = new SegmentStoreAnalysisModule(experiment);
         try {
             experiment.addAnalysisModule(m);
@@ -279,19 +277,17 @@ public class SegmentStoreTableDataProviderExperimentTest {
         assertNotNull(traceColumnId);
         assertNotNull(nsTimeColumnId);
 
-        List<@NonNull TmfTreeDataModel> expectedColumnEntries = Arrays.asList(
-                new TmfTreeDataModel(startTimeColumnId, -1, Collections.singletonList(START_TIME_COLUMN_NAME)),
-                new TmfTreeDataModel(endTimeColumnId, -1, Collections.singletonList(END_TIME_COLUMN_NAME)),
-                new TmfTreeDataModel(durationColumnId, -1, Collections.singletonList(DURATION_COLUMN_NAME)),
-                new TmfTreeDataModel(customColumnId, -1, Collections.singletonList(StubSegmentStoreProvider.STUB_COLUMN_NAME)),
-                new TmfTreeDataModel(traceColumnId, -1, Collections.singletonList(TRACE_COLUMN_NAME)),
-                new TmfTreeDataModel(nsTimeColumnId, -1, Collections.singletonList(NS_TIME_COLUMN_NAME)));
+        List<@NonNull ITableColumnDescriptor> expectedColumns = Arrays.asList(
+                new TableColumnDescriptor.Builder().setId(startTimeColumnId).setText(START_TIME_COLUMN_NAME).setTooltip("Start time of the segment").setDataType(DataType.TIMESTAMP).build(),
+                new TableColumnDescriptor.Builder().setId(endTimeColumnId).setText(END_TIME_COLUMN_NAME).setTooltip("End time of the segment").setDataType(DataType.TIMESTAMP).build(),
+                new TableColumnDescriptor.Builder().setId(durationColumnId).setText(DURATION_COLUMN_NAME).setTooltip("Segment duration").setDataType(DataType.DURATION).build(),
+                new TableColumnDescriptor.Builder().setId(customColumnId).setText(StubSegmentStoreProvider.STUB_COLUMN_NAME).setTooltip("Stub segment column information").setDataType(DataType.STRING).build(),
+                new TableColumnDescriptor.Builder().setId(traceColumnId).setText(TRACE_COLUMN_NAME).setDataType(DataType.STRING).build(),
+                new TableColumnDescriptor.Builder().setId(nsTimeColumnId).setText(NS_TIME_COLUMN_NAME).setTooltip("Start time of the segment in nano seconds").setDataType(DataType.NUMBER).build());
 
-        TmfModelResponse<@NonNull TmfTreeModel<@NonNull TmfTreeDataModel>> response = fMainDataProvider.fetchTree(FetchParametersUtils.timeQueryToMap(new TimeQueryFilter(0, 0, 1)), null);
-        TmfTreeModel<@NonNull TmfTreeDataModel> currentColumnModel = response.getModel();
-        assertNotNull(currentColumnModel);
-        List<@NonNull TmfTreeDataModel> currentColumnEntries = Objects.requireNonNull(currentColumnModel).getEntries();
-        assertEquals(expectedColumnEntries, currentColumnEntries);
+        List<@NonNull ITableColumnDescriptor> currentColumns = fMainDataProvider.fetchColumns(Collections.emptyMap(), null).getModel();
+        assertNotNull(currentColumns);
+        assertEquals(expectedColumns, currentColumns);
     }
 
     /**
@@ -314,18 +310,16 @@ public class SegmentStoreTableDataProviderExperimentTest {
         assertNotNull(customColumnId);
         assertNotNull(nsTimeColumnId);
 
-        List<@NonNull TmfTreeDataModel> expectedColumnEntries = Arrays.asList(
-                new TmfTreeDataModel(startTimeColumnId, -1, Collections.singletonList(START_TIME_COLUMN_NAME)),
-                new TmfTreeDataModel(endTimeColumnId, -1, Collections.singletonList(END_TIME_COLUMN_NAME)),
-                new TmfTreeDataModel(durationColumnId, -1, Collections.singletonList(DURATION_COLUMN_NAME)),
-                new TmfTreeDataModel(customColumnId, -1, Collections.singletonList(StubSegmentStoreProvider.STUB_COLUMN_NAME)),
-                new TmfTreeDataModel(nsTimeColumnId, -1, Collections.singletonList(NS_TIME_COLUMN_NAME)));
+        List<@NonNull ITableColumnDescriptor> expectedColumns = Arrays.asList(
+                new TableColumnDescriptor.Builder().setId(startTimeColumnId).setText(START_TIME_COLUMN_NAME).setTooltip("Start time of the segment").setDataType(DataType.TIMESTAMP).build(),
+                new TableColumnDescriptor.Builder().setId(endTimeColumnId).setText(END_TIME_COLUMN_NAME).setTooltip("End time of the segment").setDataType(DataType.TIMESTAMP).build(),
+                new TableColumnDescriptor.Builder().setId(durationColumnId).setText(DURATION_COLUMN_NAME).setTooltip("Segment duration").setDataType(DataType.DURATION).build(),
+                new TableColumnDescriptor.Builder().setId(customColumnId).setText(StubSegmentStoreProvider.STUB_COLUMN_NAME).setTooltip("Stub segment column information").setDataType(DataType.STRING).build(),
+                new TableColumnDescriptor.Builder().setId(nsTimeColumnId).setText(NS_TIME_COLUMN_NAME).setTooltip("Start time of the segment in nano seconds").setDataType(DataType.NUMBER).build());
 
-        TmfModelResponse<@NonNull TmfTreeModel<@NonNull TmfTreeDataModel>> response = fDataProvider.fetchTree(FetchParametersUtils.timeQueryToMap(new TimeQueryFilter(0, 0, 1)), null);
-        TmfTreeModel<@NonNull TmfTreeDataModel> currentColumnModel = response.getModel();
-        assertNotNull(currentColumnModel);
-        List<@NonNull TmfTreeDataModel> currentColumnEntries = Objects.requireNonNull(currentColumnModel).getEntries();
-        assertEquals(expectedColumnEntries, currentColumnEntries);
+        List<@NonNull ITableColumnDescriptor> currentColumns = fDataProvider.fetchColumns(Collections.emptyMap(), null).getModel();
+        assertNotNull(currentColumns);
+        assertEquals(expectedColumns, currentColumns);
     }
 
     /**
@@ -343,17 +337,15 @@ public class SegmentStoreTableDataProviderExperimentTest {
         assertNotNull(durationColumnId);
         assertNotNull(nsTimeColumnId);
 
-        List<@NonNull TmfTreeDataModel> expectedColumnEntries = Arrays.asList(
-                new TmfTreeDataModel(startTimeColumnId, -1, Collections.singletonList(START_TIME_COLUMN_NAME)),
-                new TmfTreeDataModel(endTimeColumnId, -1, Collections.singletonList(END_TIME_COLUMN_NAME)),
-                new TmfTreeDataModel(durationColumnId, -1, Collections.singletonList(DURATION_COLUMN_NAME)),
-                new TmfTreeDataModel(nsTimeColumnId, -1, Collections.singletonList(NS_TIME_COLUMN_NAME)));
+        List<@NonNull ITableColumnDescriptor> expectedColumns = Arrays.asList(
+                new TableColumnDescriptor.Builder().setId(startTimeColumnId).setText(START_TIME_COLUMN_NAME).setTooltip("Start time of the segment").setDataType(DataType.TIMESTAMP).build(),
+                new TableColumnDescriptor.Builder().setId(endTimeColumnId).setText(END_TIME_COLUMN_NAME).setTooltip("End time of the segment").setDataType(DataType.TIMESTAMP).build(),
+                new TableColumnDescriptor.Builder().setId(durationColumnId).setText(DURATION_COLUMN_NAME).setTooltip("Segment duration").setDataType(DataType.DURATION).build(),
+                new TableColumnDescriptor.Builder().setId(nsTimeColumnId).setText(NS_TIME_COLUMN_NAME).setTooltip("Start time of the segment in nano seconds").setDataType(DataType.NUMBER).build());
 
-        TmfModelResponse<@NonNull TmfTreeModel<@NonNull TmfTreeDataModel>> response = fInvalidDataProvider.fetchTree(FetchParametersUtils.timeQueryToMap(new TimeQueryFilter(0, 0, 1)), null);
-        TmfTreeModel<@NonNull TmfTreeDataModel> currentColumnModel = response.getModel();
-        assertNotNull(currentColumnModel);
-        List<@NonNull TmfTreeDataModel> currentColumnEntries = Objects.requireNonNull(currentColumnModel).getEntries();
-        assertEquals(expectedColumnEntries, currentColumnEntries);
+        List<@NonNull ITableColumnDescriptor> currentColumns = fInvalidDataProvider.fetchColumns(Collections.emptyMap(), null).getModel();
+        assertNotNull(currentColumns);
+        assertEquals(expectedColumns, currentColumns);
     }
 
     /**
