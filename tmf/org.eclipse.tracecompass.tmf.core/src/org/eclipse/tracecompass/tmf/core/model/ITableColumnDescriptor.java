@@ -26,7 +26,7 @@ public interface ITableColumnDescriptor {
      * is returned.
      *
      * @return the id of the column, or -1 if unused
-     * @since 10.1
+     * @since 10.2
      */
     default long getId() {
         return -1L;
@@ -60,7 +60,7 @@ public interface ITableColumnDescriptor {
      * Returns {@code true} if the column should be hidden by default
      *
      * @return {@code true} if the column should be hidden by default
-     * @since 10.1
+     * @since 10.2
      */
     default boolean isHiddenByDefault() {
         return false;

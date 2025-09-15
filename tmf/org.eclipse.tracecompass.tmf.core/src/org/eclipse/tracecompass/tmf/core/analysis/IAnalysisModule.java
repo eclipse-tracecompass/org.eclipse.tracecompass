@@ -290,7 +290,7 @@ public interface IAnalysisModule extends ITmfComponent, IAnalysisRequirementProv
      * Gets the error cause in case of failure
      *
      * @return the error cause
-     * @since 10.1
+     * @since 10.2
      */
     default @Nullable Throwable getFailureCause() {
         return null;
