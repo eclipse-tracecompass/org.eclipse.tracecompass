@@ -61,7 +61,7 @@ public class TmfAnalysisException extends Exception {
      *
      * @param cause
      *            The cause
-     * @since 10.1
+     * @since 10.2
      */
     public TmfAnalysisException(String message, Throwable cause) {
         super(message, cause);
