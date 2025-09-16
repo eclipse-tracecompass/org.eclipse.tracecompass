@@ -135,7 +135,7 @@ public class TableColumnDescriptor implements ITableColumnDescriptor {
          * @param id
          *            the header id to set
          * @return this {@link Builder} object
-         * @since 10.1
+         * @since 10.2
          */
         public Builder setId(long id) {
             fId = id;
@@ -185,7 +185,7 @@ public class TableColumnDescriptor implements ITableColumnDescriptor {
          * @param hiddenByDefault
          *            {@code true} if the column should be hidden by default
          * @return this {@link Builder} object
-         * @since 10.1
+         * @since 10.2
          */
         public Builder setHiddenByDefault(boolean hiddenByDefault) {
             fHiddenByDefault = hiddenByDefault;
