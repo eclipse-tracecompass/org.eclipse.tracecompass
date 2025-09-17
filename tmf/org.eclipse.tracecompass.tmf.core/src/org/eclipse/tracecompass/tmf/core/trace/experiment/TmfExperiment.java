@@ -367,6 +367,9 @@ public class TmfExperiment extends TmfTrace implements ITmfPersistentlyIndexable
                 if (!newTransform.equals(currentTransform)) {
                     TmfTraceManager.deleteSupplementaryFiles(trace);
                     trace.setTimestampTransform(newTransform);
+                    if (trace instanceof TmfTrace tmfTrace) {
+                        tmfTrace.resetIndexer();
+                    }
                 }
             });
         }
