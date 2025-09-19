@@ -218,19 +218,13 @@ public class CtfTmfTrace extends TmfTrace
 
         try {
             this.fTrace = new CTFTrace(path);
-            CtfTmfContext ctx;
             /* Set the start and (current) end times for this trace */
-            ctx = (CtfTmfContext) seekEvent(0L);
-            CtfTmfEvent event = getNext(ctx);
-            if ((ctx.getLocation().equals(CtfIterator.NULL_LOCATION)) || (ctx.getCurrentEvent() == null)) {
-                /* Handle the case where the trace is empty */
-                this.setStartTime(TmfTimestamp.BIG_BANG);
-            } else {
-                final ITmfTimestamp curTime = event.getTimestamp();
-                this.setStartTime(curTime);
-                long endTime = Math.max(curTime.getValue(), fTrace.getCurrentEndTime());
-                this.setEndTime(TmfTimestamp.fromNanos(endTime));
+            CtfTmfContext ctx = setStartAndEndTime(false);
+
+            if (ctx == null) {
+                return;
             }
+
             /*
              * Register every event type. When you call getType, it will register a trace to
              * that type in the TmfEventTypeManager
@@ -913,4 +907,37 @@ public class CtfTmfTrace extends TmfTrace
         return null;
     }
 
+    @Override
+    public synchronized void resetIndexer() {
+        super.resetIndexer();
+        setStartAndEndTime(true);
+    }
+
+    private @Nullable CtfTmfContext setStartAndEndTime(boolean reset) {
+        /* Set the start and (current) end times for this trace */
+        CtfTmfContext ctx = (CtfTmfContext) seekEvent(0L);
+
+        /* Verify context is valid. It's only invalid trace if trace.init() hasn't been called) */
+        if ((ctx != null) && (ctx.getLocation() != null)) {
+            if (reset == true) {
+                /* Reset to uninitialized */
+                setStartTime(TmfTimestamp.BIG_BANG);
+                setEndTime(TmfTimestamp.BIG_BANG);
+            }
+
+            CtfTmfEvent event = getNext(ctx);
+            if ((ctx.getLocation().equals(CtfIterator.NULL_LOCATION)) || (ctx.getCurrentEvent() == null)) {
+                /* Handle the case where the trace is empty */
+                this.setStartTime(TmfTimestamp.BIG_BANG);
+            } else {
+                final ITmfTimestamp curTime = event.getTimestamp();
+                this.setStartTime(curTime);
+                long endTime = createTimestamp(fTrace.getCurrentEndTime()).getValue();
+                endTime = Math.max(curTime.getValue(), endTime);
+                this.setEndTime(TmfTimestamp.fromNanos(endTime));
+            }
+            return ctx;
+        }
+        return null;
+    }
 }

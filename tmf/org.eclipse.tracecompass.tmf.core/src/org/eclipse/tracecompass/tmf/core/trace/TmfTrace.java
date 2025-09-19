@@ -222,6 +222,24 @@ public abstract class TmfTrace extends TmfEventProvider implements ITmfTrace, IT
         return new TmfCheckpointIndexer(this, interval);
     }
 
+    /**
+     * Reset indexer. It dispose the old indexer and creates a new one.
+     *
+     * Subclasses might want to reset the start and end time of the trace if
+     * needed.
+     *
+     * Note: Only call this when there is no trace reading is ongoing. Caller
+     * needs to ensure that trace indexing is restarted.
+     *
+     * @since 10.2
+     */
+    public synchronized void resetIndexer() {
+        if (fIndexer != null) {
+            fIndexer.dispose();
+        }
+        fIndexer = createIndexer(fCacheSize);
+    }
+
     // ------------------------------------------------------------------------
     // ITmfTrace - Initializers
     // ------------------------------------------------------------------------
