@@ -45,6 +45,12 @@ public class Messages extends NLS {
     /** Label for the "attribute path" column */
     public static @Nullable String AttributePathColumnLabel;
 
+    /** Data Provider factory title */
+    public static @Nullable  String StateSystemDataProviderFactory_title;
+
+    /** Data Provider factory help text */
+    public static  @Nullable  String StateSystemDataProviderFactory_descriptionText;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, Messages.class);

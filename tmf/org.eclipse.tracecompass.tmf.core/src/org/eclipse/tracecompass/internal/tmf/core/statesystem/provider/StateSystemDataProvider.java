@@ -26,7 +26,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Predicate;
-
+import com.google.common.collect.ImmutableMap;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
@@ -36,8 +36,13 @@ import org.eclipse.tracecompass.statesystem.core.exceptions.StateSystemDisposedE
 import org.eclipse.tracecompass.statesystem.core.exceptions.TimeRangeException;
 import org.eclipse.tracecompass.statesystem.core.interval.ITmfStateInterval;
 import org.eclipse.tracecompass.tmf.core.dataprovider.DataProviderParameterUtils;
+import org.eclipse.tracecompass.tmf.core.dataprovider.X11ColorUtils;
 import org.eclipse.tracecompass.tmf.core.model.AbstractTmfTraceDataProvider;
 import org.eclipse.tracecompass.tmf.core.model.CommonStatusMessage;
+import org.eclipse.tracecompass.tmf.core.model.IOutputStyleProvider;
+import org.eclipse.tracecompass.tmf.core.model.OutputElementStyle;
+import org.eclipse.tracecompass.tmf.core.model.OutputStyleModel;
+import org.eclipse.tracecompass.tmf.core.model.StyleProperties;
 import org.eclipse.tracecompass.tmf.core.model.timegraph.ITimeGraphArrow;
 import org.eclipse.tracecompass.tmf.core.model.timegraph.ITimeGraphDataProvider;
 import org.eclipse.tracecompass.tmf.core.model.timegraph.ITimeGraphRowModel;
@@ -47,7 +52,11 @@ import org.eclipse.tracecompass.tmf.core.model.timegraph.TimeGraphModel;
 import org.eclipse.tracecompass.tmf.core.model.timegraph.TimeGraphRowModel;
 import org.eclipse.tracecompass.tmf.core.model.timegraph.TimeGraphState;
 import org.eclipse.tracecompass.tmf.core.model.tree.TmfTreeModel;
+import org.eclipse.tracecompass.tmf.core.presentation.IPaletteProvider;
+import org.eclipse.tracecompass.tmf.core.presentation.RGBAColor;
+import org.eclipse.tracecompass.tmf.core.presentation.RotatingPaletteProvider;
 import org.eclipse.tracecompass.tmf.core.response.ITmfResponse.Status;
+import org.eclipse.tracecompass.tmf.core.response.ITmfResponse;
 import org.eclipse.tracecompass.tmf.core.response.TmfModelResponse;
 import org.eclipse.tracecompass.tmf.core.signal.TmfStartAnalysisSignal;
 import org.eclipse.tracecompass.tmf.core.statesystem.ITmfAnalysisModuleWithStateSystems;
@@ -70,8 +79,7 @@ import com.google.common.collect.Table;
  * @author Loic Prieur-Drevon
  *
  */
-public class StateSystemDataProvider extends AbstractTmfTraceDataProvider implements ITimeGraphDataProvider<@NonNull TimeGraphEntryModel> {
-
+public class StateSystemDataProvider extends AbstractTmfTraceDataProvider implements ITimeGraphDataProvider<@NonNull TimeGraphEntryModel>, IOutputStyleProvider {
     /**
      * Extension point ID.
      */
@@ -106,6 +114,35 @@ public class StateSystemDataProvider extends AbstractTmfTraceDataProvider implem
      * These are non automatic analysis that the build entry must join on.
      */
     private final Set<ITmfAnalysisModuleWithStateSystems> fStartedAnalysis = Objects.requireNonNull(ConcurrentHashMap.newKeySet());
+
+    /** Number of colors used for State system time events */
+    private static final int NUM_COLORS = 9;
+
+    private static final String UNKNOWN = "Unknown"; //$NON-NLS-1$
+
+    private static final String COLOR_UNKOWN = X11ColorUtils.toHexColor(192, 192, 192);
+
+    private static final @NonNull Map<@NonNull String, @NonNull OutputElementStyle> STYLE_MAP;
+
+    static {
+        ImmutableMap.Builder<@NonNull String, @NonNull OutputElementStyle> builder = new ImmutableMap.Builder<>();
+        IPaletteProvider fPalette = new RotatingPaletteProvider.Builder().setNbColors(NUM_COLORS).build();
+        List<RGBAColor> colors = fPalette.get();
+        for (int i = 0; i < colors.size(); i++) {
+            RGBAColor rgbaColor = colors.get(i);
+            String hexColor = X11ColorUtils.toHexColor(rgbaColor.getRed(), rgbaColor.getGreen(), rgbaColor.getBlue());
+            Map<String, Object> fMap = ImmutableMap.of(
+                    StyleProperties.BACKGROUND_COLOR, hexColor);
+            String key = Integer.toString(i);
+            OutputElementStyle outputStyle = new OutputElementStyle(null, fMap);
+            builder.put(key, outputStyle);
+        }
+
+        Map<String, Object> fMapUNKOWN = ImmutableMap.of(StyleProperties.BACKGROUND_COLOR, COLOR_UNKOWN);
+        OutputElementStyle unknownoutputStyle = new OutputElementStyle(null, fMapUNKOWN);
+        builder.put(UNKNOWN, unknownoutputStyle);
+        STYLE_MAP = builder.build();
+    }
 
     /**
      * Constructor
@@ -184,7 +221,7 @@ public class StateSystemDataProvider extends AbstractTmfTraceDataProvider implem
         return NonNullUtils.nullToEmptyString(valueString);
     }
 
-    private abstract static  class EntryModelBuilder {
+    private abstract static class EntryModelBuilder {
         private final long fId;
         private final long fParentId;
         private final String fName;
@@ -455,11 +492,14 @@ public class StateSystemDataProvider extends AbstractTmfTraceDataProvider implem
                 return new TmfModelResponse<>(null, Status.CANCELLED, CommonStatusMessage.TASK_CANCELLED);
             }
         }
-        List<TimeGraphEntryModel> entryList = buildEntryList(monitor);
 
+        List<TimeGraphEntryModel> entryList = buildEntryList(monitor);
         Status status = fetchTreeIsComplete ? Status.COMPLETED : Status.RUNNING;
         String msg = fetchTreeIsComplete ? CommonStatusMessage.COMPLETED : CommonStatusMessage.RUNNING;
-        return new TmfModelResponse<>(new TmfTreeModel<>(Collections.emptyList(), entryList), status, msg);
+        TmfTreeModel<TimeGraphEntryModel> treeModel = new TmfTreeModel<>(Collections.emptyList(), entryList);
+        treeModel.setAutoExpandLevel(1);
+
+        return new TmfModelResponse<>(treeModel, status, msg);
     }
 
     private boolean addTrace(@Nullable IProgressMonitor monitor) {
@@ -722,6 +762,7 @@ public class StateSystemDataProvider extends AbstractTmfTraceDataProvider implem
                     }
                 }
             }
+
             if (monitor != null && monitor.isCanceled()) {
                 return new TmfModelResponse<>(null, Status.CANCELLED, CommonStatusMessage.TASK_CANCELLED);
             }
@@ -788,17 +829,22 @@ public class StateSystemDataProvider extends AbstractTmfTraceDataProvider implem
         long time = statusInterval.getStartTime();
         long duration = Math.min(statusInterval.getEndTime(), currentEndTime - 1) + 1 - time;
         Object o = statusInterval.getValue();
+        // Set style for States w/ or w/o labels
+        OutputElementStyle style = (o != null)
+              ? new OutputElementStyle(Integer.toString(Math.floorMod(String.valueOf(o).hashCode(), NUM_COLORS)))
+              : new OutputElementStyle(UNKNOWN);
+
         if (o instanceof Integer) {
-            return new TimeGraphState(time, duration, ((Integer) o).intValue(), String.valueOf(o));
+            return new TimeGraphState(time, duration, ((Integer) o).intValue(), String.valueOf(o), style);
         } else if (o instanceof Long) {
             long l = (long) o;
-            return new TimeGraphState(time, duration, (int) l, "0x" + Long.toHexString(l)); //$NON-NLS-1$
+            return new TimeGraphState(time, duration, (int) l, "0x" + Long.toHexString(l), style); //$NON-NLS-1$
         } else if (o instanceof String) {
-            return new TimeGraphState(time, duration, Integer.MIN_VALUE, (String) o);
+            return new TimeGraphState(time, duration, Integer.MIN_VALUE, (String) o, style);
         } else if (o instanceof Double) {
-            return new TimeGraphState(time, duration, ((Double) o).intValue());
+            return new TimeGraphState(time, duration, ((Double) o).intValue(), null, style);
         }
-        return new TimeGraphState(time, duration, Integer.MIN_VALUE);
+        return new TimeGraphState(time, duration, Integer.MIN_VALUE, null, style);
     }
 
     /**
@@ -813,6 +859,11 @@ public class StateSystemDataProvider extends AbstractTmfTraceDataProvider implem
         synchronized (fStartedAnalysis) {
             fStartedAnalysis.add(module);
         }
+    }
+
+    @Override
+    public TmfModelResponse<OutputStyleModel> fetchStyle(Map<String, Object> fetchParameters, @Nullable IProgressMonitor monitor) {
+        return new TmfModelResponse<>(new OutputStyleModel(STYLE_MAP), ITmfResponse.Status.COMPLETED, CommonStatusMessage.COMPLETED);
     }
 
 }
