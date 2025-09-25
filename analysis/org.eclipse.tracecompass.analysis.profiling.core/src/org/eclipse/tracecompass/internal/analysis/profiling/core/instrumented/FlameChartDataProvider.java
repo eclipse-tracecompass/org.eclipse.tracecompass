@@ -345,6 +345,10 @@ public class FlameChartDataProvider extends AbstractTmfTraceDataProvider impleme
             boolean complete = fcProvider.isComplete();
             CallStackSeries callstack = fcProvider.getCallStackSeries();
             if (callstack == null) {
+                // Explicitly tell the client that the analysis is completed to prevent further polling
+                if (complete) {
+                    return new TmfModelResponse<>(new TmfTreeModel<>(Collections.emptyList(), Collections.emptyList()), ITmfResponse.Status.COMPLETED, CommonStatusMessage.COMPLETED);
+                }
                 return new TmfModelResponse<>(new TmfTreeModel<>(Collections.emptyList(), Collections.emptyList()), ITmfResponse.Status.RUNNING, CommonStatusMessage.RUNNING);
             }
             long start = getTrace().getStartTime().getValue();
