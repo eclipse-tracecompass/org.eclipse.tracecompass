@@ -617,6 +617,9 @@ public final class KernelThreadInformationProvider {
         Map<Integer, String> quarkToThreadIds = new HashMap<>();
         for (Integer threadId : threadIds) {
             int threadQuark = ss.optQuarkAbsolute(Attributes.THREADS, threadId.toString());
+            if (threadQuark == ITmfStateSystem.INVALID_ATTRIBUTE) {
+                continue;
+            }
             quarkToThreadIds.put(threadQuark, threadId.toString());
             int syscallQuark = ss.optQuarkRelative(threadQuark, Attributes.SYSTEM_CALL);
             if (syscallQuark != ITmfStateSystem.INVALID_ATTRIBUTE) {
