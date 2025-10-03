@@ -56,6 +56,6 @@ public class EventDensityViewer extends TmfFilteredXYChartViewer {
 
     @Override
     public @NonNull OutputElementStyle getSeriesStyle(@NonNull Long seriesId) {
-        return getPresentationProvider().getSeriesStyle(seriesId, StyleProperties.SeriesType.BAR, DEFAULT_SERIES_WIDTH);
+        return getPresentationProvider().getSeriesStyle(seriesId, StyleProperties.SeriesType.AREA, DEFAULT_SERIES_WIDTH);
     }
 }
