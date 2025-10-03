@@ -64,6 +64,7 @@ public class DataProviderManagerTest {
     private static TmfExperiment fExperiment;
     private static final Set<IDataProviderDescriptor> EXPECTED_KERNEL_DP_DESCRIPTORS = new HashSet<>();
     private static final Set<IDataProviderDescriptor> EXPECTED_UST_DP_DESCRIPTORS = new HashSet<>();
+    private static final Set<IDataProviderDescriptor> EXPECTED_EXPERIMENT_SET = new HashSet<>();
     private static final String SEGMENTSTORE_SCATTER_FUTEX_DP_ID = "org.eclipse.tracecompass.internal.analysis.timing.core.segmentstore.scatter.dataprovider:lttng.analysis.futex";
 
     private static final String PATH = "/tmp/my-test.xml";
@@ -109,28 +110,10 @@ public class DataProviderManagerTest {
                 .setId("org.eclipse.tracecompass.analysis.timing.core.segmentstore.SegmentStoreTableDataProvider:lttng.analysis.futex");
         EXPECTED_KERNEL_DP_DESCRIPTORS.add(builder.build());
         builder = new DataProviderDescriptor.Builder();
-        builder.setName("Futex Contention Analysis - Function Density")
-                .setDescription("Show function density provided by Analysis module: Futex Contention Analysis")
-                .setProviderType(ProviderType.TREE_TIME_XY)
-                .setId("org.eclipse.tracecompass.internal.analysis.timing.core.segmentstore.SegmentStoreDensityDataProvider:lttng.analysis.futex");
-        EXPECTED_KERNEL_DP_DESCRIPTORS.add(builder.build());
-        builder = new DataProviderDescriptor.Builder();
         builder.setName("Futex Contention Analysis - Latency vs Time")
                 .setDescription("Show latencies provided by Analysis module: Futex Contention Analysis")
                 .setProviderType(ProviderType.TREE_TIME_XY)
                 .setId(SEGMENTSTORE_SCATTER_FUTEX_DP_ID);
-        EXPECTED_KERNEL_DP_DESCRIPTORS.add(builder.build());
-        builder = new DataProviderDescriptor.Builder();
-        builder.setName("Futex Contention Analysis - Priority/Thread name Statistics Table")
-                .setDescription("Show Priority/Thread name Statistics Table provided by Analysis module: Futex Contention Analysis")
-                .setProviderType(ProviderType.DATA_TREE)
-                .setId("org.eclipse.tracecompass.internal.analysis.os.linux.core.segmentstore.PriorityThreadNameStatisticsDataProvider:lttng.analysis.futex");
-        EXPECTED_KERNEL_DP_DESCRIPTORS.add(builder.build());
-        builder = new DataProviderDescriptor.Builder();
-        builder.setName("Futex Contention Analysis - Priority Statistics Table")
-                .setDescription("Show Priority Statistics Table provided by Analysis module: Futex Contention Analysis")
-                .setProviderType(ProviderType.DATA_TREE)
-                .setId("org.eclipse.tracecompass.internal.analysis.os.linux.core.segmentstore.PriorityStatisticsDataProvider:lttng.analysis.futex");
         EXPECTED_KERNEL_DP_DESCRIPTORS.add(builder.build());
         builder = new DataProviderDescriptor.Builder();
         builder.setName("Histogram")
@@ -151,28 +134,10 @@ public class DataProviderManagerTest {
                 .setId("org.eclipse.tracecompass.analysis.timing.core.segmentstore.SegmentStoreTableDataProvider:lttng.analysis.irq");
         EXPECTED_KERNEL_DP_DESCRIPTORS.add(builder.build());
         builder = new DataProviderDescriptor.Builder();
-        builder.setName("IRQ Analysis - Function Density")
-                .setDescription("Show function density provided by Analysis module: IRQ Analysis")
-                .setProviderType(ProviderType.TREE_TIME_XY)
-                .setId("org.eclipse.tracecompass.internal.analysis.timing.core.segmentstore.SegmentStoreDensityDataProvider:lttng.analysis.irq");
-        EXPECTED_KERNEL_DP_DESCRIPTORS.add(builder.build());
-        builder = new DataProviderDescriptor.Builder();
         builder.setName("IRQ Analysis - Latency vs Time")
                 .setDescription("Show latencies provided by Analysis module: IRQ Analysis")
                 .setProviderType(ProviderType.TREE_TIME_XY)
                 .setId("org.eclipse.tracecompass.internal.analysis.timing.core.segmentstore.scatter.dataprovider:lttng.analysis.irq");
-        EXPECTED_KERNEL_DP_DESCRIPTORS.add(builder.build());
-        builder = new DataProviderDescriptor.Builder();
-        builder.setName("IRQ Analysis - Priority/Thread name Statistics Table")
-                .setDescription("Show Priority/Thread name Statistics Table provided by Analysis module: IRQ Analysis")
-                .setProviderType(ProviderType.DATA_TREE)
-                .setId("org.eclipse.tracecompass.internal.analysis.os.linux.core.segmentstore.PriorityThreadNameStatisticsDataProvider:lttng.analysis.irq");
-        EXPECTED_KERNEL_DP_DESCRIPTORS.add(builder.build());
-        builder = new DataProviderDescriptor.Builder();
-        builder.setName("IRQ Analysis - Priority Statistics Table")
-                .setDescription("Show Priority Statistics Table provided by Analysis module: IRQ Analysis")
-                .setProviderType(ProviderType.DATA_TREE)
-                .setId("org.eclipse.tracecompass.internal.analysis.os.linux.core.segmentstore.PriorityStatisticsDataProvider:lttng.analysis.irq");
         EXPECTED_KERNEL_DP_DESCRIPTORS.add(builder.build());
         builder = new DataProviderDescriptor.Builder();
         builder.setName("Memory Usage")
@@ -199,28 +164,10 @@ public class DataProviderManagerTest {
                 .setId("org.eclipse.tracecompass.analysis.timing.core.segmentstore.SegmentStoreTableDataProvider:org.eclipse.tracecompass.analysis.os.linux.latency.syscall");
         EXPECTED_KERNEL_DP_DESCRIPTORS.add(builder.build());
         builder = new DataProviderDescriptor.Builder();
-        builder.setName("System Call Latency - Function Density")
-                .setDescription("Show function density provided by Analysis module: System Call Latency")
-                .setProviderType(ProviderType.TREE_TIME_XY)
-                .setId("org.eclipse.tracecompass.internal.analysis.timing.core.segmentstore.SegmentStoreDensityDataProvider:org.eclipse.tracecompass.analysis.os.linux.latency.syscall");
-        EXPECTED_KERNEL_DP_DESCRIPTORS.add(builder.build());
-        builder = new DataProviderDescriptor.Builder();
         builder.setName("System Call Latency - Latency vs Time")
                 .setDescription("Show latencies provided by Analysis module: System Call Latency")
                 .setProviderType(ProviderType.TREE_TIME_XY)
                 .setId("org.eclipse.tracecompass.internal.analysis.timing.core.segmentstore.scatter.dataprovider:org.eclipse.tracecompass.analysis.os.linux.latency.syscall");
-        EXPECTED_KERNEL_DP_DESCRIPTORS.add(builder.build());
-        builder = new DataProviderDescriptor.Builder();
-        builder.setName("System Call Latency - Priority/Thread name Statistics Table")
-                .setDescription("Show Priority/Thread name Statistics Table provided by Analysis module: System Call Latency")
-                .setProviderType(ProviderType.DATA_TREE)
-                .setId("org.eclipse.tracecompass.internal.analysis.os.linux.core.segmentstore.PriorityThreadNameStatisticsDataProvider:org.eclipse.tracecompass.analysis.os.linux.latency.syscall");
-        EXPECTED_KERNEL_DP_DESCRIPTORS.add(builder.build());
-        builder = new DataProviderDescriptor.Builder();
-        builder.setName("System Call Latency - Priority Statistics Table")
-                .setDescription("Show Priority Statistics Table provided by Analysis module: System Call Latency")
-                .setProviderType(ProviderType.DATA_TREE)
-                .setId("org.eclipse.tracecompass.internal.analysis.os.linux.core.segmentstore.PriorityStatisticsDataProvider:org.eclipse.tracecompass.analysis.os.linux.latency.syscall");
         EXPECTED_KERNEL_DP_DESCRIPTORS.add(builder.build());
         builder = new DataProviderDescriptor.Builder();
         builder.setName("Thread Status")
@@ -257,6 +204,12 @@ public class DataProviderManagerTest {
                 .setDescription("Show Priority Statistics Table provided by Analysis module: Scheduler Wakeup to Scheduler Switch Latency")
                 .setProviderType(ProviderType.DATA_TREE)
                 .setId("org.eclipse.tracecompass.internal.analysis.os.linux.core.segmentstore.PriorityStatisticsDataProvider:org.eclipse.tracecompass.analysis.os.linux.core.swslatency.sws");
+        EXPECTED_KERNEL_DP_DESCRIPTORS.add(builder.build());
+        builder = new DataProviderDescriptor.Builder();
+        builder.setName("State System Explorer")
+                .setDescription("Displays the states of state system attributes over time")
+                .setProviderType(ProviderType.TIME_GRAPH)
+                .setId("org.eclipse.tracecompass.internal.tmf.core.statesystem.provider.StateSystemDataProvider");
         EXPECTED_KERNEL_DP_DESCRIPTORS.add(builder.build());
 
         // UST Trace
@@ -302,29 +255,10 @@ public class DataProviderManagerTest {
                 .setProviderType(ProviderType.TABLE)
                 .setId("org.eclipse.tracecompass.analysis.timing.core.segmentstore.SegmentStoreTableDataProvider:org.eclipse.linuxtools.lttng2.ust.analysis.callstack");
         EXPECTED_UST_DP_DESCRIPTORS.add(builder.build());
-        builder = new DataProviderDescriptor.Builder();
-        builder.setName("LTTng-UST CallStack - Function Density")
-                .setDescription("Show function density provided by Analysis module: LTTng-UST CallStack")
-                .setProviderType(ProviderType.TREE_TIME_XY)
-                .setId("org.eclipse.tracecompass.internal.analysis.timing.core.segmentstore.SegmentStoreDensityDataProvider:org.eclipse.linuxtools.lttng2.ust.analysis.callstack");
-        EXPECTED_UST_DP_DESCRIPTORS.add(builder.build());
-        builder = new DataProviderDescriptor.Builder();
         builder.setName("LTTng-UST CallStack - Latency vs Time")
                 .setDescription("Show latencies provided by Analysis module: LTTng-UST CallStack")
                 .setProviderType(ProviderType.TREE_TIME_XY)
                 .setId("org.eclipse.tracecompass.internal.analysis.timing.core.segmentstore.scatter.dataprovider:org.eclipse.linuxtools.lttng2.ust.analysis.callstack");
-        EXPECTED_UST_DP_DESCRIPTORS.add(builder.build());
-        builder = new DataProviderDescriptor.Builder();
-        builder.setName("LTTng-UST CallStack - Priority/Thread name Statistics Table")
-                .setDescription("Show Priority/Thread name Statistics Table provided by Analysis module: LTTng-UST CallStack")
-                .setProviderType(ProviderType.DATA_TREE)
-                .setId("org.eclipse.tracecompass.internal.analysis.os.linux.core.segmentstore.PriorityThreadNameStatisticsDataProvider:org.eclipse.linuxtools.lttng2.ust.analysis.callstack");
-        EXPECTED_UST_DP_DESCRIPTORS.add(builder.build());
-        builder = new DataProviderDescriptor.Builder();
-        builder.setName("LTTng-UST CallStack - Priority Statistics Table")
-                .setDescription("Show Priority Statistics Table provided by Analysis module: LTTng-UST CallStack")
-                .setProviderType(ProviderType.DATA_TREE)
-                .setId("org.eclipse.tracecompass.internal.analysis.os.linux.core.segmentstore.PriorityStatisticsDataProvider:org.eclipse.linuxtools.lttng2.ust.analysis.callstack");
         EXPECTED_UST_DP_DESCRIPTORS.add(builder.build());
         builder = new DataProviderDescriptor.Builder();
         builder.setName("LTTng-UST CallStack (new) - Flame Chart")
@@ -352,6 +286,35 @@ public class DataProviderManagerTest {
                 .setProviderType(ProviderType.GANTT_CHART)
                 .setId("org.eclipse.tracecompass.analysis.profiling.core.flamegraph:org.eclipse.tracecompass.lttng2.ust.core.analysis.callstack");
         EXPECTED_UST_DP_DESCRIPTORS.add(builder.build());
+        builder = new DataProviderDescriptor.Builder();
+        builder.setName("State System Explorer")
+                .setDescription("Displays the states of state system attributes over time")
+                .setProviderType(ProviderType.TIME_GRAPH)
+                .setId("org.eclipse.tracecompass.internal.tmf.core.statesystem.provider.StateSystemDataProvider");
+        EXPECTED_UST_DP_DESCRIPTORS.add(builder.build());
+
+        EXPECTED_EXPERIMENT_SET.addAll(EXPECTED_UST_DP_DESCRIPTORS);
+        EXPECTED_EXPERIMENT_SET.addAll(EXPECTED_KERNEL_DP_DESCRIPTORS);
+        // Additional Experiment Traces
+        builder = new DataProviderDescriptor.Builder();
+        builder.setName("Event Matching Latency - Latency vs Time")
+                .setDescription("Show latencies provided by Analysis module: Event Matching Latency")
+                .setProviderType(ProviderType.TREE_TIME_XY)
+                .setId("org.eclipse.tracecompass.internal.analysis.timing.core.segmentstore.scatter.dataprovider:org.eclipse.tracecompass.internal.analysis.timing.core.event.matching");
+        EXPECTED_EXPERIMENT_SET.add(builder.build());
+        builder = new DataProviderDescriptor.Builder();
+        builder.setName("Event Matching Latency - Latency Table")
+                .setDescription("Show latency table provided by Analysis module: Event Matching Latency")
+                .setProviderType(ProviderType.TABLE)
+                .setId("org.eclipse.tracecompass.analysis.timing.core.segmentstore.SegmentStoreTableDataProvider:org.eclipse.tracecompass.internal.analysis.timing.core.event.matching");
+        EXPECTED_EXPERIMENT_SET.add(builder.build());
+        builder = new DataProviderDescriptor.Builder();
+        builder.setName("Event Matching Latency - Latency Statistics")
+                .setDescription("Show latency statistics provided by Analysis module: Event Matching Latency")
+                .setProviderType(ProviderType.DATA_TREE)
+                .setId("org.eclipse.tracecompass.analysis.timing.core.segmentstore.SegmentStoreStatisticsDataProvider:org.eclipse.tracecompass.internal.analysis.timing.core.event.matching");
+        EXPECTED_EXPERIMENT_SET.add(builder.build());
+
     }
 
     /**
@@ -403,19 +366,16 @@ public class DataProviderManagerTest {
     @Test
     public void test() {
         List<IDataProviderDescriptor> kernelDescriptors = DataProviderManager.getInstance().getAvailableProviders(fKernelTrace);
+        Set<IDataProviderDescriptor> kernelDescriptorSet = new HashSet<>(kernelDescriptors);
         List<IDataProviderDescriptor> ustDescriptors = DataProviderManager.getInstance().getAvailableProviders(fUstTrace);
+        Set<IDataProviderDescriptor> ustDescriptorsSet = new HashSet<>(ustDescriptors);
         List<IDataProviderDescriptor> expDescriptors = DataProviderManager.getInstance().getAvailableProviders(fExperiment);
+        Set<IDataProviderDescriptor> expDescriptorsSet = new HashSet<>(expDescriptors);
 
-        // Verify kernel data provider descriptors
-        for (IDataProviderDescriptor descriptor : kernelDescriptors) {
-            assertTrue(expDescriptors.contains(descriptor));
-            assertTrue(descriptor.getName(), EXPECTED_KERNEL_DP_DESCRIPTORS.contains(descriptor));
-        }
-        // Verify UST data provider descriptors
-        for (IDataProviderDescriptor descriptor : ustDescriptors) {
-            assertTrue(expDescriptors.contains(descriptor));
-            assertTrue(descriptor.getName(), EXPECTED_UST_DP_DESCRIPTORS.contains(descriptor));
-        }
+        assertTrue(kernelDescriptorSet.equals(EXPECTED_KERNEL_DP_DESCRIPTORS));
+        assertTrue(ustDescriptorsSet.equals(EXPECTED_UST_DP_DESCRIPTORS));
+        assertTrue(expDescriptorsSet.equals(EXPECTED_EXPERIMENT_SET));
+
     }
 
     /**
@@ -470,24 +430,24 @@ public class DataProviderManagerTest {
     /**
      * Test different factory get methods
      */
-   @Test
-   public void testFactoryMethods() {
-       ITmfTrace trace = fKernelTrace;
-       assertNotNull(trace);
-       Collection<IDataProviderFactory> factories = DataProviderManager.getInstance().getFactories();
-       assertNotNull(factories);
-       for (IDataProviderFactory factory : factories) {
-           Collection<IDataProviderDescriptor> descs = factory.getDescriptors(trace);
-           for (IDataProviderDescriptor descriptor : descs) {
-               assertTrue(descriptor.getName(), EXPECTED_KERNEL_DP_DESCRIPTORS.contains(descriptor));
-           }
-       }
-       IDataProviderFactory factory =  DataProviderManager.getInstance().getFactory(SEGMENTSTORE_SCATTER_FUTEX_DP_ID);
-       assertNotNull(factory);
-       Collection<IDataProviderDescriptor> descs = factory.getDescriptors(trace);
-       long count = descs.stream().filter(desc -> desc.getId().equals(SEGMENTSTORE_SCATTER_FUTEX_DP_ID)).count();
-       assertEquals(1, count);
-   }
+    @Test
+    public void testFactoryMethods() {
+        ITmfTrace trace = fKernelTrace;
+        assertNotNull(trace);
+        Collection<IDataProviderFactory> factories = DataProviderManager.getInstance().getFactories();
+        assertNotNull(factories);
+        for (IDataProviderFactory factory : factories) {
+            Collection<IDataProviderDescriptor> descs = factory.getDescriptors(trace);
+            for (IDataProviderDescriptor descriptor : descs) {
+                assertTrue(descriptor.getName(), EXPECTED_KERNEL_DP_DESCRIPTORS.contains(descriptor));
+            }
+        }
+        IDataProviderFactory factory = DataProviderManager.getInstance().getFactory(SEGMENTSTORE_SCATTER_FUTEX_DP_ID);
+        assertNotNull(factory);
+        Collection<IDataProviderDescriptor> descs = factory.getDescriptors(trace);
+        long count = descs.stream().filter(desc -> desc.getId().equals(SEGMENTSTORE_SCATTER_FUTEX_DP_ID)).count();
+        assertEquals(1, count);
+    }
 
     /**
      * Test different factory add/remove methods
@@ -515,34 +475,34 @@ public class DataProviderManagerTest {
     /**
      * Test different data provider add/remove methods
      */
-     @SuppressWarnings("unchecked")
-     @Test
-     public void testRemoveDataProviderMethods() {
-         String myId = "my-id";
-         IDataProviderFactory testFactory = createCustomFactory(myId);
-         ITmfTrace trace = fKernelTrace;
-         assertNotNull(trace);
-         DataProviderManager.getInstance().addDataProviderFactory(myId, testFactory);
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testRemoveDataProviderMethods() {
+        String myId = "my-id";
+        IDataProviderFactory testFactory = createCustomFactory(myId);
+        ITmfTrace trace = fKernelTrace;
+        assertNotNull(trace);
+        DataProviderManager.getInstance().addDataProviderFactory(myId, testFactory);
 
-         ITimeGraphDataProvider<?> dp = DataProviderManager.getInstance().getOrCreateDataProvider(trace, myId, ITimeGraphDataProvider.class);
-         assertNotNull(dp);
+        ITimeGraphDataProvider<?> dp = DataProviderManager.getInstance().getOrCreateDataProvider(trace, myId, ITimeGraphDataProvider.class);
+        assertNotNull(dp);
 
-         List<IDataProviderDescriptor> configDescriptors = DataProviderManager.getInstance().getAvailableProviders(trace, sfCconfig);
-         assertEquals(1, configDescriptors.size());
-         assertEquals(myId, configDescriptors.get(0).getId());
+        List<IDataProviderDescriptor> configDescriptors = DataProviderManager.getInstance().getAvailableProviders(trace, sfCconfig);
+        assertEquals(1, configDescriptors.size());
+        assertEquals(myId, configDescriptors.get(0).getId());
 
-         // test remove by ID
-         DataProviderManager.getInstance().removeDataProvider(trace, myId);
-         assertNull(DataProviderManager.getInstance().getExistingDataProvider(trace, myId, ITimeGraphDataProvider.class));
+        // test remove by ID
+        DataProviderManager.getInstance().removeDataProvider(trace, myId);
+        assertNull(DataProviderManager.getInstance().getExistingDataProvider(trace, myId, ITimeGraphDataProvider.class));
 
-         // test remove by dp instance
-         dp = DataProviderManager.getInstance().getOrCreateDataProvider(trace, myId, ITimeGraphDataProvider.class);
-         assertNotNull(dp);
+        // test remove by dp instance
+        dp = DataProviderManager.getInstance().getOrCreateDataProvider(trace, myId, ITimeGraphDataProvider.class);
+        assertNotNull(dp);
 
-         assertTrue(DataProviderManager.getInstance().removeDataProvider(trace, dp));
-         assertNull(DataProviderManager.getInstance().getExistingDataProvider(trace, myId, ITimeGraphDataProvider.class));
-         DataProviderManager.getInstance().removeDataProviderFactory(myId);
-     }
+        assertTrue(DataProviderManager.getInstance().removeDataProvider(trace, dp));
+        assertNull(DataProviderManager.getInstance().getExistingDataProvider(trace, myId, ITimeGraphDataProvider.class));
+        DataProviderManager.getInstance().removeDataProviderFactory(myId);
+    }
 
     private static IDataProviderFactory createCustomFactory(@NonNull String myId) {
         return new IDataProviderFactory() {
