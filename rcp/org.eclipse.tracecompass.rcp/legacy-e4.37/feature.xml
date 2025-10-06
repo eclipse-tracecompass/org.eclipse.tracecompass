@@ -190,6 +190,10 @@
          version="0.0.0"/>
 
    <plugin
+         id="org.apache.commons.lang"
+         version="0.0.0"/>
+
+   <plugin
          id="org.apache.commons.lang3"
          version="0.0.0"/>
 
@@ -278,7 +282,7 @@
          version="0.0.0"/>
 
    <plugin
-         id="org.mortbay.jasper.mortbay-apache-jsp"
+         id="org.mortbay.jasper.apache-jsp"
          version="0.0.0"/>
 
    <plugin
