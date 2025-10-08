@@ -511,4 +511,95 @@ public class TransientState {
         }
         writer.println('\n');
     }
+    /**
+     * Process a state change to be inserted in the history.
+     *
+     * @param eventTime
+     *            The timestamp associated with this state change
+     * @param value
+     *            The new StateValue associated to this attribute
+     * @param quark
+     *            The transient state quark of the attribute that is being modified
+     * @param callStackQuark
+     *            The callstack quark of the attribute that is being modified
+     * @throws TimeRangeException
+     *             If 'eventTime' is invalid
+     * @throws IndexOutOfBoundsException
+     *             If the quark is out of range
+     * @throws StateValueTypeException
+     *             If the state value to be inserted is of a different type of
+     *             what was inserted so far for this attribute.
+     */
+    public void processSpanStateChange(long eventTime, @Nullable Object value, int quark, int callStackQuark)
+            throws TimeRangeException, StateValueTypeException {
+        if (!this.fIsActive) {
+            return;
+        }
+
+        fRWLock.writeLock().lock();
+        try {
+            if (value!=null) {
+                addEmptyEntry();
+            }
+            Class<?> expectedSvType = fStateValueTypes.get(quark);
+
+            /*
+             * Make sure the state value type we're inserting is the same as the
+             * one registered for this attribute.
+             */
+            if (expectedSvType == null) {
+                /*
+                 * The value hasn't been used yet, set it to the value we're
+                 * currently inserting (which might be null/-1 again).
+                 */
+                fStateValueTypes.set(quark, value != null ? value.getClass() : null);
+            } else if ((value != null) && (value.getClass() != expectedSvType)) {
+                /*
+                 * We authorize inserting null values in any type of attribute,
+                 * but for every other types, it needs to match our
+                 * expectations!
+                 */
+                throw new StateValueTypeException(fBackend.getSSID() + " Quark:" + quark + ", Type:" + value.getClass() + ", Expected:" + expectedSvType); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            }
+
+            if (Objects.equals(fOngoingStateInfo.get(quark), value) && !fBackend.canInsertBackwards()) {
+                /*
+                 * This is the case where the new value and the one already
+                 * present in the Builder are the same. We do not need to create
+                 * an interval, we'll just keep the current one going.
+                 */
+                return;
+            }
+
+            if (fOngoingStateStartTimes.get(quark) < eventTime) {
+                /*
+                 * These two conditions are necessary to create an interval and
+                 * update ongoingStateInfo.
+                 */
+                fBackend.insertPastState(fOngoingStateStartTimes.get(quark),
+                        eventTime - 1, /* End Time */
+                        callStackQuark, /* attribute quark */
+                        fOngoingStateInfo.get(quark)); /* StateValue */
+
+                fOngoingStateStartTimes.set(quark, eventTime);
+                fOngoingStateInfo.set(quark, value);
+            } else if (fOngoingStateStartTimes.get(quark) == eventTime || !fBackend.canInsertBackwards()) {
+                fOngoingStateInfo.set(quark, value);
+            } else {
+                fBackend.insertPastState(fOngoingStateStartTimes.get(quark),
+                        eventTime - 1, /* End Time */
+                        callStackQuark, /* attribute quark */
+                        value); /* StateValue */
+                fOngoingStateStartTimes.set(quark, eventTime);
+            }
+
+            /* Update the Transient State's lastestTime, if needed */
+            if (fLatestTime < eventTime) {
+                fLatestTime = eventTime;
+            }
+
+        } finally {
+            fRWLock.writeLock().unlock();
+        }
+    }
 }

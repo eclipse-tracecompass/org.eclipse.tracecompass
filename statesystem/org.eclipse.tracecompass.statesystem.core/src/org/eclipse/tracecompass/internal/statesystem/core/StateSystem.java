@@ -680,4 +680,19 @@ public class StateSystem implements ITmfStateSystemBuilder {
                 attribute + " at time " + timestamp + //$NON-NLS-1$
                 ", returning dummy interval"); //$NON-NLS-1$
     }
+
+    /**
+     * @param t
+     * @param value
+     * @param attributeQuark
+     * @param spanQuark
+     * @throws TimeRangeException
+     * @throws StateValueTypeException
+     */
+    @Override
+    public void modifySpanAttribute(long t, Object value, int attributeQuark, int spanQuark)
+            throws TimeRangeException, StateValueTypeException {
+        transState.processSpanStateChange(t, value, attributeQuark,spanQuark);
+    }
+
 }
