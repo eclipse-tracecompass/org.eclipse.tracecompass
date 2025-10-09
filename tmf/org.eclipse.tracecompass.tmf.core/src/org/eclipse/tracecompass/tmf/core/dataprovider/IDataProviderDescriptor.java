@@ -78,7 +78,12 @@ public interface IDataProviderDescriptor {
          * A provider for generic xy charts with a time-less x-axis
          * @since 10.1
          */
-        TREE_GENERIC_XY
+        TREE_GENERIC_XY,
+        /**
+         * A provider of generic data objects
+         * @since 10.2
+         */
+        DATA
     }
 
     /**
