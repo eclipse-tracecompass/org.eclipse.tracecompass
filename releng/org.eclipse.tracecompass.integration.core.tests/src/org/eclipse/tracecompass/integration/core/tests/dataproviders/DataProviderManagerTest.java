@@ -211,6 +211,12 @@ public class DataProviderManagerTest {
                 .setProviderType(ProviderType.TIME_GRAPH)
                 .setId("org.eclipse.tracecompass.internal.tmf.core.statesystem.provider.StateSystemDataProvider");
         EXPECTED_KERNEL_DP_DESCRIPTORS.add(builder.build());
+        builder = new DataProviderDescriptor.Builder();
+        builder.setName("Raw Events Data")
+                .setDescription("Show the raw event data in object form for a given trace")
+                .setProviderType(ProviderType.DATA)
+                .setId("org.eclipse.tracecompass.tmf.core.model.events.data");
+        EXPECTED_KERNEL_DP_DESCRIPTORS.add(builder.build());
 
         // UST Trace
         builder = new DataProviderDescriptor.Builder();
@@ -291,6 +297,12 @@ public class DataProviderManagerTest {
                 .setDescription("Displays the states of state system attributes over time")
                 .setProviderType(ProviderType.TIME_GRAPH)
                 .setId("org.eclipse.tracecompass.internal.tmf.core.statesystem.provider.StateSystemDataProvider");
+        EXPECTED_UST_DP_DESCRIPTORS.add(builder.build());
+        builder = new DataProviderDescriptor.Builder();
+        builder.setName("Raw Events Data")
+                .setDescription("Show the raw event data in object form for a given trace")
+                .setProviderType(ProviderType.DATA)
+                .setId("org.eclipse.tracecompass.tmf.core.model.events.data");
         EXPECTED_UST_DP_DESCRIPTORS.add(builder.build());
 
         EXPECTED_EXPERIMENT_SET.addAll(EXPECTED_UST_DP_DESCRIPTORS);
