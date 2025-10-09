@@ -29,6 +29,7 @@ public class DataProviderCapabilities implements IDataProviderCapabilities {
 
     private final boolean canCreate;
     private final boolean canDelete;
+    private final boolean selectionRange;
 
     /**
      * Constructor
@@ -39,6 +40,7 @@ public class DataProviderCapabilities implements IDataProviderCapabilities {
     public DataProviderCapabilities(Builder builder) {
         canCreate = builder.canCreate;
         canDelete = builder.canDelete;
+        selectionRange = builder.selectionRange;
     }
 
     @Override
@@ -49,6 +51,11 @@ public class DataProviderCapabilities implements IDataProviderCapabilities {
     @Override
     public boolean canDelete() {
         return canDelete;
+    }
+
+    @Override
+    public boolean selectionRange() {
+        return selectionRange;
     }
 
     @Override
@@ -84,6 +91,7 @@ public class DataProviderCapabilities implements IDataProviderCapabilities {
     public static class Builder {
         private boolean canCreate = false;
         private boolean canDelete = false;
+        private boolean selectionRange = false;
 
         /**
          * Sets canCreate flag
@@ -108,6 +116,20 @@ public class DataProviderCapabilities implements IDataProviderCapabilities {
          */
         public Builder setCanDelete(boolean canDelete) {
             this.canDelete = canDelete;
+            return this;
+        }
+
+        /**
+         * Sets selectionRange flag
+         *
+         * @param selectionRange
+         *            {@code true} if this data provider uses the selection
+         *            range, else {@code false}
+         * @return the builder instance.
+         * @since 10.2
+         */
+        public Builder setSelectionRange(boolean selectionRange) {
+            this.selectionRange = selectionRange;
             return this;
         }
 
