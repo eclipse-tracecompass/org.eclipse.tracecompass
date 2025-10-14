@@ -102,7 +102,7 @@ public class StateSystemDataProvider extends AbstractTmfTraceDataProvider implem
     private final Map<Long, ITmfStateSystem> fIdToSs = new HashMap<>();
     private final Map<Long, ModuleEntryModel> fIdToModuleEntryModel = new HashMap<>();
 
-    private final Map<ITmfAnalysisModuleWithStateSystems, Boolean> fModulesToStatus = new HashMap<>();
+    private final Map<ITmfAnalysisModuleWithStateSystems, Boolean> fModulesToStatus = new ConcurrentHashMap<>();
 
     /*
      * Entry Builder is a table to stash the entries so it won't duplicate the
@@ -148,16 +148,16 @@ public class StateSystemDataProvider extends AbstractTmfTraceDataProvider implem
     }
 
     private static final Comparator<ITimeGraphEntryModel> NAME_COMPARATOR = (a, b) -> {
-            if (a instanceof TraceEntryModel && b instanceof TraceEntryModel) {
-                ITmfTrace ta = ((TraceEntryModel) a).getTrace();
-                ITmfTrace tb = ((TraceEntryModel) b).getTrace();
-                // Puts the experiment entries at the top of the list
-                if (ta instanceof TmfExperiment && !(tb instanceof TmfExperiment)) {
-                    return -1;
-                } else if (!(ta instanceof TmfExperiment) && (tb instanceof TmfExperiment)) {
-                    return 1;
-                }
+        if (a instanceof TraceEntryModel && b instanceof TraceEntryModel) {
+            ITmfTrace ta = ((TraceEntryModel) a).getTrace();
+            ITmfTrace tb = ((TraceEntryModel) b).getTrace();
+            // Puts the experiment entries at the top of the list
+            if (ta instanceof TmfExperiment && !(tb instanceof TmfExperiment)) {
+                return -1;
+            } else if (!(ta instanceof TmfExperiment) && (tb instanceof TmfExperiment)) {
+                return 1;
             }
+        }
 
         try {
             return Long.compare(Long.parseLong(a.getName()), Long.parseLong(b.getName()));
@@ -176,8 +176,34 @@ public class StateSystemDataProvider extends AbstractTmfTraceDataProvider implem
      */
     public StateSystemDataProvider(ITmfTrace trace) {
         super(trace);
+        updateRegisteredAnalysisModules(trace);
+    }
+
+    private void updateRegisteredAnalysisModules(ITmfTrace trace) {
+        Set<ITmfAnalysisModuleWithStateSystems> traceAnalyses = new HashSet<>(fModulesToStatus.keySet());
         for (ITmfAnalysisModuleWithStateSystems module : Objects.requireNonNull(Iterables.filter(trace.getAnalysisModules(), ITmfAnalysisModuleWithStateSystems.class))) {
-            fModulesToStatus.put(module, false);
+            traceAnalyses.remove(module);
+            fModulesToStatus.putIfAbsent(module, false);
+        }
+
+        // Remove any deleted state system modules
+        synchronized (fEntryBuilder) {
+            for (ITmfAnalysisModuleWithStateSystems module : traceAnalyses) {
+                // Remove module
+                fModulesToStatus.remove(module);
+                // Remove corresponding entries
+                String traceName = Objects.requireNonNull(trace.getName());
+                EntryModelBuilder entry = fEntryBuilder.get(-1L, traceName);
+                if (entry != null) {
+                    long parentId = entry.getId();
+                    entry = fEntryBuilder.get(parentId, module.getName());
+                    if (entry != null) {
+                        // Delete module entry and its children
+                        removeEntryAndChildren(entry.getId());
+                        fEntryBuilder.remove(parentId, module.getName());
+                    }
+                }
+            }
         }
     }
 
@@ -506,6 +532,7 @@ public class StateSystemDataProvider extends AbstractTmfTraceDataProvider implem
 
     @Override
     public @NonNull TmfModelResponse<TmfTreeModel<TimeGraphEntryModel>> fetchTree(Map<String, Object> fetchParameters, @Nullable IProgressMonitor monitor) {
+
         // need to create the tree
         boolean fetchTreeIsComplete;
         synchronized (fEntryBuilder) {
@@ -529,6 +556,8 @@ public class StateSystemDataProvider extends AbstractTmfTraceDataProvider implem
     private boolean addTrace(@Nullable IProgressMonitor monitor) {
         boolean fetchTreeIsComplete = true;
         ITmfTrace trace = getTrace();
+        // Add newly created analysis and remove deleted analysis
+        updateRegisteredAnalysisModules(trace);
 
         // look if the trace entry already exist
         String traceName = Objects.requireNonNull(trace.getName());
@@ -621,7 +650,7 @@ public class StateSystemDataProvider extends AbstractTmfTraceDataProvider implem
                  */
                 EntryModelBuilder ssEntry = fEntryBuilder.get(moduleId, ss.getSSID());
                 if (ssEntry != null) {
-                    deleteElementFromBuildEntryList(ssEntry.getId());
+                    removeEntryAndChildren(ssEntry.getId());
                 }
             }
         }
@@ -715,11 +744,13 @@ public class StateSystemDataProvider extends AbstractTmfTraceDataProvider implem
         return entryList;
     }
 
-    private void deleteElementFromBuildEntryList(Long rowID) {
-        for (EntryModelBuilder entry : fEntryBuilder.row(rowID).values()) {
-            deleteElementFromBuildEntryList(entry.getId());
+    private void removeEntryAndChildren(Long entryID) {
+        for (EntryModelBuilder entry : fEntryBuilder.row(entryID).values()) {
+            removeEntryAndChildren(entry.getId());
         }
-        fEntryBuilder.row(rowID).clear();
+        fEntryBuilder.row(entryID).clear();
+        fIDToSSQuark.remove(entryID);
+        fIdToSs.remove(entryID);
     }
 
     private void waitForInitialization(ITmfTrace trace, ITmfAnalysisModuleWithStateSystems module) {
@@ -794,10 +825,10 @@ public class StateSystemDataProvider extends AbstractTmfTraceDataProvider implem
     private @Nullable ITimeGraphRowModel getModuleRowModel(long id) {
         ModuleEntryModel module = fIdToModuleEntryModel.get(id);
         if (module != null) {
-            TimeGraphRowModel moduleRow = new TimeGraphRowModel(module.getId(), new ArrayList<>());
-            List<ITimeGraphState> states = moduleRow.getStates();
+            List<ITimeGraphState> states = new ArrayList<>();
             states.add(new TimeGraphState(module.getStartTime(), module.getEndTime() - module.getStartTime(), Integer.MAX_VALUE, null, new OutputElementStyle(TRANSPARENT)));
-            return moduleRow;
+            return new TimeGraphRowModel(module.getId(), states);
+
         }
         return null;
     }
@@ -805,10 +836,9 @@ public class StateSystemDataProvider extends AbstractTmfTraceDataProvider implem
     private @Nullable ITimeGraphRowModel getStateSystemRowModel(long id) {
         ITmfStateSystem ss = fIdToSs.get(id);
         if (ss != null) {
-            TimeGraphRowModel ssRow = new TimeGraphRowModel(id, new ArrayList<>());
-            List<ITimeGraphState> states = ssRow.getStates();
+           List<ITimeGraphState> states = new ArrayList<>();
             states.add(new TimeGraphState(ss.getStartTime(), ss.getCurrentEndTime() - ss.getStartTime(), Integer.MAX_VALUE, null, new OutputElementStyle(TRANSPARENT)));
-            return ssRow;
+            return new TimeGraphRowModel(id, states);
         }
         return null;
     }
