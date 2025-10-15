@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019, 2020 École Polytechnique de Montréal and others
+ * Copyright (c) 2019, 2025 École Polytechnique de Montréal and others
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -96,11 +96,11 @@ public class StateSystemDataProvider extends AbstractTmfTraceDataProvider implem
 
     private static final AtomicLong ENTRY_ID = new AtomicLong();
 
-    private Map<Long, Pair<ITmfStateSystem, Integer>> fIDToDisplayQuark = new HashMap<>();
+    private Map<Long, Pair<ITmfStateSystem, Integer>> fIDToSSQuark = new HashMap<>();
 
     // Use to add one event for every state system and module
-    private final Map<ITmfStateSystem, Long> fSsToId = new HashMap<>();
-    private final List<ModuleEntryModel> fModuleEntryModelList = new ArrayList<>();
+    private final Map<Long, ITmfStateSystem> fIdToSs = new HashMap<>();
+    private final Map<Long, ModuleEntryModel> fIdToModuleEntryModel = new HashMap<>();
 
     private final Map<ITmfAnalysisModuleWithStateSystems, Boolean> fModulesToStatus = new HashMap<>();
 
@@ -217,7 +217,7 @@ public class StateSystemDataProvider extends AbstractTmfTraceDataProvider implem
         Map<Long, Pair<ITmfStateSystem, Integer>> idToQuark = new HashMap<>();
         synchronized (fEntryBuilder) {
             for (Long id : selectedItems) {
-                Pair<ITmfStateSystem, Integer> pair = fIDToDisplayQuark.get(id);
+                Pair<ITmfStateSystem, Integer> pair = fIDToSSQuark.get(id);
                 if (pair != null) {
                     idToQuark.put(id, pair);
                 }
@@ -325,7 +325,7 @@ public class StateSystemDataProvider extends AbstractTmfTraceDataProvider implem
          *            The end time
          */
         protected TraceEntryModel(long id, long parentId, String traceName, long startTime, long endTime, ITmfTrace trace) {
-            super(id, parentId, traceName, startTime, endTime);
+            super(id, parentId, traceName, startTime, endTime, false);
             fEntryTrace = trace;
         }
 
@@ -509,7 +509,7 @@ public class StateSystemDataProvider extends AbstractTmfTraceDataProvider implem
         // need to create the tree
         boolean fetchTreeIsComplete;
         synchronized (fEntryBuilder) {
-            fModuleEntryModelList.clear();
+            fIdToModuleEntryModel.clear();
             fetchTreeIsComplete = addTrace(monitor);
             if (monitor != null && monitor.isCanceled()) {
                 return new TmfModelResponse<>(null, Status.CANCELLED, CommonStatusMessage.TASK_CANCELLED);
@@ -548,18 +548,20 @@ public class StateSystemDataProvider extends AbstractTmfTraceDataProvider implem
             if (monitor != null && monitor.isCanceled()) {
                 return false;
             }
+            boolean analysisIsDone = Objects.requireNonNull(moduleWithStatus.getValue());
             ITmfAnalysisModuleWithStateSystems module = Objects.requireNonNull(moduleWithStatus.getKey());
-            Boolean analysisIsDone = Objects.requireNonNull(moduleWithStatus.getValue());
+            // Children entry of the trace are the modules
+            boolean complete = addModule(monitor, module, rootId, trace.getStartTime().toNanos());
             if (!analysisIsDone || fStartedAnalysis.contains(module)) {
                 // Children entry of the trace are the modules
-                fetchTreeIsComplete &= addModule(monitor, module, rootId, trace.getStartTime().toNanos());
+                fetchTreeIsComplete &= complete;
                 fStartedAnalysis.remove(module);
             }
         }
 
         // Update end Time
         long traceEnd = traceEntry.getEndTime();
-        for (ModuleEntryModel moduleEntryModel : fModuleEntryModelList) {
+        for (ModuleEntryModel moduleEntryModel : fIdToModuleEntryModel.values()) {
             if (monitor != null && monitor.isCanceled()) {
                 return false;
             }
@@ -598,8 +600,8 @@ public class StateSystemDataProvider extends AbstractTmfTraceDataProvider implem
         long moduleId = moduleEntry.getId();
 
         // Add child entry
-        boolean fetchTreeIsComplete = true;
-        Long moduleEnd = startTime;
+        boolean complete = true;
+        long moduleEnd = getTrace().getEndTime().toNanos();
         boolean hasChildren = false;
         for (ITmfStateSystem ss : module.getStateSystems()) {
             if (monitor != null && monitor.isCanceled()) {
@@ -607,7 +609,7 @@ public class StateSystemDataProvider extends AbstractTmfTraceDataProvider implem
             }
 
             // Children entry of the modules are state system
-            fetchTreeIsComplete &= ss.waitUntilBuilt(0);
+            complete &= ss.waitUntilBuilt(0);
             if (!ss.isCancelled()) {
                 addStateSystem(monitor, ss, moduleId);
                 moduleEnd = Long.max(moduleEnd, ss.getCurrentEndTime());
@@ -628,13 +630,13 @@ public class StateSystemDataProvider extends AbstractTmfTraceDataProvider implem
         moduleEntry.setEndTime(moduleEnd);
         fEntryBuilder.put(parentId, moduleName, moduleEntry);
         ModuleEntryModel finalModuleEntry = moduleEntry.build();
-        fModuleEntryModelList.add(finalModuleEntry);
-        if (fetchTreeIsComplete && hasChildren) {
+        fIdToModuleEntryModel.put(finalModuleEntry.getId(), finalModuleEntry);
+        if (complete && hasChildren) {
             // Analysis is complete
             fModulesToStatus.put(module, true);
         }
 
-        return fetchTreeIsComplete;
+        return complete;
     }
 
     private void addStateSystem(@Nullable IProgressMonitor monitor, ITmfStateSystem ss, long parentId) {
@@ -654,10 +656,10 @@ public class StateSystemDataProvider extends AbstractTmfTraceDataProvider implem
             fEntryBuilder.put(parentId, ssName, stateSystemEntryModel);
         }
         // Update entry
-        long ssId = stateSystemEntryModel.getId();
+        long id = stateSystemEntryModel.getId();
         stateSystemEntryModel.setEndTime(endTime);
         fEntryBuilder.put(parentId, ssName, stateSystemEntryModel);
-        fSsToId.put(ss, ssId);
+        fIdToSs.put(id, ss);
 
         // Add child entry
         for (Integer attrib : ss.getSubAttributes(ITmfStateSystem.ROOT_ATTRIBUTE, false)) {
@@ -665,7 +667,7 @@ public class StateSystemDataProvider extends AbstractTmfTraceDataProvider implem
                 return;
             }
             // Children of the state system are recursive hierarchy
-            addSubAttributes(monitor, ssId, startTime, endTime, ss, attrib);
+            addSubAttributes(monitor, id, startTime, endTime, ss, attrib);
         }
     }
 
@@ -685,7 +687,7 @@ public class StateSystemDataProvider extends AbstractTmfTraceDataProvider implem
         long id = attributeEntry.getId();
 
         Pair<ITmfStateSystem, Integer> displayQuark = new Pair<>(ss, attrib);
-        fIDToDisplayQuark.put(id, displayQuark);
+        fIDToSSQuark.put(id, displayQuark);
 
         // Add child entry
         for (Integer child : ss.getSubAttributes(attrib, false)) {
@@ -741,54 +743,47 @@ public class StateSystemDataProvider extends AbstractTmfTraceDataProvider implem
     }
 
     @Override
-    public @NonNull TmfModelResponse<@NonNull TimeGraphModel> fetchRowModel(Map<String, Object> fetchParameters, @Nullable IProgressMonitor monitor) {
-        Table<ITmfStateSystem, Integer, Long> table = HashBasedTable.create();
-        // Get the quarks to display
+    public @NonNull TmfModelResponse<TimeGraphModel> fetchRowModel(Map<String, Object> fetchParameters, @Nullable IProgressMonitor monitor) {
         Collection<Long> selectedItems = DataProviderParameterUtils.extractSelectedItems(fetchParameters);
+        if (selectedItems == null) {
+            return new TmfModelResponse<>(null, ITmfResponse.Status.FAILED, CommonStatusMessage.INCORRECT_QUERY_PARAMETERS);
+        }
+
+        List<ITimeGraphRowModel> allRows = new ArrayList<>();
+
+        // Add requested module and state system rows
         synchronized (fEntryBuilder) {
-            if (selectedItems == null) {
-                // No selected items, take them all
-                selectedItems = fIDToDisplayQuark.keySet();
-            }
+            selectedItems.forEach(id -> {
+                ITimeGraphRowModel moduleRow = getModuleRowModel(id);
+                if (moduleRow != null) {
+                    allRows.add(moduleRow);
+                }
+                ITimeGraphRowModel ssRow = getStateSystemRowModel(id);
+                if (ssRow != null) {
+                    allRows.add(ssRow);
+                }
+            });
+        }
+
+        // Get the quarks to display
+        Table<ITmfStateSystem, Integer, Long> table = HashBasedTable.create();
+        synchronized (fEntryBuilder) {
             for (Long id : selectedItems) {
-                Pair<ITmfStateSystem, Integer> pair = fIDToDisplayQuark.get(id);
+                Pair<ITmfStateSystem, Integer> pair = fIDToSSQuark.get(id);
                 if (pair != null) {
                     table.put(pair.getFirst(), pair.getSecond(), id);
                 }
             }
         }
-        List<@NonNull ITimeGraphRowModel> allRows = new ArrayList<>();
         try {
             List<Long> times = DataProviderParameterUtils.extractTimeRequested(fetchParameters);
             for (Entry<ITmfStateSystem, Map<Integer, Long>> ssEntry : table.rowMap().entrySet()) {
                 ITmfStateSystem ss = Objects.requireNonNull(ssEntry.getKey());
-                List<@NonNull ITimeGraphRowModel> rows = getRowModels(ss, ssEntry.getValue(), times, fetchParameters, monitor);
+                List<ITimeGraphRowModel> rows = getRowModels(ss, ssEntry.getValue(), times, fetchParameters, monitor);
+                allRows.addAll(rows);
                 if (monitor != null && monitor.isCanceled()) {
                     return new TmfModelResponse<>(null, Status.CANCELLED, CommonStatusMessage.TASK_CANCELLED);
                 }
-                synchronized (fEntryBuilder) {
-                    // Add the SS
-                    Long ssId = fSsToId.get(ss);
-                    if (ssId != null && selectedItems.contains(ssId)) {
-                        TimeGraphRowModel ssRow = new TimeGraphRowModel(ssId, new ArrayList<>());
-                        List<@NonNull ITimeGraphState> states = ssRow.getStates();
-                        states.add(new TimeGraphState(ss.getStartTime(), ss.getCurrentEndTime() - ss.getStartTime(), Integer.MAX_VALUE, null, new OutputElementStyle(TRANSPARENT)));
-                        rows.add(ssRow);
-                    }
-                }
-                allRows.addAll(rows);
-            }
-
-            synchronized (fEntryBuilder) {
-                for (ModuleEntryModel module : fModuleEntryModelList) {
-                    if (selectedItems.contains(module.getId())) {
-                        allRows.add(getModuleRowModels(module));
-                    }
-                }
-            }
-
-            if (monitor != null && monitor.isCanceled()) {
-                return new TmfModelResponse<>(null, Status.CANCELLED, CommonStatusMessage.TASK_CANCELLED);
             }
             return new TmfModelResponse<>(new TimeGraphModel(allRows), Status.COMPLETED, CommonStatusMessage.COMPLETED);
         } catch (IndexOutOfBoundsException | TimeRangeException | StateSystemDisposedException e) {
@@ -796,14 +791,29 @@ public class StateSystemDataProvider extends AbstractTmfTraceDataProvider implem
         }
     }
 
-    private static ITimeGraphRowModel getModuleRowModels(ModuleEntryModel module) {
-        TimeGraphRowModel moduleRow = new TimeGraphRowModel(module.getId(), new ArrayList<>());
-        List<@NonNull ITimeGraphState> states = moduleRow.getStates();
-        states.add(new TimeGraphState(module.getStartTime(), module.getEndTime() - module.getStartTime(), Integer.MAX_VALUE, null, new OutputElementStyle(TRANSPARENT)));
-        return moduleRow;
+    private @Nullable ITimeGraphRowModel getModuleRowModel(long id) {
+        ModuleEntryModel module = fIdToModuleEntryModel.get(id);
+        if (module != null) {
+            TimeGraphRowModel moduleRow = new TimeGraphRowModel(module.getId(), new ArrayList<>());
+            List<ITimeGraphState> states = moduleRow.getStates();
+            states.add(new TimeGraphState(module.getStartTime(), module.getEndTime() - module.getStartTime(), Integer.MAX_VALUE, null, new OutputElementStyle(TRANSPARENT)));
+            return moduleRow;
+        }
+        return null;
     }
 
-    private List<@NonNull ITimeGraphRowModel> getRowModels(ITmfStateSystem ss, Map<Integer, Long> idToDisplayQuark,
+    private @Nullable ITimeGraphRowModel getStateSystemRowModel(long id) {
+        ITmfStateSystem ss = fIdToSs.get(id);
+        if (ss != null) {
+            TimeGraphRowModel ssRow = new TimeGraphRowModel(id, new ArrayList<>());
+            List<ITimeGraphState> states = ssRow.getStates();
+            states.add(new TimeGraphState(ss.getStartTime(), ss.getCurrentEndTime() - ss.getStartTime(), Integer.MAX_VALUE, null, new OutputElementStyle(TRANSPARENT)));
+            return ssRow;
+        }
+        return null;
+    }
+
+    private List<@NonNull ITimeGraphRowModel> getRowModels(ITmfStateSystem ss, Map<Integer, Long> quarkToId,
             @Nullable List<Long> times, Map<String, Object> fetchParameters, @Nullable IProgressMonitor monitor) throws StateSystemDisposedException {
         // Create predicates
         Map<@NonNull Integer, @NonNull Predicate<@NonNull Multimap<@NonNull String, @NonNull Object>>> predicates = new HashMap<>();
@@ -812,12 +822,12 @@ public class StateSystemDataProvider extends AbstractTmfTraceDataProvider implem
             predicates.putAll(computeRegexPredicate(regexesMap));
         }
         // Create quark to row
-        Map<Integer, ITimeGraphRowModel> quarkToRow = new HashMap<>(idToDisplayQuark.size());
-        for (Entry<Integer, Long> entry : idToDisplayQuark.entrySet()) {
+        Map<Integer, ITimeGraphRowModel> quarkToRow = new HashMap<>(quarkToId.size());
+        for (Entry<Integer, Long> entry : quarkToId.entrySet()) {
             quarkToRow.put(entry.getKey(), new TimeGraphRowModel(entry.getValue(), new ArrayList<>()));
         }
 
-        for (ITmfStateInterval interval : ss.query2D(idToDisplayQuark.keySet(), getTimes(ss, times))) {
+        for (ITmfStateInterval interval : ss.query2D(quarkToId.keySet(), getTimes(ss, times))) {
             if (monitor != null && monitor.isCanceled()) {
                 return Collections.emptyList();
             }
