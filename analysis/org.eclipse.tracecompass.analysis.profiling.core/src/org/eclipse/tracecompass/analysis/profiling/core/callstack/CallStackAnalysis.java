@@ -54,6 +54,13 @@ public abstract class CallStackAnalysis extends TmfStateSystemAnalysisModule imp
      */
     public static final String CALL_STACK = "CallStack"; //$NON-NLS-1$
 
+    /**
+     * Annotations string state attribute
+     *
+     * @since 2.6
+     */
+    public static final String ANNOTATIONS = "Markers"; //$NON-NLS-1$
+
     private static final String[] DEFAULT_PROCESSES_PATTERN = new String[] { CallStackStateProvider.PROCESSES, "*" }; //$NON-NLS-1$
 
     private static final String[] DEFAULT_THREADS_PATTERN = new String[] { "*" }; //$NON-NLS-1$

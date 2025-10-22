@@ -11,9 +11,13 @@
 
 package org.eclipse.tracecompass.analysis.profiling.core.tests.stubs;
 
+import static org.eclipse.tracecompass.common.core.NonNullUtils.checkNotNull;
+
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.analysis.profiling.core.callstack.CallStackStateProvider;
+import org.eclipse.tracecompass.analysis.profiling.core.instrumented.InstrumentedCallStackAnalysis;
+import org.eclipse.tracecompass.statesystem.core.ITmfStateSystemBuilder;
 import org.eclipse.tracecompass.statesystem.core.statevalue.ITmfStateValue;
 import org.eclipse.tracecompass.statesystem.core.statevalue.TmfStateValue;
 import org.eclipse.tracecompass.tmf.core.event.ITmfEvent;
@@ -126,4 +130,48 @@ public class CallStackProviderStub extends CallStackStateProvider {
         return CallStackStateProvider.UNKNOWN_PID;
     }
 
+    @Override
+    protected void eventHandle(ITmfEvent event) {
+        if (!considerEvent(event)) {
+            return;
+        }
+        // Handle instant events
+        ITmfEventField phField = event.getContent().getField("ph");
+        if (phField != null && "i".equals(phField.getValue())) {
+            handleInstant(event);
+            return;
+        }
+        // Call parent for regular entry/exit events
+        super.eventHandle(event);
+    }
+
+    private void handleInstant(@NonNull ITmfEvent event) {
+        super.addMarker(event);
+
+        ITmfStateSystemBuilder ss = checkNotNull(getStateSystemBuilder());
+        long timestamp = event.getTimestamp().toNanos();
+        Object contents = event.getContent().getFieldValue( String.class,"name");
+        String toStore = (contents != null ? contents.toString() : "");
+
+        String processName = getProcessName(event);
+        int processId = getProcessId(event);
+        if (processName == null) {
+            processName = (processId == UNKNOWN_PID) ? UNKNOWN : Integer.toString(processId);
+        }
+        int processQuark = ss.getQuarkAbsoluteAndAdd(PROCESSES, processName);
+        ss.updateOngoingState(TmfStateValue.newValueInt(processId), processQuark);
+
+        String threadName = getThreadName(event);
+        long threadId = getThreadId(event);
+        if (threadName == null) {
+            threadName = Long.toString(threadId);
+        }
+        int threadQuark = ss.getQuarkRelativeAndAdd(processQuark, threadName);
+        ss.updateOngoingState(TmfStateValue.newValueLong(threadId), threadQuark);
+
+        int callStackQuark = ss.getQuarkRelativeAndAdd(threadQuark, InstrumentedCallStackAnalysis.ANNOTATIONS);
+        ss.pushAttribute(timestamp, toStore, callStackQuark);
+        return;
+
+    }
 }

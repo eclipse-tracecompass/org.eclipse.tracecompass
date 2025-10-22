@@ -277,4 +277,15 @@ public abstract class CallStackStateProvider extends AbstractTmfStateProvider {
         /* Override to provide a thread name */
         return null;
     }
+
+    /**
+     * Add an event as a marker to the Annotations attribute
+     *
+     * @param event
+     *            The event to add as a marker
+     * @since 2.6
+     */
+    protected void addMarker(ITmfEvent event) {
+        // Do nothing, this is a placeholder for overriding.
+    }
 }
