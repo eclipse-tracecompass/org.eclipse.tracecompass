@@ -43,20 +43,32 @@ import org.eclipse.tracecompass.analysis.profiling.core.callstack2.CallStackDept
 import org.eclipse.tracecompass.analysis.profiling.core.callstack2.CallStackSeries;
 import org.eclipse.tracecompass.analysis.profiling.core.instrumented.EdgeStateValue;
 import org.eclipse.tracecompass.analysis.profiling.core.instrumented.IFlameChartProvider;
+import org.eclipse.tracecompass.analysis.profiling.core.instrumented.InstrumentedCallStackAnalysis;
 import org.eclipse.tracecompass.analysis.profiling.core.model.IHostModel;
 import org.eclipse.tracecompass.common.core.log.TraceCompassLog;
 import org.eclipse.tracecompass.internal.analysis.profiling.core.instrumented.FlameChartEntryModel.EntryType;
 import org.eclipse.tracecompass.internal.analysis.profiling.core.model.ModelManager;
 import org.eclipse.tracecompass.internal.analysis.profiling.core.model.ProcessStatusInterval;
+import org.eclipse.tracecompass.internal.tmf.core.model.filters.FetchParametersUtils;
 import org.eclipse.tracecompass.segmentstore.core.ISegment;
+import org.eclipse.tracecompass.statesystem.core.ITmfStateSystem;
+import org.eclipse.tracecompass.statesystem.core.exceptions.StateSystemDisposedException;
 import org.eclipse.tracecompass.statesystem.core.exceptions.TimeRangeException;
 import org.eclipse.tracecompass.statesystem.core.interval.ITmfStateInterval;
+import org.eclipse.tracecompass.statesystem.core.statevalue.ITmfStateValue;
 import org.eclipse.tracecompass.tmf.core.dataprovider.DataProviderParameterUtils;
 import org.eclipse.tracecompass.tmf.core.model.AbstractTmfTraceDataProvider;
 import org.eclipse.tracecompass.tmf.core.model.CommonStatusMessage;
 import org.eclipse.tracecompass.tmf.core.model.IOutputStyleProvider;
 import org.eclipse.tracecompass.tmf.core.model.OutputElementStyle;
 import org.eclipse.tracecompass.tmf.core.model.OutputStyleModel;
+import org.eclipse.tracecompass.tmf.core.model.StyleProperties;
+import org.eclipse.tracecompass.tmf.core.model.StyleProperties.SymbolType;
+import org.eclipse.tracecompass.tmf.core.model.annotations.Annotation;
+import org.eclipse.tracecompass.tmf.core.model.annotations.AnnotationCategoriesModel;
+import org.eclipse.tracecompass.tmf.core.model.annotations.AnnotationModel;
+import org.eclipse.tracecompass.tmf.core.model.annotations.IOutputAnnotationProvider;
+import org.eclipse.tracecompass.tmf.core.model.filters.SelectionTimeQueryFilter;
 import org.eclipse.tracecompass.tmf.core.model.timegraph.ITimeGraphArrow;
 import org.eclipse.tracecompass.tmf.core.model.timegraph.ITimeGraphDataProvider;
 import org.eclipse.tracecompass.tmf.core.model.timegraph.ITimeGraphRowModel;
@@ -70,6 +82,7 @@ import org.eclipse.tracecompass.tmf.core.model.tree.TmfTreeModel;
 import org.eclipse.tracecompass.tmf.core.response.ITmfResponse;
 import org.eclipse.tracecompass.tmf.core.response.ITmfResponse.Status;
 import org.eclipse.tracecompass.tmf.core.response.TmfModelResponse;
+import org.eclipse.tracecompass.tmf.core.statesystem.TmfStateSystemAnalysisModule;
 import org.eclipse.tracecompass.tmf.core.symbols.ISymbolProvider;
 import org.eclipse.tracecompass.tmf.core.symbols.SymbolProviderManager;
 import org.eclipse.tracecompass.tmf.core.symbols.SymbolProviderUtils;
@@ -84,6 +97,7 @@ import com.google.common.cache.LoadingCache;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableList.Builder;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
@@ -95,7 +109,7 @@ import com.google.common.collect.Multimap;
  *
  * @author Geneviève Bastien
  */
-public class FlameChartDataProvider extends AbstractTmfTraceDataProvider implements ITimeGraphDataProvider<FlameChartEntryModel>, IOutputStyleProvider {
+public class FlameChartDataProvider extends AbstractTmfTraceDataProvider implements ITimeGraphDataProvider<FlameChartEntryModel>, IOutputAnnotationProvider, IOutputStyleProvider {
 
     /**
      * Provider ID.
@@ -275,7 +289,6 @@ public class FlameChartDataProvider extends AbstractTmfTraceDataProvider impleme
             return new TmfModelResponse<>(tooltip, Status.COMPLETED, CommonStatusMessage.COMPLETED);
         }
     }
-
     private @Nullable Map<String, String> getTooltip(Long entryId, FlameChartEntryModel entryModel, Long time) {
         switch (entryModel.getEntryType()) {
         case FUNCTION: {
@@ -345,7 +358,8 @@ public class FlameChartDataProvider extends AbstractTmfTraceDataProvider impleme
             boolean complete = fcProvider.isComplete();
             CallStackSeries callstack = fcProvider.getCallStackSeries();
             if (callstack == null) {
-                // Explicitly tell the client that the analysis is completed to prevent further polling
+                // Explicitly tell the client that the analysis is completed to
+                // prevent further polling
                 if (complete) {
                     return new TmfModelResponse<>(new TmfTreeModel<>(Collections.emptyList(), Collections.emptyList()), ITmfResponse.Status.COMPLETED, CommonStatusMessage.COMPLETED);
                 }
@@ -709,5 +723,76 @@ public class FlameChartDataProvider extends AbstractTmfTraceDataProvider impleme
         // used
         Map<String, OutputElementStyle> styles = FlameWithKernelPalette.getInstance().getStyles();
         return new TmfModelResponse<>(new OutputStyleModel(styles), ITmfResponse.Status.COMPLETED, CommonStatusMessage.COMPLETED);
+    }
+
+    @Override
+    public TmfModelResponse<AnnotationCategoriesModel> fetchAnnotationCategories(Map<String, Object> fetchParameters, @Nullable IProgressMonitor monitor) {
+        return new TmfModelResponse<>(new AnnotationCategoriesModel(Collections.singletonList( InstrumentedCallStackAnalysis.ANNOTATIONS)), ITmfResponse.Status.COMPLETED, CommonStatusMessage.COMPLETED);
+    }
+
+    @Override
+    public TmfModelResponse<AnnotationModel> fetchAnnotations(Map<String, Object> fetchParameters, @Nullable IProgressMonitor monitor) {
+
+        if (!(fFcProvider instanceof TmfStateSystemAnalysisModule)) {
+            return new TmfModelResponse<>(null, ITmfResponse.Status.FAILED, CommonStatusMessage.ANALYSIS_INITIALIZATION_FAILED);
+        }
+
+        TmfStateSystemAnalysisModule csa = (TmfStateSystemAnalysisModule) fFcProvider;
+        ITmfStateSystem ss = csa.getStateSystem();
+        if (ss == null) {
+            return new TmfModelResponse<>(null, ITmfResponse.Status.FAILED, CommonStatusMessage.STATE_SYSTEM_FAILED);
+        }
+
+        SelectionTimeQueryFilter filter = FetchParametersUtils.createSelectionTimeQuery(fetchParameters);
+        if (filter == null) {
+            return new TmfModelResponse<>(null, ITmfResponse.Status.COMPLETED, CommonStatusMessage.COMPLETED);
+        }
+
+        Map<Long, FlameChartEntryModel> selectedEntries = getSelectedEntries(fetchParameters);
+        List<Annotation> annotations = new ArrayList<>();
+        try {
+            for (Entry<@NonNull Long, @NonNull FlameChartEntryModel> entry : selectedEntries.entrySet()) {
+                long csId = entry.getValue().getId();
+                CallStackDepth cs = fIdToCallstack.get(csId);
+                if (cs == null) {
+                    continue;
+                }
+                int parentQuark = ss.getParentAttributeQuark(ss.getParentAttributeQuark(cs.getQuark()));
+                int markersQuark = ss.optQuarkRelative(parentQuark,  InstrumentedCallStackAnalysis.ANNOTATIONS);
+                if (markersQuark != ITmfStateSystem.INVALID_ATTRIBUTE) {
+                    List<Long> times = DataProviderParameterUtils.extractTimeRequested(fetchParameters);
+                    for (ITmfStateInterval markerInterval : ss.query2D(Collections.singleton(markersQuark), times)) {
+                        if (!markerInterval.getStateValue().isNull()) {
+                            long startTime = markerInterval.getStartTime();
+                            // Find callstack depth at marker start time
+                            int depth = 0;
+                            for (int i = 1; i <= ss.getNbAttributes(); i++) {
+                                int depthQuark = ss.optQuarkRelative(cs.getQuark(), String.valueOf(i));
+                                if (depthQuark != ITmfStateSystem.INVALID_ATTRIBUTE) {
+                                    ITmfStateInterval depthInterval = ss.querySingleState(startTime, depthQuark);
+                                    if (!depthInterval.getStateValue().isNull()) {
+                                        depth = i;
+                                    }
+                                }
+                            }
+                            long entryId = entry.getKey();
+                            long rowId = (depth > 0) ? entryId + depth : entryId;
+                            ITmfStateValue a = markerInterval.getStateValue();
+                            String annotValue = a.toString();
+
+                                OutputElementStyle style = new OutputElementStyle(null, ImmutableMap.of(
+                                        StyleProperties.COLOR, "#7D3D31", //$NON-NLS-1$
+                                        StyleProperties.HEIGHT, 0.33f,
+                                        StyleProperties.SYMBOL_TYPE, SymbolType.DIAMOND));
+                                annotations.add(new Annotation(startTime, 0, rowId, annotValue, style));
+                        }
+                    }
+                }
+            }
+        } catch (StateSystemDisposedException e) {
+            return new TmfModelResponse<>(null, ITmfResponse.Status.FAILED, e.getMessage());
+        }
+
+        return new TmfModelResponse<>(new AnnotationModel(Collections.singletonMap( InstrumentedCallStackAnalysis.ANNOTATIONS, annotations)), ITmfResponse.Status.COMPLETED, CommonStatusMessage.COMPLETED);
     }
 }

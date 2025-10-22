@@ -2361,9 +2361,14 @@ public class TimeGraphControl extends TimeGraphBaseControl
         gc.setAlpha(OPAQUE);
         String label = marker.getLabel();
         if (fLabelsVisible && label != null && marker.getEntry() != null) {
-            label = label.substring(0, Math.min(label.indexOf('\n') != -1 ? label.indexOf('\n') : label.length(), MAX_LABEL_LENGTH));
-            gc.setForeground(color);
-            Utils.drawText(gc, label, rect.x - gc.textExtent(label).x, rect.y, true);
+            StyleManager styleManager = getStyleManager();
+            OutputElementStyle elementStyle = getElementStyle(marker);
+            Object symbolType = (elementStyle != null) ? styleManager.getStyle(elementStyle, StyleProperties.SYMBOL_TYPE) : null;
+            if (symbolType == null || symbolType == SymbolType.NONE) {
+                label = label.substring(0, Math.min(label.indexOf('\n') != -1 ? label.indexOf('\n') : label.length(), MAX_LABEL_LENGTH));
+                gc.setForeground(color);
+                Utils.drawText(gc, label, rect.x - gc.textExtent(label).x, rect.y, true);
+            }
         }
     }
 

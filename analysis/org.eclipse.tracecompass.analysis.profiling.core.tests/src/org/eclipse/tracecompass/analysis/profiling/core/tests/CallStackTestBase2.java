@@ -47,13 +47,25 @@ public class CallStackTestBase2 {
     private CallStackAnalysisStub fModule;
     private KernelAnalysisModuleStub fKernelModule;
 
+    private final String fCallstackFile;
+
+
+    protected CallStackTestBase2(String callstackFile) {
+        fCallstackFile = callstackFile;
+    }
+
+    public CallStackTestBase2() {
+        fCallstackFile = CALLSTACK_FILE;
+    }
+
+
     /**
      * Setup the trace for the tests
      */
     @Before
     public void setUp() {
         TmfXmlTraceStub trace = new TmfXmlTraceStubNs();
-        IPath filePath = ActivatorTest.getAbsoluteFilePath(CALLSTACK_FILE);
+        IPath filePath = ActivatorTest.getAbsoluteFilePath(fCallstackFile);
         IStatus status = trace.validate(null, filePath.toOSString());
         if (!status.isOK()) {
             fail(status.getException().getMessage());
