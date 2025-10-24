@@ -1,5 +1,5 @@
 /**********************************************************************
- * Copyright (c) 2019 Ericsson
+ * Copyright (c) 2019, 2025 Ericsson
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -14,7 +14,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.osgi.util.NLS;
 
 /**
- * Message bundle for the new events table messages.
+ * Message bundle for events data provider messages.
  */
 public class Messages extends NLS {
     private static final String BUNDLE_NAME = "org.eclipse.tracecompass.internal.provisional.tmf.core.model.events.messages"; //$NON-NLS-1$
@@ -26,6 +26,14 @@ public class Messages extends NLS {
      * The events table data provider help text
      */
     public static @Nullable String EventsTableDataProviderFactory_DescriptionText;
+    /**
+     * The raw event data title
+     */
+    public static @Nullable String RawEventsDataProvider_Title;
+    /**
+     * The raw event data provider help text
+     */
+    public static @Nullable String RawEventsDataProviderFactory_DescriptionText;
 
     static {
         // initialize resource bundle
