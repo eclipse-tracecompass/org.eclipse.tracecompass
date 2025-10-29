@@ -39,8 +39,15 @@ import org.eclipse.tracecompass.tmf.core.dataprovider.DataProviderParameterUtils
 import org.eclipse.tracecompass.tmf.core.event.lookup.ITmfCallsite;
 import org.eclipse.tracecompass.tmf.core.model.CommonStatusMessage;
 import org.eclipse.tracecompass.tmf.core.model.IOutputStyleProvider;
+import org.eclipse.tracecompass.tmf.core.model.OutputElementStyle;
 import org.eclipse.tracecompass.tmf.core.model.OutputStyleModel;
+import org.eclipse.tracecompass.tmf.core.model.StyleProperties;
+import org.eclipse.tracecompass.tmf.core.model.StyleProperties.SymbolType;
+import org.eclipse.tracecompass.tmf.core.model.annotations.Annotation;
+import org.eclipse.tracecompass.tmf.core.model.annotations.AnnotationCategoriesModel;
+import org.eclipse.tracecompass.tmf.core.model.annotations.AnnotationModel;
 import org.eclipse.tracecompass.tmf.core.model.annotations.IAnnotation;
+import org.eclipse.tracecompass.tmf.core.model.annotations.IOutputAnnotationProvider;
 import org.eclipse.tracecompass.tmf.core.model.filters.SelectionTimeQueryFilter;
 import org.eclipse.tracecompass.tmf.core.model.timegraph.AbstractTimeGraphDataProvider;
 import org.eclipse.tracecompass.tmf.core.model.timegraph.ITimeGraphArrow;
@@ -64,6 +71,7 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Multimap;
 
 /**
@@ -71,7 +79,7 @@ import com.google.common.collect.Multimap;
  *
  * @author Loic Prieur-Drevon
  */
-public class CallStackDataProvider extends AbstractTimeGraphDataProvider<@NonNull CallStackAnalysis, @NonNull CallStackEntryModel> implements IOutputStyleProvider {
+public class CallStackDataProvider extends AbstractTimeGraphDataProvider<@NonNull CallStackAnalysis, @NonNull CallStackEntryModel> implements IOutputStyleProvider, IOutputAnnotationProvider {
 
     private static final String ADDRESS_FORMAT = "0x%x"; //$NON-NLS-1$
     /**
@@ -476,14 +484,13 @@ public class CallStackDataProvider extends AbstractTimeGraphDataProvider<@NonNul
                                     }
                                 }
                                 tooltips.computeIfAbsent(Messages.CallStackDataProvider_toolTipState, unused -> String.format(ADDRESS_FORMAT, longValue));
-                            } else if (value != null ) {
+                            } else if (value != null) {
                                 tooltips.put(Messages.CallStackDataProvider_toolTipState, interval.getValueString());
                             }
                         } catch (StateSystemDisposedException e) {
                             Activator.getInstance().logError("State System Disposed", e); //$NON-NLS-1$
                         }
                     }
-
                 }
             }
         }
@@ -498,5 +505,57 @@ public class CallStackDataProvider extends AbstractTimeGraphDataProvider<@NonNul
     @Override
     public @NonNull TmfModelResponse<@NonNull OutputStyleModel> fetchStyle(@NonNull Map<@NonNull String, @NonNull Object> fetchParameters, @Nullable IProgressMonitor monitor) {
         return new TmfModelResponse<>(new OutputStyleModel(FlameDefaultPalette.getStyles()), ITmfResponse.Status.COMPLETED, CommonStatusMessage.COMPLETED);
+    }
+
+    @Override
+    public TmfModelResponse<AnnotationCategoriesModel> fetchAnnotationCategories(Map<String, Object> fetchParameters, @Nullable IProgressMonitor monitor) {
+        return new TmfModelResponse<>(new AnnotationCategoriesModel(Collections.singletonList(CallStackAnalysis.ANNOTATIONS)), ITmfResponse.Status.COMPLETED, CommonStatusMessage.COMPLETED);
+    }
+
+    @Override
+    public TmfModelResponse<AnnotationModel> fetchAnnotations(Map<String, Object> fetchParameters, @Nullable IProgressMonitor monitor) {
+        CallStackAnalysis analysis = getAnalysisModule();
+        ITmfStateSystem ss = analysis.getStateSystem();
+        if (ss == null) {
+            return new TmfModelResponse<>(null, ITmfResponse.Status.FAILED, CommonStatusMessage.STATE_SYSTEM_FAILED);
+        }
+
+        SelectionTimeQueryFilter filter = FetchParametersUtils.createSelectionTimeQuery(fetchParameters);
+        if (filter == null) {
+            return new TmfModelResponse<>(null, ITmfResponse.Status.COMPLETED, CommonStatusMessage.COMPLETED);
+        }
+
+        Map<@NonNull Long, @NonNull Integer> selectedEntries = getSelectedEntries(filter);
+        List<Annotation> annotations = new ArrayList<>();
+        try {
+            for (Entry<@NonNull Long, @NonNull Integer> entry : selectedEntries.entrySet()) {
+                long entryId = entry.getKey();
+                int quark = entry.getValue();
+                if (!fQuarkToPid.containsKey(quark)) {
+                    continue;
+                }
+                int threadQuark = ss.getParentAttributeQuark(ss.getParentAttributeQuark(quark));
+                int markersQuark = ss.optQuarkRelative(threadQuark, CallStackAnalysis.ANNOTATIONS);
+                if (markersQuark != ITmfStateSystem.INVALID_ATTRIBUTE) {
+                    List<Long> times = DataProviderParameterUtils.extractTimeRequested(fetchParameters);
+                    for (ITmfStateInterval markerInterval : ss.query2D(Collections.singleton(markersQuark), times)) {
+                        if (!markerInterval.getStateValue().isNull()) {
+                            long startTime = markerInterval.getStartTime();
+                            String annotValue = markerInterval.getStateValue().toString();
+
+                            OutputElementStyle style = new OutputElementStyle(null, ImmutableMap.of(
+                                    StyleProperties.COLOR, "#7D3D31", //$NON-NLS-1$
+                                    StyleProperties.HEIGHT, 0.33f,
+                                    StyleProperties.SYMBOL_TYPE, SymbolType.DIAMOND));
+                            annotations.add(new Annotation(startTime, 0, entryId, annotValue, style));
+                        }
+                    }
+                }
+            }
+        } catch (StateSystemDisposedException e) {
+            return new TmfModelResponse<>(null, ITmfResponse.Status.FAILED, e.getMessage());
+        }
+
+        return new TmfModelResponse<>(new AnnotationModel(Collections.singletonMap(CallStackAnalysis.ANNOTATIONS, annotations)), ITmfResponse.Status.COMPLETED, CommonStatusMessage.COMPLETED);
     }
 }

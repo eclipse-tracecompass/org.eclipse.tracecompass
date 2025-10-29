@@ -67,6 +67,13 @@ public abstract class InstrumentedCallStackAnalysis extends TmfStateSystemAnalys
     /** CallStack stack-attribute */
     public static final String CALL_STACK = "CallStack"; //$NON-NLS-1$
 
+    /**
+     * Annotations string state attribute
+     *
+     * @since 2.6
+     */
+    public static final String ANNOTATIONS = "Markers"; //$NON-NLS-1$
+
     private @Nullable CallStackSeries fCallStacks;
 
     private final CallGraphAnalysis fCallGraph;

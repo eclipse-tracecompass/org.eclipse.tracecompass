@@ -24,12 +24,16 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+
 import java.util.Set;
+//import java.util.stream.Collectors;
+import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.tracecompass.analysis.profiling.core.instrumented.InstrumentedCallStackAnalysis;
 import org.eclipse.tracecompass.analysis.profiling.core.tests.stubs2.CallStackAnalysisStub;
 import org.eclipse.tracecompass.internal.analysis.os.linux.core.registry.LinuxStyle;
 import org.eclipse.tracecompass.internal.analysis.profiling.core.instrumented.FlameChartDataProvider;
@@ -38,7 +42,10 @@ import org.eclipse.tracecompass.internal.analysis.profiling.core.instrumented.Fl
 import org.eclipse.tracecompass.internal.analysis.profiling.core.instrumented.FlameChartEntryModel.EntryType;
 import org.eclipse.tracecompass.internal.tmf.core.model.filters.FetchParametersUtils;
 import org.eclipse.tracecompass.tmf.core.dataprovider.IDataProviderDescriptor;
+import org.eclipse.tracecompass.tmf.core.model.CommonStatusMessage;
 import org.eclipse.tracecompass.tmf.core.model.OutputElementStyle;
+import org.eclipse.tracecompass.tmf.core.model.StyleProperties;
+import org.eclipse.tracecompass.tmf.core.model.StyleProperties.SymbolType;
 import org.eclipse.tracecompass.tmf.core.model.filters.SelectionTimeQueryFilter;
 import org.eclipse.tracecompass.tmf.core.model.filters.TimeQueryFilter;
 import org.eclipse.tracecompass.tmf.core.model.timegraph.ITimeGraphArrow;
@@ -48,6 +55,10 @@ import org.eclipse.tracecompass.tmf.core.model.timegraph.TimeGraphArrow;
 import org.eclipse.tracecompass.tmf.core.model.timegraph.TimeGraphModel;
 import org.eclipse.tracecompass.tmf.core.model.timegraph.TimeGraphState;
 import org.eclipse.tracecompass.tmf.core.model.tree.TmfTreeModel;
+import org.eclipse.tracecompass.tmf.core.model.annotations.Annotation;
+//import org.eclipse.tracecompass.tmf.core.model.annotations.Annotation;
+import org.eclipse.tracecompass.tmf.core.model.annotations.AnnotationCategoriesModel;
+import org.eclipse.tracecompass.tmf.core.model.annotations.AnnotationModel;
 import org.eclipse.tracecompass.tmf.core.response.ITmfResponse;
 import org.eclipse.tracecompass.tmf.core.response.TmfModelResponse;
 import org.junit.Test;
@@ -63,6 +74,11 @@ public class FlameChartDataProviderTest extends CallStackTestBase2 {
 
     private static final @Nullable IProgressMonitor MONITOR = new NullProgressMonitor();
     private static final String FOR_ENTRY = " for entry ";
+    private static final String CALLSTACKIEVENTS_FILE = "testfiles/traces/callstackIevents.xml";
+
+    public FlameChartDataProviderTest() {
+        super( CALLSTACKIEVENTS_FILE);
+    }
 
     private FlameChartDataProvider getDataProvider() {
         CallStackAnalysisStub module = getModule();
@@ -436,10 +452,161 @@ public class FlameChartDataProviderTest extends CallStackTestBase2 {
         }
     }
 
+    /**
+     * Test fetching annotation categories
+     */
+    @Test
+    public void testFetchAnnotationCategories() {
+        FlameChartDataProvider dataProvider = getDataProvider();
+
+        TmfModelResponse<AnnotationCategoriesModel> response = dataProvider.fetchAnnotationCategories(Collections.emptyMap(), MONITOR);
+        assertEquals(ITmfResponse.Status.COMPLETED, response.getStatus());
+        assertEquals(CommonStatusMessage.COMPLETED, response.getStatusMessage());
+
+        AnnotationCategoriesModel model = response.getModel();
+        assertNotNull(model);
+        assertEquals(1, model.getAnnotationCategories().size());
+        assertEquals(InstrumentedCallStackAnalysis.ANNOTATIONS, model.getAnnotationCategories().get(0));
+    }
+
+    /**
+     * Test fetchAnnotations with empty result
+     */
+    @Test
+    public void testFetchAnnotations() {
+        FlameChartDataProvider dataProvider = getDataProvider();
+        Map<String, Object> parameters = FetchParametersUtils.selectionTimeQueryToMap(
+                new SelectionTimeQueryFilter(0, Long.MAX_VALUE, 2, Collections.emptySet()));
+        TmfModelResponse<AnnotationModel> response = dataProvider.fetchAnnotations(parameters, MONITOR);
+        assertEquals(ITmfResponse.Status.COMPLETED, response.getStatus());
+        assertEquals(CommonStatusMessage.COMPLETED, response.getStatusMessage());
+
+        AnnotationModel model = response.getModel();
+        assertNotNull(model);
+        assertTrue(model.getAnnotations().containsKey(InstrumentedCallStackAnalysis.ANNOTATIONS));
+    }
+    /**
+     * Test fetchAnnotations with null filter returns completed with null model
+     */
+    @Test
+    public void testFetchAnnotationsNullFilter() {
+        FlameChartDataProvider dataProvider = getDataProvider();
+
+        Map<String, Object> parameters = Collections.emptyMap();
+        TmfModelResponse<AnnotationModel> response = dataProvider.fetchAnnotations(parameters, MONITOR);
+        assertEquals(ITmfResponse.Status.COMPLETED, response.getStatus());
+        assertEquals(CommonStatusMessage.COMPLETED, response.getStatusMessage());
+        assertNull(response.getModel());
+    }
+
+    /**
+     * Test fetchAnnotations style
+     */
+    @Test
+    public void testFetchAnnotationsOutputElementStyle() {
+        FlameChartDataProvider dataProvider = getDataProvider();
+
+        // Get tree to find entry IDs
+        TmfModelResponse<@NonNull TmfTreeModel<@NonNull FlameChartEntryModel>> treeResponse =
+            dataProvider.fetchTree(FetchParametersUtils.timeQueryToMap(new TimeQueryFilter(0, Long.MAX_VALUE, 2)), null);
+        TmfTreeModel<@NonNull FlameChartEntryModel> model = treeResponse.getModel();
+
+        if (model != null) {
+            List<FlameChartEntryModel> entries = model.getEntries();
+
+            // Find a function entry that should have annotations
+            FlameChartEntryModel functionEntry = entries.stream()
+                .filter(e -> e.getEntryType() == EntryType.FUNCTION)
+                .findFirst()
+                .orElse(null);
+            assertNotNull(functionEntry);
+
+            // 15 and 18 are timestamps with instant events
+            Map<String, Object> fetchParams = FetchParametersUtils.selectionTimeQueryToMap(
+                    new SelectionTimeQueryFilter(15, 18, 2, Collections.singleton(functionEntry.getId())));
+
+            // Fetch annotations
+            TmfModelResponse<AnnotationModel> response = dataProvider.fetchAnnotations(fetchParams, MONITOR);
+
+            assertEquals(ITmfResponse.Status.COMPLETED, response.getStatus());
+            AnnotationModel m = response.getModel();
+            assertNotNull(m);
+            Collection<@NonNull Annotation> annotations = m.getAnnotations().get(InstrumentedCallStackAnalysis.ANNOTATIONS);
+            assertNotNull(annotations);
+            assertFalse(annotations.isEmpty());
+
+            // Verify OutputElementStyle properties
+            Annotation annotation = annotations.iterator().next();
+            OutputElementStyle style = annotation.getStyle();
+            assertNotNull(style);
+
+            Map<String, Object> styleMap = style.getStyleValues();
+            assertEquals("#7D3D31", styleMap.get(StyleProperties.COLOR));
+            assertEquals(0.33f, styleMap.get(StyleProperties.HEIGHT));
+            assertEquals(SymbolType.DIAMOND, styleMap.get(StyleProperties.SYMBOL_TYPE));
+        }
+
+    }
+
+    /**
+     * Test annotation model structure and properties
+     */
+    @Test
+    public void testAnnotationModelStructure() {
+        FlameChartDataProvider dataProvider = getDataProvider();
+
+        Map<String, Object> parameters = FetchParametersUtils.selectionTimeQueryToMap(
+                new SelectionTimeQueryFilter(0, Long.MAX_VALUE, 2,Collections.emptySet()));
+        TmfModelResponse<AnnotationModel> response = dataProvider.fetchAnnotations(parameters, MONITOR);
+        assertEquals(ITmfResponse.Status.COMPLETED, response.getStatus());
+
+        AnnotationModel model = response.getModel();
+        assertNotNull(model);
+
+        assertEquals(1, model.getAnnotations().size());
+        assertTrue(model.getAnnotations().containsKey(InstrumentedCallStackAnalysis.ANNOTATIONS));
+        assertNotNull(model.getAnnotations().get(InstrumentedCallStackAnalysis.ANNOTATIONS));
+    }
+
+/**
+ * Test annotation model structure and properties
+ */
+@SuppressWarnings("null")
+@Test
+    public void testFetchValidAnnotations() {
+        FlameChartDataProvider dataProvider = getDataProvider();
+        TmfModelResponse<@NonNull TmfTreeModel<@NonNull FlameChartEntryModel>> treeResponse =
+                dataProvider.fetchTree(FetchParametersUtils.timeQueryToMap(new TimeQueryFilter(1, Long.MAX_VALUE, 2)), MONITOR);
+            assertEquals(ITmfResponse.Status.COMPLETED, treeResponse.getStatus());
+
+            TmfTreeModel<@NonNull FlameChartEntryModel> m = treeResponse.getModel();
+            // Get entry IDs from the same tree response
+            if(m != null) {
+                Set<Long> allEntryIds = m.getEntries().stream()
+                        .map(FlameChartEntryModel::getId)
+                        .collect(Collectors.toSet());
+
+
+            Map<String, Object> parameters = FetchParametersUtils.selectionTimeQueryToMap(
+                new SelectionTimeQueryFilter(1, Long.MAX_VALUE, 2, allEntryIds));
+
+            TmfModelResponse<AnnotationModel> response = dataProvider.fetchAnnotations(parameters, MONITOR);
+
+            assertNotNull(response);
+            assertEquals(ITmfResponse.Status.COMPLETED, response.getStatus());
+
+            AnnotationModel model = response.getModel();
+            assertNotNull(model);
+
+            Map<String, Collection<Annotation>> annotations = model.getAnnotations();
+            assertNotNull(annotations );
+            }
+    }
+
     private static void verifyArrows(List<ITimeGraphArrow> arrows, List<ITimeGraphArrow> expectedArrows) {
         assertEquals(expectedArrows.size(), arrows.size());
         for (ITimeGraphArrow expectedArrow : expectedArrows) {
-            for (ITimeGraphArrow arrow: arrows) {
+            for (ITimeGraphArrow arrow : arrows) {
                 if (arrow.getValue() == expectedArrow.getValue()) {
                     assertEquals("Duration for arrow " + arrow.getValue(), expectedArrow.getDuration(), arrow.getDuration());
                     assertEquals("Start time for arrow " + arrow.getValue(), expectedArrow.getStartTime(), arrow.getStartTime());
