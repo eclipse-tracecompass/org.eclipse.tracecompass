@@ -16,5 +16,6 @@ Require-Bundle: org.eclipse.tracecompass.common.core,
 Export-Package: org.eclipse.tracecompass.internal.jsontrace.core;x-internal:=true,
  org.eclipse.tracecompass.internal.jsontrace.core.job;x-friends:="org.eclipse.tracecompass.jsontrace.core.tests",
  org.eclipse.tracecompass.internal.provisional.jsontrace.core.trace;x-friends:="org.eclipse.tracecompass.jsontrace.core.tests"
-Import-Package: org.eclipse.tracecompass.traceeventlogger
+Import-Package: com.fasterxml.jackson.core,
+ org.eclipse.tracecompass.traceeventlogger
 Bundle-Activator: org.eclipse.tracecompass.internal.jsontrace.core.Activator

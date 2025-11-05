@@ -26,12 +26,17 @@ import org.eclipse.tracecompass.tmf.core.trace.ITmfContext;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
 import org.junit.Test;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+
 /**
  * Test generic Json trace
  *
  * @author Simon Delisle
  */
 public class JsonTraceTest {
+
+    private final Gson gson = new Gson();
 
     /**
      * Test the unsorted json trace
@@ -45,7 +50,7 @@ public class JsonTraceTest {
         long nbEvents = 5;
         ITmfTimestamp startTime = TmfTimestamp.fromNanos(1);
         ITmfTimestamp endTime = TmfTimestamp.fromNanos(5);
-        testJsonTrace(path, nbEvents, startTime, endTime);
+        testJsonTrace(path, nbEvents, startTime, endTime, "{\"events\":[]}");
     }
 
     /**
@@ -60,10 +65,59 @@ public class JsonTraceTest {
         long nbEvents = 5;
         ITmfTimestamp startTime = TmfTimestamp.fromNanos(1);
         ITmfTimestamp endTime = TmfTimestamp.fromNanos(5);
-        testJsonTrace(path, nbEvents, startTime, endTime);
+        testJsonTrace(path, nbEvents, startTime, endTime, "{\"events\":[]}");
     }
 
-    private static void testJsonTrace(String path, long expectedNbEvents, ITmfTimestamp startTime, ITmfTimestamp endTime)
+    /**
+     * Test the json trace with metadata
+     *
+     * @throws TmfTraceException
+     *             If there is a problem while initializing the trace
+     */
+    @Test
+    public void testMetadataBeginTrace() throws TmfTraceException {
+        String path = "traces/traceMetadataBegin.json"; //$NON-NLS-1$
+        long nbEvents = 6;
+        ITmfTimestamp startTime = TmfTimestamp.fromNanos(1730000000000L);
+        ITmfTimestamp endTime = TmfTimestamp.fromNanos(1730000005000L);
+        testJsonTrace(path, nbEvents, startTime, endTime,
+                "{\"events\":[], \"metadata\":{\"source\":\"sensor-A\",\"version\":1,\"generatedAt\":\"2025-10-23T12:00:00Z\"}}");
+    }
+
+    /**
+     * Test the json trace with metadata
+     *
+     * @throws TmfTraceException
+     *             If there is a problem while initializing the trace
+     */
+    @Test
+    public void testMetadataEndTrace() throws TmfTraceException {
+        String path = "traces/traceMetadataEnd.json"; //$NON-NLS-1$
+        long nbEvents = 5;
+        ITmfTimestamp startTime = TmfTimestamp.fromNanos(1730000000000L);
+        ITmfTimestamp endTime = TmfTimestamp.fromNanos(1730000004000L);
+        testJsonTrace(path, nbEvents, startTime, endTime,
+                "{\"events\":[], \"metadata\":{\"source\":\"sensor-A\",\"version\":1,\"generatedAt\":\"2025-10-23T12:00:00Z\"}}");
+    }
+
+    /**
+     * Test the json trace with metadata
+     *
+     * @throws TmfTraceException
+     *             If there is a problem while initializing the trace
+     */
+    @Test
+    public void testMetadataBeginEndTrace() throws TmfTraceException {
+        String path = "traces/traceMetadataBeginEnd.json"; //$NON-NLS-1$
+        long nbEvents = 5;
+        ITmfTimestamp startTime = TmfTimestamp.fromNanos(1730000000000L);
+        ITmfTimestamp endTime = TmfTimestamp.fromNanos(1730000004000L);
+        testJsonTrace(path, nbEvents, startTime, endTime,
+                "{\"events\":[], \"metadataStart\":{\"source\":\"sensor-A\",\"version\":1,\"generatedAt\":\"2025-10-23T12:00:00Z\"},"
+                + "\"metadataEnd\":{\"checksum\":\"abc123\",\"recordCount\":5,\"processedAt\":\"2025-10-23T12:05:00Z\"}}");
+    }
+
+    private void testJsonTrace(String path, long expectedNbEvents, ITmfTimestamp startTime, ITmfTimestamp endTime, String metadata)
             throws TmfTraceException {
         ITmfTrace trace = new JsonStubTrace();
         try {
@@ -88,9 +142,11 @@ public class JsonTraceTest {
             assertEquals(expectedNbEvents, trace.getNbEvents());
             assertEquals(startTime.toNanos(), trace.getStartTime().toNanos());
             assertEquals(endTime.toNanos(), trace.getEndTime().toNanos());
+            JsonElement expectedElement = gson.fromJson(metadata, JsonElement.class);
+            JsonElement actualElement = gson.fromJson(((JsonStubTrace) trace).fMetadata, JsonElement.class);
+            assertEquals(expectedElement, actualElement);
         } finally {
             trace.dispose();
         }
     }
-
 }

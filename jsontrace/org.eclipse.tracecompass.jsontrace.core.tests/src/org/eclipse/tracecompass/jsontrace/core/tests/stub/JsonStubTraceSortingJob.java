@@ -12,6 +12,7 @@
 package org.eclipse.tracecompass.jsontrace.core.tests.stub;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.eclipse.tracecompass.internal.jsontrace.core.job.SortingJob;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
@@ -32,7 +33,7 @@ public class JsonStubTraceSortingJob extends SortingJob {
      *            Trace path
      */
     public JsonStubTraceSortingJob(ITmfTrace trace, String path) {
-        super(trace, path, "\"timestamp\":", 1); //$NON-NLS-1$
+        super(trace, path, "\"timestamp\":", List.of("events")); //$NON-NLS-1$
     }
 
     @Override
@@ -40,4 +41,8 @@ public class JsonStubTraceSortingJob extends SortingJob {
         // No metadata to process
     }
 
+    @Override
+    protected void processMetadataJson(ITmfTrace trace, String metadata) {
+        ((JsonStubTrace) trace).fMetadata = metadata;
+    }
 }
