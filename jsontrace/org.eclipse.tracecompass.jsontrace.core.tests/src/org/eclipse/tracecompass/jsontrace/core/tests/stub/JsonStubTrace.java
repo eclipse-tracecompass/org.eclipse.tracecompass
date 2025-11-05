@@ -48,6 +48,10 @@ public class JsonStubTrace extends JsonTrace {
 
     private static final String TIMESTAMP_KEY = "timestamp"; //$NON-NLS-1$
     private Gson GSON = new Gson();
+    /**
+     * metadata string
+     */
+    public String fMetadata;
 
     @Override
     public void initTrace(IResource resource, String path, Class<? extends ITmfEvent> type) throws TmfTraceException {
@@ -80,11 +84,10 @@ public class JsonStubTrace extends JsonTrace {
 
     @Override
     public IStatus validate(IProject project, String path) {
-        // Slow, but meh, it's a unit test and this is more readable.
-        if (path.matches("traces/.*sortedTrace.json")) { //$NON-NLS-1$
+        if (path.matches("traces/*.json")) { //$NON-NLS-1$
             return new TraceValidationStatus(MAX_CONFIDENCE, "json.trace.stub"); //$NON-NLS-1$
         }
-        return Status.CANCEL_STATUS;
+        return Status.error("Test trace was not validated");
     }
 
     @Override

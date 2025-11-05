@@ -1,0 +1,15 @@
+{
+  "metadata": {
+    "source": "sensor-A",
+    "version": 1,
+    "generatedAt": "2025-10-23T12:00:00Z"
+  },
+  "events": [
+    {"timestamp": 1730000000000, "eventContent": {"description": "Event 0"}},
+    {"timestamp": 1730000001000, "eventContent": {"description": "Event 1"}},
+    {"timestamp": 1730000002000, "eventContent": {"description": "Event 2"}},
+    {"timestamp": 1730000003000, "eventContent": {"description": "Event 3"}},
+    {"timestamp": 1730000004000, "eventContent": {"description": "Event 4"}},
+	{"timestamp": 1730000005000, "eventContent": {"description": "Event 5"}}
+  ]
+}
