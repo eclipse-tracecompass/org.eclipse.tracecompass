@@ -204,6 +204,15 @@
 <field name="pid" type="string" value="5" />
 <field name="tid" type="string" value="7" />
 </event>
+<event timestamp="19" name="nestable_instant">
+<field name="ph" value="n" type="string" />
+<field name="tid" value="2" type="string" />
+<field name="pid" type="string" value="1" />
+<field name="name" value="parse_step" type="string" />
+<field name="id" value="0x123" type="string" />
+<field name="cat" value="parser" type="string" />
+</event>
+
 <event timestamp="20" name="exit">
 <field name="op" type="string" value="op2" />
 <field name="pid" type="string" value="1" />
