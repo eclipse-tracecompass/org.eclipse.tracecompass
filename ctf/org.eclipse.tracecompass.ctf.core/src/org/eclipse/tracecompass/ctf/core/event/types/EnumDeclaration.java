@@ -46,6 +46,8 @@ import com.google.common.collect.Multimap;
  */
 public final class EnumDeclaration extends Declaration implements ISimpleDatatypeDeclaration {
 
+    private static final int CACHE_SIZE = 4096;
+
     /**
      * A pair of longs class
      *
@@ -111,6 +113,7 @@ public final class EnumDeclaration extends Declaration implements ISimpleDatatyp
     private final Multimap<Pair, String> fEnumMap = LinkedHashMultimap.create();
     private final IntegerDeclaration fContainerType;
     private Pair fLastAdded = new Pair(-1, -1);
+    private @Nullable String[] fCache = new String[CACHE_SIZE];
 
     // ------------------------------------------------------------------------
     // Constructors
@@ -141,7 +144,7 @@ public final class EnumDeclaration extends Declaration implements ISimpleDatatyp
      *            Existing enum declaration table
      * @since 2.3
      */
-    public EnumDeclaration(IntegerDeclaration containerType, Map<Pair, String> enumTree){
+    public EnumDeclaration(IntegerDeclaration containerType, Map<Pair, String> enumTree) {
         fContainerType = containerType;
         enumTree.entrySet().forEach(entry -> fEnumMap.put(entry.getKey(), entry.getValue()));
     }
@@ -212,6 +215,21 @@ public final class EnumDeclaration extends Declaration implements ISimpleDatatyp
         if (high < low) {
             return false;
         }
+        if (low < 0 || low >= CACHE_SIZE - 1 || high < 0 || high >= CACHE_SIZE - 1) {
+            fCache = null;
+        }
+        for (int i = (int) low; i <= high; i++) { // high is inclusive
+            if (fCache != null) {
+                if (fCache[i] == null) {
+                    fCache[i] = label;
+                } else {
+                    fCache = null;
+                    break;
+                }
+            } else {
+                break;
+            }
+        }
         Pair key = new Pair(low, high);
         fEnumMap.put(key, label);
         fLastAdded = key;
@@ -241,6 +259,12 @@ public final class EnumDeclaration extends Declaration implements ISimpleDatatyp
      * @return the label of that value, can be null
      */
     public @Nullable String query(long value) {
+        if (fCache != null) {
+            if (value < 0 || value >= CACHE_SIZE) {
+                return null;
+            }
+            return fCache[(int) value];
+        }
         List<String> strValues = new ArrayList<>();
         fEnumMap.forEach((k, v) -> {
             if (value >= k.getFirst() && value <= k.getSecond()) {
@@ -332,8 +356,8 @@ public final class EnumDeclaration extends Declaration implements ISimpleDatatyp
             return false;
         }
         /*
-         * Must iterate through the entry sets as the comparator used in the enum tree
-         * does not respect the contract
+         * Must iterate through the entry sets as the comparator used in the
+         * enum tree does not respect the contract
          */
         return Iterables.elementsEqual(fEnumMap.entries(), other.fEnumMap.entries());
     }
@@ -354,8 +378,8 @@ public final class EnumDeclaration extends Declaration implements ISimpleDatatyp
             return false;
         }
         /*
-         * Must iterate through the entry sets as the comparator used in the enum tree
-         * does not respect the contract
+         * Must iterate through the entry sets as the comparator used in the
+         * enum tree does not respect the contract
          */
         return Iterables.elementsEqual(fEnumMap.entries(), other.fEnumMap.entries());
     }
