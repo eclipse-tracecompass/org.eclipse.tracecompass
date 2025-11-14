@@ -18,6 +18,7 @@ import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +46,9 @@ import com.google.common.collect.Multimap;
  * @author Simon Marchi
  */
 public final class EnumDeclaration extends Declaration implements ISimpleDatatypeDeclaration {
+
+    private static final int CACHE_SIZE = 256;
+    private Map<Long, String> fCache = new HashMap<>();
 
     /**
      * A pair of longs class
@@ -141,7 +145,7 @@ public final class EnumDeclaration extends Declaration implements ISimpleDatatyp
      *            Existing enum declaration table
      * @since 2.3
      */
-    public EnumDeclaration(IntegerDeclaration containerType, Map<Pair, String> enumTree){
+    public EnumDeclaration(IntegerDeclaration containerType, Map<Pair, String> enumTree) {
         fContainerType = containerType;
         enumTree.entrySet().forEach(entry -> fEnumMap.put(entry.getKey(), entry.getValue()));
     }
@@ -241,37 +245,50 @@ public final class EnumDeclaration extends Declaration implements ISimpleDatatyp
      * @return the label of that value, can be null
      */
     public @Nullable String query(long value) {
-        List<String> strValues = new ArrayList<>();
-        fEnumMap.forEach((k, v) -> {
-            if (value >= k.getFirst() && value <= k.getSecond()) {
-                strValues.add(v);
-            }
-        });
-        if (!strValues.isEmpty()) {
-            return strValues.size() == 1 ? strValues.get(0) : strValues.toString();
-        }
-        /*
-         * Divide the positive value in bits and see if there is a value for all
-         * those bits
-         */
-        List<String> flagsSet = new ArrayList<>();
-        for (int i = 0; i < Long.SIZE; i++) {
-            Long bitValue = 1L << i;
-            if ((bitValue & value) != 0) {
-                /*
-                 * See if there is a value for this bit where lower == upper, no
-                 * range accepted here
-                 */
-                Pair bitPair = new Pair(bitValue, bitValue);
-                Collection<String> flagValues = fEnumMap.get(bitPair);
-                if (flagValues.isEmpty()) {
-                    // No value for this bit, not an enum flag
-                    return null;
+        String retVal = fCache.get(value);
+        if (retVal == null) {
+            List<String> strValues = new ArrayList<>();
+            fEnumMap.forEach((k, v) -> {
+                if (value >= k.getFirst() && value <= k.getSecond()) {
+                    strValues.add(v);
                 }
-                flagsSet.add(flagValues.size() == 1 ? flagValues.iterator().next() : flagValues.toString());
+            });
+            if (!strValues.isEmpty()) {
+                retVal = strValues.size() == 1 ? strValues.get(0) : strValues.toString();
+                fCache.put(value, retVal);
+                if (fCache.size() > CACHE_SIZE) {
+                    fCache.remove(fCache.keySet().toArray()[0]);
+                }
+                return retVal;
+            }
+            /*
+             * Divide the positive value in bits and see if there is a value for
+             * all those bits
+             */
+            List<String> flagsSet = new ArrayList<>();
+            for (int i = 0; i < Long.SIZE; i++) {
+                Long bitValue = 1L << i;
+                if ((bitValue & value) != 0) {
+                    /*
+                     * See if there is a value for this bit where lower ==
+                     * upper, no range accepted here
+                     */
+                    Pair bitPair = new Pair(bitValue, bitValue);
+                    Collection<String> flagValues = fEnumMap.get(bitPair);
+                    if (flagValues.isEmpty()) {
+                        // No value for this bit, not an enum flag
+                        return null;
+                    }
+                    flagsSet.add(flagValues.size() == 1 ? flagValues.iterator().next() : flagValues.toString());
+                }
+            }
+            retVal = flagsSet.isEmpty() ? null : String.join(" | ", flagsSet); //$NON-NLS-1$
+            fCache.put(value, retVal);
+            if (fCache.size() > CACHE_SIZE) {
+                fCache.remove(fCache.keySet().toArray()[0]);
             }
         }
-        return flagsSet.isEmpty() ? null : String.join(" | ", flagsSet); //$NON-NLS-1$
+        return retVal;
     }
 
     /**
@@ -332,8 +349,8 @@ public final class EnumDeclaration extends Declaration implements ISimpleDatatyp
             return false;
         }
         /*
-         * Must iterate through the entry sets as the comparator used in the enum tree
-         * does not respect the contract
+         * Must iterate through the entry sets as the comparator used in the
+         * enum tree does not respect the contract
          */
         return Iterables.elementsEqual(fEnumMap.entries(), other.fEnumMap.entries());
     }
@@ -354,8 +371,8 @@ public final class EnumDeclaration extends Declaration implements ISimpleDatatyp
             return false;
         }
         /*
-         * Must iterate through the entry sets as the comparator used in the enum tree
-         * does not respect the contract
+         * Must iterate through the entry sets as the comparator used in the
+         * enum tree does not respect the contract
          */
         return Iterables.elementsEqual(fEnumMap.entries(), other.fEnumMap.entries());
     }

@@ -21,7 +21,12 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.FileChannel.MapMode;
 import java.nio.file.StandardOpenOption;
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Executor;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.ctf.core.CTFException;
@@ -32,7 +37,7 @@ import org.eclipse.tracecompass.ctf.core.event.types.IDeclaration;
 import org.eclipse.tracecompass.ctf.core.event.types.StructDeclaration;
 import org.eclipse.tracecompass.internal.ctf.core.CtfCoreLoggerUtil;
 import org.eclipse.tracecompass.internal.ctf.core.SafeMappedByteBuffer;
-import org.eclipse.tracecompass.internal.ctf.core.trace.CTFPacketReader;
+import org.eclipse.tracecompass.internal.ctf.core.trace.CTFThreadedPacketReader;
 import org.eclipse.tracecompass.internal.ctf.core.trace.NullPacketReader;
 
 /**
@@ -50,6 +55,56 @@ public class CTFStreamInputReader implements AutoCloseable {
     // ------------------------------------------------------------------------
     // Attributes
     // ------------------------------------------------------------------------
+
+    private final class ExecutorClass implements Executor {
+        BlockingQueue<@NonNull Runnable> fQueue = new ArrayBlockingQueue<>(16);
+        Thread fThread = new Thread() {
+            @Override
+            public void run() {
+                try {
+                    Runnable runnable = fQueue.take();
+                    while (runnable != POISON_PILL) {
+                        runnable.run();
+                        runnable = fQueue.take();
+                    }
+                } catch (InterruptedException e) {
+                    // don't consume it
+                }
+            }
+        };
+
+        private ExecutorClass(String fileName) {
+            fThread.setName("StreamReader: " + fileName); //$NON-NLS-1$
+            fThread.start();
+            Thread.currentThread().setName("Stream enqueuer"); //$NON-NLS-1$
+        }
+
+        @Override
+        public void execute(@Nullable Runnable command) {
+            if (command != null) {
+                try {
+                    fQueue.put(command);
+                } catch (InterruptedException e) {
+
+                }
+            }
+
+        }
+
+        Runnable POISON_PILL = new Runnable() {
+
+            @Override
+            public void run() {
+            }
+        };
+
+        public void terminate() throws InterruptedException {
+            fQueue.put(POISON_PILL);
+            fThread.join();
+        }
+    }
+
+    private Executor fStreamConsumer;
 
     /**
      * The StreamInput we are reading.
@@ -97,6 +152,7 @@ public class CTFStreamInputReader implements AutoCloseable {
     public CTFStreamInputReader(CTFStreamInput streamInput) throws CTFException {
         fStreamInput = streamInput;
         fFile = fStreamInput.getFile();
+        fStreamConsumer = new ExecutorClass(String.valueOf(fFile));
         try {
             fFileChannel = FileChannel.open(fFile.toPath(), StandardOpenOption.READ);
         } catch (IOException e) {
@@ -141,7 +197,7 @@ public class CTFStreamInputReader implements AutoCloseable {
             bitBuffer.position(packet.getPayloadStartBits());
             IDeclaration eventHeaderDeclaration = getStreamInput().getStream().getEventHeaderDeclaration();
             CTFTrace trace = getStreamInput().getStream().getTrace();
-            ctfPacketReader = new CTFPacketReader(bitBuffer, packet, getEventDeclarations(), eventHeaderDeclaration, getStreamEventContextDecl(), trace.getPacketHeaderDef(), trace);
+            ctfPacketReader = new CTFThreadedPacketReader(fStreamConsumer, bitBuffer, packet, getEventDeclarations(), eventHeaderDeclaration, getStreamEventContextDecl(), Objects.requireNonNull(trace.getPacketHeaderDef()), trace);
         }
         return ctfPacketReader;
     }
@@ -178,6 +234,10 @@ public class CTFStreamInputReader implements AutoCloseable {
     public void close() throws IOException {
         if (fFileChannel != null) {
             fFileChannel.close();
+        }
+        try {
+            ((ExecutorClass) fStreamConsumer).terminate();
+        } catch (InterruptedException e) {
         }
         fPacketReader = NullPacketReader.INSTANCE;
     }
