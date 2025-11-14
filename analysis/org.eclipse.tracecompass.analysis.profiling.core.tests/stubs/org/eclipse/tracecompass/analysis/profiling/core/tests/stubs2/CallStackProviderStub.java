@@ -34,7 +34,10 @@ public class CallStackProviderStub extends CallStackStateProvider {
 
     private static final String ENTRY = "entry";
     private static final String EXIT = "exit";
-
+    /** Nested event  */
+    public static final String NESTABLE_INSTANT = "n"; //$NON-NLS-1$
+    /** Instant event */
+    public static final String INSTANT = "i"; //$NON-NLS-1$
     /**
      * Constructor
      *
@@ -109,7 +112,12 @@ public class CallStackProviderStub extends CallStackStateProvider {
         }
         // Handle instant events
         ITmfEventField phField = event.getContent().getField("ph");
-        if (phField != null && "i".equals(phField.getValue())) {
+        if (phField != null && INSTANT.equals(phField.getValue())) {
+            handleInstant(event);
+            return;
+        }
+        //  Handle nested events
+        if (phField != null && NESTABLE_INSTANT.equals(phField.getValue())) {
             handleInstant(event);
             return;
         }

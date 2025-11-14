@@ -77,7 +77,7 @@ public class FlameChartDataProviderTest extends CallStackTestBase2 {
     private static final String CALLSTACKIEVENTS_FILE = "testfiles/traces/callstackIevents.xml";
 
     public FlameChartDataProviderTest() {
-        super( CALLSTACKIEVENTS_FILE);
+        super(CALLSTACKIEVENTS_FILE);
     }
 
     private FlameChartDataProvider getDataProvider() {
@@ -485,6 +485,7 @@ public class FlameChartDataProviderTest extends CallStackTestBase2 {
         assertNotNull(model);
         assertTrue(model.getAnnotations().containsKey(InstrumentedCallStackAnalysis.ANNOTATIONS));
     }
+
     /**
      * Test fetchAnnotations with null filter returns completed with null model
      */
@@ -507,8 +508,7 @@ public class FlameChartDataProviderTest extends CallStackTestBase2 {
         FlameChartDataProvider dataProvider = getDataProvider();
 
         // Get tree to find entry IDs
-        TmfModelResponse<@NonNull TmfTreeModel<@NonNull FlameChartEntryModel>> treeResponse =
-            dataProvider.fetchTree(FetchParametersUtils.timeQueryToMap(new TimeQueryFilter(0, Long.MAX_VALUE, 2)), null);
+        TmfModelResponse<@NonNull TmfTreeModel<@NonNull FlameChartEntryModel>> treeResponse = dataProvider.fetchTree(FetchParametersUtils.timeQueryToMap(new TimeQueryFilter(0, Long.MAX_VALUE, 2)), null);
         TmfTreeModel<@NonNull FlameChartEntryModel> model = treeResponse.getModel();
 
         if (model != null) {
@@ -516,16 +516,15 @@ public class FlameChartDataProviderTest extends CallStackTestBase2 {
 
             // Find a function entry that should have annotations
             FlameChartEntryModel functionEntry = entries.stream()
-                .filter(e -> e.getEntryType() == EntryType.FUNCTION)
-                .findFirst()
-                .orElse(null);
+                    .filter(e -> e.getEntryType() == EntryType.FUNCTION)
+                    .findFirst()
+                    .orElse(null);
             assertNotNull(functionEntry);
 
-            // 15 and 18 are timestamps with instant events
+            // Test both instant and nestable events (timestamps 15, 16, 20)
             Map<String, Object> fetchParams = FetchParametersUtils.selectionTimeQueryToMap(
-                    new SelectionTimeQueryFilter(15, 18, 2, Collections.singleton(functionEntry.getId())));
+                    new SelectionTimeQueryFilter(15, 20, 3, Collections.singleton(functionEntry.getId())));
 
-            // Fetch annotations
             TmfModelResponse<AnnotationModel> response = dataProvider.fetchAnnotations(fetchParams, MONITOR);
 
             assertEquals(ITmfResponse.Status.COMPLETED, response.getStatus());
@@ -535,15 +534,18 @@ public class FlameChartDataProviderTest extends CallStackTestBase2 {
             assertNotNull(annotations);
             assertFalse(annotations.isEmpty());
 
-            // Verify OutputElementStyle properties
-            Annotation annotation = annotations.iterator().next();
-            OutputElementStyle style = annotation.getStyle();
-            assertNotNull(style);
+            // Verify OutputElementStyle properties for all annotations (instant
+            // and nestable)
+            for (Annotation annotation : annotations) {
+                OutputElementStyle style = annotation.getStyle();
+                assertNotNull(style);
 
-            Map<String, Object> styleMap = style.getStyleValues();
-            assertEquals("#7D3D31", styleMap.get(StyleProperties.COLOR));
-            assertEquals(0.33f, styleMap.get(StyleProperties.HEIGHT));
-            assertEquals(SymbolType.DIAMOND, styleMap.get(StyleProperties.SYMBOL_TYPE));
+                Map<String, Object> styleMap = style.getStyleValues();
+                assertEquals("#7D3D31", styleMap.get(StyleProperties.COLOR));
+                assertEquals(0.33f, styleMap.get(StyleProperties.HEIGHT));
+                assertEquals(SymbolType.DIAMOND, styleMap.get(StyleProperties.SYMBOL_TYPE));
+            }
+
         }
 
     }
@@ -556,7 +558,7 @@ public class FlameChartDataProviderTest extends CallStackTestBase2 {
         FlameChartDataProvider dataProvider = getDataProvider();
 
         Map<String, Object> parameters = FetchParametersUtils.selectionTimeQueryToMap(
-                new SelectionTimeQueryFilter(0, Long.MAX_VALUE, 2,Collections.emptySet()));
+                new SelectionTimeQueryFilter(0, Long.MAX_VALUE, 2, Collections.emptySet()));
         TmfModelResponse<AnnotationModel> response = dataProvider.fetchAnnotations(parameters, MONITOR);
         assertEquals(ITmfResponse.Status.COMPLETED, response.getStatus());
 
@@ -568,27 +570,25 @@ public class FlameChartDataProviderTest extends CallStackTestBase2 {
         assertNotNull(model.getAnnotations().get(InstrumentedCallStackAnalysis.ANNOTATIONS));
     }
 
-/**
- * Test annotation model structure and properties
- */
-@SuppressWarnings("null")
-@Test
+    /**
+     * Test annotation model structure and properties
+     */
+    @SuppressWarnings("null")
+    @Test
     public void testFetchValidAnnotations() {
         FlameChartDataProvider dataProvider = getDataProvider();
-        TmfModelResponse<@NonNull TmfTreeModel<@NonNull FlameChartEntryModel>> treeResponse =
-                dataProvider.fetchTree(FetchParametersUtils.timeQueryToMap(new TimeQueryFilter(1, Long.MAX_VALUE, 2)), MONITOR);
-            assertEquals(ITmfResponse.Status.COMPLETED, treeResponse.getStatus());
+        TmfModelResponse<@NonNull TmfTreeModel<@NonNull FlameChartEntryModel>> treeResponse = dataProvider.fetchTree(FetchParametersUtils.timeQueryToMap(new TimeQueryFilter(1, Long.MAX_VALUE, 2)), MONITOR);
+        assertEquals(ITmfResponse.Status.COMPLETED, treeResponse.getStatus());
 
-            TmfTreeModel<@NonNull FlameChartEntryModel> m = treeResponse.getModel();
-            // Get entry IDs from the same tree response
-            if(m != null) {
-                Set<Long> allEntryIds = m.getEntries().stream()
-                        .map(FlameChartEntryModel::getId)
-                        .collect(Collectors.toSet());
-
+        TmfTreeModel<@NonNull FlameChartEntryModel> m = treeResponse.getModel();
+        // Get entry IDs from the same tree response
+        if (m != null) {
+            Set<Long> allEntryIds = m.getEntries().stream()
+                    .map(FlameChartEntryModel::getId)
+                    .collect(Collectors.toSet());
 
             Map<String, Object> parameters = FetchParametersUtils.selectionTimeQueryToMap(
-                new SelectionTimeQueryFilter(1, Long.MAX_VALUE, 2, allEntryIds));
+                    new SelectionTimeQueryFilter(1, Long.MAX_VALUE, 2, allEntryIds));
 
             TmfModelResponse<AnnotationModel> response = dataProvider.fetchAnnotations(parameters, MONITOR);
 
@@ -599,8 +599,8 @@ public class FlameChartDataProviderTest extends CallStackTestBase2 {
             assertNotNull(model);
 
             Map<String, Collection<Annotation>> annotations = model.getAnnotations();
-            assertNotNull(annotations );
-            }
+            assertNotNull(annotations);
+        }
     }
 
     private static void verifyArrows(List<ITimeGraphArrow> arrows, List<ITimeGraphArrow> expectedArrows) {
