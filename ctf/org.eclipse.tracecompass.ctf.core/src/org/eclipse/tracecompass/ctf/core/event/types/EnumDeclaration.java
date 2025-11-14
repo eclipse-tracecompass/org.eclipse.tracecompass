@@ -17,7 +17,6 @@ package org.eclipse.tracecompass.ctf.core.event.types;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,9 +29,6 @@ import org.eclipse.tracecompass.ctf.core.event.io.BitBuffer;
 import org.eclipse.tracecompass.ctf.core.event.scope.IDefinitionScope;
 
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.LinkedHashMultimap;
-import com.google.common.collect.Multimap;
 
 /**
  * A CTF enum declaration.
@@ -102,15 +98,28 @@ public final class EnumDeclaration extends Declaration implements ISimpleDatatyp
         }
     }
 
+    /**
+     * Interval tree node for efficient range queries
+     */
+    private static class IntervalNode {
+        final Pair interval;
+        final List<String> labels;
+        long maxEnd;
+        IntervalNode left, right;
+
+        IntervalNode(Pair interval, String label) {
+            this.interval = interval;
+            this.labels = new ArrayList<>();
+            this.labels.add(label);
+            this.maxEnd = interval.getSecond();
+        }
+    }
+
     // ------------------------------------------------------------------------
     // Attributes
     // ------------------------------------------------------------------------
 
-    /**
-     * fEnumMap key is the Pair of low and high, value is the label. Overlap of
-     * keys in the map is allowed.
-     */
-    private final Multimap<Pair, String> fEnumMap = LinkedHashMultimap.create();
+    private IntervalNode fEnumRoot;
     private final IntegerDeclaration fContainerType;
     private Pair fLastAdded = new Pair(-1, -1);
     private @Nullable String[] fCache = new String[CACHE_SIZE];
@@ -146,7 +155,7 @@ public final class EnumDeclaration extends Declaration implements ISimpleDatatyp
      */
     public EnumDeclaration(IntegerDeclaration containerType, Map<Pair, String> enumTree) {
         fContainerType = containerType;
-        enumTree.entrySet().forEach(entry -> fEnumMap.put(entry.getKey(), entry.getValue()));
+        enumTree.entrySet().forEach(entry -> insert(entry.getKey(), entry.getValue()));
     }
 
     // ------------------------------------------------------------------------
@@ -231,9 +240,33 @@ public final class EnumDeclaration extends Declaration implements ISimpleDatatyp
             }
         }
         Pair key = new Pair(low, high);
-        fEnumMap.put(key, label);
+        insert(key, label);
         fLastAdded = key;
         return true;
+    }
+
+    private void insert(Pair interval, String label) {
+        fEnumRoot = insertNode(fEnumRoot, interval, label);
+    }
+
+    private IntervalNode insertNode(IntervalNode node, Pair interval, String label) {
+        if (node == null) {
+            return new IntervalNode(interval, label);
+        }
+
+        if (interval.equals(node.interval)) {
+            node.labels.add(label);
+            return node;
+        }
+
+        if (interval.getFirst() < node.interval.getFirst()) {
+            node.left = insertNode(node.left, interval, label);
+        } else {
+            node.right = insertNode(node.right, interval, label);
+        }
+
+        node.maxEnd = Math.max(node.maxEnd, interval.getSecond());
+        return node;
     }
 
     /**
@@ -266,14 +299,12 @@ public final class EnumDeclaration extends Declaration implements ISimpleDatatyp
             return fCache[(int) value];
         }
         List<String> strValues = new ArrayList<>();
-        fEnumMap.forEach((k, v) -> {
-            if (value >= k.getFirst() && value <= k.getSecond()) {
-                strValues.add(v);
-            }
-        });
+        queryIntersecting(fEnumRoot, value, strValues);
+
         if (!strValues.isEmpty()) {
             return strValues.size() == 1 ? strValues.get(0) : strValues.toString();
         }
+
         /*
          * Divide the positive value in bits and see if there is a value for all
          * those bits
@@ -282,20 +313,50 @@ public final class EnumDeclaration extends Declaration implements ISimpleDatatyp
         for (int i = 0; i < Long.SIZE; i++) {
             Long bitValue = 1L << i;
             if ((bitValue & value) != 0) {
-                /*
-                 * See if there is a value for this bit where lower == upper, no
-                 * range accepted here
-                 */
-                Pair bitPair = new Pair(bitValue, bitValue);
-                Collection<String> flagValues = fEnumMap.get(bitPair);
-                if (flagValues.isEmpty()) {
-                    // No value for this bit, not an enum flag
+                List<String> bitFlags = new ArrayList<>();
+                queryExact(fEnumRoot, bitValue, bitFlags);
+                if (bitFlags.isEmpty()) {
                     return null;
                 }
-                flagsSet.add(flagValues.size() == 1 ? flagValues.iterator().next() : flagValues.toString());
+                flagsSet.add(bitFlags.size() == 1 ? bitFlags.get(0) : bitFlags.toString());
             }
         }
         return flagsSet.isEmpty() ? null : String.join(" | ", flagsSet); //$NON-NLS-1$
+    }
+
+    private void queryIntersecting(IntervalNode node, long value, List<String> result) {
+        if (node == null || node.maxEnd < value) {
+            return;
+        }
+
+        if (value >= node.interval.getFirst() && value <= node.interval.getSecond()) {
+            result.addAll(node.labels);
+        }
+
+        if (node.left != null && node.left.maxEnd >= value) {
+            queryIntersecting(node.left, value, result);
+        }
+
+        queryIntersecting(node.right, value, result);
+    }
+
+    private void queryExact(IntervalNode node, long value, List<String> result) {
+        if (node == null) {
+            return;
+        }
+
+        if (node.interval.getFirst() == value && node.interval.getSecond() == value) {
+            result.addAll(node.labels);
+        }
+
+        if (value < node.interval.getFirst()) {
+            queryExact(node.left, value, result);
+        } else if (value > node.interval.getFirst()) {
+            queryExact(node.right, value, result);
+        } else {
+            queryExact(node.left, value, result);
+            queryExact(node.right, value, result);
+        }
     }
 
     /**
@@ -307,10 +368,20 @@ public final class EnumDeclaration extends Declaration implements ISimpleDatatyp
      */
     public Map<Pair, String> getLookupTable() {
         Map<Pair, String> table = new LinkedHashMap<>();
-        fEnumMap.asMap().forEach((k, v) -> {
-            table.put(k, v.size() == 1 ? v.iterator().next() : v.toString());
-        });
+        collectEntries(fEnumRoot, table);
         return table;
+    }
+
+    private void collectEntries(IntervalNode node, Map<Pair, String> table) {
+        if (node == null) {
+            return;
+        }
+
+        String value = node.labels.size() == 1 ? node.labels.get(0) : node.labels.toString();
+        table.put(node.interval, value);
+
+        collectEntries(node.left, table);
+        collectEntries(node.right, table);
     }
 
     /**
@@ -319,7 +390,19 @@ public final class EnumDeclaration extends Declaration implements ISimpleDatatyp
      * @return A set of labels of the enum, can be empty but not null
      */
     public Set<String> getLabels() {
-        return ImmutableSet.copyOf(fEnumMap.values());
+        List<String> labels = new ArrayList<>();
+        collectLabels(fEnumRoot, labels);
+        return ImmutableSet.copyOf(labels);
+    }
+
+    private void collectLabels(IntervalNode node, List<String> labels) {
+        if (node == null) {
+            return;
+        }
+
+        labels.addAll(node.labels);
+        collectLabels(node.left, labels);
+        collectLabels(node.right, labels);
     }
 
     @Override
@@ -337,7 +420,7 @@ public final class EnumDeclaration extends Declaration implements ISimpleDatatyp
 
     @Override
     public int hashCode() {
-        return Objects.hash(fContainerType, fEnumMap);
+        return Objects.hash(fContainerType, getLookupTable());
     }
 
     @Override
@@ -355,11 +438,7 @@ public final class EnumDeclaration extends Declaration implements ISimpleDatatyp
         if (!fContainerType.equals(other.fContainerType)) {
             return false;
         }
-        /*
-         * Must iterate through the entry sets as the comparator used in the
-         * enum tree does not respect the contract
-         */
-        return Iterables.elementsEqual(fEnumMap.entries(), other.fEnumMap.entries());
+        return Objects.equals(getLookupTable(), other.getLookupTable());
     }
 
     @Override
@@ -377,11 +456,7 @@ public final class EnumDeclaration extends Declaration implements ISimpleDatatyp
         if (!fContainerType.isBinaryEquivalent(other.fContainerType)) {
             return false;
         }
-        /*
-         * Must iterate through the entry sets as the comparator used in the
-         * enum tree does not respect the contract
-         */
-        return Iterables.elementsEqual(fEnumMap.entries(), other.fEnumMap.entries());
+        return Objects.equals(getLookupTable(), other.getLookupTable());
     }
 
 }
