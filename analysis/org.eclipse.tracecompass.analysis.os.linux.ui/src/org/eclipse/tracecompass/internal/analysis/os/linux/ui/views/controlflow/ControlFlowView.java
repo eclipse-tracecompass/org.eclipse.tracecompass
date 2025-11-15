@@ -849,13 +849,9 @@ public class ControlFlowView extends BaseDataProviderTimeGraphView {
      *         does not have a thread entry model
      */
     public static @Nullable ThreadEntryModel getThreadEntryModel(ITimeGraphEntry entry) {
-        if (!(entry instanceof TimeGraphEntry)) {
-            return null;
+        if (entry instanceof TimeGraphEntry timeGraphEntry && timeGraphEntry.getEntryModel() instanceof ThreadEntryModel threadEntryModel) {
+            return threadEntryModel;
         }
-        ITmfTreeDataModel model = ((TimeGraphEntry) entry).getEntryModel();
-        if (!(model instanceof ThreadEntryModel)) {
-            return null;
-        }
-        return (ThreadEntryModel) model;
+        return null;
     }
 }
