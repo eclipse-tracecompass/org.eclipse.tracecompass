@@ -57,7 +57,7 @@ public abstract class CallStackAnalysis extends TmfStateSystemAnalysisModule imp
     /**
      * Annotations string state attribute
      *
-     * @since 2.6
+     * @since 2.7
      */
     public static final String ANNOTATIONS = "Markers"; //$NON-NLS-1$
 

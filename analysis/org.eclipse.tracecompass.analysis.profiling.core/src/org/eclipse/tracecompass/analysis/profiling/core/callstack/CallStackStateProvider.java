@@ -283,7 +283,7 @@ public abstract class CallStackStateProvider extends AbstractTmfStateProvider {
      *
      * @param event
      *            The event to add as a marker
-     * @since 2.6
+     * @since 2.7
      */
     protected void addMarker(ITmfEvent event) {
         // Do nothing, this is a placeholder for overriding.

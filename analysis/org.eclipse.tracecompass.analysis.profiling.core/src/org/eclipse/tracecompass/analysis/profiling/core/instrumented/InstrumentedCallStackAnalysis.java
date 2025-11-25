@@ -70,7 +70,7 @@ public abstract class InstrumentedCallStackAnalysis extends TmfStateSystemAnalys
     /**
      * Annotations string state attribute
      *
-     * @since 2.6
+     * @since 2.7
      */
     public static final String ANNOTATIONS = "Markers"; //$NON-NLS-1$
 
