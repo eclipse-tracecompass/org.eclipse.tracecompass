@@ -153,6 +153,11 @@ public class Messages extends NLS {
     public static @Nullable String SegmentStoreDensityDataProvider_title;
 
     /**
+     * Segment store density description
+     */
+    public static @Nullable String SegmentStoreDensityDataProvider_description;
+
+    /**
      * Segment store density total
      */
     public static @Nullable String SegmentStoreDensity_TotalLabel;
