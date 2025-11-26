@@ -5,7 +5,7 @@ Bundle-Vendor: %Bundle-Vendor
 Bundle-Localization: plugin
 Bundle-ActivationPolicy: lazy
 Bundle-SymbolicName: org.eclipse.tracecompass.jsontrace.core;singleton:=true
-Bundle-Version: 1.2.0.qualifier
+Bundle-Version: 1.2.1.qualifier
 Automatic-Module-Name: org.eclipse.tracecompass.jsontrace.core
 Bundle-RequiredExecutionEnvironment: JavaSE-17
 Require-Bundle: org.eclipse.tracecompass.common.core,
