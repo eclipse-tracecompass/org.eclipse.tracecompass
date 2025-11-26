@@ -76,5 +76,9 @@
             class="org.eclipse.tracecompass.internal.provisional.tmf.core.model.events.TmfEventTableDataProviderFactory"
             id="org.eclipse.tracecompass.internal.provisional.tmf.core.model.events.TmfEventTableDataProvider">
       </dataProviderFactory>
+       <dataProviderFactory
+            class="org.eclipse.tracecompass.internal.provisional.tmf.core.model.events.TmfRawEventsDataProviderFactory"
+            id="org.eclipse.tracecompass.tmf.core.model.events.data">
+      </dataProviderFactory>
    </extension>
 </plugin>
