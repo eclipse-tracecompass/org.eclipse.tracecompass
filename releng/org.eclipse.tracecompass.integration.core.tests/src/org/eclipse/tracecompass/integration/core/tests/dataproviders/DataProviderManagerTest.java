@@ -211,6 +211,29 @@ public class DataProviderManagerTest {
                 .setProviderType(ProviderType.TIME_GRAPH)
                 .setId("org.eclipse.tracecompass.internal.tmf.core.statesystem.provider.StateSystemDataProvider");
         EXPECTED_KERNEL_DP_DESCRIPTORS.add(builder.build());
+        builder.setName("IRQ Analysis - Latency Density")
+                .setDescription("Shows latency density distribution by Analysis module: IRQ Analysis")
+                .setProviderType(ProviderType.TREE_GENERIC_XY)
+                .setId("org.eclipse.tracecompass.internal.analysis.timing.core.segmentstore.SegmentStoreDensityDataProvider:lttng.analysis.irq");
+        EXPECTED_KERNEL_DP_DESCRIPTORS.add(builder.build());
+        builder = new DataProviderDescriptor.Builder();
+        builder.setName("Scheduler Wakeup to Scheduler Switch Latency - Latency Density")
+                .setDescription("Shows latency density distribution by Analysis module: Scheduler Wakeup to Scheduler Switch Latency")
+                .setProviderType(ProviderType.TREE_GENERIC_XY)
+                .setId("org.eclipse.tracecompass.internal.analysis.timing.core.segmentstore.SegmentStoreDensityDataProvider:org.eclipse.tracecompass.analysis.os.linux.core.swslatency.sws");
+        EXPECTED_KERNEL_DP_DESCRIPTORS.add(builder.build());
+        builder = new DataProviderDescriptor.Builder();
+        builder.setName("Futex Contention Analysis - Latency Density")
+                .setDescription("Shows latency density distribution by Analysis module: Futex Contention Analysis")
+                .setProviderType(ProviderType.TREE_GENERIC_XY)
+                .setId("org.eclipse.tracecompass.internal.analysis.timing.core.segmentstore.SegmentStoreDensityDataProvider:lttng.analysis.futex");
+        EXPECTED_KERNEL_DP_DESCRIPTORS.add(builder.build());
+        builder = new DataProviderDescriptor.Builder();
+        builder.setName("System Call Latency - Latency Density")
+                .setDescription("Shows latency density distribution by Analysis module: System Call Latency")
+                .setProviderType(ProviderType.TREE_GENERIC_XY)
+                .setId("org.eclipse.tracecompass.internal.analysis.timing.core.segmentstore.SegmentStoreDensityDataProvider:org.eclipse.tracecompass.analysis.os.linux.latency.syscall");
+        EXPECTED_KERNEL_DP_DESCRIPTORS.add(builder.build());
 
         // UST Trace
         builder = new DataProviderDescriptor.Builder();
@@ -292,7 +315,18 @@ public class DataProviderManagerTest {
                 .setProviderType(ProviderType.TIME_GRAPH)
                 .setId("org.eclipse.tracecompass.internal.tmf.core.statesystem.provider.StateSystemDataProvider");
         EXPECTED_UST_DP_DESCRIPTORS.add(builder.build());
-
+        builder = new DataProviderDescriptor.Builder();
+        builder.setName("LTTng-UST CallStack - Latency Density")
+                .setDescription("Shows latency density distribution by Analysis module: LTTng-UST CallStack")
+                .setProviderType(ProviderType.TREE_GENERIC_XY)
+                .setId("org.eclipse.tracecompass.internal.analysis.timing.core.segmentstore.SegmentStoreDensityDataProvider:org.eclipse.linuxtools.lttng2.ust.analysis.callstack");
+        EXPECTED_UST_DP_DESCRIPTORS.add(builder.build());
+        builder = new DataProviderDescriptor.Builder();
+        builder.setName("LTTng-UST CallStack (new) - Latency Density")
+                .setDescription("Shows latency density distribution by Analysis module: LTTng-UST CallStack (new)")
+                .setProviderType(ProviderType.TREE_GENERIC_XY)
+                .setId("org.eclipse.tracecompass.internal.analysis.timing.core.segmentstore.SegmentStoreDensityDataProvider:org.eclipse.tracecompass.lttng2.ust.core.analysis.callstack");
+        EXPECTED_UST_DP_DESCRIPTORS.add(builder.build());
         EXPECTED_EXPERIMENT_SET.addAll(EXPECTED_UST_DP_DESCRIPTORS);
         EXPECTED_EXPERIMENT_SET.addAll(EXPECTED_KERNEL_DP_DESCRIPTORS);
         // Additional Experiment Traces
@@ -313,6 +347,12 @@ public class DataProviderManagerTest {
                 .setDescription("Show latency statistics provided by Analysis module: Event Matching Latency")
                 .setProviderType(ProviderType.DATA_TREE)
                 .setId("org.eclipse.tracecompass.analysis.timing.core.segmentstore.SegmentStoreStatisticsDataProvider:org.eclipse.tracecompass.internal.analysis.timing.core.event.matching");
+        EXPECTED_EXPERIMENT_SET.add(builder.build());
+        builder = new DataProviderDescriptor.Builder();
+        builder.setName("Event Matching Latency - Latency Density")
+                .setDescription("Shows latency density distribution by Analysis module: Event Matching Latency")
+                .setProviderType(ProviderType.TREE_GENERIC_XY)
+                .setId("org.eclipse.tracecompass.internal.analysis.timing.core.segmentstore.SegmentStoreDensityDataProvider:org.eclipse.tracecompass.internal.analysis.timing.core.event.matching");
         EXPECTED_EXPERIMENT_SET.add(builder.build());
 
     }
@@ -371,7 +411,6 @@ public class DataProviderManagerTest {
         Set<IDataProviderDescriptor> ustDescriptorsSet = new HashSet<>(ustDescriptors);
         List<IDataProviderDescriptor> expDescriptors = DataProviderManager.getInstance().getAvailableProviders(fExperiment);
         Set<IDataProviderDescriptor> expDescriptorsSet = new HashSet<>(expDescriptors);
-
         assertTrue(kernelDescriptorSet.equals(EXPECTED_KERNEL_DP_DESCRIPTORS));
         assertTrue(ustDescriptorsSet.equals(EXPECTED_UST_DP_DESCRIPTORS));
         assertTrue(expDescriptorsSet.equals(EXPECTED_EXPERIMENT_SET));
