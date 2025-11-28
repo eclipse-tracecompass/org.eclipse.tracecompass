@@ -50,7 +50,7 @@ These views can be extended or tailored for specific trace types (e.g. kernel, H
 == LTTng integration ==
 
 One of the main features of Trace Compass is the LTTng integration. LTTng (Linux Trace Toolkit, next generation) is a highly efficient tracing tool for Linux that can be used to track down kernel and application performance issues as well as troubleshoot problems involving multiple concurrent processes and threads. It consists of a set of kernel modules, daemons - to collect the raw tracing data - and a set of tools to control, visualize and analyze the generated data. It also provides support for user space application instrumentation.
-For more information about LTTng, refer to the project [https://lttng.org site]
+For more information about LTTng, refer to the project [https://lttng.org LTTng project site]
 
 '''Note''': This User Guide covers the integration of the latest LTTng (up to v2.4) in Eclipse.
 
@@ -100,7 +100,7 @@ For other distributions, older Ubuntu distributions, or the latest, bleeding edg
 
 == Trace Compass Plug-ins ==
 
-The easiest way to install the Trace Compass plug-ins for Eclipse is through the Install New Software menu. For information on how to use this menu, refer to this [http://help.eclipse.org/luna/index.jsp?topic=%2Forg.eclipse.platform.doc.user%2Ftasks%2Ftasks-124.htm link].
+The easiest way to install the Trace Compass plug-ins for Eclipse is through the Install New Software menu. For information on how to use this menu, refer to this [https://help.eclipse.org/luna/index.jsp?topic=%2Forg.eclipse.platform.doc.user%2Ftasks%2Ftasks-124.htm link].
 
 The Trace Compass main plug-ins are structured as a stack of features/plug-ins as following:
 
