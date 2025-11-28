@@ -50,7 +50,7 @@ These views can be extended or tailored for specific trace types (e.g. kernel, H
 == LTTng integration ==
 
 One of the main features of Trace Compass is the LTTng integration. LTTng (Linux Trace Toolkit, next generation) is a highly efficient tracing tool for Linux that can be used to track down kernel and application performance issues as well as troubleshoot problems involving multiple concurrent processes and threads. It consists of a set of kernel modules, daemons - to collect the raw tracing data - and a set of tools to control, visualize and analyze the generated data. It also provides support for user space application instrumentation.
-For more information about LTTng, refer to the project [http://lttng.org site]
+For more information about LTTng, refer to the project [https://lttng.org LTTng project site]
 
 '''Note''': This User Guide covers the integration of the latest LTTng (up to v2.4) in Eclipse.
 
@@ -78,7 +78,7 @@ Also, the LTTng plug-ins supports the following User Space traces views:
 Finally, the LTTng plug-ins supports the following Control views:
 * ''Control'' - to control the tracer and configure the tracepoints
 
-Although the control and fetching parts are targeted at the LTTng tracer, the underlying framework can also be used to process any trace that complies with the ''Common Trace Format'' ([http://www.efficios.com/ctf CTF]). CTF specifies a very efficient and compact binary trace format that is meant to be application-, architecture-, and language-agnostic.
+Although the control and fetching parts are targeted at the LTTng tracer, the underlying framework can also be used to process any trace that complies with the ''Common Trace Format'' ([https://diamon.org/ctf/v1.8.3/]). CTF specifies a very efficient and compact binary trace format that is meant to be application-, architecture-, and language-agnostic.
 
 = Installation =
 
@@ -94,13 +94,13 @@ The tracer and tools have been available for download in Ubuntu since 12.04. The
   > sudo apt-get install lttng-tools
 </pre>
 
-For other distributions, older Ubuntu distributions, or the latest, bleeding edge LTTng tracer, please refer to the [http://lttng.org/download LTTng website] for installation information.
+For other distributions, older Ubuntu distributions, or the latest, bleeding edge LTTng tracer, please refer to the [https://lttng.org/download LTTng website] for installation information.
 
 '''Note''': The LTTng tracer (and accompanying tools) is required only if you want to create your own traces (the usual case). If you intend to simply analyze existing traces then it is not necessary to install the tracer.
 
 == Trace Compass Plug-ins ==
 
-The easiest way to install the Trace Compass plug-ins for Eclipse is through the Install New Software menu. For information on how to use this menu, refer to this [http://help.eclipse.org/luna/index.jsp?topic=%2Forg.eclipse.platform.doc.user%2Ftasks%2Ftasks-124.htm link].
+The easiest way to install the Trace Compass plug-ins for Eclipse is through the Install New Software menu. For information on how to use this menu, refer to this [https://help.eclipse.org/luna/index.jsp?topic=%2Forg.eclipse.platform.doc.user%2Ftasks%2Ftasks-124.htm link].
 
 The Trace Compass main plug-ins are structured as a stack of features/plug-ins as following:
 
@@ -141,7 +141,7 @@ On the host side (where Eclipse is running), you also need to have Eclipse Remot
 
 == Installation Verification ==
 
-If you do not have any traces, sample LTTng traces can be found here [http://lttng.org/files/samples]. This page contains links to some sample LTTng 2.0 kernel traces. The trace needs to be uncompressed to be opened. The traces can also be imported directly as archive, see the [[#Importing|Importing]] section for more detail.
+If you do not have any traces, sample LTTng traces can be found here [https://lttng.org/files/samples]. This page contains links to some sample LTTng 2.0 kernel traces. The trace needs to be uncompressed to be opened. The traces can also be imported directly as archive, see the [[#Importing|Importing]] section for more detail.
 
 Here are the quick steps to verify that your installation is functional using a LTTng trace:
 
@@ -685,7 +685,7 @@ Column order and size is preserved when changed. If a column is lost due to it b
 
 Searching and filtering of events in the table can be performed by entering matching conditions in one or multiple columns in the header row (the first row below the column header).
 
-To apply a matching condition to a specific column, click on the column's header row cell, type in a [http://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html regular expression]. You can also enter a simple text string and it will be automatically be replaced with a 'contains' regular expression.
+To apply a matching condition to a specific column, click on the column's header row cell, type in a [https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html regular expression]. You can also enter a simple text string and it will be automatically be replaced with a 'contains' regular expression.
 
 Press the '''Enter''' key to apply the condition as a search condition. It will be added to any existing search conditions.
 
@@ -947,7 +947,7 @@ An external analysis is a [[#Running an External Analysis|program executed by Tr
 
 '''Note''': The program to execute is found by searching the directories listed in the standard <code>$PATH</code> environment variable when no path separator (<code>/</code> on Unix and OS X, <code>\</code> on Windows) is found in its command.
 
-Trace Compass ships with a default list of ''descriptors'' of external analyses (not the analyses themselves), including the descriptors of the [http://github.com/lttng/lttng-analyses LTTng analyses]. If the LTTng analyses project is installed, its analyses are available when opening or importing an LTTng kernel trace.
+Trace Compass ships with a default list of ''descriptors'' of external analyses (not the analyses themselves), including the descriptors of the [https://github.com/lttng/lttng-analyses LTTng analyses]. If the LTTng analyses project is installed, its analyses are available when opening or importing an LTTng kernel trace.
 
 === Running an External Analysis ===
 
@@ -991,9 +991,9 @@ To show or hide a result table once a [[#Creating a Chart from a Result Table|ch
 
 === Adding and Removing a User-Defined External Analysis ===
 
-You can add a user-defined external analysis to the current list of external analyses. Note that the command to invoke must conform to the machine interface of [http://github.com/lttng/lttng-analyses LTTng analyses] 0.4.
+You can add a user-defined external analysis to the current list of external analyses. Note that the command to invoke must conform to the machine interface of [https://github.com/lttng/lttng-analyses LTTng analyses] 0.4.
 
-'''Note''': If you want to create your own external analysis, consider following the [http://lttng.org/files/lami/lami-1.0.1.html LAMI 1.0 specification], which is supported by later versions of Trace Compass.
+'''Note''': If you want to create your own external analysis, consider following the [https://lttng.org/files/lami/lami-1.0.1.html LAMI 1.0 specification], which is supported by later versions of Trace Compass.
 
 To add a user-defined external analysis:
 
@@ -1025,12 +1025,12 @@ Fill out the first wizard page with the following information:
 * '''Category''': Enter a category name for the trace type.
 * '''Trace type''': Enter a name for the trace type, which is also the name of the custom parser. This will also be the default event type name.
 * '''Time Stamp format''': Enter the date and time pattern that will be used to output the Time Stamp, or leave blank to use the default Time Format preference.<br>
-Note: information about date and time patterns can be found here: [http://archive.eclipse.org/tracecompass/doc/stable/org.eclipse.tracecompass.doc.user/reference/api/org/eclipse/tracecompass/tmf/core/timestamp/TmfTimestampFormat.html TmfTimestampFormat]
+Note: information about date and time patterns can be found here: [https://archive.eclipse.org/tracecompass/doc/stable/org.eclipse.tracecompass.doc.user/reference/api/org/eclipse/tracecompass/tmf/core/timestamp/TmfTimestampFormat.html TmfTimestampFormat]
 
 Click the '''Add next line''', '''Add child line''' or '''Remove line''' buttons to create a new line of input or delete it. For each line of input, enter the following information:
 
 * '''Regular expression''': Enter a regular expression that should match the input line in the log, using capturing groups to extract the data.<br>
-Note: information about regular expression patterns can be found here: [http://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html]
+Note: information about regular expression patterns can be found here: [https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html]
 
 * '''Cardinality''': Enter the minimum and maximum number of lines matching this line's regular expression that must be found in the log. At least the minimum number of lines must be found before the parser will consider the next line. Child lines will always be considered first.
 
@@ -1096,7 +1096,7 @@ Fill out the first wizard page with the following information:
 * '''Category''': Enter a category name for the trace type.
 * '''Trace type''': Enter a name for the trace type, which is also the name of the custom parser. This will also be the default event type name.
 * '''Time Stamp format''': Enter the date and time pattern that will be used to output the Time Stamp, or leave blank to use the default Time Format preference.<br>
-Note: information about date and time patterns can be found here: [http://archive.eclipse.org/tracecompass/doc/stable/org.eclipse.tracecompass.doc.user/reference/api/org/eclipse/tracecompass/tmf/core/timestamp/TmfTimestampFormat.html TmfTimestampFormat]
+Note: information about date and time patterns can be found here: [https://archive.eclipse.org/tracecompass/doc/stable/org.eclipse.tracecompass.doc.user/reference/api/org/eclipse/tracecompass/tmf/core/timestamp/TmfTimestampFormat.html TmfTimestampFormat]
 
 Click the '''Add document element''' button to create a new document element and enter a name for the root-level document element of the XML file.
 
@@ -2774,7 +2774,7 @@ Hover the cursor over a line of the chart and a tooltip will pop up with the fol
 
 TraceCompass can recover wait causes of local and distributed processes using operating system events. The analysis highlights the tasks and devices causing wait. Wait cause recovery is recursive, comprise all tasks running on the system and works across computers using packet trace synchronization.
 
-The analysis details are available in the paper [http://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=7294678&isnumber=4359390 Wait analysis of distributed systems using kernel tracing].
+The analysis details are available in the paper [https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=7294678&isnumber=4359390 Wait analysis of distributed systems using kernel tracing].
 
 === Prerequisites ===
 
@@ -2785,7 +2785,7 @@ The required events are:
 * '''IRQ, SoftIRQ and IPI''': Interrupt events are required to distinguish the context of the wake-up. When a wake-up occurs inside an interrupt handler, it must be associated with the device causing the interrupt and not the interrupted task. For that reason, interrupt entry and exit events are required.
 * '''inet_sock_local_in, inet_sock_local_out''': The network events record a subset of TCP/IP packet header using a netfilter hook in the kernel. The send and receive events are matched to show the communication between distributed processes. Network events are mandatory for analyzing wait in TCP/IP programs, whether they are executing locally or on different computers. They also used to synchronize traces recorded on multiple computers. For further details, refer to the [[#Trace synchronization]] section.
 
-To analyze a distributed program, all computers involved in the processing must be traced simultaneously. The LTTng Tracer Control of TraceCompass can trace a remote computer, but controlling simultaneous tracing is not supported at the moment, meaning that all sessions must be started separately and interactively. TraceCompass will support this feature in the future. For now, it is suggested to use [https://github.com/giraldeau/lttng-cluster lttng-cluster] command line tool to control simultaneous tracing sessions on multiple computers. This tool is based on [http://www.fabfile.org/ Fabric] and uses SSH to start the tracing sessions, execute a workload, stop the sessions and gather traces on the local computer. For more information, refer to the lttng-cluster documentation.
+To analyze a distributed program, all computers involved in the processing must be traced simultaneously. The LTTng Tracer Control of TraceCompass can trace a remote computer, but controlling simultaneous tracing is not supported at the moment, meaning that all sessions must be started separately and interactively. TraceCompass will support this feature in the future. For now, it is suggested to use [https://github.com/giraldeau/lttng-cluster lttng-cluster] command line tool to control simultaneous tracing sessions on multiple computers. This tool is based on [https://www.fabfile.org/ Fabric] and uses SSH to start the tracing sessions, execute a workload, stop the sessions and gather traces on the local computer. For more information, refer to the lttng-cluster documentation.
 
 We use the [https://github.com/giraldeau/traces/blob/master/django-vote.tar.gz Django trace] as an example to demonstrate the wait analysis. [https://www.djangoproject.com/ Django] is a popular Web framework. The application is the [https://docs.djangoproject.com/en/1.9/intro/tutorial01/ Django Poll app tutorial]. The traces were recorded on three computers, namely the client (implemented with Python Mechanize), the Web server (Apache with WSGI) and the database server (PostgreSQL). The client simulates a vote in the poll.
 
@@ -2980,7 +2980,7 @@ the relevant information.
 Note that for non-trivial applications, ''liblttng-ust-cyg-profile'' generates a
 '''lot''' of events! You may need to increase the channel's subbuffer size to
 avoid lost events. Refer to the
-[http://lttng.org/docs/#doc-fine-tuning-channels LTTng documentation].
+[https://lttng.org/docs/#doc-fine-tuning-channels LTTng documentation].
 
 For traces taken with LTTng-UST 2.8 or later, the Flame Chart View should show the
 function names automatically, since it will make use of the debug information
@@ -3519,7 +3519,7 @@ The state system obtained by the state provider can then be used to populate dat
 
 === Definitions and example ===
 
-Before we start, we'll define a few terms used in the following sections. The interested reader should read the [https://wiki.eclipse.org/index.php/Trace_Compass#User_Guides Tmf Developer Guide] for more complete description of the state system and state providers.
+Before we start, we'll define a few terms used in the following sections. The interested reader should read the [https://github.com/eclipse-tracecompass/org.eclipse.tracecompass/wiki#user-guides Tmf Developer Guide] for more complete description of the state system and state providers.
 
 * The '''state system''' can be viewed as a model of the system, where the different elements (attributes) can be seen as a tree, and their evolution (states) is tracked through time.
 
@@ -4197,7 +4197,7 @@ The Counters View supports experiments.
 
 == Creating an LTTng trace with performance counters ==
 
-For the Counters View to display any data, the trace needs to collect information related to performance counters. There are two ways to configure a trace for this type of logging. On the command line, add a new context field to an LTTng channel using the <code>lttng-add-context</code> command (for more information, refer to the [http://lttng.org/docs/ LTTng documentation]). On the LTTng Tracer Control, add a new context field using the ''Add Context..." window (see [[#Adding Contexts to Channels and Events of a Domain]]).
+For the Counters View to display any data, the trace needs to collect information related to performance counters. There are two ways to configure a trace for this type of logging. On the command line, add a new context field to an LTTng channel using the <code>lttng-add-context</code> command (for more information, refer to the [https://lttng.org/docs/ LTTng documentation]). On the LTTng Tracer Control, add a new context field using the ''Add Context..." window (see [[#Adding Contexts to Channels and Events of a Domain]]).
 
 == Counters View ==
 
@@ -4297,7 +4297,7 @@ Here is an example ''logger.properties'' file to control what is being logged an
 
 == LTTng JUL log handler ==
 
-The various log handlers have an overhead on the application. The ConsoleHandler has a visible impact on Trace Compass performance. The FileHandler also has an overhead though less visible, but when logging from multiple threads at the same time, the file becomes a bottleneck, so that logging data cannot be used with accuracy for performance analysis. The [http://lttng.org/docs/#doc-java-application LTTng log handler] is much better in a multi-threads context.
+The various log handlers have an overhead on the application. The ConsoleHandler has a visible impact on Trace Compass performance. The FileHandler also has an overhead though less visible, but when logging from multiple threads at the same time, the file becomes a bottleneck, so that logging data cannot be used with accuracy for performance analysis. The [https://lttng.org/docs/#doc-java-application LTTng log handler] is much better in a multi-threads context.
 
 LTTng-UST comes with the Java JUL agent in most distros. Otherwise, it is possible to manually compile lttng-ust with options ''--enable-java-agent-jul'' and install it.
 
@@ -4383,12 +4383,12 @@ Alice kills the program, and immediately the server speeds up. She then goes to 
 
 To install features from the Trace Compass incubator, use the following update site URL: https://download.eclipse.org/tracecompass.incubator/master/repository/.
 
-If you're using the Trace Compass RCP, there's an easy method to install incubator features. See the [http://archive.eclipse.org/tracecompass/doc/stable/org.eclipse.tracecompass.rcp.doc.user/Trace-Compass-Incubator.html Trace Compass RCP documentation]
+If you're using the Trace Compass RCP, there's an easy method to install incubator features. See the [https://archive.eclipse.org/tracecompass/doc/stable/org.eclipse.tracecompass.rcp.doc.user/Trace-Compass-Incubator.html Trace Compass RCP documentation]
 
 = References =
 
-* [http://www.eclipse.org/tracecompass Trace Compass project]
-* [https://wiki.eclipse.org/index.php/Trace_Compass#User_Guides Trace Compass User Guides]
-* [http://www.lttng.org/ LTTng project]
-* [http://lttng.org/files/doc/man-pages/man1/lttng.1.html LTTng Tracer Control Command Line Tool User Manual]
-* [http://lttng.org/files/doc/man-pages/man8/lttng-relayd.8.html LTTng relayd User Manual]
+* [https://projects.eclipse.org/projects/tools.tracecompass Trace Compass project]
+* [https://github.com/eclipse-tracecompass/org.eclipse.tracecompass/wiki#user-guides Trace Compass User Guides]
+* [https://www.lttng.org/ LTTng project]
+* [https://lttng.org/files/doc/man-pages/man1/lttng.1.html LTTng Tracer Control Command Line Tool User Manual]
+* [https://lttng.org/files/doc/man-pages/man8/lttng-relayd.8.html LTTng relayd User Manual]
