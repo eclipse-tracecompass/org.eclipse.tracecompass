@@ -74,8 +74,8 @@ public class MultiTreePatternFilter extends TreePatternFilter {
 
         // Ensure the tree element and its parent(s) match the filter text
         for (Predicate<String> p : fPredicates) {
-            // Retrieve tree element text and make verification. Text is at column 0
-            String labelText = labelProvider.getColumnText(node, 0);
+            // Get the text of the element in the specified column and verify against the predicate
+            String labelText = labelProvider.getColumnText(node, this.getIndexColumnFilter());
             if (labelText == null || !p.test(labelText)) {
                 return false;
             }
@@ -84,5 +84,14 @@ public class MultiTreePatternFilter extends TreePatternFilter {
             node = treeContentProvider.getParent(node);
         }
         return true;
+    }
+
+    /**
+     * Returns the index of the column used for filtering.
+     * @return the column index (default is 0)
+     * @since 9.2
+     */
+    protected int getIndexColumnFilter() {
+        return 0;
     }
 }
