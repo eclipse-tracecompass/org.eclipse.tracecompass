@@ -220,7 +220,7 @@ public abstract class AbstractSelectTreeViewer2 extends AbstractTmfTreeViewer {
      * @param legendColumnIndex
      *            index of the legend column (-1 if none)
      */
-    private AbstractSelectTreeViewer2(Composite parent, TriStateFilteredCheckboxTree checkboxTree,
+    protected AbstractSelectTreeViewer2(Composite parent, TriStateFilteredCheckboxTree checkboxTree,
             int legendIndex, String id) {
         super(parent, checkboxTree.getViewer());
 
