@@ -176,5 +176,10 @@ public final class JsonMetadataStrings {
     /**
      * Type string for a structure field class
      */
+    public static final String PATH = "path"; //$NON-NLS-1$
+
+    /**
+     * Type string for a structure field class
+     */
     public static final String STRUCTURE = "structure"; //$NON-NLS-1$
 }
