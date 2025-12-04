@@ -44,6 +44,17 @@ public final class JsonMetadataStrings {
     public static final String FRAGMENT_FIELD_ALIAS = "field-class-alias"; //$NON-NLS-1$
 
     /**
+     * The field class
+     */
+    public static final String FIELD_CLASS = "field-class"; //$NON-NLS-1$
+
+    /**
+     * The name of the fragment
+     */
+    public static final String NAME = "name"; //$NON-NLS-1$
+
+
+    /**
      * Type string for a CTF2 clock class fragment
      */
     public static final String FRAGMENT_CLOCK = "clock-class"; //$NON-NLS-1$
