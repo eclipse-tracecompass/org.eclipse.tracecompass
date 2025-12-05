@@ -22,11 +22,13 @@ import org.eclipse.tracecompass.ctf.core.trace.CTFTrace;
 import org.eclipse.tracecompass.ctf.parser.CTFParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.AbstractScopedCommonTreeParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.CTFAntlrMetadataNode;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonStructureFieldMemberMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonStructureFieldMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.AlignmentParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.types.StructDeclarationFlattener;
+import org.eclipse.tracecompass.internal.ctf.core.utils.JsonMetadataStrings;
 
 /**
  *
@@ -185,14 +187,29 @@ public final class StructParser extends AbstractScopedCommonTreeParser {
                 structName = identifier.getText();
                 hasName = true;
             }
-        } else {
-            if (((JsonStructureFieldMetadataNode) struct).getMinimumAlignment() != 0) {
+        } else if (struct instanceof JsonStructureFieldMetadataNode) {
+            JsonStructureFieldMetadataNode structNode = (JsonStructureFieldMetadataNode) struct;
+            if (structNode.getMinimumAlignment() != 0) {
                 structAlign = AlignmentParser.INSTANCE.parse(struct, null);
             }
-            if (((JsonStructureFieldMetadataNode) struct).getMemberClasses() != null) {
+            if (structNode.getMemberClasses() != null) {
                 hasBody = true;
                 structBody = struct;
             }
+        } else if (struct instanceof JsonStructureFieldMemberMetadataNode) {
+            ICTFMetadataNode innerNode = struct.getChild(JsonMetadataStrings.STRUCT);
+            if (innerNode instanceof JsonStructureFieldMetadataNode) {
+                JsonStructureFieldMetadataNode structNode = (JsonStructureFieldMetadataNode) struct;
+                if (structNode.getMinimumAlignment() != 0) {
+                    structAlign = AlignmentParser.INSTANCE.parse(struct, null);
+                }
+                if (structNode.getMemberClasses() != null) {
+                    hasBody = true;
+                    structBody = struct;
+
+                }
+            }
+
         }
         /*
          * If a struct has just a body and no name (just like the song,

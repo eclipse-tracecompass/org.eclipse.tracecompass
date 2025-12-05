@@ -202,6 +202,10 @@ public final class JsonMetadataStrings {
     public static final String STRUCTURE = "structure"; //$NON-NLS-1$
 
     /**
+     * Type string for an internal structure field class
+     */
+    public static final String STRUCT = "struct"; //$NON-NLS-1$
+    /**
      * Encodings map
      */
     public static final Map<String, Charset> ENCODINGS = Map.of("utf-8",StandardCharsets.UTF_8, //$NON-NLS-1$
@@ -224,7 +228,13 @@ public final class JsonMetadataStrings {
     public static final String STATIC_LENGTH_ARRAY = "static-length-array"; //$NON-NLS-1$
 
     /**
+     * Dynamic length array
+     */
+    public static final String DYNAMIC_LENGTH_ARRAY = "dynamic-length-array"; //$NON-NLS-1$
+
+    /**
      * Element field class
      */
     public static final String ELEMENT_FIELD_CLASS = "element-field-class"; //$NON-NLS-1$
+
 }
