@@ -210,6 +210,8 @@ public final class JsonMetadataStrings {
      */
     public static final String ENCODING = "encoding"; //$NON-NLS-1$
 
-
-
+    /**
+     * Static length string
+     */
+    public static final String STATIC_LENGTH_STRING = "static-length-string"; //$NON-NLS-1$
 }
