@@ -138,6 +138,11 @@ public final class TypeAliasParser extends AbstractScopedCommonTreeParser {
                 }
             }
             if (fieldClass != null) {
+                if (type.isEmpty()) {
+                    if (fieldClass.isJsonObject()) {
+                        type = fieldClass.get(JsonMetadataStrings.TYPE).getAsString();
+                    }
+                }
                 if (JsonMetadataStrings.FIXED_UNSIGNED_INTEGER_FIELD.equals(type)) {
                     fieldClass.addProperty(SIGNED, false);
                     fieldClass.addProperty(VARINT, false);
