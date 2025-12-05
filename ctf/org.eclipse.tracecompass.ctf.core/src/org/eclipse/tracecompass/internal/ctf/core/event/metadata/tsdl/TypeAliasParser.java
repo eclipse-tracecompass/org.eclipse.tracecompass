@@ -27,6 +27,7 @@ import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.dynamicstring.DynamicLengthStringParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.enumeration.EnumParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.integer.IntegerDeclarationParser;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.staticstring.StaticLengthStringParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.string.StringDeclarationParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.variant.VariantParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
@@ -161,7 +162,9 @@ public final class TypeAliasParser extends AbstractScopedCommonTreeParser {
                 } else if (JsonMetadataStrings.FIXED_UNSIGNED_ENUMERATION.equals(type)) {
                     targetDeclaration = EnumParser.INSTANCE.parse(typealias, new EnumParser.Param(trace, scope));
                 } else if (JsonMetadataStrings.DYNAMIC_LENGTH_STRING.equals(type)) {
-                    targetDeclaration = DynamicLengthStringParser.INSTANCE.parse(typealias,  new DynamicLengthStringParser.Param(trace));
+                    targetDeclaration = DynamicLengthStringParser.INSTANCE.parse(typealias, new DynamicLengthStringParser.Param(trace));
+                } else if (JsonMetadataStrings.STATIC_LENGTH_STRING.equals(type)) {
+                    targetDeclaration = StaticLengthStringParser.INSTANCE.parse(typealias, new StaticLengthStringParser.Param(trace));
                 } else {
                     throw new ParseException("Invalid field class: " + type); //$NON-NLS-1$
                 }
