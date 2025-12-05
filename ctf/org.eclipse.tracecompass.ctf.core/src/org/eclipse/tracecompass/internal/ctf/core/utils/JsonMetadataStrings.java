@@ -13,6 +13,10 @@
 
 package org.eclipse.tracecompass.internal.ctf.core.utils;
 
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
+
 /**
  * Various strings for CTF2 implementation.
  *
@@ -164,6 +168,20 @@ public final class JsonMetadataStrings {
     public static final String NULL_TERMINATED_STRING = "null-terminated-string"; //$NON-NLS-1$
 
     /**
+     * The length of a dynamic string
+     */
+    public static final String LENGTH = "length"; //$NON-NLS-1$
+
+    /**
+     * Type string for a null terminated string field class
+     */
+    public static final String DYNAMIC_LENGTH_STRING = "dynamic-length-string"; //$NON-NLS-1$
+
+    /**
+     * The length field location for a dynamic string
+     */
+    public static final String LENGTH_FIELD_LOCATION = "length-field-location"; //$NON-NLS-1$
+    /**
      * Type string for a fixed length unsigned enumeration field class
      */
     public static final String FIXED_UNSIGNED_ENUMERATION = "fixed-length-unsigned-enumeration"; //$NON-NLS-1$
@@ -182,4 +200,16 @@ public final class JsonMetadataStrings {
      * Type string for a structure field class
      */
     public static final String STRUCTURE = "structure"; //$NON-NLS-1$
+
+    public static final Map<String, Charset> ENCODINGS = Map.of("utf-8",StandardCharsets.UTF_8, //$NON-NLS-1$
+            "utf-16be",StandardCharsets.UTF_16BE,"utf-16le",StandardCharsets.UTF_16LE, //$NON-NLS-1$ //$NON-NLS-2$
+            "utf-32be", Charset.forName("UTF-32BE"),"utf-32le", Charset.forName("UTF-32LE")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+
+    /**
+     * Type of string encoding
+     */
+    public static final String ENCODING = "encoding"; //$NON-NLS-1$
+
+
+
 }
