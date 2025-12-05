@@ -24,12 +24,14 @@ import org.eclipse.tracecompass.internal.ctf.core.event.metadata.AbstractScopedC
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonFieldClassAliasMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonStructureFieldMemberMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.dynamicarray.DynamicLengthArrayParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.dynamicstring.DynamicLengthStringParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.enumeration.EnumParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.integer.IntegerDeclarationParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.staticarray.StaticLengthArrayParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.staticstring.StaticLengthStringParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.string.StringDeclarationParser;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.struct.StructParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.variant.VariantParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.utils.JsonMetadataStrings;
@@ -173,6 +175,10 @@ public final class TypeAliasParser extends AbstractScopedCommonTreeParser {
                     targetDeclaration = StaticLengthStringParser.INSTANCE.parse(typealias, new StaticLengthStringParser.Param(trace));
                 } else if (JsonMetadataStrings.STATIC_LENGTH_ARRAY.equals(type)) {
                     targetDeclaration = StaticLengthArrayParser.INSTANCE.parse(typealias, new StaticLengthArrayParser.Param(trace, scope));
+                } else if (JsonMetadataStrings.DYNAMIC_LENGTH_ARRAY.equals(type)) {
+                    targetDeclaration = DynamicLengthArrayParser.INSTANCE.parse(typealias, new DynamicLengthArrayParser.Param(trace, scope));
+                } else if (JsonMetadataStrings.STRUCTURE.equals(type)) {
+                    targetDeclaration = StructParser.INSTANCE.parse(typealias, new StructParser.Param(trace, null, scope));
                 } else {
                     throw new ParseException("Invalid field class: " + type); //$NON-NLS-1$
                 }
