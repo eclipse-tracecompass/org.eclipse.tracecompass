@@ -201,6 +201,9 @@ public final class JsonMetadataStrings {
      */
     public static final String STRUCTURE = "structure"; //$NON-NLS-1$
 
+    /**
+     * Encodings map
+     */
     public static final Map<String, Charset> ENCODINGS = Map.of("utf-8",StandardCharsets.UTF_8, //$NON-NLS-1$
             "utf-16be",StandardCharsets.UTF_16BE,"utf-16le",StandardCharsets.UTF_16LE, //$NON-NLS-1$ //$NON-NLS-2$
             "utf-32be", Charset.forName("UTF-32BE"),"utf-32le", Charset.forName("UTF-32LE")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
@@ -214,4 +217,14 @@ public final class JsonMetadataStrings {
      * Static length string
      */
     public static final String STATIC_LENGTH_STRING = "static-length-string"; //$NON-NLS-1$
+
+    /**
+     * Static length array
+     */
+    public static final String STATIC_LENGTH_ARRAY = "static-length-array"; //$NON-NLS-1$
+
+    /**
+     * Element field class
+     */
+    public static final String ELEMENT_FIELD_CLASS = "element-field-class"; //$NON-NLS-1$
 }
