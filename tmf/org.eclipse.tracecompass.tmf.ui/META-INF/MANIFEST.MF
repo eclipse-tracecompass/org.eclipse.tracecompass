@@ -30,9 +30,7 @@ Require-Bundle: org.eclipse.core.expressions,
  org.eclipse.tracecompass.tmf.filter.parser,
  org.eclipse.e4.ui.css.swt.theme,
  org.eclipse.ui.themes,
- org.eclipse.jdt.annotation;bundle-version="[2.0.0,3.0.0)";resolution:=optional,
- org.eclipse.equinox.p2.ui;bundle-version="2.8.500",
- org.eclipse.ui.browser;bundle-version="3.8.300"
+ org.eclipse.jdt.annotation;bundle-version="[2.0.0,3.0.0)";resolution:=optional
 Export-Package: org.eclipse.tracecompass.internal.provisional.tmf.ui.model;x-internal:=true,
  org.eclipse.tracecompass.internal.provisional.tmf.ui.viewers.xychart;x-internal:=true,
  org.eclipse.tracecompass.internal.provisional.tmf.ui.widgets;x-friends:="org.eclipse.tracecompass.analysis.timing.ui",
@@ -153,5 +151,5 @@ Import-Package: com.google.common.annotations,
  org.apache.commons.io,
  org.eclipse.emf.common.util,
  org.eclipse.emf.ecore,
- org.eclipse.tracecompass.traceeventlogger;resolution:=optional
+ org.eclipse.tracecompass.traceeventlogger
 Automatic-Module-Name: org.eclipse.tracecompass.tmf.ui
