@@ -206,9 +206,17 @@ public final class StructParser extends AbstractScopedCommonTreeParser {
                     structAlign = minimumAlignment.getAsLong();
                 }
                 JsonElement memberClasses = memberNode.getFieldClass().getAsJsonObject().get(JsonMetadataStrings.MEMBER_CLASSES);
-                if (memberClasses != null) {
+                if (memberClasses != null && memberClasses.isJsonArray()) {
                     hasBody = true;
-                    structBody = struct;
+                    for (JsonElement memberElement : memberClasses.getAsJsonArray()) {
+                        if (memberElement.isJsonObject()) {
+                            String name = memberElement.getAsJsonObject().get(JsonMetadataStrings.NAME).getAsString();
+                            JsonElement fieldClass = memberElement.getAsJsonObject().get(JsonMetadataStrings.FIELD_CLASS);
+                            JsonStructureFieldMemberMetadataNode childNode = new JsonStructureFieldMemberMetadataNode(memberNode, "", "", name, fieldClass.getAsJsonObject()); //$NON-NLS-1$ //$NON-NLS-2$
+                            memberNode.addChild(childNode);
+                        }
+                    }
+                    structBody = memberNode;
                 }
             }
         }
