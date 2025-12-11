@@ -36,11 +36,38 @@ public final class VariantDefinition extends ScopedDefinition {
     private final Definition fDefinition;
     private final String fCurrentField;
     private final String fFieldName;
-    private final EnumDefinition fTagDef;
+    private final SimpleDatatypeDefinition fTagDef;
 
     // ------------------------------------------------------------------------
     // Constructors
     // ------------------------------------------------------------------------
+
+    /**
+     * Constructor
+     *
+     * @param declaration
+     *            the parent declaration
+     * @param definitionScope
+     *            the parent scope
+     * @param tagDef
+     *            the tagging definition
+     * @param selectedField
+     *            the selected field
+     * @param fieldName
+     *            the field name
+     * @param fieldValue
+     *            the field value
+     * @since 5.1
+     */
+    public VariantDefinition(@NonNull VariantDeclaration declaration, IDefinitionScope definitionScope, SimpleDatatypeDefinition tagDef, String selectedField, @NonNull String fieldName, Definition fieldValue) {
+        super(declaration, definitionScope, fieldName);
+
+        fTagDef = tagDef;
+        fFieldName = fieldName;
+        fCurrentField = selectedField;
+        fDefinition = fieldValue;
+    }
+
 
     /**
      * Constructor
@@ -67,6 +94,7 @@ public final class VariantDefinition extends ScopedDefinition {
         fCurrentField = selectedField;
         fDefinition = fieldValue;
     }
+
 
     // ------------------------------------------------------------------------
     // Getters/Setters/Predicates

@@ -14,6 +14,7 @@
 
 package org.eclipse.tracecompass.ctf.core.event.types;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -45,6 +46,7 @@ public class VariantDeclaration extends Declaration {
     private String fTag = null;
     private static final long ALIGNMENT = 1;
     private final Map<String, IDeclaration> fFields = Collections.synchronizedMap(new HashMap<String, IDeclaration>());
+    private IDeclaration[] fFieldArray = new IDeclaration[0];
     private IDeclaration fDeclarationToPopulate;
 
     // ------------------------------------------------------------------------
@@ -122,16 +124,32 @@ public class VariantDeclaration extends Declaration {
             String fieldName, BitBuffer input) throws CTFException {
         alignRead(input);
         IDefinition def = definitionScope.lookupDefinition(fTag);
-        EnumDefinition tagDef = (EnumDefinition) ((def instanceof EnumDefinition) ? def : null);
-        if (tagDef == null) {
-            throw new CTFException("Tag is not defined " + fTag); //$NON-NLS-1$
+        String varFieldName = fTag;
+        SimpleDatatypeDefinition tagDef = null;
+        if (def instanceof IntegerDefinition) {
+            tagDef = (SimpleDatatypeDefinition) def;
+            Long tagValue = ((IntegerDefinition) tagDef).getIntegerValue();
+            String mappings = ((IntegerDefinition) tagDef).getMappings();
+            if (mappings != null) {
+                fDeclarationToPopulate = fFields.get(mappings);
+            } else if (tagValue != null) {
+                if (tagValue < 0 || tagValue >= fFieldArray.length) {
+                    throw new CTFException("Unknown value of " + tagValue + " for the variant " + toString()); //$NON-NLS-1$ //$NON-NLS-2$
+                }
+                fDeclarationToPopulate = fFieldArray[(tagValue.intValue())];
+            }
+        } else {
+            tagDef = (EnumDefinition) ((def instanceof EnumDefinition) ? def : null);
+            if (tagDef == null) {
+                throw new CTFException("Tag is not defined " + fTag); //$NON-NLS-1$
+            }
+            varFieldName = tagDef.getStringValue();
+            if (varFieldName == null) {
+                throw new CTFException("Undefined enum selector for variant " + //$NON-NLS-1$
+                        definitionScope.getScopePath().getPath());
+            }
+            fDeclarationToPopulate = fFields.get(varFieldName);
         }
-        String varFieldName = tagDef.getStringValue();
-        if (varFieldName == null) {
-            throw new CTFException("Undefined enum selector for variant " + //$NON-NLS-1$
-                    definitionScope.getScopePath().getPath());
-        }
-        fDeclarationToPopulate = fFields.get(varFieldName);
         if (fDeclarationToPopulate == null) {
             throw new CTFException("Unknown enum selector for variant " + //$NON-NLS-1$
                     definitionScope.getScopePath().getPath());
@@ -150,6 +168,9 @@ public class VariantDeclaration extends Declaration {
      */
     public void addField(String fieldTag, IDeclaration declaration) {
         fFields.put(fieldTag, declaration);
+        int size = fFields.size();
+        fFieldArray = Arrays.copyOf(fFieldArray, size);
+        fFieldArray[size-1]=declaration;
     }
 
     @Override
