@@ -31,6 +31,7 @@ import org.eclipse.tracecompass.internal.ctf.core.event.types.StructDeclarationF
 import org.eclipse.tracecompass.internal.ctf.core.utils.JsonMetadataStrings;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 /**
  *
@@ -70,9 +71,9 @@ struct example {
  * `typedef`:
  *
  * <pre>
-struct {
-    // ...
-}
+ * struct {
+ *     // ...
+ * }
  *
  * </pre>
  *
@@ -189,8 +190,7 @@ public final class StructParser extends AbstractScopedCommonTreeParser {
                 structName = identifier.getText();
                 hasName = true;
             }
-        } else if (struct instanceof JsonStructureFieldMetadataNode) {
-            JsonStructureFieldMetadataNode structNode = (JsonStructureFieldMetadataNode) struct;
+        } else if (struct instanceof JsonStructureFieldMetadataNode structNode) {
             if (structNode.getMinimumAlignment() != 0) {
                 structAlign = AlignmentParser.INSTANCE.parse(struct, null);
             }
@@ -198,17 +198,34 @@ public final class StructParser extends AbstractScopedCommonTreeParser {
                 hasBody = true;
                 structBody = struct;
             }
-        } else if (struct instanceof JsonStructureFieldMemberMetadataNode) {
-            JsonStructureFieldMemberMetadataNode memberNode = (JsonStructureFieldMemberMetadataNode) struct;
+        } else if (struct instanceof JsonStructureFieldMemberMetadataNode memberNode) {
             if (memberNode.getFieldClass().isJsonObject()) {
-                JsonElement minimumAlignment = memberNode.getFieldClass().getAsJsonObject().get(JsonMetadataStrings.MINIMUM_ALIGNMENT);
+                JsonElement fieldClassElement = memberNode.getFieldClass();
+                if (fieldClassElement == null || !fieldClassElement.isJsonObject()) {
+                    throw new ParseException(getClass().getName() + " fieldclass must be a json object."); //$NON-NLS-1$
+                }
+                JsonObject outerFieldClass = fieldClassElement.getAsJsonObject();
+                JsonElement minimumAlignment = outerFieldClass.get(JsonMetadataStrings.MINIMUM_ALIGNMENT);
                 if (minimumAlignment != null) {
                     structAlign = minimumAlignment.getAsLong();
                 }
-                JsonElement memberClasses = memberNode.getFieldClass().getAsJsonObject().get(JsonMetadataStrings.MEMBER_CLASSES);
-                if (memberClasses != null) {
+                JsonElement memberClasses = outerFieldClass.get(JsonMetadataStrings.MEMBER_CLASSES);
+                if (memberClasses != null && memberClasses.isJsonArray()) {
                     hasBody = true;
-                    structBody = struct;
+                    for (JsonElement memberElement : memberClasses.getAsJsonArray()) {
+                        if (memberElement.isJsonObject()) {
+                            JsonObject memberObj = memberElement.getAsJsonObject();
+                            JsonElement nameElement = memberObj.get(JsonMetadataStrings.NAME);
+                            JsonElement fieldClass = memberObj.get(JsonMetadataStrings.FIELD_CLASS);
+                            if (nameElement == null || fieldClass == null || !fieldClass.isJsonObject()) {
+                                throw new ParseException("Member class requires 'name' and 'field-class' properties"); //$NON-NLS-1$
+                            }
+                            String name = nameElement.getAsString();
+                            JsonStructureFieldMemberMetadataNode childNode = new JsonStructureFieldMemberMetadataNode(memberNode, "", "", name, fieldClass.getAsJsonObject()); //$NON-NLS-1$ //$NON-NLS-2$
+                            memberNode.addChild(childNode);
+                        }
+                    }
+                    structBody = memberNode;
                 }
             }
         }
