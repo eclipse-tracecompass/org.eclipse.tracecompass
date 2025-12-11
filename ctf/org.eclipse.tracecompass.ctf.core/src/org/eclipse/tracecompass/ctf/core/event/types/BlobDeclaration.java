@@ -91,7 +91,7 @@ public class BlobDeclaration extends Declaration {
      */
     @Override
     public int getMaximumSize() {
-        return 1000000;
+        return Math.min(fLength, 1000000);
     }
 
     @Override
