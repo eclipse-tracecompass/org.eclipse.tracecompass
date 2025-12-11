@@ -30,6 +30,8 @@ import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.types.StructDeclarationFlattener;
 import org.eclipse.tracecompass.internal.ctf.core.utils.JsonMetadataStrings;
 
+import com.google.gson.JsonElement;
+
 /**
  *
  * Structures are aligned on the largest alignment required by basic types
@@ -197,19 +199,18 @@ public final class StructParser extends AbstractScopedCommonTreeParser {
                 structBody = struct;
             }
         } else if (struct instanceof JsonStructureFieldMemberMetadataNode) {
-            ICTFMetadataNode innerNode = struct.getChild(JsonMetadataStrings.STRUCT);
-            if (innerNode instanceof JsonStructureFieldMetadataNode) {
-                JsonStructureFieldMetadataNode structNode = (JsonStructureFieldMetadataNode) struct;
-                if (structNode.getMinimumAlignment() != 0) {
-                    structAlign = AlignmentParser.INSTANCE.parse(struct, null);
+            JsonStructureFieldMemberMetadataNode memberNode = (JsonStructureFieldMemberMetadataNode) struct;
+            if (memberNode.getFieldClass().isJsonObject()) {
+                JsonElement minimumAlignment = memberNode.getFieldClass().getAsJsonObject().get(JsonMetadataStrings.MINIMUM_ALIGNMENT);
+                if (minimumAlignment != null) {
+                    structAlign = minimumAlignment.getAsLong();
                 }
-                if (structNode.getMemberClasses() != null) {
+                JsonElement memberClasses = memberNode.getFieldClass().getAsJsonObject().get(JsonMetadataStrings.MEMBER_CLASSES);
+                if (memberClasses != null) {
                     hasBody = true;
                     structBody = struct;
-
                 }
             }
-
         }
         /*
          * If a struct has just a body and no name (just like the song,

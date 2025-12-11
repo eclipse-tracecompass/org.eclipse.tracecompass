@@ -237,4 +237,8 @@ public final class JsonMetadataStrings {
      */
     public static final String ELEMENT_FIELD_CLASS = "element-field-class"; //$NON-NLS-1$
 
+    public static final String MEMBER_CLASSES = "member-classes"; //$NON-NLS-1$
+
+    public static final String MINIMUM_ALIGNMENT = "minimum-alignment"; //$NON-NLS-1$
+
 }

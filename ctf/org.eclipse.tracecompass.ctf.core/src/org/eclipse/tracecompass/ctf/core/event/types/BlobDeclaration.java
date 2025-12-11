@@ -63,9 +63,6 @@ public class BlobDeclaration extends Declaration {
 
     @Override
     public @NonNull BlobDefinition createDefinition(IDefinitionScope definitionScope, @NonNull String fieldName, @NonNull BitBuffer input) throws CTFException {
-        if (fLength > getMaximumSize()) {
-            throw new CTFException("Length asked: " + fLength + " is larger than the maximum blob size " + getMaximumSize()); //$NON-NLS-1$ //$NON-NLS-2$
-        }
         byte[] array = new byte[fLength];
         if (input.getByteBuffer().remaining() < fLength) {
             throw new CTFException("There is not enough data provided. Length asked: " + fLength + " Remaining buffer size: " + input.getByteBuffer().remaining()); //$NON-NLS-1$ //$NON-NLS-2$
@@ -86,12 +83,9 @@ public class BlobDeclaration extends Declaration {
         return 8;
     }
 
-    /**
-     * Arbitrary decision to have maximum size as 1MB
-     */
     @Override
     public int getMaximumSize() {
-        return 1000000;
+        return fLength * 8; // This will allow the blob to be read properly and not break alignmentin ctf.
     }
 
     @Override
