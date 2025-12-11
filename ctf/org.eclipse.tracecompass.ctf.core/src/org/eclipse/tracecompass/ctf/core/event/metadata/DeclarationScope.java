@@ -197,7 +197,8 @@ public class DeclarationScope {
      */
     public void registerIdentifier(String name, IDeclaration declaration) throws ParseException {
         /* Check if the type has been defined in the current scope */
-        if (fIdentifiers.containsKey(name)) {
+        IDeclaration iDeclaration = fIdentifiers.get(declaration);
+        if (iDeclaration != null && !Objects.equals(iDeclaration, declaration)) {
             throw new ParseException("Identifier has already been defined:" + name); //$NON-NLS-1$
         }
 
