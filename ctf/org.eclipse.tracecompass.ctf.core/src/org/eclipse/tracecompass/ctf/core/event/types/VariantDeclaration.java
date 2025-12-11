@@ -14,8 +14,8 @@
 
 package org.eclipse.tracecompass.ctf.core.event.types;
 
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -44,7 +44,8 @@ public class VariantDeclaration extends Declaration {
 
     private String fTag = null;
     private static final long ALIGNMENT = 1;
-    private final Map<String, IDeclaration> fFields = Collections.synchronizedMap(new HashMap<String, IDeclaration>());
+    private final Map<String, IDeclaration> fFields = new HashMap<>();
+    private IDeclaration[] fFieldArray = new IDeclaration[0];
     private IDeclaration fDeclarationToPopulate;
 
     // ------------------------------------------------------------------------
@@ -122,16 +123,32 @@ public class VariantDeclaration extends Declaration {
             String fieldName, BitBuffer input) throws CTFException {
         alignRead(input);
         IDefinition def = definitionScope.lookupDefinition(fTag);
-        EnumDefinition tagDef = (EnumDefinition) ((def instanceof EnumDefinition) ? def : null);
-        if (tagDef == null) {
-            throw new CTFException("Tag is not defined " + fTag); //$NON-NLS-1$
+        String varFieldName = fTag;
+        SimpleDatatypeDefinition tagDef = null;
+        if (def instanceof IntegerDefinition) {
+            tagDef = (SimpleDatatypeDefinition) def;
+            Long tagValue = ((IntegerDefinition) tagDef).getIntegerValue();
+            String mappings = ((IntegerDefinition) tagDef).getMappings();
+            if (mappings != null && !mappings.isBlank()) {
+                fDeclarationToPopulate = fFields.get(mappings);
+            } else if (tagValue != null) {
+                if (tagValue < 0 || tagValue >= fFieldArray.length) {
+                    throw new CTFException("Unknown value of " + tagValue + " for the variant " + toString()); //$NON-NLS-1$ //$NON-NLS-2$
+                }
+                fDeclarationToPopulate = fFieldArray[(tagValue.intValue())];
+            }
+        } else {
+            tagDef = (EnumDefinition) ((def instanceof EnumDefinition) ? def : null);
+            if (tagDef == null) {
+                throw new CTFException("Tag is not defined " + fTag); //$NON-NLS-1$
+            }
+            varFieldName = tagDef.getStringValue();
+            if (varFieldName == null) {
+                throw new CTFException("Undefined enum selector for variant " + //$NON-NLS-1$
+                        definitionScope.getScopePath().getPath());
+            }
+            fDeclarationToPopulate = fFields.get(varFieldName);
         }
-        String varFieldName = tagDef.getStringValue();
-        if (varFieldName == null) {
-            throw new CTFException("Undefined enum selector for variant " + //$NON-NLS-1$
-                    definitionScope.getScopePath().getPath());
-        }
-        fDeclarationToPopulate = fFields.get(varFieldName);
         if (fDeclarationToPopulate == null) {
             throw new CTFException("Unknown enum selector for variant " + //$NON-NLS-1$
                     definitionScope.getScopePath().getPath());
@@ -149,6 +166,27 @@ public class VariantDeclaration extends Declaration {
      *            The Declaration of this new field
      */
     public void addField(String fieldTag, IDeclaration declaration) {
+        /* Note: this is on the slow path, so the O(N) add is acceptable) */
+        IDeclaration prevDeclaration = fFields.get(fieldTag);
+        if (prevDeclaration != null) {
+            // replace fFieldArray fieldtag
+            boolean found = false;
+            for (int i = 0; i < fFieldArray.length; i++) {
+                IDeclaration field = fFieldArray[i];
+                if (field == prevDeclaration) {
+                    fFieldArray[i] = declaration;
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                throw new IllegalStateException("Field tags inconsitent: " + fieldTag + " fields: " + fFields); //$NON-NLS-1$//$NON-NLS-2$
+            }
+        } else {
+            int size = fFields.size() + 1;
+            fFieldArray = Arrays.copyOf(fFieldArray, size);
+            fFieldArray[size - 1] = declaration;
+        }
         fFields.put(fieldTag, declaration);
     }
 
