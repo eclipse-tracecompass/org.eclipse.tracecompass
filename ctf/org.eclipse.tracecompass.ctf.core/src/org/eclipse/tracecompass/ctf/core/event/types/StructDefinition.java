@@ -181,16 +181,13 @@ public final class StructDefinition extends ScopedDefinition implements IComposi
     }
 
     /**
-     * Lookup definition while exclusing the caller
-     *
-     * @param lookupPath
-     *            the path to lookup
-     * @param defintionToExclude
-     *            the definition to exclude, can be null
-     * @return the definition or null
      * @since 1.1
      */
+    @Override
     public Definition lookupDefinition(String lookupPath, ScopedDefinition defintionToExclude) {
+        if (this.equals(defintionToExclude) || lookupPath == null) {
+            return null;
+        }
         /*
          * The fields are created in order of appearance, so if a variant or
          * sequence refers to a field that is after it, the field's definition
@@ -208,7 +205,12 @@ public final class StructDefinition extends ScopedDefinition implements IComposi
         for (IDefinition child : fDefinitions) {
             if (child instanceof ScopedDefinition) {
                 if (!child.equals(defintionToExclude)) {
-                    IDefinition def = ((ScopedDefinition) child).lookupDefinition(lookupPath);
+                    if (lookupPath.equals(child.getDeclaration().getRole())) {
+                        if (child instanceof Definition) {
+                            return (Definition) child;
+                        }
+                    }
+                    IDefinition def = ((ScopedDefinition) child).lookupDefinition(lookupPath, defintionToExclude);
                     if (def instanceof Definition) {
                         return (Definition) def;
                     }
@@ -217,6 +219,9 @@ public final class StructDefinition extends ScopedDefinition implements IComposi
         }
         if (getDefinitionScope() instanceof InternalDef) {
             return (Definition) ((InternalDef) getDefinitionScope()).lookupDefinitionBreakLoop(lookupPath);
+        }
+        if (getDefinitionScope() instanceof ScopedDefinition) {
+            return (Definition) ((ScopedDefinition) getDefinitionScope()).lookupDefinition(lookupPath, this);
         }
         return (Definition) getDefinitionScope().lookupDefinition(lookupPath);
     }
