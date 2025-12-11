@@ -128,7 +128,8 @@ public final class StructDeclarationParser extends AbstractScopedCommonTreeParse
         }
 
         scope.registerIdentifier(fieldName, decl);
-        if (struct.hasField(fieldName)) {
+        IDeclaration current = struct.getField(fieldName);
+        if (decl != null && current != null && !decl.equals(current)) {
             throw new ParseException("struct: duplicate field " //$NON-NLS-1$
                     + fieldName);
         }
