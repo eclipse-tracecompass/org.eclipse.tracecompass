@@ -20,9 +20,7 @@ import org.eclipse.tracecompass.ctf.core.event.scope.IDefinitionScope;
 import org.eclipse.tracecompass.ctf.core.event.scope.ILexicalScope;
 
 /**
- * Scoped defintion. a defintion where you can lookup various datatypes
- *
- * TODO: replace by default methods and an interface when java 8 is upon us
+ * Scoped definition. a definition where you can lookup various datatypes
  *
  * @author Matthew Khouzam
  */
@@ -150,4 +148,21 @@ public abstract class ScopedDefinition extends Definition implements IDefinition
         IDefinition def = lookupDefinition(name);
         return (VariantDefinition) ((def instanceof VariantDefinition) ? def : null);
     }
-}
+
+
+    /**
+     * Lookup definition while excluding the caller
+     *
+     * @param lookupPath
+     *            the path to lookup
+     * @param definitionToExclude
+     *            the definition to exclude, can be null
+     * @return the definition or null
+     * @since 5.1
+     */
+    public @Nullable IDefinition lookupDefinition(@Nullable String lookupPath, @Nullable ScopedDefinition definitionToExclude) {
+        if(definitionToExclude == this) {
+            return null;
+        }
+        return lookupDefinition(lookupPath, definitionToExclude);
+    }}
