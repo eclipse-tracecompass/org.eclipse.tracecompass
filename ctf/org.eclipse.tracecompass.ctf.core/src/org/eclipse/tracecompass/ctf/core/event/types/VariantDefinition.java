@@ -143,8 +143,42 @@ public final class VariantDefinition extends ScopedDefinition {
         if (lookupPath.equals(fFieldName)) {
             return fDefinition;
         }
+        if (lookupPath.equals(fTagDef.getDeclaration().getRole())) {
+            return fTagDef;
+        }
+        if (lookupPath.equals(fDefinition.getDeclaration().getRole())) {
+            return fDefinition;
+        }
         if (fDefinition instanceof ScopedDefinition) {
-            IDefinition def = ((ScopedDefinition) fDefinition).lookupDefinition(lookupPath);
+            IDefinition def = ((ScopedDefinition) fDefinition).lookupDefinition(lookupPath, this);
+            if (def != null) {
+                return def;
+            }
+        }
+        final IDefinitionScope definitionScope = getDefinitionScope();
+        if (definitionScope instanceof StructDefinition) {
+            StructDefinition structDefinition = (StructDefinition) definitionScope;
+            return structDefinition.lookupDefinition(lookupPath, this);
+        }
+        return definitionScope.lookupDefinition(lookupPath);
+    }
+
+    @Override
+    public IDefinition lookupDefinition(String lookupPath, ScopedDefinition definitionToExclude) {
+        if (lookupPath == null) {
+            return null;
+        }
+        if (lookupPath.equals(fFieldName)) {
+            return fDefinition;
+        }
+        if (lookupPath.equals(fTagDef.getDeclaration().getRole())) {
+            return fTagDef;
+        }
+        if (lookupPath.equals(fDefinition.getDeclaration().getRole())) {
+            return fDefinition;
+        }
+        if (fDefinition instanceof ScopedDefinition) {
+            IDefinition def = ((ScopedDefinition) fDefinition).lookupDefinition(lookupPath, definitionToExclude);
             if (def != null) {
                 return def;
             }

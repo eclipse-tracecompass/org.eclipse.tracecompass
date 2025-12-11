@@ -15,7 +15,9 @@
 package org.eclipse.tracecompass.ctf.core.event.types;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNull;
@@ -54,6 +56,8 @@ public class StructDeclaration extends Declaration {
     private @NonNull String[] fFieldNames;
     /** Field declarations */
     private @NonNull IDeclaration[] fFields;
+    /** Role declarations */
+    private final @NonNull Map<String, IDeclaration> fRoles = new HashMap<>();
 
     /** maximum bit alignment */
     private long fMaxAlign;
@@ -209,6 +213,10 @@ public class StructDeclaration extends Declaration {
         fields[length] = declaration;
         fFieldNames = names;
         fFields = fields;
+        String role = declaration.getRole();
+        if(null != role && !role.isEmpty()) {
+            fRoles.put(role, declaration);
+        }
         fMaxAlign = Math.max(fMaxAlign, declaration.getAlignment());
     }
 
@@ -338,6 +346,12 @@ public class StructDeclaration extends Declaration {
     }
 
     @Override
+    public void setRole(String role) {
+        super.setRole(role);
+        fRoles.put(role, this);
+    }
+
+    @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
@@ -403,6 +417,16 @@ public class StructDeclaration extends Declaration {
             }
         }
         return (fMaxAlign == other.fMaxAlign);
+    }
+
+    /**
+     * Get the child with a role
+     * @param role the role
+     * @return the role
+     * @since 5.1
+     */
+    public @Nullable IDeclaration getRole(String role) {
+        return fRoles.get(role);
     }
 
 }
