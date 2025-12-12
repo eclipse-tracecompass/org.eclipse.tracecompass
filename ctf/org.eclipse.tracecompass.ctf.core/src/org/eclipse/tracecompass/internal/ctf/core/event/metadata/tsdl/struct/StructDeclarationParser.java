@@ -26,6 +26,8 @@ import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.TypeAliasP
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.TypeDeclaratorParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
 
+import com.google.common.base.Objects;
+
 /**
  * Structures follow the ISO/C standard for structures
  *
@@ -92,8 +94,8 @@ public final class StructDeclarationParser extends AbstractScopedCommonTreeParse
         StringBuilder identifierSB = new StringBuilder();
         IDeclaration decl = null;
         String fieldName = null;
-
-        if (declaration instanceof CTFAntlrMetadataNode) {
+        boolean isCtf1 = declaration instanceof CTFAntlrMetadataNode;
+        if (isCtf1) {
             /* Get the type specifier list node */
             ICTFMetadataNode typeSpecifierListNode = declaration.getFirstChildWithType(CTFParser.tokenNames[CTFParser.TYPE_SPECIFIER_LIST]);
 
@@ -119,6 +121,11 @@ public final class StructDeclarationParser extends AbstractScopedCommonTreeParse
                 decl = TypeDeclaratorParser.INSTANCE.parse(typeDeclaratorNode, new TypeDeclaratorParser.Param(trace, typeSpecifierListNode, scope, identifierSB));
             }
             fieldName = identifierSB.toString();
+
+            if (struct.getField(fieldName) != null) {
+                throw new ParseException("struct: duplicate field " //$NON-NLS-1$
+                        + fieldName);
+            }
         } else {
             decl = TypeAliasParser.INSTANCE.parse(declaration, new TypeAliasParser.Param(trace, scope));
             fieldName = ((JsonStructureFieldMemberMetadataNode) declaration).getName();
@@ -129,12 +136,16 @@ public final class StructDeclarationParser extends AbstractScopedCommonTreeParse
 
         scope.registerIdentifier(fieldName, decl);
         IDeclaration current = struct.getField(fieldName);
-        if (decl != null && current != null && !decl.equals(current)) {
+        if (decl == null) {
+            throw new ParseException("struct: Cannot add null field " + fieldName); //$NON-NLS-1$
+        }
+
+        if (current != null && !Objects.equal(decl, current)) {
             throw new ParseException("struct: duplicate field " //$NON-NLS-1$
                     + fieldName);
         }
 
-        if (fieldName != null && decl != null) {
+        if (fieldName != null) {
             struct.addField(fieldName, decl);
         }
 
