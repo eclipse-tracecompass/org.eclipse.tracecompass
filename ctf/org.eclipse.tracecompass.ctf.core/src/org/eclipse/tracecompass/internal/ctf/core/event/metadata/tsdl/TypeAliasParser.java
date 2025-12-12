@@ -27,6 +27,7 @@ import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.dynamicarray.DynamicLengthArrayParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.dynamicstring.DynamicLengthStringParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.enumeration.EnumParser;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.floatingpoint.FloatDeclarationParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.integer.IntegerDeclarationParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.staticarray.StaticLengthArrayParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.staticstring.StaticLengthStringParser;
@@ -179,6 +180,10 @@ public final class TypeAliasParser extends AbstractScopedCommonTreeParser {
                     targetDeclaration = DynamicLengthArrayParser.INSTANCE.parse(typealias, new DynamicLengthArrayParser.Param(trace, scope));
                 } else if (JsonMetadataStrings.STRUCTURE.equals(type)) {
                     targetDeclaration = StructParser.INSTANCE.parse(typealias, new StructParser.Param(trace, null, scope));
+                } else if (JsonMetadataStrings.FIXED_LENGTH_FLOATING_POINT.equals(type)) {
+                    targetDeclaration = FloatDeclarationParser.INSTANCE.parse(typealias, new FloatDeclarationParser.Param(trace));
+                } else if (JsonMetadataStrings.VARIABLE_LENGTH_FLOATING_POINT.equals(type)) {
+                    targetDeclaration = FloatDeclarationParser.INSTANCE.parse(typealias, new FloatDeclarationParser.Param(trace));
                 } else {
                     throw new ParseException("Invalid field class: " + type); //$NON-NLS-1$
                 }
