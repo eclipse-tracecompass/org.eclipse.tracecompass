@@ -672,6 +672,12 @@ public final class IntegerDeclaration extends Declaration implements ISimpleData
         if (fEncoding != other.fEncoding) {
             return false;
         }
+        if (!Objects.equals(fMappings, other.fMappings)) {
+            return false;
+        }
+        if (!Objects.equals(getRole(), other.getRole())) {
+            return false;
+        }
         return (fBase == other.fBase);
     }
 
