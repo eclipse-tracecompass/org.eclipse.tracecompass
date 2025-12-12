@@ -40,6 +40,9 @@ import org.eclipse.tracecompass.internal.ctf.core.utils.LEB128;
  *
  * The declaration of a integer basic data type.
  *
+ * note: there are some basic declarations. They are not needed, but are kept
+ * for API reasons.
+ *
  * @version 1.0
  * @author Matthew Khouzam
  * @author Simon Marchi
@@ -56,66 +59,98 @@ public final class IntegerDeclaration extends Declaration implements ISimpleData
     private static final int SIZE_8 = 8;
     /**
      * unsigned int 32 bits big endian
+     *
+     * @apiNote Not used in code, only for testing.
      */
     public static final IntegerDeclaration UINT_32B_DECL = new IntegerDeclaration(32, false, ByteOrder.BIG_ENDIAN);
     /**
      * unsigned int 32 bits little endian
+     *
+     * @apiNote Not used in code, only for testing.
      */
     public static final IntegerDeclaration UINT_32L_DECL = new IntegerDeclaration(32, false, ByteOrder.LITTLE_ENDIAN);
     /**
      * signed int 32 bits big endian
+     *
+     * @apiNote Not used in code, only for testing.
      */
     public static final IntegerDeclaration INT_32B_DECL = new IntegerDeclaration(32, true, ByteOrder.BIG_ENDIAN);
     /**
      * signed int 32 bits little endian
+     *
+     * @apiNote Not used in code, only for testing.
      */
     public static final IntegerDeclaration INT_32L_DECL = new IntegerDeclaration(32, true, ByteOrder.LITTLE_ENDIAN);
     /**
      * unsigned int 32 bits big endian
+     *
+     * @apiNote Not used in code, only for testing.
      */
     public static final IntegerDeclaration UINT_64B_DECL = new IntegerDeclaration(64, false, ByteOrder.BIG_ENDIAN);
     /**
      * unsigned int 64 bits little endian
+     *
+     * @apiNote Not used in code, only for testing.
      */
     public static final IntegerDeclaration UINT_64L_DECL = new IntegerDeclaration(64, false, ByteOrder.LITTLE_ENDIAN);
     /**
      * signed int 64 bits big endian
+     *
+     * @apiNote Not used in code, only for testing.
      */
     public static final IntegerDeclaration INT_64B_DECL = new IntegerDeclaration(64, true, ByteOrder.BIG_ENDIAN);
     /**
      * signed int 64 bits little endian
+     *
+     * @apiNote Not used in code, only for testing.
      */
     public static final IntegerDeclaration INT_64L_DECL = new IntegerDeclaration(64, true, ByteOrder.LITTLE_ENDIAN);
     /**
      * unsigned 8 bit int endianness doesn't matter since it's 8 bits (byte)
+     *
+     * @apiNote Not used in code, only for testing.
      */
     public static final IntegerDeclaration UINT_8_DECL = new IntegerDeclaration(8, false, ByteOrder.BIG_ENDIAN);
     /**
      * signed 8 bit int endianness doesn't matter since it's 8 bits (char)
+     *
+     * @apiNote Not used in code, only for testing.
      */
     public static final IntegerDeclaration INT_8_DECL = new IntegerDeclaration(8, true, ByteOrder.BIG_ENDIAN);
     /**
      * Unsigned 5 bit int, used for event headers
+     *
+     * @apiNote Not used in code, only for testing.
      */
     public static final IntegerDeclaration UINT_5B_DECL = new IntegerDeclaration(5, false, 10, ByteOrder.BIG_ENDIAN, Encoding.NONE, "", 1); //$NON-NLS-1$
     /**
      * Unsigned 5 bit int, used for event headers
+     *
+     * @apiNote Not used in code, only for testing.
      */
     public static final IntegerDeclaration UINT_5L_DECL = new IntegerDeclaration(5, false, 10, ByteOrder.LITTLE_ENDIAN, Encoding.NONE, "", 1); //$NON-NLS-1$
     /**
      * Unsigned 5 bit int, used for event headers
+     *
+     * @apiNote Not used in code, only for testing.
      */
     public static final IntegerDeclaration UINT_27B_DECL = new IntegerDeclaration(27, false, 10, ByteOrder.BIG_ENDIAN, Encoding.NONE, "", 1); //$NON-NLS-1$
     /**
      * Unsigned 5 bit int, used for event headers
+     * @deprecated use the {@link #createDeclaration(int, boolean, int, ByteOrder, Encoding, String, long, String, Map)} instead
      */
+    @Deprecated
     public static final IntegerDeclaration UINT_27L_DECL = new IntegerDeclaration(27, false, 10, ByteOrder.LITTLE_ENDIAN, Encoding.NONE, "", 1); //$NON-NLS-1$
     /**
      * Unsigned 16 bit int, used for event headers
+     *
+     * @apiNote Not used in code, only for testing.
      */
     public static final IntegerDeclaration UINT_16B_DECL = new IntegerDeclaration(16, false, ByteOrder.BIG_ENDIAN);
     /**
      * Unsigned 16 bit int, used for event headers
+     *
+     * @apiNote Not used in code, only for testing.
      */
     public static final IntegerDeclaration UINT_16L_DECL = new IntegerDeclaration(16, false, ByteOrder.LITTLE_ENDIAN);
     // ------------------------------------------------------------------------
@@ -131,6 +166,7 @@ public final class IntegerDeclaration extends Declaration implements ISimpleData
     private final long fAlignment;
     private final String fClock;
     private boolean fVarint = false;
+
     private static class IntervalNode {
         final long start, end;
         final String name;
@@ -378,6 +414,7 @@ public final class IntegerDeclaration extends Declaration implements ISimpleData
     private void buildIntervalTree() {
         fIntervalTree.clear();
         for (Map.Entry<String, List<IntegerRange>> entry : fMappings.entrySet()) {
+            // TODO: extend mappings if they have the same key and overlap
             String name = entry.getKey();
             for (IntegerRange range : entry.getValue()) {
                 fIntervalTree.add(new IntervalNode(range.getStart(), range.getEnd(), name));
@@ -564,16 +601,7 @@ public final class IntegerDeclaration extends Declaration implements ISimpleData
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + (int) (fAlignment ^ (fAlignment >>> 32));
-        result = prime * result + fBase;
-        result = prime * result + fByteOrder.toString().hashCode();
-        result = prime * result + fClock.hashCode();
-        result = prime * result + fEncoding.hashCode();
-        result = prime * result + fLength;
-        result = prime * result + (fSigned ? 1231 : 1237);
-        return result;
+        return Objects.hash(fAlignment, fBase, fByteOrder, fClock, fEncoding, fLength, fSigned, fMappings, getRole());
     }
 
     @Override
@@ -645,13 +673,10 @@ public final class IntegerDeclaration extends Declaration implements ISimpleData
         if (fIntervalTree.isEmpty()) {
             return ""; //$NON-NLS-1$
         }
-
         List<String> matches = new ArrayList<>();
-
         // Binary search for rightmost node with start <= value
         int left = 0, right = fIntervalTree.size() - 1;
         int lastValid = -1;
-
         while (left <= right) {
             int mid = (left + right) / 2;
             if (fIntervalTree.get(mid).start <= value) {
@@ -661,16 +686,13 @@ public final class IntegerDeclaration extends Declaration implements ISimpleData
                 right = mid - 1;
             }
         }
-
         // Check all nodes from lastValid backwards for overlaps
         for (int i = lastValid; i >= 0; i--) {
             IntervalNode node = fIntervalTree.get(i);
-            if (node.end < value) {
-                break;
+            if (node.end >= value) {
+                matches.add(node.name);
             }
-            matches.add(node.name);
         }
-
         return matches.isEmpty() ? "" : Objects.requireNonNull(String.join(" ", matches)); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
