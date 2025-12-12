@@ -158,11 +158,12 @@ public final class JsonMetadataStrings {
     public static final String VARIABLE_SIGNED_INTEGER_FIELD = "variable-length-signed-integer"; //$NON-NLS-1$
 
     /**
-     * Type string for a fixed length floating point field class
+     * Type string for a fixed length floating point number field class
      */
     public static final String FIXED_LENGTH_FLOATING_POINT = "fixed-length-floating-point-number"; //$NON-NLS-1$
+
     /**
-     * Type string for a variable length floating point field class
+     * Type string for a variable length floating point number field class
      */
     public static final String VARIABLE_LENGTH_FLOATING_POINT = "variable-length-floating-point-number"; //$NON-NLS-1$
 
@@ -177,12 +178,12 @@ public final class JsonMetadataStrings {
     public static final String NULL_TERMINATED_STRING = "null-terminated-string"; //$NON-NLS-1$
 
     /**
-     * The length of a dynamic string
+     * Field string for the length of a field class
      */
     public static final String LENGTH = "length"; //$NON-NLS-1$
 
     /**
-     * Type string for a null terminated string field class
+     * Type string for a dynamic length string field class
      */
     public static final String DYNAMIC_LENGTH_STRING = "dynamic-length-string"; //$NON-NLS-1$
 
@@ -201,7 +202,7 @@ public final class JsonMetadataStrings {
     public static final String VARIANT = "variant"; //$NON-NLS-1$
 
     /**
-     * Type string for a structure field class
+     * Field string for a path
      */
     public static final String PATH = "path"; //$NON-NLS-1$
 
@@ -214,40 +215,57 @@ public final class JsonMetadataStrings {
      * Type string for an internal structure field class
      */
     public static final String STRUCT = "struct"; //$NON-NLS-1$
+
     /**
-     * Encodings map
+     * Map of encoding names to Charset objects
      */
     public static final Map<String, Charset> ENCODINGS = Map.of("utf-8",StandardCharsets.UTF_8, //$NON-NLS-1$
             "utf-16be",StandardCharsets.UTF_16BE,"utf-16le",StandardCharsets.UTF_16LE, //$NON-NLS-1$ //$NON-NLS-2$
             "utf-32be", Charset.forName("UTF-32BE"),"utf-32le", Charset.forName("UTF-32LE")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 
     /**
-     * Type of string encoding
+     * Field string for encoding
      */
     public static final String ENCODING = "encoding"; //$NON-NLS-1$
 
     /**
-     * Static length string
+     * Type string for a static length string field class
      */
     public static final String STATIC_LENGTH_STRING = "static-length-string"; //$NON-NLS-1$
 
     /**
-     * Static length array
+     * Type string for a static length array field class
      */
     public static final String STATIC_LENGTH_ARRAY = "static-length-array"; //$NON-NLS-1$
 
     /**
-     * Dynamic length array
+     * Type string for a dynamic length array field class
      */
     public static final String DYNAMIC_LENGTH_ARRAY = "dynamic-length-array"; //$NON-NLS-1$
 
     /**
-     * Element field class
+     * Field string for element field class
      */
     public static final String ELEMENT_FIELD_CLASS = "element-field-class"; //$NON-NLS-1$
 
+    /**
+     * Field string for member classes in a structure
+     */
     public static final String MEMBER_CLASSES = "member-classes"; //$NON-NLS-1$
 
+    /**
+     * Field string for minimum alignment
+     */
     public static final String MINIMUM_ALIGNMENT = "minimum-alignment"; //$NON-NLS-1$
+
+    /**
+     * Field string for alignment
+     */
+    public static final String ALIGNMENT = "alignment"; //$NON-NLS-1$
+
+    /**
+     * Field string for byte order
+     */
+    public static final String BYTE_ORDER = "byte-order"; //$NON-NLS-1$
 
 }
