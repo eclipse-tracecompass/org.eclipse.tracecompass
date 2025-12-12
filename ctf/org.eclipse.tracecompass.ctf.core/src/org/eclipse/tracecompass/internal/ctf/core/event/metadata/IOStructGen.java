@@ -50,6 +50,7 @@ import org.eclipse.tracecompass.internal.ctf.core.utils.JsonMetadataStrings;
 
 import com.google.common.collect.Iterables;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 /**
  * IOStructGen
@@ -157,11 +158,15 @@ public class IOStructGen {
                 traceNode = child;
                 if (child instanceof JsonTraceMetadataNode) {
                     JsonTraceMetadataNode node = (JsonTraceMetadataNode) child;
-                    Map<String, String> env = new LinkedHashMap<>();
-                    for( Entry<String, JsonElement> entry : node.getEnvironment().entrySet()) {
-                        env.put(entry.getKey(), entry.getValue().toString());
+                    JsonObject environment = node.getEnvironment();
+                    if (environment != null) {
+                        Map<String, String> env = new LinkedHashMap<>();
+
+                        for (Entry<String, JsonElement> entry : environment.entrySet()) {
+                            env.put(entry.getKey(), entry.getValue().toString());
+                        }
+                        fTrace.setEnvironment(env);
                     }
-                    fTrace.setEnvironment(env);
 
                 }
                 parseTrace(traceNode);
