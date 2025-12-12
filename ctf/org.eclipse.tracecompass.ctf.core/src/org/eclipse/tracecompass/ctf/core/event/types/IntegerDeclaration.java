@@ -20,9 +20,13 @@ import static java.util.Objects.requireNonNull;
 
 import java.math.BigInteger;
 import java.nio.ByteOrder;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -132,7 +136,19 @@ public final class IntegerDeclaration extends Declaration implements ISimpleData
     private final long fAlignment;
     private final String fClock;
     private boolean fVarint = false;
-    private Map<String, List<IntegerRange>> fMappings = new HashMap<>();
+    private static class IntervalNode {
+        final long start, end;
+        final String name;
+
+        IntervalNode(long start, long end, String name) {
+            this.start = start;
+            this.end = end;
+            this.name = name;
+        }
+    }
+
+    private Map<String, List<IntegerRange>> fMappings = new TreeMap<>();
+    private List<IntervalNode> fIntervalTree = new ArrayList<>();
 
     // ------------------------------------------------------------------------
     // Constructors
@@ -426,7 +442,20 @@ public final class IntegerDeclaration extends Declaration implements ISimpleData
      *            a mapped range of integers
      */
     private void setMappings(Map<String, List<IntegerRange>> mappings) {
-        fMappings = mappings;
+        fMappings.clear();
+        fMappings.putAll(mappings);
+        buildIntervalTree();
+    }
+
+    private void buildIntervalTree() {
+        fIntervalTree.clear();
+        for (Map.Entry<String, List<IntegerRange>> entry : fMappings.entrySet()) {
+            String name = entry.getKey();
+            for (IntegerRange range : entry.getValue()) {
+                fIntervalTree.add(new IntervalNode(range.getStart(), range.getEnd(), name));
+            }
+        }
+        Collections.sort(fIntervalTree, Comparator.comparingLong(n -> n.start));
     }
 
     /**
@@ -517,11 +546,7 @@ public final class IntegerDeclaration extends Declaration implements ISimpleData
         input.setByteOrder(fByteOrder);
         long value = read(input);
         input.setByteOrder(byteOrder);
-        if (fMappings.size() == 0) {
-            return new IntegerDefinition(this, definitionScope, fieldName, value);
-        }
-        String mappingName = getMappingForValue(value);
-        return new IntegerDefinition(this, definitionScope, fieldName, value, mappingName);
+        return new IntegerDefinition(this, definitionScope, fieldName, value);
     }
 
     @Override
@@ -682,25 +707,37 @@ public final class IntegerDeclaration extends Declaration implements ISimpleData
         return !((fLength != BYTE_ALIGN) && !fByteOrder.equals(other.fByteOrder));
     }
 
-    private String getMappingForValue(long value) {
-        String mapping = ""; //$NON-NLS-1$
-        int count = 0;
-        for (Map.Entry<String, List<IntegerRange>> entry : fMappings.entrySet()) {
-            String mappingName = entry.getKey();
-            List<IntegerRange> ranges = entry.getValue();
+    String getMappingForValue(long value) {
+        if (fIntervalTree.isEmpty()) {
+            return ""; //$NON-NLS-1$
+        }
 
-            for (IntegerRange range : ranges) {
-                if (range.getStart() <= value && value <= range.getEnd()) {
-                    if (count != 0) {
-                        mapping += " " + mappingName; //$NON-NLS-1$
-                    } else {
-                        mapping += mappingName;
-                    }
-                    count++;
+        List<String> matches = new ArrayList<>();
 
-                }
+        // Binary search for rightmost node with start <= value
+        int left = 0, right = fIntervalTree.size() - 1;
+        int lastValid = -1;
+
+        while (left <= right) {
+            int mid = (left + right) / 2;
+            if (fIntervalTree.get(mid).start <= value) {
+                lastValid = mid;
+                left = mid + 1;
+            } else {
+                right = mid - 1;
             }
         }
-        return mapping;
+
+        // Check all nodes from lastValid backwards for overlaps
+        for (int i = lastValid; i >= 0; i--) {
+            IntervalNode node = fIntervalTree.get(i);
+            if (node.end < value) {
+                break;
+            }
+            matches.add(node.name);
+        }
+
+        return matches.isEmpty() ? "" : Objects.requireNonNull(String.join(" ", matches)); //$NON-NLS-1$ //$NON-NLS-2$
     }
+
 }
