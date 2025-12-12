@@ -236,11 +236,31 @@ public final class StructDefinition extends ScopedDefinition implements IComposi
      * @since 4.4
      */
     public IDefinition lookupRole(String role) {
+        if (role == null) {
+            return null;
+        }
         for (IDefinition def : fDefinitions) {
-            IDeclaration decl = def.getDeclaration();
-            if (role != null && role.equals(decl.getRole())) {
+            if (role.equals(def.getDeclaration().getRole())) {
                 return def;
             }
+            IDefinition result = lookupRoleRecursive(def, role);
+            if (result != null) {
+                return result;
+            }
+        }
+        return null;
+    }
+
+    private IDefinition lookupRoleRecursive(IDefinition def, String role) {
+        if (def instanceof StructDefinition) {
+            return ((StructDefinition) def).lookupRole(role);
+        }
+        if (def instanceof VariantDefinition) {
+            IDefinition current = ((VariantDefinition) def).getCurrentField();
+            if (role.equals(current.getDeclaration().getRole())) {
+                return current;
+            }
+            return lookupRoleRecursive(current, role);
         }
         return null;
     }
