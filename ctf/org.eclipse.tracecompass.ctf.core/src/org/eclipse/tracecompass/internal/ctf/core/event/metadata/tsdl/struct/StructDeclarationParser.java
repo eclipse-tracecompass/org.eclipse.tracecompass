@@ -26,6 +26,8 @@ import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.TypeAliasP
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.TypeDeclaratorParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
 
+import com.google.common.base.Objects;
+
 /**
  * Structures follow the ISO/C standard for structures
  *
@@ -92,8 +94,9 @@ public final class StructDeclarationParser extends AbstractScopedCommonTreeParse
         StringBuilder identifierSB = new StringBuilder();
         IDeclaration decl = null;
         String fieldName = null;
-
+        boolean ctf1 = false;
         if (declaration instanceof CTFAntlrMetadataNode) {
+            ctf1= true;
             /* Get the type specifier list node */
             ICTFMetadataNode typeSpecifierListNode = declaration.getFirstChildWithType(CTFParser.tokenNames[CTFParser.TYPE_SPECIFIER_LIST]);
 
@@ -129,12 +132,15 @@ public final class StructDeclarationParser extends AbstractScopedCommonTreeParse
 
         scope.registerIdentifier(fieldName, decl);
         IDeclaration current = struct.getField(fieldName);
-        if (decl != null && current != null && !decl.equals(current)) {
+        if (decl == null) {
+            throw new ParseException("struct: Cannot add null field " + fieldName); //$NON-NLS-1$
+        }
+        if (current != null && (ctf1 || !Objects.equal(decl, current))) {
             throw new ParseException("struct: duplicate field " //$NON-NLS-1$
                     + fieldName);
         }
 
-        if (fieldName != null && decl != null) {
+        if (fieldName != null) {
             struct.addField(fieldName, decl);
         }
 
