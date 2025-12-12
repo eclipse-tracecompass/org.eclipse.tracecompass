@@ -21,7 +21,7 @@
 
   <groupId>org.eclipse.tracecompass</groupId>
   <artifactId>org.eclipse.tracecompass</artifactId>
-  <version>11.0.0-SNAPSHOT</version>
+  <version>11.2.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Trace Compass Parent</name>
 
@@ -57,7 +57,7 @@
     <tycho-use-project-settings>true</tycho-use-project-settings>
     <tycho.scmUrl>scm:git:https://github.com/eclipse-tracecompass/org.eclipse.tracecompass</tycho.scmUrl>
     <cbi-plugins.version>1.4.2</cbi-plugins.version>
-    <target-platform>tracecompass-e4.37</target-platform>
+    <target-platform>tracecompass-e4.38</target-platform>
     <help-docs-eclipserun-repo>https://download.eclipse.org/eclipse/updates/4.23</help-docs-eclipserun-repo>
 
     <rcptt-version>2.5.4</rcptt-version>
@@ -423,7 +423,7 @@
               <groupId>org.eclipse.tracecompass</groupId>
               <artifactId>org.eclipse.tracecompass.target</artifactId>
               <classifier>${target-platform}</classifier>
-              <version>11.0.0-SNAPSHOT</version>
+              <version>11.2.0-SNAPSHOT</version>
             </artifact>
           </target>
         </configuration>
