@@ -21,5 +21,6 @@ Export-Package: org.eclipse.tracecompass.common.core.tests;x-friends:="org.eclip
 Import-Package: com.google.common.base,
  com.google.common.collect,
  com.google.common.primitives,
+ com.google.gson,
  org.eclipse.tracecompass.traceeventlogger
 Automatic-Module-Name: org.eclipse.tracecompass.common.core.tests
