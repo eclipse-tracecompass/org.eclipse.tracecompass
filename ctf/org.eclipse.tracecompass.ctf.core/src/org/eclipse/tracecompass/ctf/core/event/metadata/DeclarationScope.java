@@ -178,7 +178,7 @@ public class DeclarationScope {
         }
         IDeclaration originalDeclaration = fTypes.get(name);
         if (originalDeclaration != null && !Objects.equals(declaration, originalDeclaration)) {
-            throw new ParseException("Type has already been defined:" + name); //$NON-NLS-1$
+            throw new ParseException("Type has already been defined: " + name); //$NON-NLS-1$
         }
 
         /* Add it to the register. */

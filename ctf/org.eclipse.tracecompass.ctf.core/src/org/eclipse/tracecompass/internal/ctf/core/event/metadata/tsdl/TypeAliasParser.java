@@ -210,6 +210,9 @@ public final class TypeAliasParser extends AbstractScopedCommonTreeParser {
             }
 
             aliasString = TypeAliasAliasParser.INSTANCE.parse(alias, null);
+            if (scope.lookupType(aliasString)!= null) {
+                throw new ParseException("Type has already been defined: " + aliasString); //$NON-NLS-1$
+            }
         }
 
         scope.registerType(aliasString, targetDeclaration);
