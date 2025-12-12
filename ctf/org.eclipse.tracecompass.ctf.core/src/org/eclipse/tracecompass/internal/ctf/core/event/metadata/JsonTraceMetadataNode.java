@@ -15,8 +15,8 @@ package org.eclipse.tracecompass.internal.ctf.core.event.metadata;
 
 import org.eclipse.tracecompass.ctf.core.CTFException;
 import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
-import org.json.JSONObject;
 
+import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -30,7 +30,7 @@ public class JsonTraceMetadataNode extends CTFJsonMetadataNode {
     @SerializedName("uid")
     private String fUid;
     @SerializedName("environment")
-    private JSONObject fEnvironment;
+    private JsonObject fEnvironment;
     @SerializedName("packet-header-field-class")
     private JsonStructureFieldMetadataNode fPacketHeader;
 
@@ -62,7 +62,7 @@ public class JsonTraceMetadataNode extends CTFJsonMetadataNode {
      *
      * @return the environment
      */
-    public JSONObject getEnvironment() {
+    public JsonObject getEnvironment() {
         return fEnvironment;
     }
 
