@@ -564,16 +564,7 @@ public final class IntegerDeclaration extends Declaration implements ISimpleData
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + (int) (fAlignment ^ (fAlignment >>> 32));
-        result = prime * result + fBase;
-        result = prime * result + fByteOrder.toString().hashCode();
-        result = prime * result + fClock.hashCode();
-        result = prime * result + fEncoding.hashCode();
-        result = prime * result + fLength;
-        result = prime * result + (fSigned ? 1231 : 1237);
-        return result;
+        return Objects.hash(fAlignment, fBase, fByteOrder, fClock, fEncoding, fLength, fSigned, fMappings, getRole());
     }
 
     @Override
@@ -645,13 +636,10 @@ public final class IntegerDeclaration extends Declaration implements ISimpleData
         if (fIntervalTree.isEmpty()) {
             return ""; //$NON-NLS-1$
         }
-
         List<String> matches = new ArrayList<>();
-
         // Binary search for rightmost node with start <= value
         int left = 0, right = fIntervalTree.size() - 1;
         int lastValid = -1;
-
         while (left <= right) {
             int mid = (left + right) / 2;
             if (fIntervalTree.get(mid).start <= value) {
@@ -661,16 +649,13 @@ public final class IntegerDeclaration extends Declaration implements ISimpleData
                 right = mid - 1;
             }
         }
-
         // Check all nodes from lastValid backwards for overlaps
         for (int i = lastValid; i >= 0; i--) {
             IntervalNode node = fIntervalTree.get(i);
-            if (node.end < value) {
-                break;
+            if (node.end >= value) {
+                matches.add(node.name);
             }
-            matches.add(node.name);
         }
-
         return matches.isEmpty() ? "" : Objects.requireNonNull(String.join(" ", matches)); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
