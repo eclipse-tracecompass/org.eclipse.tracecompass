@@ -51,14 +51,9 @@ public final class IntegerDeclaration extends Declaration implements ISimpleData
     // Helpers
     // ------------------------------------------------------------------------
 
-    private static final int SIZE_64 = 64;
-    private static final int SIZE_32 = 32;
-    private static final int SIZE_27 = 27;
-    private static final int SIZE_16 = 16;
-    private static final int SIZE_8 = 8;
-    private static final int SIZE_5 = 5;
     private static final int BYTE_ALIGN = 8;
     private static final int BASE_10 = 10;
+    private static final int SIZE_8 = 8;
     /**
      * unsigned int 32 bits big endian
      */
@@ -178,69 +173,6 @@ public final class IntegerDeclaration extends Declaration implements ISimpleData
      */
     public static IntegerDeclaration createDeclaration(int len, boolean signed, int base,
             @Nullable ByteOrder byteOrder, Encoding encoding, String clock, long alignment, @Nullable String role) {
-        if (encoding.equals(Encoding.NONE) && (clock.equals("")) && base == BASE_10 && byteOrder != null) { //$NON-NLS-1$
-            if (alignment == BYTE_ALIGN) {
-                switch (len) {
-                case SIZE_8:
-                    return signed ? INT_8_DECL : UINT_8_DECL;
-                case SIZE_16:
-                    if (!signed) {
-                        if (isBigEndian(byteOrder)) {
-                            return UINT_16B_DECL;
-                        }
-                        return UINT_16L_DECL;
-                    }
-                    break;
-                case SIZE_32:
-                    if (signed) {
-                        if (isBigEndian(byteOrder)) {
-                            return INT_32B_DECL;
-                        }
-                        return INT_32L_DECL;
-                    }
-                    if (isBigEndian(byteOrder)) {
-                        return UINT_32B_DECL;
-                    }
-                    return UINT_32L_DECL;
-                case SIZE_64:
-                    if (signed) {
-                        if (isBigEndian(byteOrder)) {
-                            return INT_64B_DECL;
-                        }
-                        return INT_64L_DECL;
-                    }
-                    if (isBigEndian(byteOrder)) {
-                        return UINT_64B_DECL;
-                    }
-                    return UINT_64L_DECL;
-
-                default:
-
-                }
-
-            } else if (alignment == 1) {
-                switch (len) {
-                case SIZE_5:
-                    if (!signed) {
-                        if (isBigEndian(byteOrder)) {
-                            return UINT_5B_DECL;
-                        }
-                        return UINT_5L_DECL;
-                    }
-                    break;
-                case SIZE_27:
-                    if (!signed) {
-                        if (isBigEndian(byteOrder)) {
-                            return UINT_27B_DECL;
-                        }
-                        return UINT_27L_DECL;
-                    }
-                    break;
-                default:
-                    break;
-                }
-            }
-        }
         return new IntegerDeclaration(len, signed, base, byteOrder, encoding, clock, alignment, role, null);
     }
 
@@ -322,10 +254,6 @@ public final class IntegerDeclaration extends Declaration implements ISimpleData
             decl.setMappings(mappings);
         }
         return decl;
-    }
-
-    private static boolean isBigEndian(@Nullable ByteOrder byteOrder) {
-        return (byteOrder != null) && byteOrder.equals(ByteOrder.BIG_ENDIAN);
     }
 
     /**
@@ -618,7 +546,7 @@ public final class IntegerDeclaration extends Declaration implements ISimpleData
             input.setByteOrder(getByteOrder());
         }
 
-        if (length > SIZE_64) {
+        if (length > Long.SIZE) {
             throw new CTFException("Cannot read an integer with over 64 bits. Length given: " + length); //$NON-NLS-1$
         }
 
