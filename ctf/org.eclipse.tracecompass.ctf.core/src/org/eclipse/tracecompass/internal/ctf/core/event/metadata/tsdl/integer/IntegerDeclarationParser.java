@@ -152,8 +152,11 @@ public final class IntegerDeclarationParser implements ICommonTreeParser {
 
         Encoding encoding = Encoding.NONE;
 
-        if (integer instanceof JsonStructureFieldMemberMetadataNode) {
-            JsonStructureFieldMemberMetadataNode member = (JsonStructureFieldMemberMetadataNode) integer;
+        if (integer instanceof JsonStructureFieldMemberMetadataNode member) {
+            JsonElement fieldClassElement = member.getFieldClass();
+            if (fieldClassElement == null || !fieldClassElement.isJsonObject()) {
+                throw new ParseException(getClass().getName() + " fieldclass must be a json object."); //$NON-NLS-1$
+            }
             JsonObject fieldclass = member.getFieldClass().getAsJsonObject();
             role = member.getRole();
             // by default fieldclass is unsigned
@@ -193,7 +196,7 @@ public final class IntegerDeclarationParser implements ICommonTreeParser {
                 return IntegerDeclaration.createVarintDeclaration(signed, base, role, true);
             }
             if (fieldclass.has(ALIGNMENT)) {
-                alignment = fieldclass.get(ALIGNMENT).getAsInt();
+                alignment = AlignmentParser.INSTANCE.parse(member, null);
             }
             size = fieldclass.get(LENGTH).getAsInt();
 
@@ -262,7 +265,8 @@ public final class IntegerDeclarationParser implements ICommonTreeParser {
         }
 
         if (mappings.size() > 0) {
-            return IntegerDeclaration.createDeclaration(base, signed, base, byteOrder, encoding, clock, alignment, role, mappings);
+
+            return IntegerDeclaration.createDeclaration((int) size, signed, base, byteOrder, encoding, clock, alignment, role, mappings);
         }
 
         return IntegerDeclaration.createDeclaration((int) size, signed, base,
