@@ -250,4 +250,8 @@ public final class JsonMetadataStrings {
 
     public static final String MINIMUM_ALIGNMENT = "minimum-alignment"; //$NON-NLS-1$
 
+    public static final String ALIGNMENT = "alignment";
+
+    public static final String BYTE_ORDER = "byte-order";
+
 }
