@@ -40,6 +40,9 @@ import org.eclipse.tracecompass.internal.ctf.core.utils.LEB128;
  *
  * The declaration of a integer basic data type.
  *
+ * note: there are some basic declarations. They are not needed, but are kept
+ * for API reasons.
+ *
  * @version 1.0
  * @author Matthew Khouzam
  * @author Simon Marchi
@@ -109,6 +112,7 @@ public final class IntegerDeclaration extends Declaration implements ISimpleData
     /**
      * Unsigned 5 bit int, used for event headers
      */
+    @Deprecated
     public static final IntegerDeclaration UINT_27L_DECL = new IntegerDeclaration(27, false, 10, ByteOrder.LITTLE_ENDIAN, Encoding.NONE, "", 1); //$NON-NLS-1$
     /**
      * Unsigned 16 bit int, used for event headers
@@ -131,6 +135,7 @@ public final class IntegerDeclaration extends Declaration implements ISimpleData
     private final long fAlignment;
     private final String fClock;
     private boolean fVarint = false;
+
     private static class IntervalNode {
         final long start, end;
         final String name;
@@ -564,16 +569,7 @@ public final class IntegerDeclaration extends Declaration implements ISimpleData
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + (int) (fAlignment ^ (fAlignment >>> 32));
-        result = prime * result + fBase;
-        result = prime * result + fByteOrder.toString().hashCode();
-        result = prime * result + fClock.hashCode();
-        result = prime * result + fEncoding.hashCode();
-        result = prime * result + fLength;
-        result = prime * result + (fSigned ? 1231 : 1237);
-        return result;
+        return Objects.hash(fAlignment, fBase, fByteOrder, fClock, fEncoding, fLength, fSigned, fMappings, getRole());
     }
 
     @Override
@@ -645,13 +641,10 @@ public final class IntegerDeclaration extends Declaration implements ISimpleData
         if (fIntervalTree.isEmpty()) {
             return ""; //$NON-NLS-1$
         }
-
         List<String> matches = new ArrayList<>();
-
         // Binary search for rightmost node with start <= value
         int left = 0, right = fIntervalTree.size() - 1;
         int lastValid = -1;
-
         while (left <= right) {
             int mid = (left + right) / 2;
             if (fIntervalTree.get(mid).start <= value) {
@@ -661,16 +654,13 @@ public final class IntegerDeclaration extends Declaration implements ISimpleData
                 right = mid - 1;
             }
         }
-
         // Check all nodes from lastValid backwards for overlaps
         for (int i = lastValid; i >= 0; i--) {
             IntervalNode node = fIntervalTree.get(i);
-            if (node.end < value) {
-                break;
+            if (node.end >= value) {
+                matches.add(node.name);
             }
-            matches.add(node.name);
         }
-
         return matches.isEmpty() ? "" : Objects.requireNonNull(String.join(" ", matches)); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
