@@ -141,50 +141,64 @@ public final class TypeAliasParser extends AbstractScopedCommonTreeParser {
                 }
             }
             if (fieldClass != null) {
-                if (type.isEmpty()) {
-                    if (fieldClass.isJsonObject()) {
-                        type = fieldClass.get(JsonMetadataStrings.TYPE).getAsString();
-                    }
+                if (type.isEmpty() && fieldClass.isJsonObject()) {
+                    type = fieldClass.get(JsonMetadataStrings.TYPE).getAsString();
                 }
-                if (JsonMetadataStrings.FIXED_UNSIGNED_INTEGER_FIELD.equals(type)) {
+                switch (type) {
+                case JsonMetadataStrings.FIXED_UNSIGNED_INTEGER_FIELD:
                     fieldClass.addProperty(SIGNED, false);
                     fieldClass.addProperty(VARINT, false);
                     targetDeclaration = IntegerDeclarationParser.INSTANCE.parse(typealias, new IntegerDeclarationParser.Param(trace));
-                } else if (JsonMetadataStrings.FIXED_SIGNED_INTEGER_FIELD.equals(type)) {
+                    break;
+                case JsonMetadataStrings.FIXED_SIGNED_INTEGER_FIELD:
                     fieldClass.addProperty(SIGNED, true);
                     fieldClass.addProperty(VARINT, false);
                     targetDeclaration = IntegerDeclarationParser.INSTANCE.parse(typealias, new IntegerDeclarationParser.Param(trace));
-                } else if (JsonMetadataStrings.VARIABLE_UNSIGNED_INTEGER_FIELD.equals(type)) {
+                    break;
+                case JsonMetadataStrings.VARIABLE_UNSIGNED_INTEGER_FIELD:
                     fieldClass.addProperty(SIGNED, false);
                     fieldClass.addProperty(VARINT, true);
                     targetDeclaration = IntegerDeclarationParser.INSTANCE.parse(typealias, new IntegerDeclarationParser.Param(trace));
-                } else if (JsonMetadataStrings.VARIABLE_SIGNED_INTEGER_FIELD.equals(type)) {
+                    break;
+                case JsonMetadataStrings.VARIABLE_SIGNED_INTEGER_FIELD:
                     fieldClass.addProperty(SIGNED, true);
                     fieldClass.addProperty(VARINT, true);
                     targetDeclaration = IntegerDeclarationParser.INSTANCE.parse(typealias, new IntegerDeclarationParser.Param(trace));
-                } else if (JsonMetadataStrings.STATIC_LENGTH_BLOB.equals(type)) {
+                    break;
+                case JsonMetadataStrings.STATIC_LENGTH_BLOB:
                     targetDeclaration = BlobDeclarationParser.INSTANCE.parse(typealias, null);
-                } else if (JsonMetadataStrings.NULL_TERMINATED_STRING.equals(type)) {
+                    break;
+                case JsonMetadataStrings.NULL_TERMINATED_STRING:
                     targetDeclaration = StringDeclarationParser.INSTANCE.parse(typealias, null);
-                } else if (JsonMetadataStrings.VARIANT.equals(type)) {
+                    break;
+                case JsonMetadataStrings.VARIANT:
                     targetDeclaration = VariantParser.INSTANCE.parse(typealias, new VariantParser.Param(trace, scope));
-                } else if (JsonMetadataStrings.FIXED_UNSIGNED_ENUMERATION.equals(type)) {
+                    break;
+                case JsonMetadataStrings.FIXED_UNSIGNED_ENUMERATION:
                     targetDeclaration = EnumParser.INSTANCE.parse(typealias, new EnumParser.Param(trace, scope));
-                } else if (JsonMetadataStrings.DYNAMIC_LENGTH_STRING.equals(type)) {
+                    break;
+                case JsonMetadataStrings.DYNAMIC_LENGTH_STRING:
                     targetDeclaration = DynamicLengthStringParser.INSTANCE.parse(typealias, new DynamicLengthStringParser.Param(trace));
-                } else if (JsonMetadataStrings.STATIC_LENGTH_STRING.equals(type)) {
+                    break;
+                case JsonMetadataStrings.STATIC_LENGTH_STRING:
                     targetDeclaration = StaticLengthStringParser.INSTANCE.parse(typealias, new StaticLengthStringParser.Param(trace));
-                } else if (JsonMetadataStrings.STATIC_LENGTH_ARRAY.equals(type)) {
+                    break;
+                case JsonMetadataStrings.STATIC_LENGTH_ARRAY:
                     targetDeclaration = StaticLengthArrayParser.INSTANCE.parse(typealias, new StaticLengthArrayParser.Param(trace, scope));
-                } else if (JsonMetadataStrings.DYNAMIC_LENGTH_ARRAY.equals(type)) {
+                    break;
+                case JsonMetadataStrings.DYNAMIC_LENGTH_ARRAY:
                     targetDeclaration = DynamicLengthArrayParser.INSTANCE.parse(typealias, new DynamicLengthArrayParser.Param(trace, scope));
-                } else if (JsonMetadataStrings.STRUCTURE.equals(type)) {
+                    break;
+                case JsonMetadataStrings.STRUCTURE:
                     targetDeclaration = StructParser.INSTANCE.parse(typealias, new StructParser.Param(trace, null, scope));
-                } else if (JsonMetadataStrings.FIXED_LENGTH_FLOATING_POINT.equals(type)) {
+                    break;
+                case JsonMetadataStrings.FIXED_LENGTH_FLOATING_POINT:
                     targetDeclaration = FloatDeclarationParser.INSTANCE.parse(typealias, new FloatDeclarationParser.Param(trace));
-                } else if (JsonMetadataStrings.VARIABLE_LENGTH_FLOATING_POINT.equals(type)) {
+                    break;
+                case JsonMetadataStrings.VARIABLE_LENGTH_FLOATING_POINT:
                     targetDeclaration = FloatDeclarationParser.INSTANCE.parse(typealias, new FloatDeclarationParser.Param(trace));
-                } else {
+                    break;
+                default:
                     throw new ParseException("Invalid field class: " + type); //$NON-NLS-1$
                 }
             } else {
@@ -210,6 +224,9 @@ public final class TypeAliasParser extends AbstractScopedCommonTreeParser {
             }
 
             aliasString = TypeAliasAliasParser.INSTANCE.parse(alias, null);
+            if (scope.lookupType(aliasString)!= null) {
+                throw new ParseException("Type has already been defined: " + aliasString); //$NON-NLS-1$
+            }
         }
 
         scope.registerType(aliasString, targetDeclaration);
