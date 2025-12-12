@@ -145,7 +145,7 @@ public final class FloatDeclarationParser implements ICommonTreeParser {
             }
 
             if (fieldclass.has(JsonMetadataStrings.BYTE_ORDER)) {
-                CTFJsonMetadataNode bo = new CTFJsonMetadataNode(floatingPoint, CTFParser.tokenNames[CTFParser.UNARY_EXPRESSION_STRING], fieldclass.get("byte-order").getAsString());
+                CTFJsonMetadataNode bo = new CTFJsonMetadataNode(floatingPoint, CTFParser.tokenNames[CTFParser.UNARY_EXPRESSION_STRING], fieldclass.get(JsonMetadataStrings.BYTE_ORDER).getAsString());
                 byteOrder = ByteOrderParser.INSTANCE.parse(bo, new ByteOrderParser.Param(trace));
             }
 
