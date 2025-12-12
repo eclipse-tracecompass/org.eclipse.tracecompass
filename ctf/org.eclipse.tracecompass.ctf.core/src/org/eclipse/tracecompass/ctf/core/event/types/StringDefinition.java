@@ -26,6 +26,7 @@ import org.eclipse.tracecompass.ctf.core.event.scope.IDefinitionScope;
  *
  * @author Matthew Khouzam
  * @author Simon Marchi
+ * @apiNote as it is too coupled to the StringDeclaration class. Use StringDefinition2
  */
 public final class StringDefinition extends Definition {
 
