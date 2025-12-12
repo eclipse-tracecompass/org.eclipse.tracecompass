@@ -13,6 +13,10 @@
 
 package org.eclipse.tracecompass.internal.ctf.core.utils;
 
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
+
 /**
  * Various strings for CTF2 implementation.
  *
@@ -42,6 +46,17 @@ public final class JsonMetadataStrings {
      * Type string for a CTF2 field class alias fragment
      */
     public static final String FRAGMENT_FIELD_ALIAS = "field-class-alias"; //$NON-NLS-1$
+
+    /**
+     * The field class
+     */
+    public static final String FIELD_CLASS = "field-class"; //$NON-NLS-1$
+
+    /**
+     * The name of the fragment
+     */
+    public static final String NAME = "name"; //$NON-NLS-1$
+
 
     /**
      * Type string for a CTF2 clock class fragment
@@ -143,6 +158,15 @@ public final class JsonMetadataStrings {
     public static final String VARIABLE_SIGNED_INTEGER_FIELD = "variable-length-signed-integer"; //$NON-NLS-1$
 
     /**
+     * Type string for a fixed length floating point field class
+     */
+    public static final String FIXED_LENGTH_FLOATING_POINT = "fixed-length-floating-point-number"; //$NON-NLS-1$
+    /**
+     * Type string for a variable length floating point field class
+     */
+    public static final String VARIABLE_LENGTH_FLOATING_POINT = "variable-length-floating-point-number"; //$NON-NLS-1$
+
+    /**
      * Type string for a static length blob field class
      */
     public static final String STATIC_LENGTH_BLOB = "static-length-blob"; //$NON-NLS-1$
@@ -152,6 +176,20 @@ public final class JsonMetadataStrings {
      */
     public static final String NULL_TERMINATED_STRING = "null-terminated-string"; //$NON-NLS-1$
 
+    /**
+     * The length of a dynamic string
+     */
+    public static final String LENGTH = "length"; //$NON-NLS-1$
+
+    /**
+     * Type string for a null terminated string field class
+     */
+    public static final String DYNAMIC_LENGTH_STRING = "dynamic-length-string"; //$NON-NLS-1$
+
+    /**
+     * The length field location for a dynamic string
+     */
+    public static final String LENGTH_FIELD_LOCATION = "length-field-location"; //$NON-NLS-1$
     /**
      * Type string for a fixed length unsigned enumeration field class
      */
@@ -165,5 +203,55 @@ public final class JsonMetadataStrings {
     /**
      * Type string for a structure field class
      */
+    public static final String PATH = "path"; //$NON-NLS-1$
+
+    /**
+     * Type string for a structure field class
+     */
     public static final String STRUCTURE = "structure"; //$NON-NLS-1$
+
+    /**
+     * Type string for an internal structure field class
+     */
+    public static final String STRUCT = "struct"; //$NON-NLS-1$
+    /**
+     * Encodings map
+     */
+    public static final Map<String, Charset> ENCODINGS = Map.of("utf-8",StandardCharsets.UTF_8, //$NON-NLS-1$
+            "utf-16be",StandardCharsets.UTF_16BE,"utf-16le",StandardCharsets.UTF_16LE, //$NON-NLS-1$ //$NON-NLS-2$
+            "utf-32be", Charset.forName("UTF-32BE"),"utf-32le", Charset.forName("UTF-32LE")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+
+    /**
+     * Type of string encoding
+     */
+    public static final String ENCODING = "encoding"; //$NON-NLS-1$
+
+    /**
+     * Static length string
+     */
+    public static final String STATIC_LENGTH_STRING = "static-length-string"; //$NON-NLS-1$
+
+    /**
+     * Static length array
+     */
+    public static final String STATIC_LENGTH_ARRAY = "static-length-array"; //$NON-NLS-1$
+
+    /**
+     * Dynamic length array
+     */
+    public static final String DYNAMIC_LENGTH_ARRAY = "dynamic-length-array"; //$NON-NLS-1$
+
+    /**
+     * Element field class
+     */
+    public static final String ELEMENT_FIELD_CLASS = "element-field-class"; //$NON-NLS-1$
+
+    public static final String MEMBER_CLASSES = "member-classes"; //$NON-NLS-1$
+
+    public static final String MINIMUM_ALIGNMENT = "minimum-alignment"; //$NON-NLS-1$
+
+    public static final String ALIGNMENT = "alignment";
+
+    public static final String BYTE_ORDER = "byte-order";
+
 }

@@ -36,11 +36,38 @@ public final class VariantDefinition extends ScopedDefinition {
     private final Definition fDefinition;
     private final String fCurrentField;
     private final String fFieldName;
-    private final EnumDefinition fTagDef;
+    private final SimpleDatatypeDefinition fTagDef;
 
     // ------------------------------------------------------------------------
     // Constructors
     // ------------------------------------------------------------------------
+
+    /**
+     * Constructor
+     *
+     * @param declaration
+     *            the parent declaration
+     * @param definitionScope
+     *            the parent scope
+     * @param tagDef
+     *            the tagging definition
+     * @param selectedField
+     *            the selected field
+     * @param fieldName
+     *            the field name
+     * @param fieldValue
+     *            the field value
+     * @since 5.1
+     */
+    public VariantDefinition(@NonNull VariantDeclaration declaration, IDefinitionScope definitionScope, SimpleDatatypeDefinition tagDef, String selectedField, @NonNull String fieldName, Definition fieldValue) {
+        super(declaration, definitionScope, fieldName);
+
+        fTagDef = tagDef;
+        fFieldName = fieldName;
+        fCurrentField = selectedField;
+        fDefinition = fieldValue;
+    }
+
 
     /**
      * Constructor
@@ -67,6 +94,7 @@ public final class VariantDefinition extends ScopedDefinition {
         fCurrentField = selectedField;
         fDefinition = fieldValue;
     }
+
 
     // ------------------------------------------------------------------------
     // Getters/Setters/Predicates
@@ -115,8 +143,42 @@ public final class VariantDefinition extends ScopedDefinition {
         if (lookupPath.equals(fFieldName)) {
             return fDefinition;
         }
+        if (lookupPath.equals(fTagDef.getDeclaration().getRole())) {
+            return fTagDef;
+        }
+        if (lookupPath.equals(fDefinition.getDeclaration().getRole())) {
+            return fDefinition;
+        }
         if (fDefinition instanceof ScopedDefinition) {
-            IDefinition def = ((ScopedDefinition) fDefinition).lookupDefinition(lookupPath);
+            IDefinition def = ((ScopedDefinition) fDefinition).lookupDefinition(lookupPath, this);
+            if (def != null) {
+                return def;
+            }
+        }
+        final IDefinitionScope definitionScope = getDefinitionScope();
+        if (definitionScope instanceof StructDefinition) {
+            StructDefinition structDefinition = (StructDefinition) definitionScope;
+            return structDefinition.lookupDefinition(lookupPath, this);
+        }
+        return definitionScope.lookupDefinition(lookupPath);
+    }
+
+    @Override
+    public IDefinition lookupDefinition(String lookupPath, ScopedDefinition definitionToExclude) {
+        if (lookupPath == null) {
+            return null;
+        }
+        if (lookupPath.equals(fFieldName)) {
+            return fDefinition;
+        }
+        if (lookupPath.equals(fTagDef.getDeclaration().getRole())) {
+            return fTagDef;
+        }
+        if (lookupPath.equals(fDefinition.getDeclaration().getRole())) {
+            return fDefinition;
+        }
+        if (fDefinition instanceof ScopedDefinition) {
+            IDefinition def = ((ScopedDefinition) fDefinition).lookupDefinition(lookupPath, definitionToExclude);
             if (def != null) {
                 return def;
             }

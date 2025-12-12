@@ -86,12 +86,9 @@ public class BlobDeclaration extends Declaration {
         return 8;
     }
 
-    /**
-     * Arbitrary decision to have maximum size as 1MB
-     */
     @Override
     public int getMaximumSize() {
-        return 1000000;
+        return fLength*8;
     }
 
     @Override

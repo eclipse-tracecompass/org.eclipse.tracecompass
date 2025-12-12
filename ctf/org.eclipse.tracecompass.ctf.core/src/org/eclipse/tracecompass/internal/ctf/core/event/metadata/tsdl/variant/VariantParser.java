@@ -22,6 +22,7 @@ import org.eclipse.tracecompass.ctf.core.CTFException;
 import org.eclipse.tracecompass.ctf.core.event.metadata.DeclarationScope;
 import org.eclipse.tracecompass.ctf.core.event.types.EnumDeclaration;
 import org.eclipse.tracecompass.ctf.core.event.types.IDeclaration;
+import org.eclipse.tracecompass.ctf.core.event.types.IntegerDeclaration;
 import org.eclipse.tracecompass.ctf.core.event.types.VariantDeclaration;
 import org.eclipse.tracecompass.ctf.core.trace.CTFTrace;
 import org.eclipse.tracecompass.ctf.parser.CTFParser;
@@ -266,7 +267,7 @@ public final class VariantParser extends AbstractScopedCommonTreeParser {
         if (variant instanceof JsonStructureFieldMemberMetadataNode) {
             JsonObject fieldClass = ((JsonStructureFieldMemberMetadataNode) variant).getFieldClass().getAsJsonObject();
             if (fieldClass.has(SELECTOR_FIELD_LOCATION)) {
-                JsonArray location = fieldClass.get(SELECTOR_FIELD_LOCATION).getAsJsonArray();
+                JsonArray location = (fieldClass.get(SELECTOR_FIELD_LOCATION).getAsJsonObject().get(JsonMetadataStrings.PATH)).getAsJsonArray();
                 variantTag = location.get(location.size() - 1).getAsString();
                 hasTag = true;
             }
@@ -361,13 +362,17 @@ public final class VariantParser extends AbstractScopedCommonTreeParser {
             if (decl == null) {
                 throw new ParseException("Variant tag not found: " + variantTag); //$NON-NLS-1$
             }
-            if (!(decl instanceof EnumDeclaration)) {
-                throw new ParseException("Variant tag must be an enum: " + variantTag); //$NON-NLS-1$
+            if (decl instanceof EnumDeclaration) {
+                EnumDeclaration tagDecl = (EnumDeclaration) decl;
+                if (!intersects(tagDecl.getLabels(), variantDeclaration.getFields().keySet())) {
+                    throw new ParseException("Variant contains no values of the tag, impossible to use: " + variantName); //$NON-NLS-1$
+                }
+            } else if (decl instanceof IntegerDeclaration) {
+                // do nothing
+            } else {
+                throw new ParseException("Variant tag must be an enum: " + variantTag);//$NON-NLS-1$
             }
-            EnumDeclaration tagDecl = (EnumDeclaration) decl;
-            if (!intersects(tagDecl.getLabels(), variantDeclaration.getFields().keySet())) {
-                throw new ParseException("Variant contains no values of the tag, impossible to use: " + variantName); //$NON-NLS-1$
-            }
+
         }
 
         return variantDeclaration;

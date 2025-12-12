@@ -22,13 +22,18 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.tracecompass.ctf.core.event.types.FloatDeclaration;
 import org.eclipse.tracecompass.ctf.core.trace.CTFTrace;
 import org.eclipse.tracecompass.ctf.parser.CTFParser;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.CTFJsonMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ICommonTreeParser;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonStructureFieldMemberMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.MetadataStrings;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.AlignmentParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.ByteOrderParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.UnaryIntegerParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
+import org.eclipse.tracecompass.internal.ctf.core.utils.JsonMetadataStrings;
+
+import com.google.gson.JsonObject;
 
 /**
  *
@@ -114,49 +119,78 @@ public final class FloatDeclarationParser implements ICommonTreeParser {
             throw new IllegalArgumentException("Param must be a " + Param.class.getCanonicalName()); //$NON-NLS-1$
         }
         CTFTrace trace = ((Param) param).fTrace;
-        List<ICTFMetadataNode> children = floatingPoint.getChildren();
-
-        /*
-         * If the integer has no attributes, then it is missing the size
-         * attribute which is required
-         */
-        if (children == null) {
-            throw new ParseException(FLOAT_MISSING_SIZE_ATTRIBUTE);
-        }
 
         /* The return value */
         ByteOrder byteOrder = trace.getByteOrder();
         long alignment = 0;
-
         int exponent = DEFAULT_FLOAT_EXPONENT;
         int mantissa = DEFAULT_FLOAT_MANTISSA;
 
-        /* Iterate on all integer children */
-        for (ICTFMetadataNode child : children) {
-            String type = child.getType();
-            if (CTFParser.tokenNames[CTFParser.CTF_EXPRESSION_VAL].equals(type)) {
-                ICTFMetadataNode leftNode = child.getChild(0);
-                ICTFMetadataNode rightNode = child.getChild(1);
-                List<ICTFMetadataNode> leftStrings = leftNode.getChildren();
-                if (!isAnyUnaryString(leftStrings.get(0))) {
-                    throw new ParseException(IDENTIFIER_MUST_BE_A_STRING);
-                }
-                String left = concatenateUnaryStrings(leftStrings);
-                if (left.equals(MetadataStrings.EXP_DIG)) {
-                    exponent = UnaryIntegerParser.INSTANCE.parse(rightNode.getChild(0), null).intValue();
-                } else if (left.equals(MetadataStrings.BYTE_ORDER)) {
-                    byteOrder = ByteOrderParser.INSTANCE.parse(rightNode, new ByteOrderParser.Param(trace));
-                } else if (left.equals(MetadataStrings.MANT_DIG)) {
-                    mantissa = UnaryIntegerParser.INSTANCE.parse(rightNode.getChild(0), null).intValue();
-                } else if (left.equals(MetadataStrings.ALIGN)) {
-                    alignment = AlignmentParser.INSTANCE.parse(rightNode, null);
+        if (floatingPoint instanceof JsonStructureFieldMemberMetadataNode) {
+            JsonStructureFieldMemberMetadataNode member = (JsonStructureFieldMemberMetadataNode) floatingPoint;
+            JsonObject fieldclass = member.getFieldClass().getAsJsonObject();
+
+            if (fieldclass.has(JsonMetadataStrings.LENGTH)) {
+                int size = fieldclass.get(JsonMetadataStrings.LENGTH).getAsInt();
+                // Standard IEEE 754 sizes
+                if (size == 32) {
+                    exponent = 8;
+                    mantissa = 24;
+                } else if (size == 64) {
+                    exponent = 11;
+                    mantissa = 53;
                 } else {
-                    throw new ParseException(FLOAT_UNKNOWN_ATTRIBUTE + left);
+                    throw new ParseException("Unsupported floating point size: " + size);
                 }
-            } else {
-                throw childTypeError(child);
+            }
+
+            if (fieldclass.has(JsonMetadataStrings.BYTE_ORDER)) {
+                CTFJsonMetadataNode bo = new CTFJsonMetadataNode(floatingPoint, CTFParser.tokenNames[CTFParser.UNARY_EXPRESSION_STRING], fieldclass.get(JsonMetadataStrings.BYTE_ORDER).getAsString());
+                byteOrder = ByteOrderParser.INSTANCE.parse(bo, new ByteOrderParser.Param(trace));
+            }
+
+            if (fieldclass.has(JsonMetadataStrings.ALIGNMENT)) {
+                alignment = fieldclass.get(JsonMetadataStrings.ALIGNMENT).getAsInt();
+            }
+        } else {
+            List<ICTFMetadataNode> children = floatingPoint.getChildren();
+
+            /*
+             * If the integer has no attributes, then it is missing the size
+             * attribute which is required
+             */
+            if (children == null) {
+                throw new ParseException(FLOAT_MISSING_SIZE_ATTRIBUTE);
+            }
+
+            /* Iterate on all integer children */
+            for (ICTFMetadataNode child : children) {
+                String type = child.getType();
+                if (CTFParser.tokenNames[CTFParser.CTF_EXPRESSION_VAL].equals(type)) {
+                    ICTFMetadataNode leftNode = child.getChild(0);
+                    ICTFMetadataNode rightNode = child.getChild(1);
+                    List<ICTFMetadataNode> leftStrings = leftNode.getChildren();
+                    if (!isAnyUnaryString(leftStrings.get(0))) {
+                        throw new ParseException(IDENTIFIER_MUST_BE_A_STRING);
+                    }
+                    String left = concatenateUnaryStrings(leftStrings);
+                    if (left.equals(MetadataStrings.EXP_DIG)) {
+                        exponent = UnaryIntegerParser.INSTANCE.parse(rightNode.getChild(0), null).intValue();
+                    } else if (left.equals(MetadataStrings.BYTE_ORDER)) {
+                        byteOrder = ByteOrderParser.INSTANCE.parse(rightNode, new ByteOrderParser.Param(trace));
+                    } else if (left.equals(MetadataStrings.MANT_DIG)) {
+                        mantissa = UnaryIntegerParser.INSTANCE.parse(rightNode.getChild(0), null).intValue();
+                    } else if (left.equals(MetadataStrings.ALIGN)) {
+                        alignment = AlignmentParser.INSTANCE.parse(rightNode, null);
+                    } else {
+                        throw new ParseException(FLOAT_UNKNOWN_ATTRIBUTE + left);
+                    }
+                } else {
+                    throw childTypeError(child);
+                }
             }
         }
+
         int size = mantissa + exponent;
         if (size == 0) {
             throw new ParseException(FLOAT_MISSING_SIZE_ATTRIBUTE);
@@ -167,7 +201,6 @@ public final class FloatDeclarationParser implements ICommonTreeParser {
         }
 
         return new FloatDeclaration(exponent, mantissa, byteOrder, alignment);
-
     }
 
 }

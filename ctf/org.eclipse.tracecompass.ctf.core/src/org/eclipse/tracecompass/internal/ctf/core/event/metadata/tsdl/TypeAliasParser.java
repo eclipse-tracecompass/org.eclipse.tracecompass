@@ -24,9 +24,15 @@ import org.eclipse.tracecompass.internal.ctf.core.event.metadata.AbstractScopedC
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonFieldClassAliasMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonStructureFieldMemberMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.dynamicarray.DynamicLengthArrayParser;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.dynamicstring.DynamicLengthStringParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.enumeration.EnumParser;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.floatingpoint.FloatDeclarationParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.integer.IntegerDeclarationParser;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.staticarray.StaticLengthArrayParser;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.staticstring.StaticLengthStringParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.string.StringDeclarationParser;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.struct.StructParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.variant.VariantParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.utils.JsonMetadataStrings;
@@ -135,6 +141,11 @@ public final class TypeAliasParser extends AbstractScopedCommonTreeParser {
                 }
             }
             if (fieldClass != null) {
+                if (type.isEmpty()) {
+                    if (fieldClass.isJsonObject()) {
+                        type = fieldClass.get(JsonMetadataStrings.TYPE).getAsString();
+                    }
+                }
                 if (JsonMetadataStrings.FIXED_UNSIGNED_INTEGER_FIELD.equals(type)) {
                     fieldClass.addProperty(SIGNED, false);
                     fieldClass.addProperty(VARINT, false);
@@ -159,6 +170,20 @@ public final class TypeAliasParser extends AbstractScopedCommonTreeParser {
                     targetDeclaration = VariantParser.INSTANCE.parse(typealias, new VariantParser.Param(trace, scope));
                 } else if (JsonMetadataStrings.FIXED_UNSIGNED_ENUMERATION.equals(type)) {
                     targetDeclaration = EnumParser.INSTANCE.parse(typealias, new EnumParser.Param(trace, scope));
+                } else if (JsonMetadataStrings.DYNAMIC_LENGTH_STRING.equals(type)) {
+                    targetDeclaration = DynamicLengthStringParser.INSTANCE.parse(typealias, new DynamicLengthStringParser.Param(trace));
+                } else if (JsonMetadataStrings.STATIC_LENGTH_STRING.equals(type)) {
+                    targetDeclaration = StaticLengthStringParser.INSTANCE.parse(typealias, new StaticLengthStringParser.Param(trace));
+                } else if (JsonMetadataStrings.STATIC_LENGTH_ARRAY.equals(type)) {
+                    targetDeclaration = StaticLengthArrayParser.INSTANCE.parse(typealias, new StaticLengthArrayParser.Param(trace, scope));
+                } else if (JsonMetadataStrings.DYNAMIC_LENGTH_ARRAY.equals(type)) {
+                    targetDeclaration = DynamicLengthArrayParser.INSTANCE.parse(typealias, new DynamicLengthArrayParser.Param(trace, scope));
+                } else if (JsonMetadataStrings.STRUCTURE.equals(type)) {
+                    targetDeclaration = StructParser.INSTANCE.parse(typealias, new StructParser.Param(trace, null, scope));
+                } else if (JsonMetadataStrings.FIXED_LENGTH_FLOATING_POINT.equals(type)) {
+                    targetDeclaration = FloatDeclarationParser.INSTANCE.parse(typealias, new FloatDeclarationParser.Param(trace));
+                } else if (JsonMetadataStrings.VARIABLE_LENGTH_FLOATING_POINT.equals(type)) {
+                    targetDeclaration = FloatDeclarationParser.INSTANCE.parse(typealias, new FloatDeclarationParser.Param(trace));
                 } else {
                     throw new ParseException("Invalid field class: " + type); //$NON-NLS-1$
                 }
@@ -185,6 +210,9 @@ public final class TypeAliasParser extends AbstractScopedCommonTreeParser {
             }
 
             aliasString = TypeAliasAliasParser.INSTANCE.parse(alias, null);
+            if (scope.lookupType(aliasString)!= null) {
+                throw new ParseException("Type has already been defined: " + aliasString); //$NON-NLS-1$
+            }
         }
 
         scope.registerType(aliasString, targetDeclaration);
