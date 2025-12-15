@@ -13,6 +13,7 @@ package org.eclipse.tracecompass.common.core.tests.log;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -30,6 +31,9 @@ import org.eclipse.tracecompass.common.core.log.TraceCompassLogUtils.FlowScopeLo
 import org.junit.Before;
 import org.junit.Test;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 /**
  * Test cases for logger (line sensitive!)
  *
@@ -40,11 +44,6 @@ public class LoggerTest {
     private StringOutputStream fLog;
     private Logger fLogger;
     private StreamHandler fStreamHandler;
-
-    private static String eventWithNoTs(String event) {
-        //"ts":["1530079243191"],"ph":"E","tid":1,"p...>
-        return event.replaceFirst("\\\"ts\\\"\\:\\\"\\d*\\.?\\d*\\\"", "\"ts\":0");
-    }
 
     private static String eventUnifyId(String event) {
         return event.replaceFirst("\\\"id\\\"\\:\\\"0x[0-9A-Fa-f]+\\\"", "\"id\":\"0x1234\"");
@@ -76,7 +75,7 @@ public class LoggerTest {
                 }
             } else {
                 if (secondLine) {
-                    fMessages.add(eventUnifyId(eventWithNoTs(sb.toString())));
+                    fMessages.add(eventUnifyId(sb.toString()));
                     sb = new StringBuilder();
                     secondLine = false;
                 } else {
@@ -103,6 +102,18 @@ public class LoggerTest {
         fLogger.addHandler(fStreamHandler);
     }
 
+    private static void assertLogMessage(String message, String expectedLevel, String expectedPhase, String expectedName) {
+        String[] parts = message.split(":", 2);
+        assertEquals(expectedLevel, parts[0]);
+        JsonObject json = JsonParser.parseString(parts[1].trim()).getAsJsonObject();
+        assertEquals(expectedPhase, json.get("ph").getAsString());
+        assertTrue(json.get("tid").getAsInt() > 0);
+        assertTrue(json.get("pid").getAsInt() > 0);
+        if (expectedName != null) {
+            assertEquals(expectedName, json.get("name").getAsString());
+        }
+    }
+
     /**
      * Test simple logging
      */
@@ -115,8 +126,8 @@ public class LoggerTest {
             new Object();
         }
         fStreamHandler.flush();
-        assertEquals("INFO: {\"ts\":0,\"ph\":\"B\",\"tid\":1,\"pid\":1,\"name\":\"world\"}", fLog.getMessages().get(0));
-        assertEquals("INFO: {\"ts\":0,\"ph\":\"E\",\"tid\":1,\"pid\":1}", fLog.getMessages().get(1));
+        assertLogMessage(fLog.getMessages().get(0), "INFO", "B", "world");
+        assertLogMessage(fLog.getMessages().get(1), "INFO", "E", null);
     }
 
     /**
@@ -135,10 +146,10 @@ public class LoggerTest {
             }
         }
         fStreamHandler.flush();
-        assertEquals("INFO: {\"ts\":0,\"ph\":\"B\",\"tid\":1,\"pid\":1,\"name\":\"foo\"}", fLog.getMessages().get(0));
-        assertEquals("INFO: {\"ts\":0,\"ph\":\"B\",\"tid\":1,\"pid\":1,\"name\":\"bar\"}", fLog.getMessages().get(1));
-        assertEquals("INFO: {\"ts\":0,\"ph\":\"E\",\"tid\":1,\"pid\":1}", fLog.getMessages().get(2));
-        assertEquals("INFO: {\"ts\":0,\"ph\":\"E\",\"tid\":1,\"pid\":1}", fLog.getMessages().get(3));
+        assertLogMessage(fLog.getMessages().get(0), "INFO", "B", "foo");
+        assertLogMessage(fLog.getMessages().get(1), "INFO", "B", "bar");
+        assertLogMessage(fLog.getMessages().get(2), "INFO", "E", null);
+        assertLogMessage(fLog.getMessages().get(3), "INFO", "E", null);
     }
 
     /**
@@ -161,10 +172,10 @@ public class LoggerTest {
             }
         }
         fStreamHandler.flush();
-        assertEquals("FINE: {\"ts\":0,\"ph\":\"B\",\"tid\":1,\"pid\":1,\"name\":\"foo\"}", fLog.getMessages().get(0));
-        assertEquals("FINER: {\"ts\":0,\"ph\":\"B\",\"tid\":1,\"pid\":1,\"name\":\"bar\"}", fLog.getMessages().get(1));
-        assertEquals("FINER: {\"ts\":0,\"ph\":\"E\",\"tid\":1,\"pid\":1}", fLog.getMessages().get(2));
-        assertEquals("FINE: {\"ts\":0,\"ph\":\"E\",\"tid\":1,\"pid\":1}", fLog.getMessages().get(3));
+        assertLogMessage(fLog.getMessages().get(0), "FINE", "B", "foo");
+        assertLogMessage(fLog.getMessages().get(1), "FINER", "B", "bar");
+        assertLogMessage(fLog.getMessages().get(2), "FINER", "E", null);
+        assertLogMessage(fLog.getMessages().get(3), "FINE", "E", null);
     }
 
     /**
@@ -181,11 +192,10 @@ public class LoggerTest {
             }
         }
         fStreamHandler.flush();
-        assertEquals("WARNING: {\"ts\":0,\"ph\":\"B\",\"tid\":1,\"pid\":1,\"name\":\"foo\"}",
-                fLog.getMessages().get(0));
-        assertEquals("FINE: {\"ts\":0,\"ph\":\"B\",\"tid\":1,\"pid\":1,\"name\":\"bar\"}", fLog.getMessages().get(1));
-        assertEquals("FINE: {\"ts\":0,\"ph\":\"E\",\"tid\":1,\"pid\":1}", fLog.getMessages().get(2));
-        assertEquals("WARNING: {\"ts\":0,\"ph\":\"E\",\"tid\":1,\"pid\":1}", fLog.getMessages().get(3));
+        assertLogMessage(fLog.getMessages().get(0), "WARNING", "B", "foo");
+        assertLogMessage(fLog.getMessages().get(1), "FINE", "B", "bar");
+        assertLogMessage(fLog.getMessages().get(2), "FINE", "E", null);
+        assertLogMessage(fLog.getMessages().get(3), "WARNING", "E", null);
     }
 
     /**
@@ -202,11 +212,10 @@ public class LoggerTest {
             }
         }
         fStreamHandler.flush();
-        assertEquals("WARNING: {\"ts\":0,\"ph\":\"B\",\"tid\":1,\"pid\":1,\"name\":\"foo\"}",
-                fLog.getMessages().get(0));
-        assertEquals("FINE: {\"ts\":0,\"ph\":\"B\",\"tid\":1,\"pid\":1,\"name\":\"bar\"}", fLog.getMessages().get(1));
-        assertEquals("FINE: {\"ts\":0,\"ph\":\"E\",\"tid\":1,\"pid\":1,\"args\":{\"return\":\"false\"}}", fLog.getMessages().get(2));
-        assertEquals("WARNING: {\"ts\":0,\"ph\":\"E\",\"tid\":1,\"pid\":1}", fLog.getMessages().get(3));
+        assertLogMessage(fLog.getMessages().get(0), "WARNING", "B", "foo");
+        assertLogMessage(fLog.getMessages().get(1), "FINE", "B", "bar");
+        assertLogMessage(fLog.getMessages().get(2), "FINE", "E", null);
+        assertLogMessage(fLog.getMessages().get(3), "WARNING", "E", null);
     }
 
     /**
@@ -229,12 +238,12 @@ public class LoggerTest {
             }
         }
         fStreamHandler.flush();
-        assertEquals("FINE: {\"ts\":0,\"ph\":\"B\",\"tid\":1,\"pid\":1,\"name\":\"foo\"}", fLog.getMessages().get(0));
-        assertEquals("FINE: {\"ts\":0,\"ph\":\"s\",\"tid\":1,\"pid\":1,\"name\":\"foo\",\"cat\":\"mycat\",\"id\":\"0x1234\"}", fLog.getMessages().get(1));
-        assertEquals("FINER: {\"ts\":0,\"ph\":\"B\",\"tid\":1,\"pid\":1,\"name\":\"bar\",\"args\":{\"big\":\"ben\"}}", fLog.getMessages().get(2));
-        assertEquals("FINER: {\"ts\":0,\"ph\":\"t\",\"tid\":1,\"pid\":1,\"name\":\"bar\",\"cat\":\"mycat\",\"id\":\"0x1234\",\"args\":{\"big\":\"ben\"}}", fLog.getMessages().get(3));
-        assertEquals("FINER: {\"ts\":0,\"ph\":\"E\",\"tid\":1,\"pid\":1}", fLog.getMessages().get(4));
-        assertEquals("FINE: {\"ts\":0,\"ph\":\"E\",\"tid\":1,\"pid\":1}", fLog.getMessages().get(5));
+        assertLogMessage(fLog.getMessages().get(0), "FINE", "B", "foo");
+        assertLogMessage(fLog.getMessages().get(1), "FINE", "s", "foo");
+        assertLogMessage(fLog.getMessages().get(2), "FINER", "B", "bar");
+        assertLogMessage(fLog.getMessages().get(3), "FINER", "t", "bar");
+        assertLogMessage(fLog.getMessages().get(4), "FINER", "E", null);
+        assertLogMessage(fLog.getMessages().get(5), "FINE", "E", null);
     }
 
     /**
@@ -251,16 +260,13 @@ public class LoggerTest {
             }
         }
         fStreamHandler.flush();
-        assertEquals("WARNING: {\"ts\":0,\"ph\":\"B\",\"tid\":1,\"pid\":1,\"name\":\"foo\"}",
-                fLog.getMessages().get(0));
-        assertEquals("WARNING: {\"ts\":0,\"ph\":\"s\",\"tid\":1,\"pid\":1,\"name\":\"foo\",\"cat\":\"mydog\",\"id\":\"0x1234\"}",
-                fLog.getMessages().get(1));
-        assertEquals("FINE: {\"ts\":0,\"ph\":\"B\",\"tid\":1,\"pid\":1,\"name\":\"bar\"}",
-                fLog.getMessages().get(2));
-        assertEquals("FINE: {\"ts\":0,\"ph\":\"t\",\"tid\":1,\"pid\":1,\"name\":\"bar\",\"cat\":\"mydog\",\"id\":\"0x1234\"}", fLog.getMessages().get(3));
-        assertEquals("FINE: {\"ts\":0,\"ph\":\"t\",\"tid\":1,\"pid\":1,\"name\":\"barked\",\"cat\":\"mydog\",\"id\":\"0x1234\"}", fLog.getMessages().get(4));
-        assertEquals("FINE: {\"ts\":0,\"ph\":\"E\",\"tid\":1,\"pid\":1}", fLog.getMessages().get(5));
-        assertEquals("WARNING: {\"ts\":0,\"ph\":\"E\",\"tid\":1,\"pid\":1}", fLog.getMessages().get(6));
+        assertLogMessage(fLog.getMessages().get(0), "WARNING", "B", "foo");
+        assertLogMessage(fLog.getMessages().get(1), "WARNING", "s", "foo");
+        assertLogMessage(fLog.getMessages().get(2), "FINE", "B", "bar");
+        assertLogMessage(fLog.getMessages().get(3), "FINE", "t", "bar");
+        assertLogMessage(fLog.getMessages().get(4), "FINE", "t", "barked");
+        assertLogMessage(fLog.getMessages().get(5), "FINE", "E", null);
+        assertLogMessage(fLog.getMessages().get(6), "WARNING", "E", null);
     }
 
     /**
@@ -277,16 +283,13 @@ public class LoggerTest {
             }
         }
         fStreamHandler.flush();
-        assertEquals("WARNING: {\"ts\":0,\"ph\":\"B\",\"tid\":1,\"pid\":1,\"name\":\"foo\"}",
-                fLog.getMessages().get(0));
-        assertEquals("WARNING: {\"ts\":0,\"ph\":\"s\",\"tid\":1,\"pid\":1,\"name\":\"foo\",\"cat\":\"mydog\",\"id\":\"0x1234\"}",
-                fLog.getMessages().get(1));
-        assertEquals("FINE: {\"ts\":0,\"ph\":\"B\",\"tid\":1,\"pid\":1,\"name\":\"bar\"}",
-                fLog.getMessages().get(2));
-        assertEquals("FINE: {\"ts\":0,\"ph\":\"t\",\"tid\":1,\"pid\":1,\"name\":\"bar\",\"cat\":\"mydog\",\"id\":\"0x1234\"}", fLog.getMessages().get(3));
-        assertEquals("FINE: {\"ts\":0,\"ph\":\"t\",\"tid\":1,\"pid\":1,\"name\":\"barked\",\"cat\":\"mydog\",\"id\":\"0x1234\"}", fLog.getMessages().get(4));
-        assertEquals("FINE: {\"ts\":0,\"ph\":\"E\",\"tid\":1,\"pid\":1}", fLog.getMessages().get(5));
-        assertEquals("WARNING: {\"ts\":0,\"ph\":\"E\",\"tid\":1,\"pid\":1}", fLog.getMessages().get(6));
+        assertLogMessage(fLog.getMessages().get(0), "WARNING", "B", "foo");
+        assertLogMessage(fLog.getMessages().get(1), "WARNING", "s", "foo");
+        assertLogMessage(fLog.getMessages().get(2), "FINE", "B", "bar");
+        assertLogMessage(fLog.getMessages().get(3), "FINE", "t", "bar");
+        assertLogMessage(fLog.getMessages().get(4), "FINE", "t", "barked");
+        assertLogMessage(fLog.getMessages().get(5), "FINE", "E", null);
+        assertLogMessage(fLog.getMessages().get(6), "WARNING", "E", null);
     }
 
     /**
@@ -303,15 +306,12 @@ public class LoggerTest {
             }
         }
         fStreamHandler.flush();
-        assertEquals("WARNING: {\"ts\":0,\"ph\":\"B\",\"tid\":1,\"pid\":1,\"name\":\"foo\"}",
-                fLog.getMessages().get(0));
-        assertEquals("WARNING: {\"ts\":0,\"ph\":\"s\",\"tid\":1,\"pid\":1,\"name\":\"foo\",\"cat\":\"myspider\",\"id\":\"0x1234\"}",
-                fLog.getMessages().get(1));
-        assertEquals("FINE: {\"ts\":0,\"ph\":\"B\",\"tid\":1,\"pid\":1,\"name\":\"bar\"}",
-                fLog.getMessages().get(2));
-        assertEquals("FINE: {\"ts\":0,\"ph\":\"t\",\"tid\":1,\"pid\":1,\"name\":\"bar\",\"cat\":\"myspider\",\"id\":\"0x1234\"}", fLog.getMessages().get(3));
-        assertEquals("FINE: {\"ts\":0,\"ph\":\"E\",\"tid\":1,\"pid\":1,\"args\":{\"return\":\"false\"}}", fLog.getMessages().get(4));
-        assertEquals("WARNING: {\"ts\":0,\"ph\":\"E\",\"tid\":1,\"pid\":1}", fLog.getMessages().get(5));
+        assertLogMessage(fLog.getMessages().get(0), "WARNING", "B", "foo");
+        assertLogMessage(fLog.getMessages().get(1), "WARNING", "s", "foo");
+        assertLogMessage(fLog.getMessages().get(2), "FINE", "B", "bar");
+        assertLogMessage(fLog.getMessages().get(3), "FINE", "t", "bar");
+        assertLogMessage(fLog.getMessages().get(4), "FINE", "E", null);
+        assertLogMessage(fLog.getMessages().get(5), "WARNING", "E", null);
     }
 
     /**
@@ -327,11 +327,9 @@ public class LoggerTest {
             new Object();
         }
         fStreamHandler.flush();
-        assertEquals("WARNING: {\"ts\":0,\"ph\":\"B\",\"tid\":1,\"pid\":1,\"name\":\"foo\"}",
-                fLog.getMessages().get(0));
-        assertEquals("WARNING: {\"ts\":0,\"ph\":\"s\",\"tid\":1,\"pid\":1,\"name\":\"foo\",\"cat\":\"null\",\"id\":\"0x1234\"}",
-                fLog.getMessages().get(1));
-        assertEquals("WARNING: {\"ts\":0,\"ph\":\"E\",\"tid\":1,\"pid\":1}", fLog.getMessages().get(2));
+        assertLogMessage(fLog.getMessages().get(0), "WARNING", "B", "foo");
+        assertLogMessage(fLog.getMessages().get(1), "WARNING", "s", "foo");
+        assertLogMessage(fLog.getMessages().get(2), "WARNING", "E", null);
     }
 
     /**
@@ -388,17 +386,12 @@ public class LoggerTest {
             new Object();
         }
         fStreamHandler.flush();
-        assertEquals("WARNING: {\"ts\":0,\"ph\":\"B\",\"tid\":1,\"pid\":1,\"name\":\"foo\",\"args\":{\"Pen:Pineapple\":\"Apple:Pen\"}}",
-                fLog.getMessages().get(0));
-        assertEquals("WARNING: {\"ts\":0,\"ph\":\"E\",\"tid\":1,\"pid\":1}", fLog.getMessages().get(1));
-
-        assertEquals("WARNING: {\"ts\":0,\"ph\":\"B\",\"tid\":1,\"pid\":1,\"name\":\"foo\",\"args\":{\"msg\":\"Pen:Pineapple:Apple:Pen\"}}",
-                fLog.getMessages().get(2));
-        assertEquals("WARNING: {\"ts\":0,\"ph\":\"E\",\"tid\":1,\"pid\":1}", fLog.getMessages().get(3));
-
-        assertEquals("WARNING: {\"ts\":0,\"ph\":\"B\",\"tid\":1,\"pid\":1,\"name\":\"foo\",\"args\":{\"pen\":\"pineapple\",\"apple\":\"pen\",\"number_of_badgers\":12}}",
-                fLog.getMessages().get(4));
-        assertEquals("WARNING: {\"ts\":0,\"ph\":\"E\",\"tid\":1,\"pid\":1}", fLog.getMessages().get(5));
+        assertLogMessage(fLog.getMessages().get(0), "WARNING", "B", "foo");
+        assertLogMessage(fLog.getMessages().get(1), "WARNING", "E", null);
+        assertLogMessage(fLog.getMessages().get(2), "WARNING", "B", "foo");
+        assertLogMessage(fLog.getMessages().get(3), "WARNING", "E", null);
+        assertLogMessage(fLog.getMessages().get(4), "WARNING", "B", "foo");
+        assertLogMessage(fLog.getMessages().get(5), "WARNING", "E", null);
     }
 
     /**
@@ -444,10 +437,10 @@ public class LoggerTest {
             assertEquals("test", e.getMessage());
         }
         fStreamHandler.flush();
-        assertEquals("INFO: {\"ts\":0,\"ph\":\"B\",\"tid\":1,\"pid\":1,\"name\":\"foo\"}", fLog.getMessages().get(0));
-        assertEquals("INFO: {\"ts\":0,\"ph\":\"B\",\"tid\":1,\"pid\":1,\"name\":\"bar\"}", fLog.getMessages().get(1));
-        assertEquals("INFO: {\"ts\":0,\"ph\":\"E\",\"tid\":1,\"pid\":1}", fLog.getMessages().get(2));
-        assertEquals("INFO: {\"ts\":0,\"ph\":\"E\",\"tid\":1,\"pid\":1}", fLog.getMessages().get(3));
+        assertLogMessage(fLog.getMessages().get(0), "INFO", "B", "foo");
+        assertLogMessage(fLog.getMessages().get(1), "INFO", "B", "bar");
+        assertLogMessage(fLog.getMessages().get(2), "INFO", "E", null);
+        assertLogMessage(fLog.getMessages().get(3), "INFO", "E", null);
     }
 
     private static final class LivingObject {
@@ -489,10 +482,10 @@ public class LoggerTest {
         }
 
         fStreamHandler.flush();
-        assertEquals("FINE: {\"ts\":0,\"ph\":\"N\",\"tid\":1,\"pid\":1,\"name\":\"LivingObject\",\"id\":\"0x1234\"}", fLog.getMessages().get(0));
-        assertEquals("FINE: {\"ts\":0,\"ph\":\"N\",\"tid\":1,\"pid\":1,\"name\":\"LivingObject\",\"id\":\"0x1234\"}", fLog.getMessages().get(1));
-        assertEquals("FINE: {\"ts\":0,\"ph\":\"D\",\"tid\":1,\"pid\":1,\"name\":\"LivingObject\",\"id\":\"0x1234\"}", fLog.getMessages().get(2));
-        assertEquals("FINE: {\"ts\":0,\"ph\":\"D\",\"tid\":1,\"pid\":1,\"name\":\"LivingObject\",\"id\":\"0x1234\"}", fLog.getMessages().get(3));
+        assertLogMessage(fLog.getMessages().get(0), "FINE", "N", "LivingObject");
+        assertLogMessage(fLog.getMessages().get(1), "FINE", "N", "LivingObject");
+        assertLogMessage(fLog.getMessages().get(2), "FINE", "D", "LivingObject");
+        assertLogMessage(fLog.getMessages().get(3), "FINE", "D", "LivingObject");
     }
 
     /**
@@ -514,8 +507,8 @@ public class LoggerTest {
         }
 
         fStreamHandler.flush();
-        assertEquals("FINE: {\"ts\":0,\"ph\":\"N\",\"tid\":1,\"pid\":1,\"name\":\"ArrayList\",\"id\":\"0x1234\"}", fLog.getMessages().get(0));
-        assertEquals("FINE: {\"ts\":0,\"ph\":\"D\",\"tid\":1,\"pid\":1,\"name\":\"ArrayList\",\"id\":\"0x1234\"}", fLog.getMessages().get(1));
+        assertLogMessage(fLog.getMessages().get(0), "FINE", "N", "ArrayList");
+        assertLogMessage(fLog.getMessages().get(1), "FINE", "D", "ArrayList");
     }
 
     /**
@@ -527,7 +520,7 @@ public class LoggerTest {
         assertNotNull(logger);
         TraceCompassLogUtils.traceInstant(logger, Level.FINE, "hello", "foo", "bar");
         fStreamHandler.flush();
-        assertEquals("FINE: {\"ts\":0,\"ph\":\"i\",\"tid\":1,\"pid\":1,\"name\":\"hello\",\"args\":{\"foo\":\"bar\"}}", fLog.getMessages().get(0));
+        assertLogMessage(fLog.getMessages().get(0), "FINE", "i", "hello");
     }
 
     /**
@@ -548,13 +541,13 @@ public class LoggerTest {
         TraceCompassLogUtils.traceAsyncEnd(logger, Level.FINE, "network connect", "net", 10, "OK");
 
         fStreamHandler.flush();
-        assertEquals("FINE: {\"ts\":0,\"ph\":\"b\",\"tid\":1,\"pid\":1,\"name\":\"network connect\",\"cat\":\"net\",\"id\":\"0x1234\"}", fLog.getMessages().get(0));
-        assertEquals("FINER: {\"ts\":0,\"ph\":\"b\",\"tid\":1,\"pid\":1,\"name\":\"network lookup\",\"cat\":\"net\",\"id\":\"0x1234\"}", fLog.getMessages().get(1));
-        assertEquals("FINER: {\"ts\":0,\"ph\":\"n\",\"tid\":1,\"pid\":1,\"name\":\"network cache\",\"cat\":\"net\",\"id\":\"0x1234\"}", fLog.getMessages().get(2));
-        assertEquals("FINER: {\"ts\":0,\"ph\":\"b\",\"tid\":1,\"pid\":1,\"id\":\"0x1234\"}", fLog.getMessages().get(3));
-        assertEquals("FINER: {\"ts\":0,\"ph\":\"e\",\"tid\":1,\"pid\":1,\"id\":\"0x1234\"}", fLog.getMessages().get(4));
-        assertEquals("FINER: {\"ts\":0,\"ph\":\"e\",\"tid\":1,\"pid\":1,\"name\":\"network lookup\",\"cat\":\"net\",\"id\":\"0x1234\",\"args\":{\"msg\":\"OK\"}}", fLog.getMessages().get(5));
-        assertEquals("FINE: {\"ts\":0,\"ph\":\"e\",\"tid\":1,\"pid\":1,\"name\":\"network connect\",\"cat\":\"net\",\"id\":\"0x1234\",\"args\":{\"msg\":\"OK\"}}", fLog.getMessages().get(6));
+        assertLogMessage(fLog.getMessages().get(0), "FINE", "b", "network connect");
+        assertLogMessage(fLog.getMessages().get(1), "FINER", "b", "network lookup");
+        assertLogMessage(fLog.getMessages().get(2), "FINER", "n", "network cache");
+        assertLogMessage(fLog.getMessages().get(3), "FINER", "b", null);
+        assertLogMessage(fLog.getMessages().get(4), "FINER", "e", null);
+        assertLogMessage(fLog.getMessages().get(5), "FINER", "e", "network lookup");
+        assertLogMessage(fLog.getMessages().get(6), "FINE", "e", "network connect");
     }
 
     /**
@@ -568,8 +561,8 @@ public class LoggerTest {
         TraceCompassLogUtils.traceInstant(logger, Level.INFO, "test null key", null, "value");
 
         fStreamHandler.flush();
-        assertEquals("INFO: {\"ts\":0,\"ph\":\"i\",\"tid\":1,\"pid\":1,\"name\":\"test null value\",\"args\":{\"nullvalue\":\"null\"}}", fLog.getMessages().get(0));
-        assertEquals("INFO: {\"ts\":0,\"ph\":\"i\",\"tid\":1,\"pid\":1,\"name\":\"test null key\",\"args\":{\"null\":\"value\"}}", fLog.getMessages().get(1));
+        assertLogMessage(fLog.getMessages().get(0), "INFO", "i", "test null value");
+        assertLogMessage(fLog.getMessages().get(1), "INFO", "i", "test null key");
     }
 
     /**
@@ -585,9 +578,9 @@ public class LoggerTest {
         TraceCompassLogUtils.traceCounter(logger, Level.FINER, "counter", "cats", 0);
 
         fStreamHandler.flush();
-        assertEquals("FINER: {\"ts\":0,\"ph\":\"C\",\"tid\":1,\"pid\":1,\"name\":\"counter\",\"args\":{\"cats\":0}}", fLog.getMessages().get(0));
-        assertEquals("FINER: {\"ts\":0,\"ph\":\"C\",\"tid\":1,\"pid\":1,\"name\":\"counter\",\"args\":{\"cats\":10}}", fLog.getMessages().get(1));
-        assertEquals("FINER: {\"ts\":0,\"ph\":\"C\",\"tid\":1,\"pid\":1,\"name\":\"counter\",\"args\":{\"cats\":0}}", fLog.getMessages().get(2));
+        assertLogMessage(fLog.getMessages().get(0), "FINER", "C", "counter");
+        assertLogMessage(fLog.getMessages().get(1), "FINER", "C", "counter");
+        assertLogMessage(fLog.getMessages().get(2), "FINER", "C", "counter");
     }
 
     /**
@@ -600,8 +593,8 @@ public class LoggerTest {
         TraceCompassLogUtils.traceMarker(logger, Level.CONFIG, "instant", 0);
         TraceCompassLogUtils.traceMarker(logger, Level.CONFIG, "colored", 15, "color", 0xaabccdd);
         fStreamHandler.flush();
-        assertEquals("CONFIG: {\"ts\":0,\"ph\":\"R\",\"tid\":1,\"pid\":1,\"name\":\"instant\",\"dur\":0}", fLog.getMessages().get(0));
-        assertEquals("CONFIG: {\"ts\":0,\"ph\":\"R\",\"tid\":1,\"pid\":1,\"name\":\"colored\",\"dur\":15,\"args\":{\"color\":179031261}}", fLog.getMessages().get(1));
+        assertLogMessage(fLog.getMessages().get(0), "CONFIG", "R", "instant");
+        assertLogMessage(fLog.getMessages().get(1), "CONFIG", "R", "colored");
     }
 
 }

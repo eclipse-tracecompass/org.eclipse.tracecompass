@@ -150,4 +150,21 @@ public abstract class ScopedDefinition extends Definition implements IDefinition
         IDefinition def = lookupDefinition(name);
         return (VariantDefinition) ((def instanceof VariantDefinition) ? def : null);
     }
-}
+
+
+    /**
+     * Lookup definition while excluding the caller
+     *
+     * @param lookupPath
+     *            the path to lookup
+     * @param defintionToExclude
+     *            the definition to exclude, can be null
+     * @return the definition or null
+     * @since 5.1
+     */
+    public @Nullable IDefinition lookupDefinition(@Nullable String lookupPath, @Nullable ScopedDefinition defintionToExclude) {
+        if(defintionToExclude == this) {
+            return null;
+        }
+        return lookupDefinition(lookupPath, defintionToExclude);
+    }}
