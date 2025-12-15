@@ -86,7 +86,7 @@ public class TestInvalidCtfTrace {
         ERRORS.put("struct-align-negative", "Invalid value for alignment : -8");
         ERRORS.put("struct-align-string", "Invalid value for alignment");
         ERRORS.put("struct-align-zero", "Invalid value for alignment : 0");
-        ERRORS.put("struct-duplicate-field-name", "Identifier has already been defined:xxx");
+        ERRORS.put("struct-duplicate-field-name", "struct: duplicate field xxx");
         ERRORS.put("struct-duplicate-struct-name", "struct a already defined.");
         ERRORS.put("struct-field-name-keyword", "NoViableAltException(73@[])");
         // streams
