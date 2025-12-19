@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2020 Ericsson
+ * Copyright (c) 2015, 2025 Ericsson and others
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -10,6 +10,7 @@
  *
  * Contributors:
  *   Alexis Cabana-Loriaux - Initial API and implementation
+ *   Alexander Fedorov (ArSysOp) - fix "SWT Resource was not properly disposed"
  *
  *******************************************************************************/
 
@@ -442,17 +443,11 @@ public class TmfPieChartViewer extends Composite {
         if (isDisposed()) {
             return;
         }
-
-        if (getGlobalPC() != null && !getGlobalPC().isDisposed()) {
-            getGlobalPC().dispose();
-        }
+        disposeGlobalPC();
         fGlobalPC = new TmfPieChart(this, SWT.NONE);
         getGlobalPC().getTitle().setText(fGlobalPCname);
         getGlobalPC().getAxisSet().getXAxis(0).getTitle().setText(""); //Hide the title over the legend //$NON-NLS-1$
-        if (getTimeRangePC() != null && !getTimeRangePC().isDisposed()) {
-            getTimeRangePC().dispose();
-            fTimeRangePC = null;
-        }
+        disposeTimeRangePC();
         layout();
         setCurrentState(new PieChartViewerStateNoContentSelected(this));
     }
@@ -582,4 +577,26 @@ public class TmfPieChartViewer extends Composite {
             pieChart.redraw();
         }
     }
+
+    @Override
+    public void dispose() {
+        disposeGlobalPC();
+        disposeTimeRangePC();
+        super.dispose();
+    }
+
+    void disposeGlobalPC() {
+        if (fGlobalPC != null && !fGlobalPC.isDisposed()) {
+            fGlobalPC.dispose();
+            fGlobalPC = null;
+        }
+    }
+
+    void disposeTimeRangePC() {
+        if (fTimeRangePC != null && !fTimeRangePC.isDisposed()) {
+            fTimeRangePC.dispose();
+            fTimeRangePC = null;
+        }
+    }
+
 }
