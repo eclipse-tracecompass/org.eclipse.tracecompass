@@ -262,7 +262,7 @@ public final class IntegerDeclarationParser implements ICommonTreeParser {
         }
 
         if (mappings.size() > 0) {
-            return IntegerDeclaration.createDeclaration(base, signed, base, byteOrder, encoding, clock, alignment, role, mappings);
+            return IntegerDeclaration.createDeclaration((int) size, signed, base, byteOrder, encoding, clock, alignment, role, mappings);
         }
 
         return IntegerDeclaration.createDeclaration((int) size, signed, base,

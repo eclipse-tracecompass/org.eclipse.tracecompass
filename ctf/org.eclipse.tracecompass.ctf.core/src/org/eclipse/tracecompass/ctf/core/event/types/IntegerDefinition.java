@@ -41,7 +41,7 @@ public final class IntegerDefinition extends SimpleDatatypeDefinition {
     private static final int INT_BASE_8 = 8;
     private static final int INT_BASE_2 = 2;
     private final long fValue;
-    private final String fMapping;
+    private String fMapping;
 
     // ------------------------------------------------------------------------
     // Constructors
@@ -107,6 +107,9 @@ public final class IntegerDefinition extends SimpleDatatypeDefinition {
      * @since 4.6
      */
     public String getMappings() {
+        if (fMapping == null) {
+            fMapping = getDeclaration().getMappingForValue(fValue);
+        }
         return fMapping;
     }
 

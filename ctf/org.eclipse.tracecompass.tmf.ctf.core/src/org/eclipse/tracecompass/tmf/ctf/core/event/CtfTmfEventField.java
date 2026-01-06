@@ -39,6 +39,7 @@ import org.eclipse.tracecompass.ctf.core.event.types.IDefinition;
 import org.eclipse.tracecompass.ctf.core.event.types.IntegerDeclaration;
 import org.eclipse.tracecompass.ctf.core.event.types.IntegerDefinition;
 import org.eclipse.tracecompass.ctf.core.event.types.StringDefinition;
+import org.eclipse.tracecompass.ctf.core.event.types.StringDefinition2;
 import org.eclipse.tracecompass.ctf.core.event.types.VariantDefinition;
 import org.eclipse.tracecompass.internal.ctf.core.event.types.ByteArrayDefinition;
 import org.eclipse.tracecompass.tmf.core.event.ITmfEventField;
@@ -119,6 +120,9 @@ public abstract class CtfTmfEventField extends TmfEventField {
 
         } else if (fieldDef instanceof StringDefinition) {
             field = new CTFStringField(fieldName, ((StringDefinition) fieldDef).getValue());
+
+        } else if (fieldDef instanceof StringDefinition2) {
+            field = new CTFStringField(fieldName, ((StringDefinition2) fieldDef).getValue());
 
         } else if (fieldDef instanceof FloatDefinition) {
             FloatDefinition floatDef = (FloatDefinition) fieldDef;

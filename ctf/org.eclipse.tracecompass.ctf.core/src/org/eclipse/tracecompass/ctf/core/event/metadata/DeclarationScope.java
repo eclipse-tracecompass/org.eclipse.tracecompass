@@ -17,6 +17,7 @@ package org.eclipse.tracecompass.ctf.core.event.metadata;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -171,8 +172,13 @@ public class DeclarationScope {
     public void registerType(String name, IDeclaration declaration)
             throws ParseException {
         /* Check if the type has been defined in the current scope */
-        if (fTypes.containsKey(name)) {
-            throw new ParseException("Type has already been defined:" + name); //$NON-NLS-1$
+        if (name == null || name.isEmpty()) {
+            // don't register anonymous types
+            return;
+        }
+        IDeclaration originalDeclaration = fTypes.get(name);
+        if (originalDeclaration != null && !Objects.equals(declaration, originalDeclaration)) {
+            throw new ParseException("Type has already been defined: " + name); //$NON-NLS-1$
         }
 
         /* Add it to the register. */
@@ -191,10 +197,10 @@ public class DeclarationScope {
      */
     public void registerIdentifier(String name, IDeclaration declaration) throws ParseException {
         /* Check if the type has been defined in the current scope */
-        if (fIdentifiers.containsKey(name)) {
+        IDeclaration iDeclaration = fIdentifiers.get(name);
+        if (iDeclaration != null && !Objects.equals(iDeclaration, declaration)) {
             throw new ParseException("Identifier has already been defined:" + name); //$NON-NLS-1$
         }
-
         /* Add it to the register. */
         fIdentifiers.put(name, declaration);
     }

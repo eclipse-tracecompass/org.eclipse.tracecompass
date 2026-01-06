@@ -20,7 +20,10 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNull;
@@ -46,6 +49,8 @@ import org.eclipse.tracecompass.internal.ctf.core.trace.CTFStream;
 import org.eclipse.tracecompass.internal.ctf.core.utils.JsonMetadataStrings;
 
 import com.google.common.collect.Iterables;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 /**
  * IOStructGen
@@ -151,6 +156,24 @@ public class IOStructGen {
                     throw new ParseException("Only one trace block is allowed"); //$NON-NLS-1$
                 }
                 traceNode = child;
+                if (child instanceof JsonTraceMetadataNode) {
+                    JsonTraceMetadataNode node = (JsonTraceMetadataNode) child;
+                    JsonObject environment = node.getEnvironment();
+                    if (environment != null) {
+                        Map<String, String> env = new LinkedHashMap<>();
+
+                        for (Entry<String, JsonElement> entry : environment.entrySet()) {
+                            JsonElement value = entry.getValue();
+                            if (value.isJsonPrimitive()) {
+                                env.put(entry.getKey(), value.getAsString());
+                            } else {
+                                env.put(entry.getKey(), value.toString());
+                            }
+                        }
+                        fTrace.setEnvironment(env);
+                    }
+
+                }
                 parseTrace(traceNode);
             } else if (CTFParser.tokenNames[CTFParser.STREAM].equals(type) || JsonMetadataStrings.FRAGMENT_DATA_STREAM.equals(type)) {
                 StreamParser.INSTANCE.parse(child, new StreamParser.Param(fTrace, fRoot));

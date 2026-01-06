@@ -20,9 +20,13 @@ import static java.util.Objects.requireNonNull;
 
 import java.math.BigInteger;
 import java.nio.ByteOrder;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -36,6 +40,9 @@ import org.eclipse.tracecompass.internal.ctf.core.utils.LEB128;
  *
  * The declaration of a integer basic data type.
  *
+ * note: there are some basic declarations. They are not needed, but are kept
+ * for API reasons.
+ *
  * @version 1.0
  * @author Matthew Khouzam
  * @author Simon Marchi
@@ -47,14 +54,9 @@ public final class IntegerDeclaration extends Declaration implements ISimpleData
     // Helpers
     // ------------------------------------------------------------------------
 
-    private static final int SIZE_64 = 64;
-    private static final int SIZE_32 = 32;
-    private static final int SIZE_27 = 27;
-    private static final int SIZE_16 = 16;
-    private static final int SIZE_8 = 8;
-    private static final int SIZE_5 = 5;
     private static final int BYTE_ALIGN = 8;
     private static final int BASE_10 = 10;
+    private static final int SIZE_8 = 8;
     /**
      * unsigned int 32 bits big endian
      */
@@ -110,6 +112,7 @@ public final class IntegerDeclaration extends Declaration implements ISimpleData
     /**
      * Unsigned 5 bit int, used for event headers
      */
+    @Deprecated
     public static final IntegerDeclaration UINT_27L_DECL = new IntegerDeclaration(27, false, 10, ByteOrder.LITTLE_ENDIAN, Encoding.NONE, "", 1); //$NON-NLS-1$
     /**
      * Unsigned 16 bit int, used for event headers
@@ -132,7 +135,20 @@ public final class IntegerDeclaration extends Declaration implements ISimpleData
     private final long fAlignment;
     private final String fClock;
     private boolean fVarint = false;
-    private Map<String, List<IntegerRange>> fMappings = new HashMap<>();
+
+    private static class IntervalNode {
+        final long start, end;
+        final String name;
+
+        IntervalNode(long start, long end, String name) {
+            this.start = start;
+            this.end = end;
+            this.name = name;
+        }
+    }
+
+    private Map<String, List<IntegerRange>> fMappings = new TreeMap<>();
+    private List<IntervalNode> fIntervalTree = new ArrayList<>();
 
     // ------------------------------------------------------------------------
     // Constructors
@@ -162,69 +178,6 @@ public final class IntegerDeclaration extends Declaration implements ISimpleData
      */
     public static IntegerDeclaration createDeclaration(int len, boolean signed, int base,
             @Nullable ByteOrder byteOrder, Encoding encoding, String clock, long alignment, @Nullable String role) {
-        if (encoding.equals(Encoding.NONE) && (clock.equals("")) && base == BASE_10 && byteOrder != null) { //$NON-NLS-1$
-            if (alignment == BYTE_ALIGN) {
-                switch (len) {
-                case SIZE_8:
-                    return signed ? INT_8_DECL : UINT_8_DECL;
-                case SIZE_16:
-                    if (!signed) {
-                        if (isBigEndian(byteOrder)) {
-                            return UINT_16B_DECL;
-                        }
-                        return UINT_16L_DECL;
-                    }
-                    break;
-                case SIZE_32:
-                    if (signed) {
-                        if (isBigEndian(byteOrder)) {
-                            return INT_32B_DECL;
-                        }
-                        return INT_32L_DECL;
-                    }
-                    if (isBigEndian(byteOrder)) {
-                        return UINT_32B_DECL;
-                    }
-                    return UINT_32L_DECL;
-                case SIZE_64:
-                    if (signed) {
-                        if (isBigEndian(byteOrder)) {
-                            return INT_64B_DECL;
-                        }
-                        return INT_64L_DECL;
-                    }
-                    if (isBigEndian(byteOrder)) {
-                        return UINT_64B_DECL;
-                    }
-                    return UINT_64L_DECL;
-
-                default:
-
-                }
-
-            } else if (alignment == 1) {
-                switch (len) {
-                case SIZE_5:
-                    if (!signed) {
-                        if (isBigEndian(byteOrder)) {
-                            return UINT_5B_DECL;
-                        }
-                        return UINT_5L_DECL;
-                    }
-                    break;
-                case SIZE_27:
-                    if (!signed) {
-                        if (isBigEndian(byteOrder)) {
-                            return UINT_27B_DECL;
-                        }
-                        return UINT_27L_DECL;
-                    }
-                    break;
-                default:
-                    break;
-                }
-            }
-        }
         return new IntegerDeclaration(len, signed, base, byteOrder, encoding, clock, alignment, role, null);
     }
 
@@ -306,10 +259,6 @@ public final class IntegerDeclaration extends Declaration implements ISimpleData
             decl.setMappings(mappings);
         }
         return decl;
-    }
-
-    private static boolean isBigEndian(@Nullable ByteOrder byteOrder) {
-        return (byteOrder != null) && byteOrder.equals(ByteOrder.BIG_ENDIAN);
     }
 
     /**
@@ -426,7 +375,20 @@ public final class IntegerDeclaration extends Declaration implements ISimpleData
      *            a mapped range of integers
      */
     private void setMappings(Map<String, List<IntegerRange>> mappings) {
-        fMappings = mappings;
+        fMappings.clear();
+        fMappings.putAll(mappings);
+        buildIntervalTree();
+    }
+
+    private void buildIntervalTree() {
+        fIntervalTree.clear();
+        for (Map.Entry<String, List<IntegerRange>> entry : fMappings.entrySet()) {
+            String name = entry.getKey();
+            for (IntegerRange range : entry.getValue()) {
+                fIntervalTree.add(new IntervalNode(range.getStart(), range.getEnd(), name));
+            }
+        }
+        Collections.sort(fIntervalTree, Comparator.comparingLong(n -> n.start));
     }
 
     /**
@@ -517,11 +479,7 @@ public final class IntegerDeclaration extends Declaration implements ISimpleData
         input.setByteOrder(fByteOrder);
         long value = read(input);
         input.setByteOrder(byteOrder);
-        if (fMappings.size() == 0) {
-            return new IntegerDefinition(this, definitionScope, fieldName, value);
-        }
-        String mappingName = getMappingForValue(value);
-        return new IntegerDefinition(this, definitionScope, fieldName, value, mappingName);
+        return new IntegerDefinition(this, definitionScope, fieldName, value);
     }
 
     @Override
@@ -593,7 +551,7 @@ public final class IntegerDeclaration extends Declaration implements ISimpleData
             input.setByteOrder(getByteOrder());
         }
 
-        if (length > SIZE_64) {
+        if (length > Long.SIZE) {
             throw new CTFException("Cannot read an integer with over 64 bits. Length given: " + length); //$NON-NLS-1$
         }
 
@@ -611,16 +569,7 @@ public final class IntegerDeclaration extends Declaration implements ISimpleData
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + (int) (fAlignment ^ (fAlignment >>> 32));
-        result = prime * result + fBase;
-        result = prime * result + fByteOrder.toString().hashCode();
-        result = prime * result + fClock.hashCode();
-        result = prime * result + fEncoding.hashCode();
-        result = prime * result + fLength;
-        result = prime * result + (fSigned ? 1231 : 1237);
-        return result;
+        return Objects.hash(fAlignment, fBase, fByteOrder, fClock, fEncoding, fLength, fSigned, fMappings, getRole());
     }
 
     @Override
@@ -645,6 +594,12 @@ public final class IntegerDeclaration extends Declaration implements ISimpleData
             return false;
         }
         if (fEncoding != other.fEncoding) {
+            return false;
+        }
+        if (!Objects.equals(fMappings, other.fMappings)) {
+            return false;
+        }
+        if (!Objects.equals(getRole(), other.getRole())) {
             return false;
         }
         return (fBase == other.fBase);
@@ -682,25 +637,31 @@ public final class IntegerDeclaration extends Declaration implements ISimpleData
         return !((fLength != BYTE_ALIGN) && !fByteOrder.equals(other.fByteOrder));
     }
 
-    private String getMappingForValue(long value) {
-        String mapping = ""; //$NON-NLS-1$
-        int count = 0;
-        for (Map.Entry<String, List<IntegerRange>> entry : fMappings.entrySet()) {
-            String mappingName = entry.getKey();
-            List<IntegerRange> ranges = entry.getValue();
-
-            for (IntegerRange range : ranges) {
-                if (range.getStart() <= value && value <= range.getEnd()) {
-                    if (count != 0) {
-                        mapping += " " + mappingName; //$NON-NLS-1$
-                    } else {
-                        mapping += mappingName;
-                    }
-                    count++;
-
-                }
+    String getMappingForValue(long value) {
+        if (fIntervalTree.isEmpty()) {
+            return ""; //$NON-NLS-1$
+        }
+        List<String> matches = new ArrayList<>();
+        // Binary search for rightmost node with start <= value
+        int left = 0, right = fIntervalTree.size() - 1;
+        int lastValid = -1;
+        while (left <= right) {
+            int mid = (left + right) / 2;
+            if (fIntervalTree.get(mid).start <= value) {
+                lastValid = mid;
+                left = mid + 1;
+            } else {
+                right = mid - 1;
             }
         }
-        return mapping;
+        // Check all nodes from lastValid backwards for overlaps
+        for (int i = lastValid; i >= 0; i--) {
+            IntervalNode node = fIntervalTree.get(i);
+            if (node.end >= value) {
+                matches.add(node.name);
+            }
+        }
+        return matches.isEmpty() ? "" : Objects.requireNonNull(String.join(" ", matches)); //$NON-NLS-1$ //$NON-NLS-2$
     }
+
 }

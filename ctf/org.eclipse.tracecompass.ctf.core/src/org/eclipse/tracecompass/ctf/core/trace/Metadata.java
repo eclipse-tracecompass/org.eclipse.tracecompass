@@ -35,7 +35,9 @@ import java.nio.charset.Charset;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -73,6 +75,9 @@ import org.eclipse.tracecompass.internal.ctf.core.utils.Utils;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
 /**
@@ -247,30 +252,42 @@ public class Metadata {
         Gson gson = builder.create();
 
         String[] jsonBlocks = json.split("\u001e"); //$NON-NLS-1$
+        Map<String, JsonObject> metadata = new HashMap<>();
+
+        // Second pass: expand string references and parse
         for (int i = 1; i < jsonBlocks.length; i++) {
+            JsonElement element = JsonParser.parseString(jsonBlocks[i]);
+            if (element.isJsonObject()) {
+                JsonObject obj = element.getAsJsonObject();
+                expandAliases(obj, metadata);
+                if (obj.has(JsonMetadataStrings.TYPE) && obj.get(JsonMetadataStrings.TYPE).getAsString().equals(JsonMetadataStrings.FRAGMENT_FIELD_ALIAS)) {
+                    metadata.put(obj.get(JsonMetadataStrings.NAME).getAsString(), obj.get(JsonMetadataStrings.FIELD_CLASS).getAsJsonObject());
+                }
+            }
+
             ICTFMetadataNode fragment;
             try {
-                fragment = Objects.requireNonNull(gson.fromJson(jsonBlocks[i], CTFJsonMetadataNode.class));
+                fragment = Objects.requireNonNull(gson.fromJson(element, CTFJsonMetadataNode.class));
             } catch (JsonSyntaxException e) {
                 throw new CTFException("Trace cannot be parsed as CTF2"); //$NON-NLS-1$
             }
 
             String type = fragment.getType();
             if (type.equals(JsonMetadataStrings.FRAGMENT_PREAMBLE)) {
-                fragment = Objects.requireNonNull(gson.fromJson(jsonBlocks[i], JsonPreambleMetadataNode.class));
+                fragment = Objects.requireNonNull(gson.fromJson(element, JsonPreambleMetadataNode.class));
             } else if (type.equals(JsonMetadataStrings.FRAGMENT_TRACE)) {
-                fragment = Objects.requireNonNull(gson.fromJson(jsonBlocks[i], JsonTraceMetadataNode.class));
+                fragment = Objects.requireNonNull(gson.fromJson(element, JsonTraceMetadataNode.class));
             } else if (type.equals(JsonMetadataStrings.FRAGMENT_CLOCK)) {
-                fragment = Objects.requireNonNull(gson.fromJson(jsonBlocks[i], JsonClockMetadataNode.class));
+                fragment = Objects.requireNonNull(gson.fromJson(element, JsonClockMetadataNode.class));
             } else if (type.equals(JsonMetadataStrings.FRAGMENT_EVENT_RECORD)) {
-                fragment = Objects.requireNonNull(gson.fromJson(jsonBlocks[i], JsonEventRecordMetadataNode.class));
+                fragment = Objects.requireNonNull(gson.fromJson(element, JsonEventRecordMetadataNode.class));
             } else if (type.equals(JsonMetadataStrings.FRAGMENT_DATA_STREAM)) {
-                fragment = Objects.requireNonNull(gson.fromJson(jsonBlocks[i], JsonDataStreamMetadataNode.class));
+                fragment = Objects.requireNonNull(gson.fromJson(element, JsonDataStreamMetadataNode.class));
                 if (!jsonBlocks[i].contains("id:")) { //$NON-NLS-1$
                     ((JsonDataStreamMetadataNode) fragment).setId(-1);
                 }
             } else if (type.equals(JsonMetadataStrings.FRAGMENT_FIELD_ALIAS)) {
-                fragment = Objects.requireNonNull(gson.fromJson(jsonBlocks[i], JsonFieldClassAliasMetadataNode.class));
+                fragment = Objects.requireNonNull(gson.fromJson(element, JsonFieldClassAliasMetadataNode.class));
             }
 
             ((CTFJsonMetadataNode) fragment).initialize();
@@ -279,6 +296,23 @@ public class Metadata {
             fragment.setParent(root);
         }
         return root;
+    }
+
+    private static void expandAliases(JsonObject obj, Map<String, JsonObject> metadata) {
+        for (String key : obj.keySet()) {
+            JsonElement value = obj.get(key);
+            if (value.isJsonPrimitive() && value.getAsJsonPrimitive().isString() && metadata.containsKey(value.getAsString())) {
+                obj.add(key, metadata.get(value.getAsString()));
+            } else if (value.isJsonObject()) {
+                expandAliases(value.getAsJsonObject(), metadata);
+            } else if (value.isJsonArray()) {
+                for (JsonElement elem : value.getAsJsonArray()) {
+                    if (elem.isJsonObject()) {
+                        expandAliases(elem.getAsJsonObject(), metadata);
+                    }
+                }
+            }
+        }
     }
 
     /**
