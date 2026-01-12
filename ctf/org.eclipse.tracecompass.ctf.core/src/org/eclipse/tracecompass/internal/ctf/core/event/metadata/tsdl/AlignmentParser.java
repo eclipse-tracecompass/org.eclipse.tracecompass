@@ -15,9 +15,14 @@ import static org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.Tsd
 
 import org.eclipse.tracecompass.ctf.parser.CTFParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ICommonTreeParser;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonStructureFieldMemberMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonStructureFieldMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
 import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
+import org.eclipse.tracecompass.internal.ctf.core.utils.JsonMetadataStrings;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 /**
  * Alignment parser, we define byte-packed types as aligned on the byte size,
@@ -91,13 +96,35 @@ public final class AlignmentParser implements ICommonTreeParser {
             }
 
             return alignment;
-        } else if (tree instanceof JsonStructureFieldMetadataNode) {
-            long alignment = ((JsonStructureFieldMetadataNode) tree).getMinimumAlignment();
+        } else if (tree instanceof JsonStructureFieldMetadataNode structTree) {
+            long alignment = structTree.getMinimumAlignment();
+
             if (!isValidAlignment(alignment)) {
                 throw new ParseException(INVALID_VALUE_FOR_ALIGNMENT + " : " //$NON-NLS-1$
                         + alignment);
             }
             return alignment;
+        } else if (tree instanceof JsonStructureFieldMemberMetadataNode structTree) {
+            JsonElement fieldClassElement = structTree.getFieldClass();
+            if (fieldClassElement == null || !fieldClassElement.isJsonObject()) {
+                throw new ParseException(getClass().getName() + " fieldclass must be a json object."); //$NON-NLS-1$
+            }
+            JsonObject fieldclass = fieldClassElement.getAsJsonObject();
+            if (fieldclass.has(JsonMetadataStrings.ALIGNMENT)) {
+                JsonElement alignmentElement = fieldclass.get(JsonMetadataStrings.ALIGNMENT);
+                if (alignmentElement == null || !alignmentElement.isJsonPrimitive()) {
+                    throw new ParseException(INVALID_VALUE_FOR_ALIGNMENT + " : " //$NON-NLS-1$
+                            + alignmentElement);
+                }
+                long alignment = alignmentElement.getAsLong();
+                if (!isValidAlignment(alignment)) {
+                    throw new ParseException(INVALID_VALUE_FOR_ALIGNMENT + " : " //$NON-NLS-1$
+                            + alignment);
+                }
+                return alignment;
+            }
+            // Return default alignment when not specified
+            return 1L;
         }
 
         throw new ParseException(INVALID_VALUE_FOR_ALIGNMENT); // $NON-NLS-1$
