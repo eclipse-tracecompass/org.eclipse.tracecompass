@@ -114,9 +114,6 @@ public abstract class CallStackStateProvider extends AbstractTmfStateProvider {
 
     @Override
     protected void eventHandle(ITmfEvent event) {
-        if (!considerEvent(event)) {
-            return;
-        }
 
         ITmfStateSystemBuilder ss = checkNotNull(getStateSystemBuilder());
 
@@ -204,7 +201,10 @@ public abstract class CallStackStateProvider extends AbstractTmfStateProvider {
      * @return If false, the event will be ignored by the state provider. If
      *         true processing will continue.
      */
-    protected abstract boolean considerEvent(ITmfEvent event);
+    @Override
+    protected boolean considerEvent(ITmfEvent event) {
+        return true;
+    }
 
     /**
      * Check an event if it indicates a function entry.

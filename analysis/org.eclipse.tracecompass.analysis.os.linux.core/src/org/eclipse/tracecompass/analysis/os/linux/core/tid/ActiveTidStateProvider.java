@@ -73,10 +73,12 @@ class ActiveTidStateProvider extends AbstractTmfStateProvider {
     }
 
     @Override
+    protected boolean considerEvent(@NonNull ITmfEvent event) {
+        return super.considerEvent(event) && event.getName().equals(fSchedSwitch);
+    }
+
+    @Override
     protected void eventHandle(@NonNull ITmfEvent event) {
-        if (!event.getName().equals(fSchedSwitch)) {
-            return;
-        }
         ITmfStateSystemBuilder ssb = getStateSystemBuilder();
         if (ssb == null) {
             return;

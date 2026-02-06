@@ -14,7 +14,9 @@
 
 package org.eclipse.tracecompass.internal.analysis.os.linux.core.kernel;
 
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.analysis.os.linux.core.trace.IKernelAnalysisEventLayout;
@@ -98,6 +100,7 @@ public class KernelStateProvider extends AbstractTmfStateProvider {
 
     private final KernelEventHandler fSysEntryHandler;
     private final KernelEventHandler fSysExitHandler;
+    private final Set<String> fValidEventNames = new HashSet<>();
 
     // ------------------------------------------------------------------------
     // Constructor
@@ -116,7 +119,7 @@ public class KernelStateProvider extends AbstractTmfStateProvider {
         super(trace, "Kernel"); //$NON-NLS-1$
         fLayout = layout;
         fEventNames = buildEventNames(layout);
-
+        fValidEventNames.addAll(fEventNames.keySet());
         fSysEntryHandler = new SysEntryHandler(fLayout);
         fSysExitHandler = new SysExitHandler(fLayout);
     }
@@ -173,6 +176,19 @@ public class KernelStateProvider extends AbstractTmfStateProvider {
     @Override
     public KernelStateProvider getNewInstance() {
         return new KernelStateProvider(this.getTrace(), fLayout);
+    }
+
+    @Override
+    protected boolean considerEvent(ITmfEvent event) {
+        boolean considerEvent = super.considerEvent(event);
+        if (!considerEvent) {
+            return false;
+        }
+        String name = event.getName();
+        if (fValidEventNames.contains(name)) {
+            return true;
+        }
+        return isSyscallEntry(name) || isSyscallExit(name);
     }
 
     @Override
