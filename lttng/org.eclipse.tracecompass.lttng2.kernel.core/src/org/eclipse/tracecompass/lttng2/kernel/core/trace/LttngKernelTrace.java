@@ -181,7 +181,7 @@ public class LttngKernelTrace extends CtfTmfTrace implements IKernelTrace, ILttn
             Map<String, String> environment = ((CtfTraceValidationStatus) status).getEnvironment();
             /* Make sure the domain is "kernel" in the trace's env vars */
             String domain = environment.get("domain"); //$NON-NLS-1$
-            if (domain == null || !domain.equals("\"kernel\"")) { //$NON-NLS-1$
+            if (domain == null || !(domain.equals("kernel") || domain.equals("\"kernel\""))) { //$NON-NLS-1$ //$NON-NLS-2$
                 return new Status(IStatus.ERROR, Activator.PLUGIN_ID, Messages.LttngKernelTrace_DomainError);
             }
             return new TraceValidationStatus(CONFIDENCE, Activator.PLUGIN_ID);
