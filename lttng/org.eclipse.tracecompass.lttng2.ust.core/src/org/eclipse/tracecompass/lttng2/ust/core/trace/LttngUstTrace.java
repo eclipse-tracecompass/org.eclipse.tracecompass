@@ -190,7 +190,7 @@ public class LttngUstTrace extends CtfTmfTrace implements ILttngTrace{
             Map<String, String> environment = ctfTraceValidationStatus.getEnvironment();
             /* Make sure the domain is "ust" in the trace's env vars */
             String domain = environment.get("domain"); //$NON-NLS-1$
-            if (domain == null || !domain.equals("\"ust\"")) { //$NON-NLS-1$
+            if (domain == null || !(domain.equals("ust") || domain.equals("\"ust\""))) { //$NON-NLS-1$ //$NON-NLS-2$
                 return Status.error(Messages.LttngUstTrace_DomainError);
             }
             return new CtfTraceValidationStatus(CONFIDENCE, Activator.PLUGIN_ID, environment, ctfTraceValidationStatus.getEventNames() );
