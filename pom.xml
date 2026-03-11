@@ -58,7 +58,6 @@
     <tycho.scmUrl>scm:git:https://github.com/eclipse-tracecompass/org.eclipse.tracecompass</tycho.scmUrl>
     <cbi-plugins.version>1.4.2</cbi-plugins.version>
     <target-platform>tracecompass-e4.38</target-platform>
-    <help-docs-eclipserun-repo>https://download.eclipse.org/eclipse/updates/4.23</help-docs-eclipserun-repo>
 
     <rcptt-version>2.5.4</rcptt-version>
     <!-- Disable GTK3 because it's not quite usable yet and it can make the tests hang (bug in IcedTea http://icedtea.classpath.org/bugzilla/show_bug.cgi?id=1736) -->
@@ -696,44 +695,6 @@
           <version>${sonar-version}</version>
         </plugin>
 
-        <plugin>
-          <groupId>org.eclipse.tycho.extras</groupId>
-          <artifactId>tycho-eclipserun-plugin</artifactId>
-          <version>${tycho-extras-version}</version>
-          <configuration>
-            <dependencies>
-              <dependency>
-                <artifactId>org.apache.ant</artifactId>
-                <type>eclipse-plugin</type>
-              </dependency>
-              <dependency>
-                <artifactId>org.eclipse.help.base</artifactId>
-                <type>eclipse-plugin</type>
-              </dependency>
-              <dependency>
-                <artifactId>org.eclipse.ant.core</artifactId>
-                <type>eclipse-plugin</type>
-              </dependency>
-            </dependencies>
-            <!-- This needs to be explicitly set now, see https://bugs.eclipse.org/bugs/show_bug.cgi?id=395281 -->
-            <repositories>
-              <repository>
-                <id>platform</id>
-                <layout>p2</layout>
-                <url>${help-docs-eclipserun-repo}</url>
-              </repository>
-            </repositories>
-            <executionEnvironment>JavaSE-${jdk.version}</executionEnvironment>
-          </configuration>
-          <executions>
-            <execution>
-              <goals>
-                <goal>eclipse-run</goal>
-              </goals>
-              <phase>compile</phase>
-            </execution>
-          </executions>
-        </plugin>
       </plugins>
     </pluginManagement>
   </build>
