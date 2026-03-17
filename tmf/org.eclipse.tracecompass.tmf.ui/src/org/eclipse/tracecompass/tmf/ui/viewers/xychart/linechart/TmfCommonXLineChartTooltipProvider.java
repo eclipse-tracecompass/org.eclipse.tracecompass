@@ -28,6 +28,7 @@ import org.eclipse.tracecompass.tmf.core.presentation.RGBAColor;
 import org.eclipse.tracecompass.tmf.core.timestamp.ITmfTimestamp;
 import org.eclipse.tracecompass.tmf.core.timestamp.TmfTimestamp;
 import org.eclipse.tracecompass.tmf.ui.viewers.TmfAbstractToolTipHandler;
+import org.eclipse.tracecompass.tmf.ui.viewers.TmfAbstractToolTipHandler.ToolTipString;
 import org.eclipse.tracecompass.tmf.ui.viewers.xychart.IAxis;
 import org.eclipse.tracecompass.tmf.ui.viewers.xychart.ITmfChartTimeProvider;
 import org.eclipse.tracecompass.tmf.ui.viewers.xychart.IXYSeries;
@@ -43,80 +44,8 @@ import org.eclipse.tracecompass.tmf.ui.viewers.xychart.TmfBaseProvider;
  */
 public class TmfCommonXLineChartTooltipProvider extends TmfBaseProvider {
 
-    private final class XYToolTipHandler extends TmfAbstractToolTipHandler {
-        private static final String HTML_COLOR_TOOLTIP = "<span style=\"color:%s;\">%s</span>"; //$NON-NLS-1$
-
-        private boolean isValid(int index, IXYSeries serie) {
-            double[] ySeries = serie.getYSeries();
-            return serie.isVisible() && ySeries != null && ySeries.length > index;
-        }
-
-        @Override
-        public void fill(Control control, MouseEvent event, Point pt) {
-            if (getChartViewer().getWindowDuration() != 0) {
-                IAxis xAxis = getXAxis();
-
-                double xCoordinate = xAxis.getDataCoordinate(pt.x);
-
-                List<IXYSeries> series = getSeries();
-
-                if ((xCoordinate < 0) || (series.isEmpty())) {
-                    return;
-                }
-
-                /* Find the index of the value we want */
-                double[] xS = series.get(0).getXSeries();
-                if (xS == null) {
-                    return;
-                }
-                int index = Arrays.binarySearch(xS, xCoordinate);
-                index = index >= 0 ? index : -index - 1;
-                int maxLen = 0;
-                for (IXYSeries serie : series) {
-                    /* Make sure the series values and the value at index exist */
-                    if (isValid(index, serie)) {
-                        maxLen = Math.max(maxLen, serie.getId().length());
-                    }
-                }
-
-                TmfCommonXAxisChartViewer viewer = null;
-                Format format = null;
-                ITmfChartTimeProvider timeProvider = getChartViewer();
-                if (timeProvider instanceof TmfCommonXAxisChartViewer) {
-                    viewer = (TmfCommonXAxisChartViewer) timeProvider;
-                    format = viewer.getSwtChart().getAxisSet().getYAxes()[0].getTick().getFormat();
-                }
-                ITmfTimestamp time = TmfTimestamp.fromNanos((long) xCoordinate + getChartViewer().getTimeOffset());
-                addItem(null, ToolTipString.fromString(Messages.TmfCommonXLineChartTooltipProvider_time), ToolTipString.fromTimestamp(time.toString(), time.toNanos()));
-                /* For each series, get the value at the index */
-                for (IXYSeries serie : series) {
-                    double[] yS = serie.getYSeries();
-                    /* Make sure the series values and the value at index exist */
-                    if (isValid(index, serie)) {
-                        String key = serie.getId();
-                        Color color = serie.getColor();
-                        if (key != null && color != null && viewer != null) {
-                            RGBA rgba = color.getRGBA();
-                            RGBAColor rgbaColor = new RGBAColor(rgba.rgb.red, rgba.rgb.green, rgba.rgb.blue, rgba.alpha);
-                            key = String.format(HTML_COLOR_TOOLTIP, rgbaColor, key);
-                        }
-                        if (key == null) {
-                            key = ""; //$NON-NLS-1$
-                        }
-                        double yValue = yS[index];
-                        if (format == null) {
-                            addItem(null, ToolTipString.fromHtml(key), ToolTipString.fromDecimal(yValue));
-                        } else {
-                            addItem(null, ToolTipString.fromHtml(key), ToolTipString.fromString(format.format(yValue)));
-                        }
-                    }
-                }
-            }
-        }
-
-    }
-
-    private XYToolTipHandler fToolTipHandler = new XYToolTipHandler();
+    private static final String HTML_COLOR_TOOLTIP = "<span style=\"color:%s;\">%s</span>"; //$NON-NLS-1$
+    private final CommonToolTipHandler fToolTipHandler = new CommonToolTipHandler();
 
     /**
      * Constructor for the tooltip provider
@@ -141,5 +70,104 @@ public class TmfCommonXLineChartTooltipProvider extends TmfBaseProvider {
     @Override
     public void refresh() {
         // nothing to do
+    }
+
+    protected boolean isTooltipAvailable() {
+        return getChartViewer().getWindowDuration() != 0;
+    }
+
+    protected int getHoveredIndex(List<IXYSeries> series, double xCoordinate) {
+        if (series.isEmpty()) {
+            return -1;
+        }
+        double[] xSeries = series.get(0).getXSeries();
+        if ((xSeries == null) || (xSeries.length == 0)) {
+            return -1;
+        }
+        int index = Arrays.binarySearch(xSeries, xCoordinate);
+        index = (index >= 0) ? index : -index - 1;
+        return (index < xSeries.length) ? index : -1;
+    }
+
+    protected boolean isValidSeriesIndex(IXYSeries series, int index) {
+        double[] ySeries = series.getYSeries();
+        return series.isVisible() && ySeries != null && index >= 0 && index < ySeries.length;
+    }
+
+    protected void addAdditionalTooltipItems(double xCoordinate, String seriesKey) {
+        ITmfTimestamp time = TmfTimestamp.fromNanos((long) xCoordinate + getChartViewer().getTimeOffset());
+        addItem(null,
+                ToolTipString.fromString(Messages.TmfCommonXLineChartTooltipProvider_time),
+                ToolTipString.fromTimestamp(time.toString(), time.toNanos()));
+    }
+
+    protected void addSeriesTooltipItem(IXYSeries series, int index, Format format) {
+        double[] ySeries = series.getYSeries();
+        if (ySeries == null || index < 0 || index >= ySeries.length) {
+            return;
+        }
+
+        String label = formatSeriesLabel(series);
+        double yValue = ySeries[index];
+        if (format == null) {
+            addItem(null, ToolTipString.fromHtml(label), ToolTipString.fromDecimal(yValue));
+        } else {
+            addItem(null, ToolTipString.fromHtml(label), ToolTipString.fromString(format.format(yValue)));
+        }
+    }
+
+    protected String formatSeriesLabel(IXYSeries series) {
+        String key = series.getId();
+        String label = (key == null) ? "" : key; //$NON-NLS-1$
+        Color color = series.getColor();
+        if (color != null) {
+            RGBA rgba = color.getRGBA();
+            RGBAColor rgbaColor = new RGBAColor(rgba.rgb.red, rgba.rgb.green, rgba.rgb.blue, rgba.alpha);
+            label = String.format(TmfCommonXLineChartTooltipProvider.HTML_COLOR_TOOLTIP, rgbaColor, label);
+        }
+        return label;
+    }
+
+    private final class CommonToolTipHandler extends TmfAbstractToolTipHandler {
+
+        @Override
+        public void fill(Control control, MouseEvent event, Point pt) {
+            if (!isTooltipAvailable()) {
+                return;
+            }
+
+            IAxis xAxis = getXAxis();
+            double xCoordinate = xAxis.getDataCoordinate(pt.x);
+            if (xCoordinate < 0) {
+                return;
+            }
+
+            List<IXYSeries> series = getSeries();
+            int index = getHoveredIndex(series, xCoordinate);
+            if (index < 0) {
+                return;
+            }
+
+            Format format = null;
+            if (getChartViewer() instanceof TmfCommonXAxisChartViewer chartViewer) {
+                format = chartViewer.getSwtChart().getAxisSet().getYAxes()[0].getTick().getFormat();
+            }
+
+            String firstValidSeriesKey = null;
+            for (IXYSeries xySeries : series) {
+                if (isValidSeriesIndex(xySeries, index)) {
+                    firstValidSeriesKey = xySeries.getId();
+                    break;
+                }
+            }
+            addAdditionalTooltipItems(xCoordinate, firstValidSeriesKey);
+
+            for (IXYSeries xySeries : series) {
+                if (!isValidSeriesIndex(xySeries, index)) {
+                    continue;
+                }
+                addSeriesTooltipItem(xySeries, index, format);
+            }
+        }
     }
 }
