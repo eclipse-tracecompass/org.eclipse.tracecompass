@@ -28,6 +28,7 @@ import org.eclipse.tracecompass.tmf.core.presentation.RGBAColor;
 import org.eclipse.tracecompass.tmf.core.timestamp.ITmfTimestamp;
 import org.eclipse.tracecompass.tmf.core.timestamp.TmfTimestamp;
 import org.eclipse.tracecompass.tmf.ui.viewers.TmfAbstractToolTipHandler;
+import org.eclipse.tracecompass.tmf.ui.viewers.TmfAbstractToolTipHandler.ToolTipString;
 import org.eclipse.tracecompass.tmf.ui.viewers.xychart.IAxis;
 import org.eclipse.tracecompass.tmf.ui.viewers.xychart.ITmfChartTimeProvider;
 import org.eclipse.tracecompass.tmf.ui.viewers.xychart.IXYSeries;
@@ -43,80 +44,8 @@ import org.eclipse.tracecompass.tmf.ui.viewers.xychart.TmfBaseProvider;
  */
 public class TmfCommonXLineChartTooltipProvider extends TmfBaseProvider {
 
-    private final class XYToolTipHandler extends TmfAbstractToolTipHandler {
-        private static final String HTML_COLOR_TOOLTIP = "<span style=\"color:%s;\">%s</span>"; //$NON-NLS-1$
-
-        private boolean isValid(int index, IXYSeries serie) {
-            double[] ySeries = serie.getYSeries();
-            return serie.isVisible() && ySeries != null && ySeries.length > index;
-        }
-
-        @Override
-        public void fill(Control control, MouseEvent event, Point pt) {
-            if (getChartViewer().getWindowDuration() != 0) {
-                IAxis xAxis = getXAxis();
-
-                double xCoordinate = xAxis.getDataCoordinate(pt.x);
-
-                List<IXYSeries> series = getSeries();
-
-                if ((xCoordinate < 0) || (series.isEmpty())) {
-                    return;
-                }
-
-                /* Find the index of the value we want */
-                double[] xS = series.get(0).getXSeries();
-                if (xS == null) {
-                    return;
-                }
-                int index = Arrays.binarySearch(xS, xCoordinate);
-                index = index >= 0 ? index : -index - 1;
-                int maxLen = 0;
-                for (IXYSeries serie : series) {
-                    /* Make sure the series values and the value at index exist */
-                    if (isValid(index, serie)) {
-                        maxLen = Math.max(maxLen, serie.getId().length());
-                    }
-                }
-
-                TmfCommonXAxisChartViewer viewer = null;
-                Format format = null;
-                ITmfChartTimeProvider timeProvider = getChartViewer();
-                if (timeProvider instanceof TmfCommonXAxisChartViewer) {
-                    viewer = (TmfCommonXAxisChartViewer) timeProvider;
-                    format = viewer.getSwtChart().getAxisSet().getYAxes()[0].getTick().getFormat();
-                }
-                ITmfTimestamp time = TmfTimestamp.fromNanos((long) xCoordinate + getChartViewer().getTimeOffset());
-                addItem(null, ToolTipString.fromString(Messages.TmfCommonXLineChartTooltipProvider_time), ToolTipString.fromTimestamp(time.toString(), time.toNanos()));
-                /* For each series, get the value at the index */
-                for (IXYSeries serie : series) {
-                    double[] yS = serie.getYSeries();
-                    /* Make sure the series values and the value at index exist */
-                    if (isValid(index, serie)) {
-                        String key = serie.getId();
-                        Color color = serie.getColor();
-                        if (key != null && color != null && viewer != null) {
-                            RGBA rgba = color.getRGBA();
-                            RGBAColor rgbaColor = new RGBAColor(rgba.rgb.red, rgba.rgb.green, rgba.rgb.blue, rgba.alpha);
-                            key = String.format(HTML_COLOR_TOOLTIP, rgbaColor, key);
-                        }
-                        if (key == null) {
-                            key = ""; //$NON-NLS-1$
-                        }
-                        double yValue = yS[index];
-                        if (format == null) {
-                            addItem(null, ToolTipString.fromHtml(key), ToolTipString.fromDecimal(yValue));
-                        } else {
-                            addItem(null, ToolTipString.fromHtml(key), ToolTipString.fromString(format.format(yValue)));
-                        }
-                    }
-                }
-            }
-        }
-
-    }
-
-    private XYToolTipHandler fToolTipHandler = new XYToolTipHandler();
+    private static final String HTML_COLOR_TOOLTIP = "<span style=\"color:%s;\">%s</span>"; //$NON-NLS-1$
+    private final CommonToolTipHandler fToolTipHandler = new CommonToolTipHandler();
 
     /**
      * Constructor for the tooltip provider
@@ -141,5 +70,229 @@ public class TmfCommonXLineChartTooltipProvider extends TmfBaseProvider {
     @Override
     public void refresh() {
         // nothing to do
+    }
+
+    /**
+     * Functional interface used to add items into the tooltip.
+     * <p>
+     * This abstraction allows tooltip content builders (including subclasses) to
+     * contribute key/value pairs without depending directly on the underlying
+     * tooltip UI implementation.
+     * </p>
+     * @since 9.2
+     */
+    @FunctionalInterface
+    protected interface ITooltipItemAdder {
+        /**
+         * Adds a key/value pair to the tooltip.
+         *
+         * @param key
+         *            The item key (label). Must not be {@code null}.
+         * @param value
+         *            The item value. Must not be {@code null}.
+         */
+        void addItem(ToolTipString key, ToolTipString value);
+    }
+
+    /**
+     * Adds tooltip items that are not tied to a particular series (for example, the
+     * timestamp corresponding to the hovered X coordinate).
+     * <p>
+     * This method is part of the provider API and is designed to be overridden by
+     * subclasses that want to contribute additional context to the tooltip when the
+     * user hovers the chart.
+     * </p>
+     * <p>
+     * The default implementation adds a single "time" item computed from
+     * {@code xCoordinate} and the chart viewer's time offset.
+     * </p>
+     *
+     * @param adder
+     *            Callback used to append items to the tooltip.
+     * @param xCoordinate
+     *            The hovered X coordinate in data space (i.e., in the same domain as
+     *            the series X values, typically nanoseconds relative to the viewer's
+     *            time offset).
+     * @since 9.2
+     */
+    protected void addAdditionalTooltipItems(ITooltipItemAdder adder, double xCoordinate) {
+        long timeNanos = Math.round(xCoordinate) + getChartViewer().getTimeOffset();
+        ITmfTimestamp time = TmfTimestamp.fromNanos(timeNanos);
+        adder.addItem(
+                ToolTipString.fromString(Messages.TmfCommonXLineChartTooltipProvider_time),
+                ToolTipString.fromTimestamp(time.toString(), time.toNanos()));
+    }
+
+    /**
+     * Adds a tooltip item for a given series at the specified hovered index.
+     * <p>
+     * This method is part of the provider API and may be overridden to customize
+     * how a series is rendered in the tooltip (e.g., formatting, units, hiding
+     * specific series, etc.).
+     * </p>
+     * <p>
+     * The default implementation:
+     * <ul>
+     *   <li>computes a label from {@link #formatSeriesLabel(IXYSeries)} (including
+     *       the series color when available)</li>
+     *   <li>reads the Y value at {@code index}</li>
+     *   <li>formats it using {@code format} when non-null, otherwise uses a default
+     *       decimal representation</li>
+     * </ul>
+     * </p>
+     *
+     * @param adder
+     *            Callback used to append the key/value pair to the tooltip.
+     * @param xySeries
+     *            The series for which to add a tooltip entry.
+     * @param index
+     *            Hovered point index within the series arrays.
+     * @param format
+     *            Optional numeric formatter (typically inherited from the chart Y axis tick
+     *            formatter). If {@code null}, a default decimal formatting is used.
+     * @since 9.2
+     */
+    protected void addSeriesTooltipItem(ITooltipItemAdder adder, IXYSeries xySeries, int index, Format format) {
+        double[] ySeries = xySeries.getYSeries();
+        if (ySeries == null || index < 0 || index >= ySeries.length) {
+            return;
+        }
+
+        String label = formatSeriesLabel(xySeries);
+        double yValue = ySeries[index];
+        if (format == null) {
+            adder.addItem(
+                    ToolTipString.fromHtml(label),
+                    ToolTipString.fromDecimal(yValue));
+        } else {
+            adder.addItem(
+                    ToolTipString.fromHtml(label),
+                    ToolTipString.fromString(format.format(yValue)));
+        }
+    }
+
+    /**
+     * Builds the display label for a series when shown in the tooltip.
+     * <p>
+     * The default implementation uses the series id and, when the series color is
+     * available, wraps the label in an HTML span using that color so the tooltip
+     * visually matches the series.
+     * </p>
+     *
+     * @param xySeries
+     *            The series to format.
+     * @return The formatted label (potentially containing HTML).
+     * @since 9.2
+     */
+    protected static final String formatSeriesLabel(IXYSeries xySeries) {
+        String label = xySeries.getId();
+        if (label == null) {
+            label = ""; //$NON-NLS-1$
+        }
+
+        Color color = xySeries.getColor();
+        if (color != null) {
+            RGBA rgba = color.getRGBA();
+            RGBAColor rgbaColor = new RGBAColor(rgba.rgb.red, rgba.rgb.green, rgba.rgb.blue, rgba.alpha);
+            label = String.format(TmfCommonXLineChartTooltipProvider.HTML_COLOR_TOOLTIP, rgbaColor, label);
+        }
+
+        return label;
+    }
+
+    /**
+     * Returns the id (key) of the first series that contributed an entry to the most
+     * recently built tooltip.
+     * <p>
+     * This value is set when the tooltip is filled and can be used by subclasses to
+     * correlate additional tooltip content with the first visible/valid series at the
+     * hovered index.
+     * </p>
+     *
+     * @return The id of the first valid series used for the tooltip, or {@code null}
+     *         if the tooltip has not been computed yet or no valid series was found.
+     * @since 9.2
+     */
+    protected final String getFirstValidSeriesKey() {
+        return fToolTipHandler.firstValidSeriesKey;
+    }
+
+    // ======================================================================
+    // TOOLTIP HANDLER
+    // ======================================================================
+
+    private final class CommonToolTipHandler extends TmfAbstractToolTipHandler {
+
+        private String firstValidSeriesKey;
+
+        @Override
+        public void fill(Control control, MouseEvent event, Point pt) {
+            if (!isTooltipAvailable()) {
+                return;
+            }
+
+            IAxis xAxis = getXAxis();
+            double xCoordinate = xAxis.getDataCoordinate(pt.x);
+            if (xCoordinate < 0) {
+                return;
+            }
+
+            List<IXYSeries> series = getSeries();
+            int index = getHoveredIndex(series, xCoordinate);
+            if (index < 0) {
+                return;
+            }
+
+            Format format = null;
+            if (getChartViewer() instanceof TmfCommonXAxisChartViewer chartViewer) {
+                format = chartViewer.getSwtChart().getAxisSet().getYAxes()[0].getTick().getFormat();
+            }
+
+            boolean firstValid = true;
+            for (IXYSeries xySeries : series) {
+                if (!isValidSeriesIndex(xySeries, index)) {
+                    continue;
+                }
+
+                if (firstValid) {
+                    firstValid = false;
+                    firstValidSeriesKey = xySeries.getId();
+                    addAdditionalTooltipItems((key, value) -> addItem(null, key, value), xCoordinate);
+                }
+
+                addSeriesTooltipItem((key, value) -> addItem(null, key, value), xySeries, index, format);
+            }
+        }
+
+        private boolean isTooltipAvailable() {
+            return getChartViewer().getWindowDuration() != 0;
+        }
+
+        private int getHoveredIndex(List<IXYSeries> series, double xCoordinate) {
+            if (series.isEmpty()) {
+                return -1;
+            }
+
+            double[] xSeries = series.get(0).getXSeries();
+            if (xSeries == null || xSeries.length == 0) {
+                return -1;
+            }
+
+            int index = Arrays.binarySearch(xSeries, xCoordinate);
+            if (index < 0) {
+                index = -index - 1;
+                index = Math.max(0, index - 1);
+            }
+
+            return index < xSeries.length ? index : -1;
+        }
+
+        private boolean isValidSeriesIndex(IXYSeries series, int index) {
+            double[] ySeries = series.getYSeries();
+            return series.isVisible()
+                    && ySeries != null
+                    && index >= 0
+                    && index < ySeries.length;
+        }
     }
 }
