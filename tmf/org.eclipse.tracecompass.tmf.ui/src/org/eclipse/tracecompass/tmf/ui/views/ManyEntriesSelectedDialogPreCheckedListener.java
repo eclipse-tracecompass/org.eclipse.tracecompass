@@ -48,7 +48,7 @@ public class ManyEntriesSelectedDialogPreCheckedListener implements IPreCheckSta
     public boolean setSubtreeChecked(Object element, boolean state) {
         if (state) {
             ITreeContentProvider contentProvider = (ITreeContentProvider) fFilteredCheckboxTree.getCheckboxTreeViewer().getContentProvider();
-            int nb = fFilteredCheckboxTree.getCheckedElements().length + getSubTreeSize(contentProvider, element);
+            int nb = fFilteredCheckboxTree.getCheckedElements().length + getSubTreeSize(contentProvider, element) - 1;
             return showWarning(nb);
         }
         return false;
