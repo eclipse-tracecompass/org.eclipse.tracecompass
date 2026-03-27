@@ -43,18 +43,10 @@ public abstract class Declaration implements IDeclaration {
         if (definitionScope != null) {
             final ILexicalScope parentPath = definitionScope.getScopePath();
             if (parentPath != null) {
-                ILexicalScope myScope = parentPath.getChild(fieldName);
-                if (myScope == null) {
-                    myScope = new LexicalScope(parentPath, fieldName);
-                }
-                return myScope;
+                return LexicalScope.create(parentPath, fieldName);
             }
         }
-        ILexicalScope child = ILexicalScope.ROOT.getChild(fieldName);
-        if (child != null) {
-            return child;
-        }
-        return new LexicalScope(ILexicalScope.ROOT, fieldName);
+        return LexicalScope.create(ILexicalScope.ROOT, fieldName);
     }
 
     /**
