@@ -160,6 +160,14 @@ public class UstMemoryStateProvider extends AbstractTmfStateProvider {
     }
 
     @Override
+    protected boolean considerEvent(@NonNull ITmfEvent event) {
+        if (!super.considerEvent(event)) {
+            return false;
+        }
+        return fEventNames.containsKey(event.getName());
+    }
+
+    @Override
     protected void eventHandle(ITmfEvent event) {
         String name = event.getName();
         Integer index = fEventNames.get(name);

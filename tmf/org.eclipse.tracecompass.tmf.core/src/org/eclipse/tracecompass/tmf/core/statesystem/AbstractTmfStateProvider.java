@@ -319,6 +319,10 @@ public abstract class AbstractTmfStateProvider implements ITmfStateProvider {
                         event = fEventsQueue.take();
                         continue;
                     }
+                    if (!considerEvent(event)) {
+                        event = fEventsQueue.take();
+                        continue;
+                    }
                     currentEvent = event;
                     long currentTime = event.getTimestamp().toNanos();
                     fSafeTime = currentTime - 1;
@@ -435,6 +439,22 @@ public abstract class AbstractTmfStateProvider implements ITmfStateProvider {
     // ------------------------------------------------------------------------
     // Abstract methods
     // ------------------------------------------------------------------------
+
+    /**
+     * Check if this event should be considered for processing by the state
+     * provider. This check is a fast fail filter invoked before
+     * {@link #eventHandle(ITmfEvent)} to allow events to not be processed as
+     * much.
+     *
+     * @param event
+     *            The event to check
+     * @return If false, the event will be ignored by the state provider. If
+     *         true processing will continue.
+     * @since 10.2
+     */
+    protected boolean considerEvent(ITmfEvent event) {
+        return true;
+    }
 
     /**
      * Handle the given event and send the appropriate state transitions into
