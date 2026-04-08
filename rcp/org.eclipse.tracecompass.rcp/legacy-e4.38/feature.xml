@@ -206,6 +206,10 @@
          version="0.0.0"/>
 
    <plugin
+         id="org.eclipse.swtchart"
+         version="0.0.0"/>
+
+   <plugin
          id="jakarta.xml.bind-api"
          version="0.0.0"/>
 
@@ -439,86 +443,6 @@
 
    <plugin
          id="com.fasterxml.jackson.core.jackson-core"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.apache.felix.gogo.command"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.apache.felix.gogo.runtime"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.apache.felix.gogo.shell"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.osgi.service.cm"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.osgi.service.component"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.osgi.service.device"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.osgi.service.event"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.osgi.service.metatype"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.osgi.service.provisioning"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.osgi.service.upnp"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.osgi.service.useradmin"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.osgi.service.wireadmin"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.osgi.util.function"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.osgi.util.measurement"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.osgi.util.position"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.osgi.util.promise"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.osgi.util.xml"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.osgi.service.prefs"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.apache.ant"
-         version="0.0.0"/>
-
-   <plugin
-         id="com.jcraft.jsch"
          version="0.0.0"/>
 
 </feature>
