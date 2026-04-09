@@ -12,6 +12,9 @@ package org.eclipse.tracecompass.analysis.os.linux.core.kernelmemoryusage;
 
 import static org.eclipse.tracecompass.common.core.NonNullUtils.checkNotNull;
 
+import java.util.Set;
+import java.util.TreeSet;
+
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.tracecompass.analysis.os.linux.core.kernel.KernelTidAspect;
@@ -58,6 +61,12 @@ public class KernelMemoryStateProvider extends AbstractTmfStateProvider {
 
     private IKernelAnalysisEventLayout fLayout;
 
+    private final String fEventKmemPageFree;
+
+    private final String fEventKmemPageAlloc;
+
+    private final Set<String> fToConsider = new TreeSet<>();
+
     /**
      * Constructor
      *
@@ -69,6 +78,10 @@ public class KernelMemoryStateProvider extends AbstractTmfStateProvider {
     public KernelMemoryStateProvider(@NonNull ITmfTrace trace, IKernelAnalysisEventLayout layout) {
         super(trace, "Kernel:Memory"); //$NON-NLS-1$
         fLayout = layout;
+        fEventKmemPageAlloc = fLayout.eventKmemPageAlloc();
+        fEventKmemPageFree = fLayout.eventKmemPageFree();
+        fToConsider.add(fEventKmemPageAlloc);
+        fToConsider.add(fEventKmemPageFree);
     }
 
     @Override
@@ -82,16 +95,23 @@ public class KernelMemoryStateProvider extends AbstractTmfStateProvider {
     }
 
     @Override
+    protected boolean considerEvent(ITmfEvent event) {
+        return super.considerEvent(event) && fToConsider.contains(event.getName());
+    }
+
+    @Override
     protected void eventHandle(@NonNull ITmfEvent event) {
         String name = event.getName();
 
         long inc;
-        if (name.equals(fLayout.eventKmemPageAlloc())) {
+        if (name.equals(fEventKmemPageAlloc)) {
             inc = PAGE_SIZE;
-        } else if (name.equals(fLayout.eventKmemPageFree())) {
-            inc = -PAGE_SIZE;
         } else {
-            return;
+            if (name.equals(fEventKmemPageFree)) {
+                inc = -PAGE_SIZE;
+            } else {
+                return;
+            }
         }
 
         try {

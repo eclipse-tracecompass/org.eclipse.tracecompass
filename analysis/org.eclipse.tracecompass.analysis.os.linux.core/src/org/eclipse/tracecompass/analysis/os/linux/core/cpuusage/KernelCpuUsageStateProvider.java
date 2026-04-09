@@ -91,6 +91,11 @@ public class KernelCpuUsageStateProvider extends AbstractTmfStateProvider {
     }
 
     @Override
+    protected boolean considerEvent(ITmfEvent event) {
+        return super.considerEvent(event) && event.getName().equals(fLayout.eventSchedSwitch());
+    }
+
+    @Override
     protected void eventHandle(@Nullable ITmfEvent event) {
         if (event == null) {
             return;
