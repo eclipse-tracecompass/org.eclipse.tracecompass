@@ -57,7 +57,7 @@
     <tycho-use-project-settings>true</tycho-use-project-settings>
     <tycho.scmUrl>scm:git:https://github.com/eclipse-tracecompass/org.eclipse.tracecompass</tycho.scmUrl>
     <cbi-plugins.version>1.4.2</cbi-plugins.version>
-    <target-platform>tracecompass-e4.39</target-platform>
+    <target-platform>tracecompass-e4.40</target-platform>
 
     <rcptt-version>2.5.4</rcptt-version>
     <!-- Disable GTK3 because it's not quite usable yet and it can make the tests hang (bug in IcedTea http://icedtea.classpath.org/bugzilla/show_bug.cgi?id=1736) -->
