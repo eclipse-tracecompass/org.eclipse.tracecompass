@@ -18,9 +18,9 @@ package org.eclipse.tracecompass.internal.analysis.timing.ui.views.segmentstore.
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Predicate;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
@@ -132,10 +132,10 @@ public class SegmentStoreContentProvider implements ISortingLazyContentProvider 
                 }
                 fIterable = iterable;
             }
-            return iterable;
+            return Objects.requireNonNull(iterable);
         }
 
-        private Iterator<? extends @NonNull ISegment> resetIterator() {
+        private Iterator<? extends ISegment> resetIterator() {
             Iterator<E> iterator = NonNullUtils.checkNotNull(getIterable().iterator());
             fIterator = iterator;
             fLastReadPos = -1;
@@ -160,7 +160,7 @@ public class SegmentStoreContentProvider implements ISortingLazyContentProvider 
             long idx = index;
             // Special code path if we are looking for an element from the end there is a comparator
             if (index == LAST) {
-                Comparator<@NonNull ISegment> comparator = fComparator;
+                Comparator<ISegment> comparator = fComparator;
                 if (comparator != null) {
                     return getLastElement(comparator);
                 }
@@ -168,11 +168,11 @@ public class SegmentStoreContentProvider implements ISortingLazyContentProvider 
                 // just return the first as it is random anyway
                 idx = 0;
             }
-            Iterable<? extends @NonNull ISegment> iterable = fIterable;
+            Iterable<? extends @Nullable ISegment> iterable = fIterable;
             if (iterable instanceof List<?> && idx <= Integer.MAX_VALUE) {
                 return Iterables.get(iterable, (int) idx, null);
             }
-            Iterator<? extends @NonNull ISegment> iterator = fIterator;
+            Iterator<? extends ISegment> iterator = fIterator;
             if (iterator == null || idx <= fLastReadPos) {
                 iterator = resetIterator();
             }
@@ -187,10 +187,10 @@ public class SegmentStoreContentProvider implements ISortingLazyContentProvider 
             return null;
         }
 
-        private @Nullable ISegment getLastElement(Comparator<@NonNull ISegment> comparator) {
+        private @Nullable ISegment getLastElement(Comparator<ISegment> comparator) {
             Iterable<? extends ISegment> baseIterable = fIterable;
             if (baseIterable instanceof List<?>) {
-                return Iterables.getLast(baseIterable, null);
+                return Iterables.getLast((Iterable<? extends @Nullable ISegment>) baseIterable, null);
             }
             // Not a trivial get, so get an iterable for the reverse comparator
             // and fetch first element
@@ -199,9 +199,8 @@ public class SegmentStoreContentProvider implements ISortingLazyContentProvider 
             if (predicate != null) {
                 iterable = Iterables.filter(iterable, input -> predicate.test(input));
             }
-            // FIXME: The cast turns an error into a warning for this null
-            // value, but it is completely unnecessary otherwise
-            return Iterables.getFirst((Iterable<? extends ISegment>) iterable, null);
+
+            return Iterables.getFirst((Iterable<? extends @Nullable ISegment>) iterable, null);
         }
 
         /**
