@@ -90,7 +90,7 @@ public class AddProjectNatureTest {
     private static final String CUSTOMIZE_VIEW_DIALOG_TITLE_4_7 = "Filters and Customization";
     private static final String CUSTOMIZE_VIEW_RESOURCES_FILTER = ".* resources";
     private static final String CUSTOMIZE_VIEW_SHADOW_FILTER = "Trace Compass Shadow Projects";
-    private static final String OK_BUTTON = "OK";
+    private static final String APPLY_BUTTON = "Apply";
 
     private static IWorkspaceRoot fWorkspaceRoot;
     private static IProject fSomeProject;
@@ -249,6 +249,6 @@ public class AddProjectNatureTest {
             item.toggleCheck();
         }
 
-        shell.bot().button(OK_BUTTON).click();
+        shell.bot().button(APPLY_BUTTON).click();
     }
 }
