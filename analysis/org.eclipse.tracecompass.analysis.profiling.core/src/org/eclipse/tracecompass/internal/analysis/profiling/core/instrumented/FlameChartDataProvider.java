@@ -289,6 +289,7 @@ public class FlameChartDataProvider extends AbstractTmfTraceDataProvider impleme
             return new TmfModelResponse<>(tooltip, Status.COMPLETED, CommonStatusMessage.COMPLETED);
         }
     }
+
     private @Nullable Map<String, String> getTooltip(Long entryId, FlameChartEntryModel entryModel, Long time) {
         switch (entryModel.getEntryType()) {
         case FUNCTION: {
@@ -579,23 +580,27 @@ public class FlameChartDataProvider extends AbstractTmfTraceDataProvider impleme
         Map<Long, List<ITimeGraphState>> kernelStates = new HashMap<>();
 
         IHostModel model = ModelManager.getModelFor(getTrace().getHostId());
-        Map<Integer, Long> threadIdsToEntryIds = tids.stream().collect(Collectors.toMap(tid -> tid.fTid.getTid(), tid -> tid.fLinked));
+        Map<Integer, Set<Long>> threadIdsToEntryIds = tids.stream().collect(Collectors.groupingBy(
+                tid -> tid.fTid.getTid(),
+                Collectors.mapping(tid -> tid.fLinked, Collectors.toSet())));
         Map<Integer, Iterable<ProcessStatusInterval>> kernelStatuses = model.getThreadStatusIntervals(threadIdsToEntryIds.keySet(), times, monitor);
         for (Entry<Integer, Iterable<ProcessStatusInterval>> processStatuses : kernelStatuses.entrySet()) {
-            Long linkedEntryId = threadIdsToEntryIds.get(processStatuses.getKey());
-            if (linkedEntryId == null) {
+            Set<Long> linkedEntryIds = threadIdsToEntryIds.get(processStatuses.getKey());
+            if (linkedEntryIds == null) {
                 continue;
             }
-            Long entryId = fLinkedEntries.get(linkedEntryId);
-            if (entryId == null) {
-                entryId = linkedEntryId;
-            }
-            List<ITimeGraphState> states = kernelStates.computeIfAbsent(linkedEntryId, k -> new ArrayList<>());
-            for (ProcessStatusInterval processStatus : Objects.requireNonNull(processStatuses.getValue())) {
-                OutputElementStyle style = new OutputElementStyle(
-                        FlameWithKernelPalette.getStyleFor(processStatus.getProcessStatus().getStateValue().unboxInt()));
-                ITimeGraphState state = new TimeGraphState(processStatus.getStart(), processStatus.getLength(), processStatus.getSyscallName(), style);
-                applyFilterAndAddState(states, state, entryId, predicates, monitor);
+            for (Long linkedEntryId : linkedEntryIds) {
+                Long entryId = fLinkedEntries.get(linkedEntryId);
+                if (entryId == null) {
+                    entryId = linkedEntryId;
+                }
+                List<ITimeGraphState> states = kernelStates.computeIfAbsent(linkedEntryId, k -> new ArrayList<>());
+                for (ProcessStatusInterval processStatus : Objects.requireNonNull(processStatuses.getValue())) {
+                    OutputElementStyle style = new OutputElementStyle(
+                            FlameWithKernelPalette.getStyleFor(processStatus.getProcessStatus().getStateValue().unboxInt()));
+                    ITimeGraphState state = new TimeGraphState(processStatus.getStart(), processStatus.getLength(), processStatus.getSyscallName(), style);
+                    applyFilterAndAddState(states, state, entryId, predicates, monitor);
+                }
             }
         }
         return kernelStates;
@@ -727,7 +732,7 @@ public class FlameChartDataProvider extends AbstractTmfTraceDataProvider impleme
 
     @Override
     public TmfModelResponse<AnnotationCategoriesModel> fetchAnnotationCategories(Map<String, Object> fetchParameters, @Nullable IProgressMonitor monitor) {
-        return new TmfModelResponse<>(new AnnotationCategoriesModel(Collections.singletonList( InstrumentedCallStackAnalysis.ANNOTATIONS)), ITmfResponse.Status.COMPLETED, CommonStatusMessage.COMPLETED);
+        return new TmfModelResponse<>(new AnnotationCategoriesModel(Collections.singletonList(InstrumentedCallStackAnalysis.ANNOTATIONS)), ITmfResponse.Status.COMPLETED, CommonStatusMessage.COMPLETED);
     }
 
     @Override
@@ -758,7 +763,7 @@ public class FlameChartDataProvider extends AbstractTmfTraceDataProvider impleme
                     continue;
                 }
                 int parentQuark = ss.getParentAttributeQuark(ss.getParentAttributeQuark(cs.getQuark()));
-                int markersQuark = ss.optQuarkRelative(parentQuark,  InstrumentedCallStackAnalysis.ANNOTATIONS);
+                int markersQuark = ss.optQuarkRelative(parentQuark, InstrumentedCallStackAnalysis.ANNOTATIONS);
                 if (markersQuark != ITmfStateSystem.INVALID_ATTRIBUTE) {
                     List<Long> times = DataProviderParameterUtils.extractTimeRequested(fetchParameters);
                     for (ITmfStateInterval markerInterval : ss.query2D(Collections.singleton(markersQuark), times)) {
@@ -780,11 +785,11 @@ public class FlameChartDataProvider extends AbstractTmfTraceDataProvider impleme
                             ITmfStateValue a = markerInterval.getStateValue();
                             String annotValue = a.toString();
 
-                                OutputElementStyle style = new OutputElementStyle(null, ImmutableMap.of(
-                                        StyleProperties.COLOR, "#7D3D31", //$NON-NLS-1$
-                                        StyleProperties.HEIGHT, 0.33f,
-                                        StyleProperties.SYMBOL_TYPE, SymbolType.DIAMOND));
-                                annotations.add(new Annotation(startTime, 0, rowId, annotValue, style));
+                            OutputElementStyle style = new OutputElementStyle(null, ImmutableMap.of(
+                                    StyleProperties.COLOR, "#7D3D31", //$NON-NLS-1$
+                                    StyleProperties.HEIGHT, 0.33f,
+                                    StyleProperties.SYMBOL_TYPE, SymbolType.DIAMOND));
+                            annotations.add(new Annotation(startTime, 0, rowId, annotValue, style));
                         }
                     }
                 }
@@ -793,6 +798,6 @@ public class FlameChartDataProvider extends AbstractTmfTraceDataProvider impleme
             return new TmfModelResponse<>(null, ITmfResponse.Status.FAILED, e.getMessage());
         }
 
-        return new TmfModelResponse<>(new AnnotationModel(Collections.singletonMap( InstrumentedCallStackAnalysis.ANNOTATIONS, annotations)), ITmfResponse.Status.COMPLETED, CommonStatusMessage.COMPLETED);
+        return new TmfModelResponse<>(new AnnotationModel(Collections.singletonMap(InstrumentedCallStackAnalysis.ANNOTATIONS, annotations)), ITmfResponse.Status.COMPLETED, CommonStatusMessage.COMPLETED);
     }
 }
