@@ -8,7 +8,7 @@ kernel,Kernel statuses,level,3:8,9,RUN,RUN
 function,0,level,6:0,19,op1,op1
 function,1,level,6:8,8,op4,op4,16,3,-,null
 function,2,level,6:5,14,-,null
-kernel,Kernel statuses,level,6:4,15,RUN,RUN
+kernel,Kernel statuses,level,6:4,7,RUN,RUN,11,8,RUN_SYTEMCALL,RUN_SYTEMCALL
 function,0,level,7:0,19,op5,op5
 function,1,level,7:0,12,op2,op2,12,7,-,null
 function,2,level,7:1,18,-,null

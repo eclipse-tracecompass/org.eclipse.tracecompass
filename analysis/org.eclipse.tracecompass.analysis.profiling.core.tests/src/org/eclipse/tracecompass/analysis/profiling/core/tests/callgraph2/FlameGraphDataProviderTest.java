@@ -300,7 +300,7 @@ public class FlameGraphDataProviderTest extends CallStackTestBase2 {
         assertNotNull(tooltipModel);
         if (expectedObject.equals("null")) {
             assertTrue(tooltipModel.isEmpty());
-        } else if (List.of(ProcessStatus.RUN.toString(), ProcessStatus.WAIT_CPU.toString()).contains(expectedObject)) {
+        } else if (List.of(ProcessStatus.RUN.toString(), ProcessStatus.WAIT_CPU.toString(), ProcessStatus.RUN_SYTEMCALL.toString()).contains(expectedObject)) {
             if (isAction) {
                 assertNotNull(tooltipModel);
             } else {

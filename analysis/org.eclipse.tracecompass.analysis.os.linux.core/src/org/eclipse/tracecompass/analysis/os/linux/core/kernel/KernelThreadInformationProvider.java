@@ -548,7 +548,7 @@ public final class KernelThreadInformationProvider {
         if (ss == null) {
             return Objects.requireNonNull(Collections.emptyMap());
         }
-        List<Long> currentTimes = times.stream().filter(time -> (time > ss.getCurrentEndTime() || time < ss.getStartTime())).sorted().collect(Collectors.toList());
+        List<Long> currentTimes = times.stream().filter(time -> (time < ss.getCurrentEndTime() && time > ss.getStartTime())).sorted().collect(Collectors.toList());
         if (currentTimes.isEmpty()) {
             return Objects.requireNonNull(Collections.emptyMap());
         }

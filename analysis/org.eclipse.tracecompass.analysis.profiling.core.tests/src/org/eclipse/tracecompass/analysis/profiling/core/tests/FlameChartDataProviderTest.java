@@ -24,9 +24,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-
 import java.util.Set;
-//import java.util.stream.Collectors;
 import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -46,6 +44,9 @@ import org.eclipse.tracecompass.tmf.core.model.CommonStatusMessage;
 import org.eclipse.tracecompass.tmf.core.model.OutputElementStyle;
 import org.eclipse.tracecompass.tmf.core.model.StyleProperties;
 import org.eclipse.tracecompass.tmf.core.model.StyleProperties.SymbolType;
+import org.eclipse.tracecompass.tmf.core.model.annotations.Annotation;
+import org.eclipse.tracecompass.tmf.core.model.annotations.AnnotationCategoriesModel;
+import org.eclipse.tracecompass.tmf.core.model.annotations.AnnotationModel;
 import org.eclipse.tracecompass.tmf.core.model.filters.SelectionTimeQueryFilter;
 import org.eclipse.tracecompass.tmf.core.model.filters.TimeQueryFilter;
 import org.eclipse.tracecompass.tmf.core.model.timegraph.ITimeGraphArrow;
@@ -55,10 +56,6 @@ import org.eclipse.tracecompass.tmf.core.model.timegraph.TimeGraphArrow;
 import org.eclipse.tracecompass.tmf.core.model.timegraph.TimeGraphModel;
 import org.eclipse.tracecompass.tmf.core.model.timegraph.TimeGraphState;
 import org.eclipse.tracecompass.tmf.core.model.tree.TmfTreeModel;
-import org.eclipse.tracecompass.tmf.core.model.annotations.Annotation;
-//import org.eclipse.tracecompass.tmf.core.model.annotations.Annotation;
-import org.eclipse.tracecompass.tmf.core.model.annotations.AnnotationCategoriesModel;
-import org.eclipse.tracecompass.tmf.core.model.annotations.AnnotationModel;
 import org.eclipse.tracecompass.tmf.core.response.ITmfResponse;
 import org.eclipse.tracecompass.tmf.core.response.TmfModelResponse;
 import org.junit.Test;
@@ -262,7 +259,7 @@ public class FlameChartDataProviderTest extends CallStackTestBase2 {
                 new TimeGraphState(6, 2, null, new OutputElementStyle(LinuxStyle.WAIT_FOR_CPU.getLabel())),
                 new TimeGraphState(8, 2, null, new OutputElementStyle(LinuxStyle.USERMODE.getLabel())),
                 new TimeGraphState(10, 2, null, new OutputElementStyle(LinuxStyle.WAIT_FOR_CPU.getLabel())),
-                new TimeGraphState(12, 8, null, new OutputElementStyle(LinuxStyle.USERMODE.getLabel()))), true);
+                new TimeGraphState(12, 8, "openat", new OutputElementStyle(LinuxStyle.SYSCALL.getLabel()))), true);
 
         // Get the row model for those entries with low resolution
         rowResponse = dataProvider.fetchRowModel(FetchParametersUtils.selectionTimeQueryToMap(new SelectionTimeQueryFilter(3, 15, 2, selectedIds)), new NullProgressMonitor());
@@ -300,7 +297,7 @@ public class FlameChartDataProviderTest extends CallStackTestBase2 {
         // Verify kernel statuses of tid 6
         verifyStates(rows, FlameDataProviderTestUtils.findEntryByDepthAndType(tid6Children, -1, EntryType.KERNEL), ImmutableList.of(
                 new TimeGraphState(1, 5, null, new OutputElementStyle(LinuxStyle.USERMODE.getLabel())),
-                new TimeGraphState(12, 8, null, new OutputElementStyle(LinuxStyle.USERMODE.getLabel()))), true);
+                new TimeGraphState(12, 8, "openat", new OutputElementStyle(LinuxStyle.SYSCALL.getLabel()))), true);
 
         // Check arrows
         FlameChartEntryModel tid2 = FlameDataProviderTestUtils.findEntryByNameAndType(modelEntries, "2", EntryType.LEVEL);
@@ -436,11 +433,9 @@ public class FlameChartDataProviderTest extends CallStackTestBase2 {
         assertNotNull(rowModel);
         @SuppressWarnings("null")
         List<ITimeGraphState> states = rowModel.getStates();
+        assertEquals(expectedStates.size(), states.size());
         for (int i = 0; i < states.size(); i++) {
             String entryName = entry.getName();
-            if (i > expectedStates.size() - 1) {
-                fail("Unexpected state at position " + i + FOR_ENTRY + entryName + ": " + states.get(i));
-            }
             ITimeGraphState actual = states.get(i);
             ITimeGraphState expected = expectedStates.get(i);
             assertEquals("State start time at " + i + FOR_ENTRY + entryName, expected.getStartTime(), actual.getStartTime());
