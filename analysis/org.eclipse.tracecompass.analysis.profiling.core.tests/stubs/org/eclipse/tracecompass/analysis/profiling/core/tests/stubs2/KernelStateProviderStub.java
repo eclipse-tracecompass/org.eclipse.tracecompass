@@ -59,14 +59,15 @@ public class KernelStateProviderStub extends AbstractTmfStateProvider {
     @Override
     protected void eventHandle(ITmfEvent event) {
         ITmfStateSystemBuilder ssb = getStateSystemBuilder();
-        if (ssb == null) {
+        if (ssb == null || event.getName().equals("instant_event")) {
             return;
         }
         int threadQuark = ssb.getQuarkAbsoluteAndAdd(Attributes.THREADS, event.getContent().getFieldValue(String.class, "tid"));
         boolean isEntry = event.getName().equals(ENTRY);
         long timestamp = event.getTimestamp().getValue();
         if (isEntry) {
-            if (event.getName().equals("op4")) {
+            String operationName = event.getContent().getFieldValue(String.class, "op");
+            if (operationName != null && operationName.equals("op4")) {
                 int systemCallQuark = ssb.getQuarkRelativeAndAdd(threadQuark, Attributes.SYSTEM_CALL);
                 ssb.modifyAttribute(timestamp, "openat", systemCallQuark);
                 /* Put the process in system call mode */
