@@ -32,7 +32,7 @@ jobs:
     - name: Set up Maven
       uses: stCarolas/setup-maven@07fbbe97d97ef44336b7382563d66743297e442f # v4.5
       with:
-        maven-version: 3.9.5
+        maven-version: 3.9.12
     - name: Build with Maven
       uses: coactions/setup-xvfb@b6b4fcfb9f5a895edadc3bc76318fae0ac17c8b3 # v1.0.1
       with:
