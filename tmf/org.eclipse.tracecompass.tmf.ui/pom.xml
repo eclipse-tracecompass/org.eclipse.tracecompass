@@ -34,8 +34,8 @@
             <id>fix-dark-theme-css</id>
             <phase>validate</phase>
             <configuration>
-              <echo>Fix Dark Theme CSS</echo>
               <target>
+                <echo message="Fix Dark Theme CSS"/>
                 <property name="targetPlatform" value="${target-platform}" />
                 <ant antfile="build.xml"/>
               </target>
@@ -48,8 +48,8 @@
             <id>cleanup-dark-theme-css</id>
             <phase>verify</phase>
             <configuration>
-              <echo>Clean-up Dark Theme CSS</echo>
               <target>
+                <echo message="Clean-up Dark Theme CSS"/>
                 <property name="targetPlatform" value="${target-platform}" />
                 <ant antfile="build.xml" target="resetCSS"/>
               </target>

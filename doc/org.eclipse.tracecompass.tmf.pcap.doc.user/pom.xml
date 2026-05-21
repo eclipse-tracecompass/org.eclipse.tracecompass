@@ -34,8 +34,8 @@
             <id>generate-documentation</id>
             <phase>generate-sources</phase>
             <configuration>
-              <echo>Generating Pcap Help Files</echo>
               <target>
+                <echo message="Generating Pcap Help Files"/>
                 <property name="compile_classpath" refid="maven.compile.classpath" />
                 <ant target="build" inheritRefs="true" antfile="build.xml" />
               </target>
@@ -48,8 +48,8 @@
             <id>clean-documentation</id>
             <phase>clean</phase>
             <configuration>
-              <echo>Cleaning up generated Pcap Help Files</echo>
               <target>
+                <echo message="Cleaning up generated Pcap Help Files"/>
                 <ant target="clean" antfile="build.xml" />
               </target>
             </configuration>
