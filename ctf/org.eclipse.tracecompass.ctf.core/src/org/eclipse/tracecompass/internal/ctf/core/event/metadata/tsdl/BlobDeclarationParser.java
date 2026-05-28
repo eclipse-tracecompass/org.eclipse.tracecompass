@@ -74,7 +74,7 @@ public final class BlobDeclarationParser implements ICommonTreeParser {
             throw new ParseException("Invalid length attribute in Blob: " + length); //$NON-NLS-1$
         }
 
-        if (fieldClass.has(mediaType)) {
+        if (fieldClass.has(MEDIA_TYPE)) {
             mediaType = fieldClass.get(MEDIA_TYPE).getAsString();
         }
         role = member.getRole();

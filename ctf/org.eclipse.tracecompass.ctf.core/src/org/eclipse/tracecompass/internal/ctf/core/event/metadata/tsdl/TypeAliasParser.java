@@ -24,6 +24,7 @@ import org.eclipse.tracecompass.internal.ctf.core.event.metadata.AbstractScopedC
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonFieldClassAliasMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonStructureFieldMemberMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.bool.BooleanDeclarationParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.dynamicarray.DynamicLengthArrayParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.dynamicstring.DynamicLengthStringParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.enumeration.EnumParser;
@@ -168,6 +169,9 @@ public final class TypeAliasParser extends AbstractScopedCommonTreeParser {
                 case JsonMetadataStrings.STATIC_LENGTH_BLOB:
                     targetDeclaration = BlobDeclarationParser.INSTANCE.parse(typealias, null);
                     break;
+                case JsonMetadataStrings.DYNAMIC_LENGTH_BLOB:
+                    targetDeclaration = DynamicBlobDeclarationParser.INSTANCE.parse(member, null);
+                    break;
                 case JsonMetadataStrings.NULL_TERMINATED_STRING:
                     targetDeclaration = StringDeclarationParser.INSTANCE.parse(typealias, null);
                     break;
@@ -189,11 +193,23 @@ public final class TypeAliasParser extends AbstractScopedCommonTreeParser {
                 case JsonMetadataStrings.DYNAMIC_LENGTH_ARRAY:
                     targetDeclaration = DynamicLengthArrayParser.INSTANCE.parse(typealias, new DynamicLengthArrayParser.Param(trace, scope));
                     break;
+                case JsonMetadataStrings.FIXED_LENGTH_BIT_ARRAY:
+                    // TODO: Handle fixed length bit arrays
+                    break;
+                case JsonMetadataStrings.FIXED_LENGTH_BIT_MAP:
+                    // TODO: handle fixed length bit map
+                    break;
                 case JsonMetadataStrings.STRUCTURE:
                     targetDeclaration = StructParser.INSTANCE.parse(typealias, new StructParser.Param(trace, null, scope));
                     break;
+                case JsonMetadataStrings.OPTIONAL:
+                    // TODO: handle optional
+                    break;
                 case JsonMetadataStrings.FIXED_LENGTH_FLOATING_POINT:
                     targetDeclaration = FloatDeclarationParser.INSTANCE.parse(typealias, new FloatDeclarationParser.Param(trace));
+                    break;
+                case JsonMetadataStrings.FIXED_LENGTH_BOOLEAN:
+                    targetDeclaration = BooleanDeclarationParser.INSTANCE.parse(typealias, new BooleanDeclarationParser.Param(trace));
                     break;
                 case JsonMetadataStrings.VARIABLE_LENGTH_FLOATING_POINT:
                     targetDeclaration = FloatDeclarationParser.INSTANCE.parse(typealias, new FloatDeclarationParser.Param(trace));

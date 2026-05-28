@@ -23,14 +23,17 @@ import static org.eclipse.tracecompass.common.core.NonNullUtils.checkNotNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.ctf.core.event.types.AbstractArrayDefinition;
+import org.eclipse.tracecompass.ctf.core.event.types.BlobDefinition;
 import org.eclipse.tracecompass.ctf.core.event.types.CompoundDeclaration;
 import org.eclipse.tracecompass.ctf.core.event.types.Definition;
+import org.eclipse.tracecompass.ctf.core.event.types.DynamicBlobDefinition;
 import org.eclipse.tracecompass.ctf.core.event.types.EnumDefinition;
 import org.eclipse.tracecompass.ctf.core.event.types.FloatDefinition;
 import org.eclipse.tracecompass.ctf.core.event.types.ICompositeDefinition;
@@ -211,7 +214,10 @@ public abstract class CtfTmfEventField extends TmfEventField {
                 /* A safe-guard, but curFieldDef should never be null */
                 field = new CTFStringField(curFieldName, ""); //$NON-NLS-1$
             }
-
+        } else if (fieldDef instanceof BlobDefinition blob) {
+            field = new CTFHexBlobField(fieldName, blob.getType(), blob.getBytes());
+        } else if (fieldDef instanceof DynamicBlobDefinition blob) {
+            field = new CTFHexBlobField(fieldName, blob.getType(), blob.getBytes());
         } else {
             /*
              * Safe-guard, to avoid null exceptions later, field is expected not
@@ -570,6 +576,27 @@ final class CTFVariantField extends CtfTmfEventField {
         return super.getField(path);
     }
 
+}
+
+final class CTFHexBlobField extends CtfTmfEventField {
+
+    private String fBlobType;
+
+    CTFHexBlobField(@NonNull String name, String blobType, byte[] value) {
+        super(name, value, null);
+        fBlobType = blobType;
+    }
+
+    @Override
+    public byte[] getValue() {
+        return (byte[]) super.getValue();
+    }
+
+    @Override
+    public String getFormattedValue() {
+        String encoded = Base64.getEncoder().encodeToString(getValue());
+        return "[" + fBlobType + "]<" + encoded + '>'; //$NON-NLS-1$ //$NON-NLS-2$
+    }
 }
 
 /* Implement other possible fields types here... */
