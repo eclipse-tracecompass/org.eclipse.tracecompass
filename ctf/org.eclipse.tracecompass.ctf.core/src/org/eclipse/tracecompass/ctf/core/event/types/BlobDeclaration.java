@@ -19,9 +19,9 @@ import org.eclipse.tracecompass.ctf.core.event.io.BitBuffer;
 import org.eclipse.tracecompass.ctf.core.event.scope.IDefinitionScope;
 
 /**
- * A CTF blob class definition.
+ * A CTF blob class declaration.
  *
- * The definition of a blob data type that can be used to define sequence of
+ * The declaration of a blob data type that can be used to define sequence of
  * zero or more contiguous bytes with an associated IANA media type
  *
  * @author Sehr Moosabhoy
@@ -85,7 +85,8 @@ public class BlobDeclaration extends Declaration {
 
     @Override
     public int getMaximumSize() {
-        return fLength * 8; // This will allow the blob to be read properly and not break alignment in ctf.
+        return fLength * 8; // This will allow the blob to be read properly and
+                            // not break alignment in ctf.
     }
 
     @Override

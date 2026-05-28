@@ -57,7 +57,6 @@ public final class JsonMetadataStrings {
      */
     public static final String NAME = "name"; //$NON-NLS-1$
 
-
     /**
      * Type string for a CTF2 clock class fragment
      */
@@ -163,6 +162,26 @@ public final class JsonMetadataStrings {
     public static final String FIXED_LENGTH_FLOATING_POINT = "fixed-length-floating-point-number"; //$NON-NLS-1$
 
     /**
+     * Type string for a fixed-length boolean field which is a fixed-length bit
+     * array field
+     */
+    public static final String FIXED_LENGTH_BOOLEAN = "fixed-length-boolean"; //$NON-NLS-1$
+
+    /**
+     * Type string for a fixed-length bit array field class which describes
+     * fixed-length bit array fields and is a base of a fixed-length bit map
+     * field class, a fixed-length boolean field class, a fixed-length integer
+     * field class, and a fixed-length floating point number field class
+     */
+    public static final String FIXED_LENGTH_BIT_ARRAY = "fixed-length-bit-array"; //$NON-NLS-1$
+
+    /**
+     * Type string for a fixed-length bit array field class with one or more
+     * associated bit names thanks to the flags property
+     */
+    public static final String FIXED_LENGTH_BIT_MAP = "fixed-length-bit-map"; //$NON-NLS-1$
+
+    /**
      * Type string for a variable length floating point number field class
      */
     public static final String VARIABLE_LENGTH_FLOATING_POINT = "variable-length-floating-point-number"; //$NON-NLS-1$
@@ -186,6 +205,12 @@ public final class JsonMetadataStrings {
      * Type string for a dynamic length string field class
      */
     public static final String DYNAMIC_LENGTH_STRING = "dynamic-length-string"; //$NON-NLS-1$
+
+    /**
+     * Type string for a dynamic-length BLOB field which is a sequence of zero
+     * or more contiguous bytes with an associated IANA media type
+     */
+    public static final String DYNAMIC_LENGTH_BLOB = "dynamic-length-blob"; //$NON-NLS-1$
 
     /**
      * The length field location for a dynamic string
@@ -212,6 +237,12 @@ public final class JsonMetadataStrings {
     public static final String STRUCTURE = "structure"; //$NON-NLS-1$
 
     /**
+     * Type string for an optional field class which is depending on the value
+     * of another field, an instance of a given field class or a zero-bit field
+     */
+    public static final String OPTIONAL = "optional"; //$NON-NLS-1$
+
+    /**
      * Type string for an internal structure field class
      */
     public static final String STRUCT = "struct"; //$NON-NLS-1$
@@ -219,9 +250,9 @@ public final class JsonMetadataStrings {
     /**
      * Map of encoding names to Charset objects
      */
-    public static final Map<String, Charset> ENCODINGS = Map.of("utf-8",StandardCharsets.UTF_8, //$NON-NLS-1$
-            "utf-16be",StandardCharsets.UTF_16BE,"utf-16le",StandardCharsets.UTF_16LE, //$NON-NLS-1$ //$NON-NLS-2$
-            "utf-32be", Charset.forName("UTF-32BE"),"utf-32le", Charset.forName("UTF-32LE")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+    public static final Map<String, Charset> ENCODINGS = Map.of("utf-8", StandardCharsets.UTF_8, //$NON-NLS-1$
+            "utf-16be", StandardCharsets.UTF_16BE, "utf-16le", StandardCharsets.UTF_16LE, //$NON-NLS-1$ //$NON-NLS-2$
+            "utf-32be", Charset.forName("UTF-32BE"), "utf-32le", Charset.forName("UTF-32LE")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 
     /**
      * Field string for encoding
@@ -267,5 +298,10 @@ public final class JsonMetadataStrings {
      * Field string for byte order
      */
     public static final String BYTE_ORDER = "byte-order"; //$NON-NLS-1$
+
+    /**
+     * Field string for the metadata type of a blob
+     */
+    public static final String MEDIA_TYPE = "media-type"; //$NON-NLS-1$
 
 }
