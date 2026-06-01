@@ -34,7 +34,7 @@ command from the top-level directory:
 ```
 mvn compile javadoc:aggregate
 ```
-The javadoc html files will be under `target/site/apidocs`.
+The javadoc html files will be under `target/reports/apidocs`.
 
 ## Tracing Trace Compass
 
