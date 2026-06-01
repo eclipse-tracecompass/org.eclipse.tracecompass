@@ -116,11 +116,15 @@ public class SequenceDeclaration extends CompoundDeclaration {
         }
 
         long length = lengthDefinition.getValue();
-        long maxBits = length * fElemType.getMaximumSize();
-        if ((length > Integer.MAX_VALUE) || (maxBits > Integer.MAX_VALUE) || (!input.canRead((int) maxBits))) {
+        if (length > Integer.MAX_VALUE ) {
             throw new CTFException("Sequence length too long " + length); //$NON-NLS-1$
         }
-
+        if (fElemType.getMaximumSize() != Integer.MAX_VALUE) {
+            long maxBits = length * fElemType.getMaximumSize();
+            if (maxBits > Integer.MAX_VALUE || !input.canRead((int) maxBits)) {
+                throw new CTFException("Sequence length too long " + length); //$NON-NLS-1$
+            }
+        }
         // Explicitly align to support 0-length sequences
         alignRead(input);
 
