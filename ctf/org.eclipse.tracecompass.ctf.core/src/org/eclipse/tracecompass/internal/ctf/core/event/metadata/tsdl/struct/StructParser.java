@@ -221,8 +221,8 @@ public final class StructParser extends AbstractScopedCommonTreeParser {
                                 throw new ParseException("Member class requires 'name' and 'field-class' properties"); //$NON-NLS-1$
                             }
                             String name = nameElement.getAsString();
-                            JsonStructureFieldMemberMetadataNode childNode = new JsonStructureFieldMemberMetadataNode(memberNode, "", "", name, fieldClass.getAsJsonObject()); //$NON-NLS-1$ //$NON-NLS-2$
-                            memberNode.addChild(childNode);
+                            // The constructor adds the reference to the parent automatically
+                            new JsonStructureFieldMemberMetadataNode(memberNode, "", "", name, fieldClass.getAsJsonObject()); //$NON-NLS-1$ //$NON-NLS-2$
                         }
                     }
                     structBody = memberNode;
