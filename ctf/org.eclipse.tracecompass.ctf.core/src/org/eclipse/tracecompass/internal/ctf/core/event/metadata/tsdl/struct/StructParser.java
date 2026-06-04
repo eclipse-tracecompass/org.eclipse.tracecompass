@@ -22,6 +22,7 @@ import org.eclipse.tracecompass.ctf.core.trace.CTFTrace;
 import org.eclipse.tracecompass.ctf.parser.CTFParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.AbstractScopedCommonTreeParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.CTFAntlrMetadataNode;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.CTFJsonMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonStructureFieldMemberMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonStructureFieldMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
@@ -281,6 +282,9 @@ public final class StructParser extends AbstractScopedCommonTreeParser {
                     throw new ParseException("struct " + structName //$NON-NLS-1$
                             + " is not defined"); //$NON-NLS-1$
                 }
+            } else if (struct instanceof CTFJsonMetadataNode) {
+                /* In CTF2, empty structs should be supported */
+                structDeclaration = new StructDeclaration(structAlign);
             } else {
                 /* !Name and !body */
 
