@@ -850,6 +850,19 @@ public abstract class TmfTrace extends TmfEventProvider implements ITmfTrace, IT
         Set<String> oldAnalysisModulesKeys = new HashSet<>(previousAnalysisModules.keySet());
         Set<String> keys = new HashSet<>(newAnalysisModules.keySet());
 
+        /* Get all modules in the fAnalysisModules Map to allow 
+        for dependent analysis builds */
+        synchronized(fAnalysisModules){
+          for (String key : keys) {
+              if (!fAnalysisModules.containsKey(key)) {
+                IAnalysisModule module = newAnalysisModules.get(key);
+                  if (module != null) {
+                      fAnalysisModules.put(key, module);
+                  }
+              }
+            }
+        }
+
         for (String key : keys) {
             IAnalysisModule module = newAnalysisModules.remove(key);
             if (!oldAnalysisModulesKeys.contains(key)) {
@@ -861,6 +874,8 @@ public abstract class TmfTrace extends TmfEventProvider implements ITmfTrace, IT
             } else {
                 oldAnalysisModulesKeys.remove(key);
                 if (module != null) {
+                    /* Remove the newly computed analysis module since it already
+                    was done previously*/
                     module.dispose();
                 }
             }
