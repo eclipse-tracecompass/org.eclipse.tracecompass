@@ -422,8 +422,9 @@ public class TmfPieChartViewer extends Composite {
 
                 // Check if the selection is empty or if
                 // there is enough event types to show in the piecharts
+                // if there aren't enough, show the global pie chart
                 if (nbEventsType < 2) {
-                    getCurrentState().newEmptySelection(this);
+                    getCurrentState().newGlobalEntries(this);
                 } else {
                     getCurrentState().newSelection(this);
                 }
