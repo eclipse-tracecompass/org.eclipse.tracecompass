@@ -188,8 +188,8 @@ public class TmfTreeCompositeDataProvider<M extends ITmfTreeDataModel, P extends
      *
      * @return the list of encapsulated providers
      */
-    protected List<P> getProviders() {
-        return fProviders;
+    public List<P> getProviders() {
+        return Collections.unmodifiableList(fProviders);
     }
 
     /**
