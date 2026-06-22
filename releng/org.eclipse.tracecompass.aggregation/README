@@ -1,0 +1,16 @@
+This project creates an maven repository with all dependencies needed for
+Trace Compass CTF core and parser plug-in installed. The location of the
+generated maven repository by default is 
+releng/org.eclipse.tracecompass.aggregation/target/final. 
+
+This can be changed in the tracecompass.aggr file.
+
+Install Eclipse CBI aggregator, e.g. using update site (or later version):
+http://download.eclipse.org/cbi/updates/aggregator/ide/4.13/
+
+It can be separately built by the following commands:
+cd releng/org.eclipse.tracecompass.aggregation
+mvn clean install
+
+Follow instructions on:
+https://wiki.eclipse.org/CBI/aggregator/manual
