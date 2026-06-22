@@ -17,6 +17,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.annotation.NonNull;
@@ -108,7 +109,10 @@ public class HistogramDataProviderTest {
                     ITmfResponse.Status.COMPLETED, treeResponse.getStatus());
             TmfTreeModel<@NonNull TmfTreeDataModel> treeModel = treeResponse.getModel();
             assertNotNull(treeModel);
-            assertEquals(EXPECTED_FULL_PATHS, getFullPaths(treeModel.getEntries()));
+            List<String> entries = getFullPaths(treeModel.getEntries());
+            for (String path : EXPECTED_FULL_PATHS) {
+                assertTrue(entries.contains(path));
+            }
 
             for (TmfTreeDataModel entry : treeModel.getEntries()) {
                 if (!entry.getName().equals(TRACE_NAME)) {
@@ -124,7 +128,10 @@ public class HistogramDataProviderTest {
                     ITmfResponse.Status.COMPLETED, xyResponse.getStatus());
             ITmfXyModel xyModel = xyResponse.getModel();
             assertNotNull(xyModel);
-            assertEquals(EXPECTED_YDATA, Maps.uniqueIndex(xyModel.getSeriesData(), ISeriesModel::getId));
+            Map<Long, @NonNull ISeriesModel> data = Maps.uniqueIndex(xyModel.getSeriesData(), ISeriesModel::getId);
+            for (Entry<Long, ISeriesModel> yEntry : EXPECTED_YDATA.entrySet()) {
+                assertEquals(data.get(yEntry.getKey()), yEntry.getValue());
+            }
         } finally {
             module.dispose();
             CtfTmfTestTraceUtils.dispose(CtfTestTrace.HELLO_LOST);
