@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Ericsson
+ * Copyright (c) 2015, 2025 Ericsson and others
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -10,6 +10,7 @@
  *
  * Contributors:
  *   Alexis Cabana-Loriaux - Initial API and implementation
+ *   Alexander Fedorov (ArSysOp) - fix "SWT Resource was not properly disposed"
  *
  *******************************************************************************/
 
@@ -43,13 +44,7 @@ public class PieChartViewerStateNoContentSelected implements IPieChartViewerStat
             synchronized (context) {
                 if (!context.isDisposed()) {
                     // Have to get rid of the time-range PieChart
-                    if (context.getTimeRangePC() != null) {
-                        if (!context.getTimeRangePC().isDisposed()) {
-                            context.getTimeRangePC().dispose();
-                        }
-                        context.setTimeRangePC(null);
-                    }
-
+                    context.disposeTimeRangePC();
                     context.updateGlobalPieChart();
                     // update the global chart so it takes all the place
                     context.getGlobalPC().getLegend().setPosition(SWT.RIGHT);
