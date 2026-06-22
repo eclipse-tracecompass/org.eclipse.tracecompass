@@ -26,19 +26,40 @@
    </feature>
    <feature url="features/org.eclipse.tracecompass.testing_0.0.0.qualifier.jar" id="org.eclipse.tracecompass.testing" version="0.0.0"/>
    <feature url="features/org.eclipse.tracecompass.tmf.remote_0.0.0.qualifier.jar" id="org.eclipse.tracecompass.tmf.remote" version="0.0.0"/>
-   <feature url="features/org.eclipse.tracecompass.btf.source_0.0.0.qualifier.jar" id="org.eclipse.tracecompass.btf.source" version="0.0.0"/>
-   <feature url="features/org.eclipse.tracecompass.lttng2.kernel.source_0.0.0.qualifier.jar" id="org.eclipse.tracecompass.lttng2.kernel.source" version="0.0.0"/>
-   <feature url="features/org.eclipse.tracecompass.lttng2.ust.source_0.0.0.qualifier.jar" id="org.eclipse.tracecompass.lttng2.ust.source" version="0.0.0"/>
-   <feature url="features/org.eclipse.tracecompass.gdbtrace.source_0.0.0.qualifier.jar" id="org.eclipse.tracecompass.gdbtrace.source" version="0.0.0"/>
-   <feature url="features/org.eclipse.tracecompass.tmf.remote.source_0.0.0.qualifier.jar" id="org.eclipse.tracecompass.tmf.remote.source" version="0.0.0"/>
-   <feature url="features/org.eclipse.tracecompass.tmf.pcap.source_0.0.0.qualifier.jar" id="org.eclipse.tracecompass.tmf.pcap.source" version="0.0.0"/>
-   <feature url="features/org.eclipse.tracecompass.testing.source_0.0.0.qualifier.jar" id="org.eclipse.tracecompass.testing.source" version="0.0.0"/>
-   <feature url="features/org.eclipse.tracecompass.jsontrace.source_0.0.0.qualifier.jar" id="org.eclipse.tracecompass.jsontrace.source" version="0.0.0"/>
-   <feature url="features/org.eclipse.tracecompass.tmf.cli.source_0.0.0.qualifier.jar" id="org.eclipse.tracecompass.tmf.cli.source" version="0.0.0"/>
+   <feature url="features/org.eclipse.tracecompass.btf.source_0.0.0.qualifier.jar" id="org.eclipse.tracecompass.btf.source" version="0.0.0">
+      <category name="sources"/>
+   </feature>
+   <feature url="features/org.eclipse.tracecompass.lttng2.kernel.source_0.0.0.qualifier.jar" id="org.eclipse.tracecompass.lttng2.kernel.source" version="0.0.0">
+      <category name="sources"/>
+   </feature>
+   <feature url="features/org.eclipse.tracecompass.lttng2.ust.source_0.0.0.qualifier.jar" id="org.eclipse.tracecompass.lttng2.ust.source" version="0.0.0">
+      <category name="sources"/>
+   </feature>
+   <feature url="features/org.eclipse.tracecompass.gdbtrace.source_0.0.0.qualifier.jar" id="org.eclipse.tracecompass.gdbtrace.source" version="0.0.0">
+      <category name="sources"/>
+   </feature>
+   <feature url="features/org.eclipse.tracecompass.tmf.remote.source_0.0.0.qualifier.jar" id="org.eclipse.tracecompass.tmf.remote.source" version="0.0.0">
+      <category name="sources"/>
+   </feature>
+   <feature url="features/org.eclipse.tracecompass.tmf.pcap.source_0.0.0.qualifier.jar" id="org.eclipse.tracecompass.tmf.pcap.source" version="0.0.0">
+      <category name="sources"/>
+   </feature>
+   <feature url="features/org.eclipse.tracecompass.testing.source_0.0.0.qualifier.jar" id="org.eclipse.tracecompass.testing.source" version="0.0.0">
+      <category name="sources"/>
+   </feature>
+   <feature url="features/org.eclipse.tracecompass.jsontrace.source_0.0.0.qualifier.jar" id="org.eclipse.tracecompass.jsontrace.source" version="0.0.0">
+      <category name="sources"/>
+   </feature>
+   <feature url="features/org.eclipse.tracecompass.tmf.cli.source_0.0.0.qualifier.jar" id="org.eclipse.tracecompass.tmf.cli.source" version="0.0.0">
+      <category name="sources"/>
+   </feature>
    <bundle id="org.eclipse.tracecompass.common.core"/>
-   <bundle id="org.eclipse.tracecompass.common.core.source"/>
+   <bundle id="org.eclipse.tracecompass.common.core.source">
+      <category name="sources"/>
+   </bundle>
    <bundle id="org.eclipse.tracecompass.trace-event-logger"/>
    <bundle id="org.apache.commons.lang3"/>
    <bundle id="json"/>
    <category-def name="Trace Compass" label="Trace Compass Main Features"/>
+   <category-def name="sources" label="Trace Compass Sources"/>
 </site>
