@@ -36,9 +36,11 @@ public final class EnumDefinition extends SimpleDatatypeDefinition {
 
     private static final String UNKNOWN_ENUM = "<unknown> (%s)"; //$NON-NLS-1$
 
+    private static final String UNINITIALIZED = "UNINITIALIZED"; //$NON-NLS-1$
+
     private final IntegerDefinition fInteger;
 
-    private final @Nullable String fValue;
+    private @Nullable String fValue;
 
     // ------------------------------------------------------------------------
     // Constructors
@@ -59,9 +61,9 @@ public final class EnumDefinition extends SimpleDatatypeDefinition {
     public EnumDefinition(@NonNull EnumDeclaration declaration,
             IDefinitionScope definitionScope, @NonNull String fieldName, IntegerDefinition intValue) {
         super(declaration, definitionScope, fieldName);
-
         fInteger = intValue;
-        fValue = declaration.query(fInteger.getValue());
+        fValue = UNINITIALIZED;
+
     }
 
     // ------------------------------------------------------------------------
@@ -75,6 +77,9 @@ public final class EnumDefinition extends SimpleDatatypeDefinition {
      * @return the value of the enum.
      */
     public String getValue() {
+        if (fValue == UNINITIALIZED) {
+            fValue = getDeclaration().query(fInteger.getValue());
+        }
         return fValue != null ? fValue : String.format(UNKNOWN_ENUM, getIntegerValue());
     }
 
