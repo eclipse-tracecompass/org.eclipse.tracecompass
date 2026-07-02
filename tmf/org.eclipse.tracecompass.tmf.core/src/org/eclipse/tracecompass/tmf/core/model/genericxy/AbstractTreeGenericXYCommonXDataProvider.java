@@ -21,6 +21,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.internal.tmf.core.model.TmfXyResponseFactory;
 import org.eclipse.tracecompass.internal.tmf.core.model.filters.FetchParametersUtils;
+import org.eclipse.tracecompass.internal.tmf.core.statesystem.mipmap.MipmapXYQueryHelper;
 import org.eclipse.tracecompass.statesystem.core.ITmfStateSystem;
 import org.eclipse.tracecompass.statesystem.core.exceptions.StateSystemDisposedException;
 import org.eclipse.tracecompass.statesystem.core.exceptions.TimeRangeException;
@@ -101,10 +102,16 @@ public abstract class AbstractTreeGenericXYCommonXDataProvider<A extends TmfStat
                 // getModels returns null if the query was cancelled.
                 return TmfXyResponseFactory.createCancelledResponse(CommonStatusMessage.TASK_CANCELLED);
             }
+            // Auto-enhance with mipmap max-per-bucket where available (time-based sampling only)
+            ISampling sampling = xAxisAndYSeriesModels.getFirst();
+            Collection<IYModel> yModels = xAxisAndYSeriesModels.getSecond();
+            if (sampling instanceof ISampling.Timestamps timestamps) {
+                yModels = MipmapXYQueryHelper.enhanceWithMipmap(ss, getIdToQuark(), yModels, timestamps.timestamps());
+            }
             return TmfXyResponseFactory.create(
                     getTitle(),
-                    xAxisAndYSeriesModels.getFirst(),
-                    ImmutableList.copyOf(xAxisAndYSeriesModels.getSecond()),
+                    sampling,
+                    ImmutableList.copyOf(yModels),
                     getDisplayType(),
                     getXAxisDescription(),
                     complete);
