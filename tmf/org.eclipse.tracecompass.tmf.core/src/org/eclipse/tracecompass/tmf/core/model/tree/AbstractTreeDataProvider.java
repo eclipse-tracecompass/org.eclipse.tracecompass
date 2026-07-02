@@ -203,6 +203,17 @@ public abstract class AbstractTreeDataProvider<A extends TmfStateSystemAnalysisM
     }
 
     /**
+     * Get the mapping from entry IDs to state system quarks. This map is
+     * populated during {@link #getTree} when {@link #getId(int)} is called.
+     *
+     * @return an unmodifiable view of the ID-to-quark mapping
+     * @since 10.2
+     */
+    protected BiMap<Long, Integer> getIdToQuark() {
+        return fIdToQuark;
+    }
+
+    /**
      * Get selected entries from the filter for this provider.
      *
      * @param selectedItems
