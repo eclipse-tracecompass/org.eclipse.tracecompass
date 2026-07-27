@@ -203,6 +203,40 @@ public abstract class AbstractTreeDataProvider<A extends TmfStateSystemAnalysisM
     }
 
     /**
+     * Get the mapping from entry IDs to state system quarks. This map is
+     * populated during {@link #getTree} when {@link #getId(int)} is called.
+     *
+     * @return an unmodifiable view of the ID-to-quark mapping
+     * @since 10.2
+     */
+    protected BiMap<Long, Integer> getIdToQuark() {
+        return fIdToQuark;
+    }
+
+    /**
+     * Whether the XY results of this provider should be enhanced with
+     * mipmap-based max-per-bucket downsampling (see
+     * {@code MipmapXYQueryHelper}).
+     * <p>
+     * This is <b>opt-in</b> and returns {@code false} by default. It is only
+     * correct to enable it when every Y value returned by
+     * {@code getYSeriesModels} / {@code getXAxisAndYSeriesModels} is the raw
+     * instantaneous state value of the quark mapped through
+     * {@link #getIdToQuark()}. Providers that transform state values before
+     * returning them (for example differential counters that plot deltas, or
+     * CPU usage that plots a rate computed over an interval) must <b>not</b>
+     * enable this, because the maximum of the raw underlying value is not the
+     * maximum of the displayed value.
+     *
+     * @return {@code true} to enable mipmap enhancement, {@code false}
+     *         otherwise. Defaults to {@code false}.
+     * @since 10.2
+     */
+    protected boolean isMipmapEnhanced() {
+        return false;
+    }
+
+    /**
      * Get selected entries from the filter for this provider.
      *
      * @param selectedItems
