@@ -616,7 +616,7 @@ public class CTFTrace implements IDefinitionScope {
                         // skip packet as the position must be invalid.
                         continue;
                     }
-                    ByteBuffer byteBuffer = SafeMappedByteBuffer.map(fc, MapMode.READ_ONLY, (packetPosition + getPacketHeader().getMaximumSize()) / Byte.SIZE, packetContextDecl.getMaximumSize());
+                    ByteBuffer byteBuffer = SafeMappedByteBuffer.map(fc, MapMode.READ_ONLY, (packetPosition + getPacketHeader().getMaximumSize()) / Byte.SIZE, packetContextDecl.getMaximumSize() / Byte.SIZE);
                     BitBuffer bitBuffer = new BitBuffer(byteBuffer);
                     StructDefinition packetContextFromStream = packetContextDecl.createDefinition(this, ILexicalScope.PACKET_HEADER, bitBuffer);
 
