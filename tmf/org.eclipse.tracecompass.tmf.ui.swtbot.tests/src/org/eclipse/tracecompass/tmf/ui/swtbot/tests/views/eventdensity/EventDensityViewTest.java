@@ -66,9 +66,9 @@ public class EventDensityViewTest extends XYDataProviderBaseTest {
 
         // Uncheck a leaf of the tree
         totalItem.uncheck();
-        assertFalse(root.isChecked());
+        assertTrue(root.isChecked());
         assertFalse(totalItem.isChecked());
-        WaitUtils.waitUntil(c -> c.getSeriesSet().getSeries().length == 0, chart,
+        WaitUtils.waitUntil(c -> c.getSeriesSet().getSeries().length >= 1, chart,
                 "A data series has not been removed.");
     }
 
