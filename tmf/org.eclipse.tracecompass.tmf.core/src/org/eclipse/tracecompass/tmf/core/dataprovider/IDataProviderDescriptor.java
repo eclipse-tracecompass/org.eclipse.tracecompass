@@ -29,14 +29,13 @@ import org.eclipse.tracecompass.tmf.core.model.DataProviderCapabilities;
 public interface IDataProviderDescriptor {
 
     /**
-     * The type of the data provider. The purpose of the type to indicate
-     * to the clients the type of viewer to visualize or whether they can
-     * share a common x-axis (e.g. time).
+     * The type of the data provider. The purpose of the type to indicate to the
+     * clients the type of viewer to visualize or whether they can share a
+     * common x-axis (e.g. time).
      *
      * The following types share common x-axis/time axis:
      *
-     * {@link #TREE_TIME_XY}
-     * {@link #TIME_GRAPH}
+     * {@link #TREE_TIME_XY} {@link #TIME_GRAPH}
      *
      * @author Loic Prieur-Drevon
      * @author Bernd Hufmann
@@ -47,22 +46,33 @@ public interface IDataProviderDescriptor {
          */
         TABLE,
         /**
-         * A provider for a tree, whose entries have XY series. The x-series is time.
+         * A provider for a tree, whose entries have XY series. The x-series is
+         * time.
          */
         TREE_TIME_XY,
         /**
-         * A provider for a Time Graph model, which has entries with a start and end
-         * time, each entry has a series of states, arrows link from one series to
-         * another
+         * A provider for a Time Graph model, which has entries with a start and
+         * end time, each entry has a series of states, arrows link from one
+         * series to another
          */
         TIME_GRAPH,
         /**
          * A provider for a data tree, which has entries (rows) and columns.
+         *
          * @since 6.1
          */
         DATA_TREE,
         /**
-         * A provider with no data. Can be used for grouping purposes and/or as data provider configurator.
+         * A provider for a MIME data provider, which can be an image, audio,
+         * video, text, pdf, etc.
+         *
+         * @since 10.3
+         */
+        MIME,
+        /**
+         * A provider with no data. Can be used for grouping purposes and/or as
+         * data provider configurator.
+         *
          * @since 9.5
          */
         NONE,
@@ -123,7 +133,7 @@ public interface IDataProviderDescriptor {
      * Gets the input configuration used to create this data provider.
      *
      * @return the {@link ITmfConfiguration} configuration use to create this
-     * data provider, or null if not applicable
+     *         data provider, or null if not applicable
      * @since 9.5
      */
     default @Nullable ITmfConfiguration getConfiguration() {
