@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2020 Ericsson
+ * Copyright (c) 2012, 2025 Ericsson and others
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -13,6 +13,7 @@
  *   Alexandre Montplaisir - Port to ITmfStatistics provider
  *   Patrick Tasse - Support selection range
  *   Bernd Hufmann - Fix range selection updates
+ *   Alexander Fedorov (ArSysOp) - fix "SWT Resource was not properly disposed"
  *******************************************************************************/
 
 package org.eclipse.tracecompass.internal.tmf.ui.viewers.statistics;
@@ -186,7 +187,7 @@ public class TmfStatisticsViewer extends TmfViewer {
 
         // Clean the model for this viewer
         TmfStatisticsTreeManager.removeStatTreeRoot(getTreeID());
-        fPieChartViewer.reinitializeCharts();
+        fPieChartViewer.dispose();
     }
 
     // ------------------------------------------------------------------------
