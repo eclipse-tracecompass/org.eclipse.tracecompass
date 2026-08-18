@@ -57,31 +57,19 @@ public class FlameChartDataProviderFactory implements IDataProviderFactory {
         if (provider != null) {
             return provider;
         }
-        // Otherwise, see if it's an experiment and create a composite if that's
-        // the case
+        // Otherwise, it may be an experiment and the analysis does not apply to an experiment:
         Collection<ITmfTrace> traces = TmfTraceManager.getTraceSet(trace);
         if (traces.size() > 1) {
-            // Try creating a composite only if there are many traces,
-            // otherwise, the previous call to create should have returned the
-            // data provider
             return TmfTimeGraphCompositeDataProvider.create(traces, FlameChartDataProvider.ID, secondaryId);
         }
         return null;
     }
 
     private static @Nullable ITmfTreeDataProvider<? extends ITmfTreeDataModel> create(ITmfTrace trace, String secondaryId) {
-        // The trace can be an experiment, so we need to know if there are
-        // multiple analysis modules with the same ID
-        Iterable<IFlameChartProvider> modules = TmfTraceUtils.getAnalysisModulesOfClass(trace, IFlameChartProvider.class);
-        Iterable<IFlameChartProvider> filteredModules = Iterables.filter(modules, m -> m.getId().equals(secondaryId));
-        Iterator<IFlameChartProvider> iterator = filteredModules.iterator();
-        if (iterator.hasNext()) {
-            IFlameChartProvider module = iterator.next();
-            if (iterator.hasNext()) {
-                // More than one module, must be an experiment, return null so
-                // the factory can try with individual traces
-                return null;
-            }
+        Iterable<IAnalysisModule> modules = trace.getAnalysisModules();
+        modules = Iterables.filter(modules, m -> m.getId().equals(secondaryId));
+        Iterator<IAnalysisModule> iterator = modules.iterator();
+        if (iterator.hasNext() && iterator.next() instanceof IFlameChartProvider module) {
             module.schedule();
             return new FlameChartDataProvider(trace, module, secondaryId);
         }

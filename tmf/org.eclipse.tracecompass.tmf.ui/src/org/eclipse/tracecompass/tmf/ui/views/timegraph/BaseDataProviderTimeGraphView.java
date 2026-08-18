@@ -178,7 +178,7 @@ public class BaseDataProviderTimeGraphView extends AbstractTimeGraphView {
     @Override
     protected void buildEntryList(@NonNull ITmfTrace trace, @NonNull ITmfTrace parentTrace, @NonNull IProgressMonitor monitor) {
         ITimeGraphDataProvider<@NonNull TimeGraphEntryModel> dataProvider = DataProviderManager
-                .getInstance().getOrCreateDataProvider(trace, getProviderId(), ITimeGraphDataProvider.class);
+                .getInstance().fetchOrCreateDataProvider(trace, getProviderId(), ITimeGraphDataProvider.class);
         if (dataProvider == null) {
             return;
         }

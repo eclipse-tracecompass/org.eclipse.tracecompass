@@ -88,6 +88,7 @@ import org.eclipse.tracecompass.traceeventlogger.LogUtils.FlowScopeLogBuilder;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchActionConstants;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -373,15 +374,31 @@ public class FlameChartView extends BaseDataProviderTimeGraphView {
     }
 
     @Override
+    protected Iterable<ITmfTrace> getTracesToBuild(@Nullable ITmfTrace trace) {
+        if (trace == null) {
+            return ImmutableSet.of();
+        }
+        return ImmutableSet.of(trace);
+    }
+
+    @Override
     protected void buildEntryList(final ITmfTrace trace, final ITmfTrace parentTrace, final IProgressMonitor monitor) {
-        FlameChartDataProvider provider = DataProviderManager
-                .getInstance().getOrCreateDataProvider(trace, getProviderId(), FlameChartDataProvider.class);
+        ITimeGraphDataProvider<? extends TimeGraphEntryModel> provider = DataProviderManager
+                .getInstance().fetchOrCreateDataProvider(trace, getProviderId(), ITimeGraphDataProvider.class);
         if (provider == null) {
             addUnavailableEntry(trace, parentTrace);
             return;
         }
-
-        provider.resetFunctionNames(monitor);
+        /*
+         * TODO: the reset function names method is not available in the TSP. A
+         * solution should be added to either support the call or get rid of
+         * this function and make the symbol cache flushing implicit. It will
+         * also make this function work with the composite data provider as the
+         * cache flushing is only available on the flame chart data provider.
+         */
+        if (provider instanceof FlameChartDataProvider flameChartDataProvider) {
+            flameChartDataProvider.resetFunctionNames(monitor);
+        }
         super.buildEntryList(trace, parentTrace, monitor);
     }
 
@@ -626,7 +643,8 @@ public class FlameChartView extends BaseDataProviderTimeGraphView {
                 if (dialog.open() == IDialogConstants.OK_ID) {
                     /*
                      * Nothing to do. SymbolProviderConfigDialog will send a
-                     * TmfSymbolProviderUpdatedSignal to notify registered components.
+                     * TmfSymbolProviderUpdatedSignal to notify registered
+                     * components.
                      */
                 }
             }
