@@ -28,7 +28,7 @@ import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
  * @author Sehr Moosabhoy
  *
  */
-public class CTFAntlrMetadataNode implements ICTFMetadataNode {
+public class CTFAntlrMetadataNode implements ITypeSpecifierListMetadataNode {
     private ICTFMetadataNode fParent;
     private final Map<String, ICTFMetadataNode> fChildren;
     private final String fValue;
@@ -110,6 +110,17 @@ public class CTFAntlrMetadataNode implements ICTFMetadataNode {
             }
         }
         return null;
+    }
+
+    @Override
+    public ICTFMetadataNode getTypeSpecifierNode() {
+        return fChildrenList.isEmpty() ? null : fChildrenList.get(0);
+    }
+
+    @Override
+    public String getTypeSpecifierType() {
+        ICTFMetadataNode firstChild = getTypeSpecifierNode();
+        return firstChild != null ? firstChild.getType() : null;
     }
 
 }

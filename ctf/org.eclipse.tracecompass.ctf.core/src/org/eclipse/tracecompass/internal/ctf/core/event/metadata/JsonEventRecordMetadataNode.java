@@ -85,7 +85,8 @@ public class JsonEventRecordMetadataNode extends CTFJsonMetadataNode implements 
      *
      * @return the data stream class id
      */
-    public int getDataStreamClassId() {
+    @Override
+    public long getDataStreamClassId() {
         return fDataStreamClassId;
     }
 
@@ -120,11 +121,6 @@ public class JsonEventRecordMetadataNode extends CTFJsonMetadataNode implements 
     @Override
     public long getEventId() {
         return fId;
-    }
-
-    @Override
-    public long getDataStreamClassId() {
-        return fDataStreamClassId;
     }
 
     @Override

@@ -31,7 +31,7 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Sehr Moosabhoy
  */
-public class CTFJsonMetadataNode implements ICTFMetadataNode, IByteOrderMetadataNode {
+public class CTFJsonMetadataNode implements IByteOrderMetadataNode, ITypeSpecifierListMetadataNode {
     //deserialized attributes from Json
     @SerializedName("type")
     private String fType;
@@ -173,5 +173,15 @@ public class CTFJsonMetadataNode implements ICTFMetadataNode, IByteOrderMetadata
     @Override
     public @Nullable String getByteOrderString() {
         return fValue;
+    }
+
+    @Override
+    public ICTFMetadataNode getTypeSpecifierNode() {
+        return this;
+    }
+
+    @Override
+    public @Nullable String getTypeSpecifierType() {
+        return null;
     }
 }
