@@ -25,9 +25,7 @@ import org.eclipse.tracecompass.ctf.core.trace.CTFTrace;
 import org.eclipse.tracecompass.ctf.parser.CTFParser;
 import org.eclipse.tracecompass.internal.ctf.core.CtfCoreLoggerUtil;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.AbstractScopedCommonTreeParser;
-import org.eclipse.tracecompass.internal.ctf.core.event.metadata.CTFJsonMetadataNode;
-import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonDataStreamMetadataNode;
-import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonStructureFieldMetadataNode;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.IStreamDeclarationMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.MetadataStrings;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.TypeSpecifierListParser;
@@ -139,15 +137,15 @@ public final class StreamDeclarationParser extends AbstractScopedCommonTreeParse
         CTFStream stream = ((Param) param).fStream;
         CTFTrace fTrace = ((Param) param).fTrace;
 
-        if (streamDecl instanceof CTFJsonMetadataNode) {
-            JsonDataStreamMetadataNode decl = (JsonDataStreamMetadataNode) streamDecl;
+        if (streamDecl instanceof IStreamDeclarationMetadataNode) {
+            IStreamDeclarationMetadataNode decl = (IStreamDeclarationMetadataNode) streamDecl;
 
-            if (decl.getId() >= 0) {
-                long streamId = decl.getId();
+            if (decl.getStreamId() >= 0) {
+                long streamId = decl.getStreamId();
                 stream.setId(streamId);
             }
 
-            JsonStructureFieldMetadataNode eventHeader = decl.getEventRecordHeaderClass();
+            ICTFMetadataNode eventHeader = decl.getEventRecordHeaderNode();
             if (eventHeader != null) {
                 IDeclaration eventHeaderDecl = TypeSpecifierListParser.INSTANCE.parse(eventHeader, new TypeSpecifierListParser.Param(fTrace, null, null, scope));
                 DeclarationScope eventHeaderScope = lookupStructName(eventHeader, scope);
@@ -155,14 +153,14 @@ public final class StreamDeclarationParser extends AbstractScopedCommonTreeParse
                 setEventHeader(stream, eventHeaderDecl);
             }
 
-            JsonStructureFieldMetadataNode eventContext = decl.getEventRecordCommonContextClass();
+            ICTFMetadataNode eventContext = decl.getEventRecordCommonContextNode();
             if (eventContext != null) {
                 IDeclaration eventContextDecl = TypeSpecifierListParser.INSTANCE.parse(eventContext, new TypeSpecifierListParser.Param(fTrace, null, null, scope));
                 verifyEventContext(eventContextDecl);
                 stream.setEventContext((StructDeclaration) eventContextDecl);
             }
 
-            JsonStructureFieldMetadataNode packetContext = decl.getPacketContextFieldClass();
+            ICTFMetadataNode packetContext = decl.getPacketContextNode();
             if (packetContext != null) {
                 IDeclaration packetContextDecl = TypeSpecifierListParser.INSTANCE.parse(packetContext, new TypeSpecifierListParser.Param(fTrace, null, null, scope));
                 verifyPacketContext(packetContextDecl);

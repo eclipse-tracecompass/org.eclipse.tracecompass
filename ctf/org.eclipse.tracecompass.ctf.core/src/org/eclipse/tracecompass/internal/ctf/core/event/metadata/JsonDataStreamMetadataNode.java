@@ -24,7 +24,7 @@ import com.google.gson.annotations.SerializedName;
  * @author Sehr Moosabhoy
  *
  */
-public class JsonDataStreamMetadataNode extends CTFJsonMetadataNode implements IStreamMetadataNode {
+public class JsonDataStreamMetadataNode extends CTFJsonMetadataNode implements IStreamMetadataNode, IStreamDeclarationMetadataNode {
 
     @SerializedName("id")
     private int fId;
@@ -131,6 +131,26 @@ public class JsonDataStreamMetadataNode extends CTFJsonMetadataNode implements I
     @Override
     public boolean isSelfContained() {
         return true;
+    }
+
+    @Override
+    public long getStreamId() {
+        return fId;
+    }
+
+    @Override
+    public ICTFMetadataNode getEventRecordHeaderNode() {
+        return fEventRecordHeaderClass;
+    }
+
+    @Override
+    public ICTFMetadataNode getEventRecordCommonContextNode() {
+        return fEventRecordCommonContextClass;
+    }
+
+    @Override
+    public ICTFMetadataNode getPacketContextNode() {
+        return fPacketContextFieldClass;
     }
 
     @Override
