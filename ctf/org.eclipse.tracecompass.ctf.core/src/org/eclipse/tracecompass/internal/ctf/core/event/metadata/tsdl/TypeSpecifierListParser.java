@@ -26,7 +26,7 @@ import org.eclipse.tracecompass.ctf.core.trace.CTFTrace;
 import org.eclipse.tracecompass.ctf.parser.CTFParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.AbstractScopedCommonTreeParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ITypeSpecifierListMetadataNode;
-import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonStructureFieldMetadataNode;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.IStructureFieldMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.MetadataStrings;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.enumeration.EnumParser;
@@ -132,7 +132,7 @@ public final class TypeSpecifierListParser extends AbstractScopedCommonTreeParse
             declaration = IntegerDeclarationParser.INSTANCE.parse(firstChild, new IntegerDeclarationParser.Param(trace));
         } else if (CTFParser.tokenNames[CTFParser.STRING].equals(type)) {
             declaration = StringDeclarationParser.INSTANCE.parse(firstChild, null);
-        } else if (CTFParser.tokenNames[CTFParser.STRUCT].equals(type) || firstChild instanceof JsonStructureFieldMetadataNode) {
+        } else if (CTFParser.tokenNames[CTFParser.STRUCT].equals(type) || firstChild instanceof IStructureFieldMetadataNode) {
             declaration = StructParser.INSTANCE.parse(firstChild, new StructParser.Param(trace, identifier, scope));
             StructDeclaration structDeclaration = (StructDeclaration) declaration;
             if (structDeclaration.hasField(MetadataStrings.ID)) {
