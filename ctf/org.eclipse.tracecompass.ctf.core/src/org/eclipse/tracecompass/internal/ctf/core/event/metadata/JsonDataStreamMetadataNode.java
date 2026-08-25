@@ -24,7 +24,7 @@ import com.google.gson.annotations.SerializedName;
  * @author Sehr Moosabhoy
  *
  */
-public class JsonDataStreamMetadataNode extends CTFJsonMetadataNode {
+public class JsonDataStreamMetadataNode extends CTFJsonMetadataNode implements IStreamMetadataNode {
 
     @SerializedName("id")
     private int fId;
@@ -126,6 +126,11 @@ public class JsonDataStreamMetadataNode extends CTFJsonMetadataNode {
      */
     public void setId(int id) {
         fId = id;
+    }
+
+    @Override
+    public boolean isSelfContained() {
+        return true;
     }
 
     @Override
