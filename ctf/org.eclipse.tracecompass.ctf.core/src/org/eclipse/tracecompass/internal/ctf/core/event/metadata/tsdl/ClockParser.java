@@ -11,17 +11,12 @@
 
 package org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl;
 
-import java.util.List;
-
 import org.eclipse.tracecompass.ctf.core.event.CTFClock;
-import org.eclipse.tracecompass.ctf.parser.CTFParser;
-import org.eclipse.tracecompass.internal.ctf.core.CtfCoreLoggerUtil;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.AntlrClockMetadataNode;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.IClockMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ICommonTreeParser;
-import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonClockMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
 import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
-
-import com.google.gson.JsonObject;
 
 /**
  * Clock metadata allows to describe the clock topology of the system, as well
@@ -115,13 +110,10 @@ public final class ClockParser implements ICommonTreeParser {
     private static final String NAME = "name"; //$NON-NLS-1$
     private static final String FREQUENCY = "freq"; //$NON-NLS-1$
     private static final String ORIGIN = "origin"; //$NON-NLS-1$
-    private static final String SECONDS = "seconds"; //$NON-NLS-1$
-    private static final String CYCLES = "cycles"; //$NON-NLS-1$
     private static final String OFFSET = "offset"; //$NON-NLS-1$
     private static final String OFFSET_S = "offset_s"; //$NON-NLS-1$
     private static final String PRECISION = "precision"; //$NON-NLS-1$
     private static final String DESCRIPTION = "description"; //$NON-NLS-1$
-    private static final String UNIX_EPOCH = "unix-epoch"; //$NON-NLS-1$
 
     /**
      * Instance
@@ -133,62 +125,45 @@ public final class ClockParser implements ICommonTreeParser {
 
     @Override
     public CTFClock parse(ICTFMetadataNode clock, ICommonTreeParserParameter unused) throws ParseException {
-        CTFClock ctfClock = new CTFClock();
-        if (clock instanceof JsonClockMetadataNode) {
-            JsonClockMetadataNode jsonClock = (JsonClockMetadataNode) clock;
-
-            ctfClock.addAttribute(FREQUENCY, jsonClock.getFrequency());
-            ctfClock.addAttribute(NAME, jsonClock.getName());
-            ctfClock.addAttribute(PRECISION, jsonClock.getPrecision());
-            if (jsonClock.getDescription() != null) {
-                ctfClock.addAttribute(DESCRIPTION, jsonClock.getPrecision());
-            }
-            JsonObject offset = jsonClock.getOffset();
-            if (offset != null && offset.has(SECONDS) && offset.has(CYCLES)) {
-                Long seconds = offset.get(SECONDS).getAsLong();
-                Long cycles = offset.get(CYCLES).getAsLong();
-                ctfClock.addAttribute(OFFSET, cycles);
-                ctfClock.addAttribute(OFFSET_S, seconds);
-            }
-            if (jsonClock.getOrigin() != null) {
-                if (jsonClock.getOrigin().isJsonObject()) {
-                    ctfClock.addAttribute(ORIGIN, jsonClock.getOrigin().getAsJsonObject().get(NAME).getAsString());
-                } else if (jsonClock.getOrigin().getAsString().equals(UNIX_EPOCH)) {
-                    ctfClock.addAttribute(ORIGIN, UNIX_EPOCH);
-                }
-            }
+        IClockMetadataNode clockNode;
+        if (clock instanceof IClockMetadataNode) {
+            clockNode = (IClockMetadataNode) clock;
         } else {
-            List<ICTFMetadataNode> children = clock.getChildren();
-            for (ICTFMetadataNode child : children) {
-                String key = child.getChild(0).getChild(0).getChild(0).getText();
-                ICTFMetadataNode value = child.getChild(1).getChild(0).getChild(0);
-                String type = value.getType();
-                String text = value.getText();
-
-                if (CTFParser.tokenNames[CTFParser.INTEGER].equals(type) || CTFParser.tokenNames[CTFParser.DECIMAL_LITERAL].equals(type)) {
-                    /*
-                     * Not a pretty hack, this is to make sure that there is no
-                     * number overflow due to 63 bit integers. The offset should
-                     * only really be an issue in the year 2262. The tracer in
-                     * C/ASM can write an offset in an unsigned 64 bit long. In
-                     * java, the last bit, being set to 1, will be read as a
-                     * negative number, but since it is too large as a positive
-                     * number it will throw an exception. This will happen in
-                     * 2^63 ns from 1970. Therefore 293 years from 1970.
-                     */
-                    Long numValue;
-                    try {
-                        numValue = Long.parseLong(text);
-                    } catch (NumberFormatException e) {
-                        CtfCoreLoggerUtil.logWarning("Number conversion issue with " + text + ". Assigning " + key + " = 0."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                        numValue = Long.valueOf(0L);
-                    }
-                    ctfClock.addAttribute(key, numValue);
-                } else {
-                    ctfClock.addAttribute(key, text);
-                }
-            }
+            // Wrap raw ANTLR node into the typed interface
+            clockNode = new AntlrClockMetadataNode(clock);
         }
+
+        CTFClock ctfClock = new CTFClock();
+        ctfClock.addAttribute(NAME, clockNode.getClockName());
+        ctfClock.addAttribute(FREQUENCY, clockNode.getClockFrequency());
+        ctfClock.addAttribute(PRECISION, clockNode.getClockPrecision());
+
+        String description = clockNode.getClockDescription();
+        if (description != null) {
+            ctfClock.addAttribute(DESCRIPTION, description);
+        }
+
+        long offsetSeconds = clockNode.getClockOffsetSeconds();
+        long offsetCycles = clockNode.getClockOffsetCycles();
+        if (offsetSeconds != 0 || offsetCycles != 0) {
+            ctfClock.addAttribute(OFFSET, offsetCycles);
+            ctfClock.addAttribute(OFFSET_S, offsetSeconds);
+        }
+
+        String origin = clockNode.getClockOrigin();
+        if (origin != null) {
+            ctfClock.addAttribute(ORIGIN, origin);
+        }
+
+        String uuid = clockNode.getClockUUID();
+        if (uuid != null) {
+            ctfClock.addAttribute("uuid", uuid); //$NON-NLS-1$
+        }
+
+        if (clockNode.isClockAbsolute()) {
+            ctfClock.addAttribute("absolute", "TRUE"); //$NON-NLS-1$ //$NON-NLS-2$
+        }
+
         return ctfClock;
     }
 }
