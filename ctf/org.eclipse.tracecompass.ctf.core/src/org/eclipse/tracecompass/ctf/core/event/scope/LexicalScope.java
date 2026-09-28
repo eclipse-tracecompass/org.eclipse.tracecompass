@@ -13,8 +13,8 @@
 
 package org.eclipse.tracecompass.ctf.core.event.scope;
 
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
@@ -28,7 +28,7 @@ public class LexicalScope implements ILexicalScope {
     private int hash = 0;
     private final @NonNull String fName;
     private final @NonNull String fPath;
-    private final Map<String, ILexicalScope> fChildren = new ConcurrentHashMap<>();
+    private final Map<String, ILexicalScope> fChildren = new HashMap<>();
 
     /**
      * Hidden constructor for the root node only
@@ -38,6 +38,22 @@ public class LexicalScope implements ILexicalScope {
     protected LexicalScope() {
         fPath = ""; //$NON-NLS-1$
         fName = ""; //$NON-NLS-1$
+    }
+
+    /**
+     * Create a scope
+     * @param parent
+     *            The parent node, can be null, but shouldn't
+     * @param name
+     *            the name of the field
+     * @return the scope
+     */
+    public static @NonNull ILexicalScope create(ILexicalScope parent, @NonNull String name) {
+        ILexicalScope child = parent.getChild(name);
+        if( child == null) {
+            child = new LexicalScope(parent, name);
+        }
+        return child;
     }
 
     /**
