@@ -1,0 +1,10 @@
+Example using maven dependencies build with b3 aggregator in 
+project org.eclipse.tracecompass.aggregation. Right now the maven repository
+is expected to be in ${user.home}/build/final
+
+Note: Fix TODOs The pom.xml and MyTest.java to build and run example.
+
+To build:
+> mvn clean install
+To run
+> mvn exec:exec
