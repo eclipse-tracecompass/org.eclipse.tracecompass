@@ -223,7 +223,7 @@ public class PartialInMemoryBackend implements IPartialStateHistoryBackend {
     @Override
     public Iterable<@NonNull ITmfStateInterval> query2D(IntegerRangeCondition quarks, TimeRangeCondition times)
             throws TimeRangeException {
-        try (ScopeLog log = new ScopeLog(LOGGER, Level.FINER, "InMemoryBackend:query2D", //$NON-NLS-1$
+        try (ScopeLog _ = new ScopeLog(LOGGER, Level.FINER, "InMemoryBackend:query2D", //$NON-NLS-1$
                 "ssid", getSSID(), //$NON-NLS-1$
                 "quarks", quarks, //$NON-NLS-1$
                 "times", times)) { //$NON-NLS-1$

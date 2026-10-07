@@ -300,7 +300,7 @@ public abstract class AbstractTmfStateProvider implements ITmfStateProvider {
 
         @Override
         public void run() {
-            try (FlowScopeLog log = new FlowScopeLogBuilder(LOGGER, Level.FINE, "AbstractTmfStateProvider:running consumer").setParentScope(fLog).build()) { //$NON-NLS-1$
+            try (FlowScopeLog _ = new FlowScopeLogBuilder(LOGGER, Level.FINE, "AbstractTmfStateProvider:running consumer").setParentScope(fLog).build()) { //$NON-NLS-1$
                 if (!fStateSystemAssigned) {
                     Activator.logError("Cannot run event manager without assigning a target state system first!"); //$NON-NLS-1$
                     return;

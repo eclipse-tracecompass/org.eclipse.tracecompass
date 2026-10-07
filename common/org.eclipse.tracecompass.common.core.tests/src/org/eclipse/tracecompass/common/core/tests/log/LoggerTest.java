@@ -121,7 +121,7 @@ public class LoggerTest {
     public void testHelloWorld() {
         Logger logger = fLogger;
         assertNotNull(logger);
-        try (TraceCompassLogUtils.ScopeLog log = new TraceCompassLogUtils.ScopeLog(logger, Level.INFO, "world")) {
+        try (TraceCompassLogUtils.ScopeLog _ = new TraceCompassLogUtils.ScopeLog(logger, Level.INFO, "world")) {
             // do something
             new Object();
         }
@@ -137,10 +137,10 @@ public class LoggerTest {
     public void testNesting() {
         Logger logger = fLogger;
         assertNotNull(logger);
-        try (TraceCompassLogUtils.ScopeLog log = new TraceCompassLogUtils.ScopeLog(logger, Level.INFO, "foo")) {
+        try (TraceCompassLogUtils.ScopeLog _ = new TraceCompassLogUtils.ScopeLog(logger, Level.INFO, "foo")) {
             // do something
             new Object();
-            try (TraceCompassLogUtils.ScopeLog log1 = new TraceCompassLogUtils.ScopeLog(logger, Level.INFO, "bar")) {
+            try (TraceCompassLogUtils.ScopeLog _ = new TraceCompassLogUtils.ScopeLog(logger, Level.INFO, "bar")) {
                 // do something
                 new Object();
             }
@@ -159,13 +159,13 @@ public class LoggerTest {
     public void testNestingFiltered() {
         Logger logger = fLogger;
         assertNotNull(logger);
-        try (TraceCompassLogUtils.ScopeLog log = new TraceCompassLogUtils.ScopeLog(logger, Level.FINE, "foo")) {
+        try (TraceCompassLogUtils.ScopeLog _ = new TraceCompassLogUtils.ScopeLog(logger, Level.FINE, "foo")) {
             // do something
             new Object();
-            try (TraceCompassLogUtils.ScopeLog log1 = new TraceCompassLogUtils.ScopeLog(logger, Level.FINER, "bar")) {
+            try (TraceCompassLogUtils.ScopeLog _ = new TraceCompassLogUtils.ScopeLog(logger, Level.FINER, "bar")) {
                 // do something
                 new Object();
-                try (TraceCompassLogUtils.ScopeLog log2 = new TraceCompassLogUtils.ScopeLog(logger, Level.FINEST, "baz")) {
+                try (TraceCompassLogUtils.ScopeLog _ = new TraceCompassLogUtils.ScopeLog(logger, Level.FINEST, "baz")) {
                     // do something
                     new Object();
                 }
@@ -185,8 +185,8 @@ public class LoggerTest {
     public void testNestingLogLevels() {
         Logger logger = fLogger;
         assertNotNull(logger);
-        try (TraceCompassLogUtils.ScopeLog log = new TraceCompassLogUtils.ScopeLog(logger, Level.WARNING, "foo")) {
-            try (TraceCompassLogUtils.ScopeLog log1 = new TraceCompassLogUtils.ScopeLog(logger, Level.FINE, "bar")) {
+        try (TraceCompassLogUtils.ScopeLog _ = new TraceCompassLogUtils.ScopeLog(logger, Level.WARNING, "foo")) {
+            try (TraceCompassLogUtils.ScopeLog _ = new TraceCompassLogUtils.ScopeLog(logger, Level.FINE, "bar")) {
                 // do something
                 new Object();
             }
@@ -205,7 +205,7 @@ public class LoggerTest {
     public void testNestingWithData() {
         Logger logger = fLogger;
         assertNotNull(logger);
-        try (TraceCompassLogUtils.ScopeLog log = new TraceCompassLogUtils.ScopeLog(logger, Level.WARNING, "foo")) {
+        try (TraceCompassLogUtils.ScopeLog _ = new TraceCompassLogUtils.ScopeLog(logger, Level.WARNING, "foo")) {
             try (TraceCompassLogUtils.ScopeLog log1 = new TraceCompassLogUtils.ScopeLog(logger, Level.FINE, "bar")) {
                 // do something
                 log1.addData("return", false);
@@ -231,7 +231,7 @@ public class LoggerTest {
             try (FlowScopeLog log1 = new FlowScopeLogBuilder(logger, Level.FINER, "bar", "big", "ben").setParentScope(log).build()) {
                 // do something
                 new Object();
-                try (FlowScopeLog log2 = new FlowScopeLogBuilder(logger, Level.FINEST, "baz").setParentScope(log1).build()) {
+                try (FlowScopeLog _ = new FlowScopeLogBuilder(logger, Level.FINEST, "baz").setParentScope(log1).build()) {
                     // do something
                     new Object();
                 }
@@ -322,7 +322,7 @@ public class LoggerTest {
     public void testFlowBuilderNoExtra() {
         Logger logger = fLogger;
         assertNotNull(logger);
-        try (FlowScopeLog log = new FlowScopeLogBuilder(logger, Level.WARNING, "foo").build()) {
+        try (FlowScopeLog _ = new FlowScopeLogBuilder(logger, Level.WARNING, "foo").build()) {
             // do something
             new Object();
         }
@@ -342,7 +342,7 @@ public class LoggerTest {
         Logger logger = fLogger;
         assertNotNull(logger);
         try (FlowScopeLog log = new FlowScopeLogBuilder(logger, Level.WARNING, "foo").setCategory("myspider").build()) {
-            try (FlowScopeLog log1 = new FlowScopeLogBuilder(logger, Level.FINE, "bar").setParentScope(log).setCategory("myspider").build()) {
+            try (FlowScopeLog _ = new FlowScopeLogBuilder(logger, Level.FINE, "bar").setParentScope(log).setCategory("myspider").build()) {
                 // do something
                 new Object();
             }
@@ -359,7 +359,7 @@ public class LoggerTest {
         Logger logger = fLogger;
         assertNotNull(logger);
         try (FlowScopeLog log = new FlowScopeLogBuilder(logger, Level.WARNING, "foo").setCategory("myspider").build()) {
-            try (FlowScopeLog log1 = new FlowScopeLogBuilder(logger, Level.FINE, "bar").setCategory("myspider").setParentScope(log).build()) {
+            try (FlowScopeLog _ = new FlowScopeLogBuilder(logger, Level.FINE, "bar").setCategory("myspider").setParentScope(log).build()) {
                 // do something
                 new Object();
             }
@@ -373,15 +373,15 @@ public class LoggerTest {
     public void testAttributes() {
         Logger logger = fLogger;
         assertNotNull(logger);
-        try (TraceCompassLogUtils.ScopeLog log = new TraceCompassLogUtils.ScopeLog(logger, Level.WARNING, "foo", "Pen:Pineapple", "Apple:Pen")) {
+        try (TraceCompassLogUtils.ScopeLog _ = new TraceCompassLogUtils.ScopeLog(logger, Level.WARNING, "foo", "Pen:Pineapple", "Apple:Pen")) {
             // do something
             new Object();
         }
-        try (TraceCompassLogUtils.ScopeLog log = new TraceCompassLogUtils.ScopeLog(logger, Level.WARNING, "foo", "Pen:Pineapple:Apple:Pen")) {
+        try (TraceCompassLogUtils.ScopeLog _ = new TraceCompassLogUtils.ScopeLog(logger, Level.WARNING, "foo", "Pen:Pineapple:Apple:Pen")) {
             // do something
             new Object();
         }
-        try (TraceCompassLogUtils.ScopeLog log = new TraceCompassLogUtils.ScopeLog(logger, Level.WARNING, "foo", "pen", "pineapple", "apple", "pen", "number_of_badgers", 12)) {
+        try (TraceCompassLogUtils.ScopeLog _ = new TraceCompassLogUtils.ScopeLog(logger, Level.WARNING, "foo", "pen", "pineapple", "apple", "pen", "number_of_badgers", 12)) {
             // do something
             new Object();
         }
@@ -401,7 +401,7 @@ public class LoggerTest {
     public void testAttributeFail3Args() {
         Logger logger = fLogger;
         assertNotNull(logger);
-        try (TraceCompassLogUtils.ScopeLog log = new TraceCompassLogUtils.ScopeLog(logger, Level.WARNING, "foo", "Pen:Pineapple", "Apple", "Pen")) {
+        try (TraceCompassLogUtils.ScopeLog _ = new TraceCompassLogUtils.ScopeLog(logger, Level.WARNING, "foo", "Pen:Pineapple", "Apple", "Pen")) {
             // do something
             new Object();
         }
@@ -414,7 +414,7 @@ public class LoggerTest {
     public void testAttributeFailRepeatedArgs() {
         Logger logger = fLogger;
         assertNotNull(logger);
-        try (TraceCompassLogUtils.ScopeLog log = new TraceCompassLogUtils.ScopeLog(logger, Level.WARNING, "foo", "badger", "badger", "badger", "badger")) {
+        try (TraceCompassLogUtils.ScopeLog _ = new TraceCompassLogUtils.ScopeLog(logger, Level.WARNING, "foo", "badger", "badger", "badger", "badger")) {
             // do something
             new Object();
         }
@@ -427,8 +427,8 @@ public class LoggerTest {
     public void testNestingException() {
         Logger logger = fLogger;
         assertNotNull(logger);
-        try (TraceCompassLogUtils.ScopeLog log = new TraceCompassLogUtils.ScopeLog(logger, Level.INFO, "foo")) {
-            try (TraceCompassLogUtils.ScopeLog log1 = new TraceCompassLogUtils.ScopeLog(logger, Level.INFO, "bar")) {
+        try (TraceCompassLogUtils.ScopeLog _ = new TraceCompassLogUtils.ScopeLog(logger, Level.INFO, "foo")) {
+            try (TraceCompassLogUtils.ScopeLog _ = new TraceCompassLogUtils.ScopeLog(logger, Level.INFO, "bar")) {
                 // do something
                 new Object();
                 throw new Exception("test");

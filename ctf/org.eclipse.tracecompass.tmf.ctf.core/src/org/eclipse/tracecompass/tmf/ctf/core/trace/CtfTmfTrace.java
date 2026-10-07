@@ -329,7 +329,7 @@ public class CtfTmfTrace extends TmfTrace
                 }
 
                 // Validate using reader initialization
-                try (CTFTraceReader ctfTraceReader = new CTFTraceReader(trace)) {
+                try (CTFTraceReader _ = new CTFTraceReader(trace)) {
                     // do nothing
                 }
 

@@ -72,7 +72,7 @@ public class TriStateFilteredCheckboxTree extends FilteredCheckboxTree {
     @Override
     public void setCheckedElements(Object[] elements) {
         super.setCheckedElements(elements);
-        try (ScopeLog sl = new ScopeLog(LOGGER, Level.FINE, getClass().getSimpleName() + "#setCheckedElements")) { //$NON-NLS-1$
+        try (ScopeLog _ = new ScopeLog(LOGGER, Level.FINE, getClass().getSimpleName() + "#setCheckedElements")) { //$NON-NLS-1$
             maintainAllCheckIntegrity();
         }
     }
@@ -114,7 +114,7 @@ public class TriStateFilteredCheckboxTree extends FilteredCheckboxTree {
             job.addJobChangeListener(new JobChangeAdapter() {
                 @Override
                 public void done(IJobChangeEvent event) {
-                    try (FlowScopeLog fsl1 = new FlowScopeLogBuilder(LOGGER, Level.FINE, getClass().getSimpleName() + "#doCreateRefreshJob").setParentScope(fsl).build()) { //$NON-NLS-1$
+                    try (FlowScopeLog _ = new FlowScopeLogBuilder(LOGGER, Level.FINE, getClass().getSimpleName() + "#doCreateRefreshJob").setParentScope(fsl).build()) { //$NON-NLS-1$
                         if (getCheckboxTreeViewer().getTree().isDisposed()) {
                             return;
                         }
@@ -128,7 +128,7 @@ public class TriStateFilteredCheckboxTree extends FilteredCheckboxTree {
 
     @Override
     protected void checkSubtree(Object element, boolean state) {
-        try (ScopeLog checkST = new ScopeLog(LOGGER, Level.FINE, getClass().getSimpleName() + "#checkSubtree()")) { //$NON-NLS-1$
+        try (ScopeLog _ = new ScopeLog(LOGGER, Level.FINE, getClass().getSimpleName() + "#checkSubtree()")) { //$NON-NLS-1$
             CheckboxTreeViewer checkboxTreeViewer = getCheckboxTreeViewer();
             if (checkboxTreeViewer.testFindItem(element) != null) {
                 if (state) {
@@ -180,7 +180,7 @@ public class TriStateFilteredCheckboxTree extends FilteredCheckboxTree {
      *            Tree element from which the verification needs to be made
      */
     private void maintainCheckIntegrity(final Object element) {
-        try (ScopeLog maintain = new ScopeLog(LOGGER, Level.FINE, getClass().getSimpleName() + "#maintainChackIntegrity")) { //$NON-NLS-1$
+        try (ScopeLog _ = new ScopeLog(LOGGER, Level.FINE, getClass().getSimpleName() + "#maintainChackIntegrity")) { //$NON-NLS-1$
             if (element == null) {
                 return;
             }
@@ -189,10 +189,10 @@ public class TriStateFilteredCheckboxTree extends FilteredCheckboxTree {
             boolean allChecked = true;
             boolean oneChecked = false;
             boolean oneGrayed = false;
-            try (ScopeLog scanChildren = new ScopeLog(LOGGER, Level.FINE, getClass().getSimpleName() + "#scanChildren")) { //$NON-NLS-1$
+            try (ScopeLog _ = new ScopeLog(LOGGER, Level.FINE, getClass().getSimpleName() + "#scanChildren")) { //$NON-NLS-1$
                 for (Object child : contentProvider.getChildren(element)) {
                     if (!filterText.getText().isEmpty()) {
-                        try (ScopeLog testFind = new ScopeLog(LOGGER, Level.FINE, getClass().getSimpleName() + "#testFind")) { //$NON-NLS-1$
+                        try (ScopeLog _ = new ScopeLog(LOGGER, Level.FINE, getClass().getSimpleName() + "#testFind")) { //$NON-NLS-1$
                             if (checkboxTreeViewer.testFindItem(child) == null) {
                                 continue;
                             }
@@ -204,7 +204,7 @@ public class TriStateFilteredCheckboxTree extends FilteredCheckboxTree {
                     oneGrayed |= (checked && getGrayed(child));
                 }
             }
-            try (ScopeLog updateParent = new ScopeLog(LOGGER, Level.FINE, getClass().getSimpleName() + "#updateParent")) { //$NON-NLS-1$
+            try (ScopeLog _ = new ScopeLog(LOGGER, Level.FINE, getClass().getSimpleName() + "#updateParent")) { //$NON-NLS-1$
                 if (oneGrayed || (oneChecked && !allChecked)) {
                     setGrayed(element, true);
                     setChecked(element, true);
@@ -222,7 +222,7 @@ public class TriStateFilteredCheckboxTree extends FilteredCheckboxTree {
     }
 
     private void maintainAllCheckIntegrity() {
-        try (ScopeLog sl = new ScopeLog(LOGGER, Level.FINE, getClass().getSimpleName() + "#maintainAllCheckIntegrity")) { //$NON-NLS-1$
+        try (ScopeLog _ = new ScopeLog(LOGGER, Level.FINE, getClass().getSimpleName() + "#maintainAllCheckIntegrity")) { //$NON-NLS-1$
             for (Object checkedElement : getCheckedElements()) {
                 maintainCheckIntegrity(checkedElement);
             }

@@ -207,7 +207,7 @@ public abstract class AbstractStateSystemTimeGraphView extends AbstractTimeGraph
         private void doZoom(final ITmfStateSystem ss, final List<ILinkEvent> links, final List<IMarkerEvent> markers, long resolution, final @NonNull IProgressMonitor monitor, final long start, final long end, Sampling sampling,
                 Iterable<@NonNull TimeGraphEntry> entries, @NonNull Map<@NonNull Integer, @NonNull Predicate<@NonNull Multimap<@NonNull String, @NonNull Object>>> predicates, Map<TimeGraphEntry, List<ITimeEvent>> gaps) {
             queryFullStates(ss, start, end, resolution, monitor, (@NonNull List<List<ITmfStateInterval>> fullStates, @Nullable List<ITmfStateInterval> prevFullState) -> {
-                try (ScopeLog scope = new ScopeLog(LOGGER, Level.FINER, "ZoomThread:GettingStates");) { //$NON-NLS-1$
+                try (ScopeLog _ = new ScopeLog(LOGGER, Level.FINER, "ZoomThread:GettingStates");) { //$NON-NLS-1$
 
                     for (TimeGraphEntry entry : entries) {
                         if (!sampling.equals(entry.getSampling())) {
@@ -216,11 +216,11 @@ public abstract class AbstractStateSystemTimeGraphView extends AbstractTimeGraph
                     }
                 }
                 /* Refresh the arrows when zooming */
-                try (ScopeLog linksLogger1 = new ScopeLog(LOGGER, Level.FINER, "ZoomThread:GettingLinks")) { //$NON-NLS-1$
+                try (ScopeLog _ = new ScopeLog(LOGGER, Level.FINER, "ZoomThread:GettingLinks")) { //$NON-NLS-1$
                     links.addAll(getLinkList(ss, fullStates, prevFullState, monitor));
                 }
                 /* Refresh the view-specific markers when zooming */
-                try (ScopeLog linksLogger2 = new ScopeLog(LOGGER, Level.FINER, "ZoomThread:GettingMarkers")) { //$NON-NLS-1$
+                try (ScopeLog _ = new ScopeLog(LOGGER, Level.FINER, "ZoomThread:GettingMarkers")) { //$NON-NLS-1$
                     markers.addAll(getViewMarkerList(ss, fullStates, prevFullState, monitor));
                 }
                 refresh();
@@ -264,7 +264,7 @@ public abstract class AbstractStateSystemTimeGraphView extends AbstractTimeGraph
 
         private void doBgSearch(ITmfStateSystem ss, int resolution, @NonNull IProgressMonitor monitor, Map<TimeGraphEntry, List<ITimeEvent>> gaps,
                 @NonNull Map<@NonNull Integer, @NonNull Predicate<@NonNull Multimap<@NonNull String, @NonNull Object>>> predicates) {
-            try (ScopeLog poc = new ScopeLog(LOGGER, Level.FINE, "TimegraphBgSearch")) { //$NON-NLS-1$
+            try (ScopeLog _ = new ScopeLog(LOGGER, Level.FINE, "TimegraphBgSearch")) { //$NON-NLS-1$
 
                 ViewFilterDialog timeEventFilterDialog = getViewFilterDialog();
                 boolean hasActiveSavedFilters = timeEventFilterDialog.hasActiveSavedFilters();

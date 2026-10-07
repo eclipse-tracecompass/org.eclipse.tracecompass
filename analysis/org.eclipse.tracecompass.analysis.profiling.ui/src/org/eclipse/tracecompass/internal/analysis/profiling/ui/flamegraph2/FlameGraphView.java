@@ -441,7 +441,7 @@ public class FlameGraphView extends TmfView {
         }
 
         public void run(IProgressMonitor monitor) {
-            try (FlowScopeLog log = new FlowScopeLogBuilder(LOGGER, Level.FINE, "FlameGraphView:BuildThread", "trace", fBuildTrace.getName()).setParentScope(fScope).build()) { //$NON-NLS-1$ //$NON-NLS-2$
+            try (FlowScopeLog _ = new FlowScopeLogBuilder(LOGGER, Level.FINE, "FlameGraphView:BuildThread", "trace", fBuildTrace.getName()).setParentScope(fScope).build()) { //$NON-NLS-1$ //$NON-NLS-2$
                 buildEntryList(fBuildTrace, fParentTrace, fParameters, Objects.requireNonNull(monitor));
                 synchronized (fBuildJobMap) {
                     fBuildJobMap.remove(fBuildTrace);
@@ -1094,7 +1094,7 @@ public class FlameGraphView extends TmfView {
     private void redraw() {
         try (FlowScopeLog flowParent = new FlowScopeLogBuilder(LOGGER, Level.FINE, "FlameGraphView:RedrawRequested").setCategory(getViewId()).build()) { //$NON-NLS-1$
             Display.getDefault().asyncExec(() -> {
-                try (FlowScopeLog log = new FlowScopeLogBuilder(LOGGER, Level.FINE, "FlameGraphView:Redraw").setParentScope(flowParent).build()) { //$NON-NLS-1$
+                try (FlowScopeLog _ = new FlowScopeLogBuilder(LOGGER, Level.FINE, "FlameGraphView:Redraw").setParentScope(flowParent).build()) { //$NON-NLS-1$
                     if (fTimeGraphViewer.getControl().isDisposed()) {
                         return;
                     }

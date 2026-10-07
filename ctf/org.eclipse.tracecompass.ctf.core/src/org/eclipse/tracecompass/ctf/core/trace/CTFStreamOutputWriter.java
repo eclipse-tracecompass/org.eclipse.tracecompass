@@ -103,7 +103,7 @@ public class CTFStreamOutputWriter {
         }
 
         try (FileChannel fc = requireNonNull(FileChannel.open(fOutFile.toPath(), StandardOpenOption.WRITE));
-                FileChannel source = FileChannel.open(streamInput.getFile().toPath(), StandardOpenOption.READ);) {
+                FileChannel _ = FileChannel.open(streamInput.getFile().toPath(), StandardOpenOption.READ);) {
             StreamInputPacketIndex index = streamInput.getIndex();
             int count = 0;
             long initialLost = 0;

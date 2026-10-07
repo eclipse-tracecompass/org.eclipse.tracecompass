@@ -214,7 +214,7 @@ public class SegmentStoreAnalysisModule extends AbstractSegmentStoreAnalysisModu
 
     @Override
     protected boolean buildAnalysisSegments(ISegmentStore<ISegment> segmentStore, IProgressMonitor monitor) throws TmfAnalysisException {
-        try (ScopeLog scope = new ScopeLog(LOGGER, Level.FINER, "SegmentStoreAnalysisModule#buildAnalysisSegment")) { //$NON-NLS-1$
+        try (ScopeLog _ = new ScopeLog(LOGGER, Level.FINER, "SegmentStoreAnalysisModule#buildAnalysisSegment")) { //$NON-NLS-1$
             int size = fProviders.size();
             if (size == 0) {
                 return false;

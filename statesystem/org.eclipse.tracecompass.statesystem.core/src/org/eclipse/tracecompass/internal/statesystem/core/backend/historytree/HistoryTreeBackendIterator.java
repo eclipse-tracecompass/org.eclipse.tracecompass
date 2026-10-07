@@ -79,7 +79,7 @@ class HistoryTreeBackendIterator implements Iterator<@NonNull ITmfStateInterval>
                     intervalQueue = currentNode.iterable2D(fQuarks, subTimes).iterator();
                 }
             } catch (ClosedChannelException e) {
-                try (FlowScopeLog closedChannelLog = new FlowScopeLogBuilder(LOGGER, Level.FINER,
+                try (FlowScopeLog _ = new FlowScopeLogBuilder(LOGGER, Level.FINER,
                         "HistoryTreeBackendIterator:query2D:channelClosed").setParentScope(fParentLog).build()) { //$NON-NLS-1$
                     return false;
                 }
@@ -87,7 +87,7 @@ class HistoryTreeBackendIterator implements Iterator<@NonNull ITmfStateInterval>
         }
         boolean hasNext = intervalQueue.hasNext();
         if (!hasNext) {
-            try (FlowScopeLog noNext = new FlowScopeLogBuilder(LOGGER, Level.FINER,
+            try (FlowScopeLog _ = new FlowScopeLogBuilder(LOGGER, Level.FINER,
                     "HistoryTreeBackendIterator:query2D:iteratorEnd").setParentScope(fParentLog).build()) { //$NON-NLS-1$
             }
         }

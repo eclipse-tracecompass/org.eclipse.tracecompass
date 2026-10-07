@@ -332,9 +332,9 @@ public abstract class TmfCommonXAxisChartViewer extends TmfXYChartViewer {
 
         @Override
         public void run() {
-            try (FlowScopeLog scope = new FlowScopeLogBuilder(LOGGER, Level.FINE, "CommonXLineChart:UpdateThread", "numRequests=", fNumRequests).setParentScope(fScope).build()) { //$NON-NLS-1$ //$NON-NLS-2$
+            try (FlowScopeLog _ = new FlowScopeLogBuilder(LOGGER, Level.FINE, "CommonXLineChart:UpdateThread", "numRequests=", fNumRequests).setParentScope(fScope).build()) { //$NON-NLS-1$ //$NON-NLS-2$
                 ITmfXYDataProvider dataProvider = null;
-                try (FlowScopeLog scopeDp = new FlowScopeLogBuilder(LOGGER, Level.FINE, "CommonXLineChart:InitializeDataProvider").setParentScope(fScope).build()) { //$NON-NLS-1$
+                try (FlowScopeLog _ = new FlowScopeLogBuilder(LOGGER, Level.FINE, "CommonXLineChart:InitializeDataProvider").setParentScope(fScope).build()) { //$NON-NLS-1$
                     dataProvider = initializeDataProvider(fTrace);
                 }
                 if (dataProvider == null) {

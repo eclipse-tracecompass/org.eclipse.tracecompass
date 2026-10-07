@@ -668,7 +668,7 @@ public abstract class Histogram implements ControlListener, PaintListener, KeyLi
                 fCanvas.getDisplay().asyncExec(() -> {
                     int canvasWidth = -1;
                     int canvasHeight = -1;
-                    try (LogUtils.FlowScopeLog fs1 = new LogUtils.FlowScopeLogBuilder(LOGGER, Level.FINER, "Histogram:getBounds").setParentScope(fs).build()) { //$NON-NLS-1$
+                    try (LogUtils.FlowScopeLog _ = new LogUtils.FlowScopeLogBuilder(LOGGER, Level.FINER, "Histogram:getBounds").setParentScope(fs).build()) { //$NON-NLS-1$
                         if (!fCanvas.isDisposed()) {
                             // Retrieve and normalize the data
                             canvasWidth = fCanvas.getBounds().width;
@@ -679,7 +679,7 @@ public abstract class Histogram implements ControlListener, PaintListener, KeyLi
                     if (canvasHeight <= 0 || canvasWidth <= 0) {
                         return;
                     }
-                    try (LogUtils.FlowScopeLog fs1 = new LogUtils.FlowScopeLogBuilder(LOGGER, Level.FINER, "Histogram:scaleData").setParentScope(fs).build()) { //$NON-NLS-1$
+                    try (LogUtils.FlowScopeLog _ = new LogUtils.FlowScopeLogBuilder(LOGGER, Level.FINER, "Histogram:scaleData").setParentScope(fs).build()) { //$NON-NLS-1$
                         fDataModel.setSelection(fSelectionBegin, fSelectionEnd);
                         HistogramScaledData scaledData = fDataModel.scaleTo(canvasWidth, canvasHeight, 1);
                         if (Objects.equal(scaledData, fScaledData)) {
@@ -687,7 +687,7 @@ public abstract class Histogram implements ControlListener, PaintListener, KeyLi
                         }
                         fScaledData = scaledData;
                     }
-                    try (LogUtils.FlowScopeLog fs1 = new LogUtils.FlowScopeLogBuilder(LOGGER, Level.FINER, "Histogram:redraw").setParentScope(fs).build()) { //$NON-NLS-1$
+                    try (LogUtils.FlowScopeLog _ = new LogUtils.FlowScopeLogBuilder(LOGGER, Level.FINER, "Histogram:redraw").setParentScope(fs).build()) { //$NON-NLS-1$
                         synchronized (fDataModel) {
                             if (fScaledData != null) {
                                 fCanvas.redraw();
@@ -808,7 +808,7 @@ public abstract class Histogram implements ControlListener, PaintListener, KeyLi
 
         final HistogramScaledData scaledData = new HistogramScaledData(fScaledData);
 
-        try (ScopeLog sl = new ScopeLog(LOGGER, Level.FINER, "Histogram:FmtImg")) { //$NON-NLS-1$
+        try (ScopeLog _ = new ScopeLog(LOGGER, Level.FINER, "Histogram:FmtImg")) { //$NON-NLS-1$
             final int height = image.getBounds().height;
 
             // Clear the drawing area

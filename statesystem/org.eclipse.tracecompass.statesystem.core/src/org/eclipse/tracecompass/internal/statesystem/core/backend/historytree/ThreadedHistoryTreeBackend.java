@@ -297,7 +297,7 @@ public final class ThreadedHistoryTreeBackend extends HistoryTreeBackend
     @Override
     public Iterable<@NonNull ITmfStateInterval> query2D(IntegerRangeCondition quarks, TimeRangeCondition times, boolean reverse)
             throws TimeRangeException {
-        try (ScopeLog log = new ScopeLog(LOGGER, Level.FINEST, "ThreadedHistoryTreeBackend:query2D", //$NON-NLS-1$
+        try (ScopeLog _ = new ScopeLog(LOGGER, Level.FINEST, "ThreadedHistoryTreeBackend:query2D", //$NON-NLS-1$
                 "ssid", getSSID(), //$NON-NLS-1$
                 "quarks", quarks, //$NON-NLS-1$
                 "timeCondition", times)) { //$NON-NLS-1$

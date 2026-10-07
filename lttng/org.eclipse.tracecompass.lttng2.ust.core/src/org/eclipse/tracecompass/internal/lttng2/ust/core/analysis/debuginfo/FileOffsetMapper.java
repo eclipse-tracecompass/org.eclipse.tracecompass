@@ -184,7 +184,7 @@ public final class FileOffsetMapper {
                 .build(new CacheLoader<FileOffset, @NonNull Iterable<Addr2lineInfo>>() {
                     @Override
                     public @NonNull Iterable<Addr2lineInfo> load(FileOffset fo) {
-                        try (ScopeLog sl = new ScopeLog(LOGGER, Level.FINER, "FileOffsetMapper:CacheMiss",  //$NON-NLS-1$
+                        try (ScopeLog _ = new ScopeLog(LOGGER, Level.FINER, "FileOffsetMapper:CacheMiss",  //$NON-NLS-1$
                                 "File", fo.fFilePath,  //$NON-NLS-1$
                                 "Offset", fo.fOffset, //$NON-NLS-1$
                                 "Build id", fo.fBuildId)) { //$NON-NLS-1$

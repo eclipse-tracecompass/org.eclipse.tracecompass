@@ -140,7 +140,7 @@ public class TmfOpenTraceHelper {
     public static IStatus openTraceFromPath(TmfTraceFolder destinationFolder, String path, Shell shell, String tracetypeHint) throws CoreException {
         final String pathToUse = TmfTraceType.checkAndUpdateTracePath(path);
         TraceTypeHelper traceTypeToSet = null;
-        try (ScopeLog scopeLog = new ScopeLog(LOGGER, Level.FINE, "TmfOpenTraceHelper#openTraceFromPath", "Get trace type")) { //$NON-NLS-1$//$NON-NLS-2$
+        try (ScopeLog _ = new ScopeLog(LOGGER, Level.FINE, "TmfOpenTraceHelper#openTraceFromPath", "Get trace type")) { //$NON-NLS-1$//$NON-NLS-2$
             traceTypeToSet = TmfTraceTypeUIUtils.selectTraceType(pathToUse, null, tracetypeHint);
         } catch (TmfTraceImportException e) {
             TraceUtils.displayErrorMsg(e);
@@ -343,7 +343,7 @@ public class TmfOpenTraceHelper {
     public static IStatus openFromElement(final TmfCommonProjectElement traceElement) {
         try (FlowScopeLog flow = new FlowScopeLogBuilder(LOGGER, Level.FINE, "openTraceFromElement").setCategory(LOCAL_CATEGORY).build()) { //$NON-NLS-1$
             AtomicReference<IFile> bookmarksFile = new AtomicReference<>();
-            try (FlowScopeLog bmFlow = new FlowScopeLogBuilder(LOGGER, Level.FINE, "createBookmarkFile").setParentScope(flow).build()) { //$NON-NLS-1$
+            try (FlowScopeLog _ = new FlowScopeLogBuilder(LOGGER, Level.FINE, "createBookmarkFile").setParentScope(flow).build()) { //$NON-NLS-1$
                 PlatformUI.getWorkbench().getProgressService().busyCursorWhile(monitor -> {
                     try {
                         traceElement.refreshSupplementaryFolder(monitor);
@@ -381,7 +381,7 @@ public class TmfOpenTraceHelper {
 
             // If a trace type is not set then delegate it to the eclipse platform
             if ((traceElement instanceof TmfTraceElement) && (traceElement.getResource() instanceof IFile) && (traceElement.getTraceType() == null)) {
-                try (FlowScopeLog bmFlow = new FlowScopeLogBuilder(LOGGER, Level.FINE, "OpenEditor").setParentScope(flow).build()) { //$NON-NLS-1$
+                try (FlowScopeLog _ = new FlowScopeLogBuilder(LOGGER, Level.FINE, "OpenEditor").setParentScope(flow).build()) { //$NON-NLS-1$
                     boolean activate = OpenStrategy.activateOnOpen();
                     // only local open is supported
                     IEditorPart openedEditor = IDE.openEditor(activePage, file, activate);
@@ -456,7 +456,7 @@ public class TmfOpenTraceHelper {
                 final IEditorInput editorInput = new TmfEditorInput(fFile, fTrace);
 
                 Display.getDefault().syncExec(() -> {
-                    try (FlowScopeLog displayLog = new FlowScopeLogBuilder(LOGGER, Level.FINE, "OpenEditor").setParentScope(log).build();) { //$NON-NLS-1$
+                    try (FlowScopeLog _ = new FlowScopeLogBuilder(LOGGER, Level.FINE, "OpenEditor").setParentScope(log).build();) { //$NON-NLS-1$
 
                         IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
                         if (window == null) {
@@ -531,7 +531,7 @@ public class TmfOpenTraceHelper {
 
         try (FlowScopeLog flow = new FlowScopeLogBuilder(LOGGER, Level.FINE, "reopenTraceFromElement").setCategory(LOCAL_CATEGORY).build()) { //$NON-NLS-1$
             AtomicReference<IFile> bookmarksFile = new AtomicReference<>();
-            try (FlowScopeLog scopeLog = new FlowScopeLogBuilder(LOGGER, Level.FINE, "createBookmarks").setParentScope(flow).build()) { //$NON-NLS-1$
+            try (FlowScopeLog _ = new FlowScopeLogBuilder(LOGGER, Level.FINE, "createBookmarks").setParentScope(flow).build()) { //$NON-NLS-1$
                 PlatformUI.getWorkbench().getProgressService().busyCursorWhile(monitor -> {
                     try {
                         traceElement.refreshSupplementaryFolder(monitor);
@@ -557,7 +557,7 @@ public class TmfOpenTraceHelper {
             Thread thread = new Thread() {
                 @Override
                 public void run() {
-                    try (FlowScopeLog scopeLog = new FlowScopeLogBuilder(LOGGER, Level.FINE, "createThread").setParentScope(flow).build()) { //$NON-NLS-1$
+                    try (FlowScopeLog _ = new FlowScopeLogBuilder(LOGGER, Level.FINE, "createThread").setParentScope(flow).build()) { //$NON-NLS-1$
                         final ITmfTrace trace = openProjectElement(traceElement);
                         if (trace == null) {
                             return;
@@ -566,7 +566,7 @@ public class TmfOpenTraceHelper {
                         final IEditorInput editorInput = new TmfEditorInput(file, trace);
 
                         Display.getDefault().asyncExec(() -> {
-                            try (FlowScopeLog innerScopeLog = new FlowScopeLogBuilder(LOGGER, Level.FINE, "OpenEditor").setParentScope(flow).build()) { //$NON-NLS-1$
+                            try (FlowScopeLog _ = new FlowScopeLogBuilder(LOGGER, Level.FINE, "OpenEditor").setParentScope(flow).build()) { //$NON-NLS-1$
                                 final IWorkbench wb = PlatformUI.getWorkbench();
                                 IWorkbenchWindow activeWorkbenchWindow = wb.getActiveWorkbenchWindow();
                                 if (activeWorkbenchWindow == null) {

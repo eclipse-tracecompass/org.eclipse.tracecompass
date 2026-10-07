@@ -403,7 +403,7 @@ public class TimeGraphEntry implements ITimeGraphEntry, ICoreElementResolver {
      * @since 4.2
      */
     public void updateZoomedEvent(ITimeEvent event) {
-        try (ScopeLog poc = new ScopeLog(LOGGER, Level.FINE, "UpdateZoomedEvent")) { //$NON-NLS-1$
+        try (ScopeLog _ = new ScopeLog(LOGGER, Level.FINE, "UpdateZoomedEvent")) { //$NON-NLS-1$
 
             long start = getStartTime();
             long end = getEndTime();

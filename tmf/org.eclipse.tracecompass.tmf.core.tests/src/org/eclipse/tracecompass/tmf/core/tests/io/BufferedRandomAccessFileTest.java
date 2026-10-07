@@ -113,11 +113,11 @@ public class BufferedRandomAccessFileTest {
             assertEquals(FILESIZE, file.length());
             for (int pos = 0; pos < file.length(); pos += LENGTH) {
                 assertEquals(pos, file.getFilePointer());
-                String line = file.readLine();
+                String line = file.getNextLine();
                 assertEquals(LINE.trim(), line);
             }
             assertEquals(file.length(), file.getFilePointer());
-            assertEquals(null, file.readLine());
+            assertEquals(null, file.getNextLine());
         }
     }
 

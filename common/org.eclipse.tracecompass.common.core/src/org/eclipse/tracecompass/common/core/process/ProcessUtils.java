@@ -62,7 +62,7 @@ public final class ProcessUtils {
      * @since 5.0
      */
     public static @Nullable List<String> getOutputFromCommand(List<String> command, boolean orError) {
-        try (ScopeLog sl = new ScopeLog(LOGGER, Level.FINER, "ProcessUtils#getOutputFromComment", "args", command)) { //$NON-NLS-1$ //$NON-NLS-2$
+        try (ScopeLog _ = new ScopeLog(LOGGER, Level.FINER, "ProcessUtils#getOutputFromComment", "args", command)) { //$NON-NLS-1$ //$NON-NLS-2$
             ProcessBuilder builder = new ProcessBuilder(command);
             builder.redirectErrorStream(true);
 
