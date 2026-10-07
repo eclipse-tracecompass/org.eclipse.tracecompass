@@ -86,7 +86,7 @@ public abstract class AbstractTreeCommonXDataProvider<A extends TmfStateSystemAn
         long currentEnd = ss.getCurrentEndTime();
         boolean complete = ss.waitUntilBuilt(0) || filter.getEnd() <= currentEnd;
 
-        try (FlowScopeLog scope = new FlowScopeLogBuilder(LOGGER, Level.FINE, "AbstractTreeXyDataProvider#fetchXY") //$NON-NLS-1$
+        try (FlowScopeLog _ = new FlowScopeLogBuilder(LOGGER, Level.FINE, "AbstractTreeXyDataProvider#fetchXY") //$NON-NLS-1$
                 .setCategory(getClass().getSimpleName()).build()) {
             Collection<IYModel> yModels = getYSeriesModels(ss, fetchParameters, monitor);
             if (yModels == null) {

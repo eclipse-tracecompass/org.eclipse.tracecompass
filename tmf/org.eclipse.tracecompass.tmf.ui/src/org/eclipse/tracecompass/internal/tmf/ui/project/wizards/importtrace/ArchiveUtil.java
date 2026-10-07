@@ -96,7 +96,7 @@ public class ArchiveUtil {
 
     private static boolean isGzipFile(String fileName) {
         if (!fileName.isEmpty()) {
-            try (GzipFile specifiedTarSourceFile = new GzipFile(fileName);) {
+            try (GzipFile _ = new GzipFile(fileName);) {
                 return true;
             } catch (IOException e) {
             }

@@ -2031,7 +2031,7 @@ public class TimeGraphControl extends TimeGraphBaseControl
 
     @Override
     void paint(Rectangle bounds, PaintEvent e) {
-        try (ScopeLog sl = new ScopeLog(LOGGER, Level.FINE, fPaintScopeLabel)) {
+        try (ScopeLog _ = new ScopeLog(LOGGER, Level.FINE, fPaintScopeLabel)) {
             GC gc = e.gc;
             fPostDrawEntries.clear();
             fPostDrawArrows.clear();
@@ -2045,28 +2045,28 @@ public class TimeGraphControl extends TimeGraphBaseControl
 
             fIdealNameSpace = 0;
             int nameSpace = fTimeProvider.getNameSpace();
-            try (ScopeLog bgScope = new ScopeLog(LOGGER, Level.FINEST, fBackgroundScopeLabel)) {
+            try (ScopeLog _ = new ScopeLog(LOGGER, Level.FINEST, fBackgroundScopeLabel)) {
                 // draw the background layer
                 drawBackground(bounds, nameSpace, gc);
             }
-            try (ScopeLog glScope = new ScopeLog(LOGGER, Level.FINEST, fGridLinesScopeLabel)) {
+            try (ScopeLog _ = new ScopeLog(LOGGER, Level.FINEST, fGridLinesScopeLabel)) {
                 // draw the grid lines
                 drawGridLines(bounds, gc);
             }
-            try (ScopeLog bgmScope = new ScopeLog(LOGGER, Level.FINEST, fBgmScopeLabel)) {
+            try (ScopeLog _ = new ScopeLog(LOGGER, Level.FINEST, fBgmScopeLabel)) {
                 // draw the background markers
                 drawMarkers(bounds, fTimeProvider, fMarkers, false, nameSpace, gc);
             }
-            try (ScopeLog itemsScope = new ScopeLog(LOGGER, Level.FINEST, fItemsScopeLabel)) {
+            try (ScopeLog _ = new ScopeLog(LOGGER, Level.FINEST, fItemsScopeLabel)) {
                 // draw the items
                 drawItems(bounds, fTimeProvider, fItemData.fExpandedItems, fTopIndex, nameSpace, gc);
             }
-            try (ScopeLog markerScope = new ScopeLog(LOGGER, Level.FINEST, fMarkersScopeLabel)) {
+            try (ScopeLog _ = new ScopeLog(LOGGER, Level.FINEST, fMarkersScopeLabel)) {
                 // draw the foreground markers
                 drawMarkers(bounds, fTimeProvider, fMarkers, true, nameSpace, gc);
             }
 
-            try (ScopeLog linksScope = new ScopeLog(LOGGER, Level.FINEST, fLinksScopeLabel)) {
+            try (ScopeLog _ = new ScopeLog(LOGGER, Level.FINEST, fLinksScopeLabel)) {
                 // draw the links (arrows)
                 drawLinks(bounds, fTimeProvider, fItemData.fLinks, nameSpace, gc);
             }

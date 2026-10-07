@@ -305,7 +305,7 @@ public abstract class AbstractSegmentStoreTableViewer extends TmfSimpleTableView
     public void updateModel(final @Nullable Object dataInput) {
         final TableViewer tableViewer = getTableViewer();
         Display.getDefault().asyncExec(() -> {
-            try (ScopeLog sl = new ScopeLog(LOGGER, Level.FINE, "updateModel")) { //$NON-NLS-1$
+            try (ScopeLog _ = new ScopeLog(LOGGER, Level.FINE, "updateModel")) { //$NON-NLS-1$
                 if (!tableViewer.getTable().isDisposed()) {
                     // Go to the top of the table
                     tableViewer.getTable().setTopIndex(0);
@@ -439,7 +439,7 @@ public abstract class AbstractSegmentStoreTableViewer extends TmfSimpleTableView
 
                 @Override
                 protected IStatus run(@Nullable IProgressMonitor monitor) {
-                    try (ScopeLog log = new ScopeLog(LOGGER, Level.FINE, "SegmentStoreTable:Filtering")) { //$NON-NLS-1$
+                    try (ScopeLog _ = new ScopeLog(LOGGER, Level.FINE, "SegmentStoreTable:Filtering")) { //$NON-NLS-1$
                         SubMonitor subMonitor = SubMonitor.convert(monitor);
 
                         ISegmentStore<ISegment> filteredStore = new ArrayListStore<>();

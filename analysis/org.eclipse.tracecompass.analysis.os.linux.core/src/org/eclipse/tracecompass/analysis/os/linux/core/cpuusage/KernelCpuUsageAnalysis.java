@@ -197,7 +197,7 @@ public class KernelCpuUsageAnalysis extends TmfStateSystemAnalysisModule {
             return map;
         }
 
-        try (ScopeLog scopeLog = new ScopeLog(LOGGER, Level.FINE, "KernelCpuUsageAnalysis#getCpuUsageInRange")) { //$NON-NLS-1$
+        try (ScopeLog _ = new ScopeLog(LOGGER, Level.FINE, "KernelCpuUsageAnalysis#getCpuUsageInRange")) { //$NON-NLS-1$
             /* Get the list of quarks for each CPU and CPU's TIDs */
             int cpusNode = cpuSs.getQuarkAbsolute(Attributes.CPUS);
             Map<Integer, List<Integer>> tidsPerCpu = new HashMap<>();

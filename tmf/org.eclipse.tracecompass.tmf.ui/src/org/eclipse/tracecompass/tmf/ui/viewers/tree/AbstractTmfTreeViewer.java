@@ -359,7 +359,7 @@ public abstract class AbstractTmfTreeViewer extends TmfTimeViewer {
 
     @Override
     public void refresh() {
-        try (ScopeLog refreshTree = new ScopeLog(LOGGER, Level.FINE, getClass().getCanonicalName() + "#refresh()")) {
+        try (ScopeLog _ = new ScopeLog(LOGGER, Level.FINE, getClass().getCanonicalName() + "#refresh()")) {
             Tree tree = fTreeViewer.getTree();
             tree.setRedraw(false);
             fTreeViewer.refresh();
@@ -535,7 +535,7 @@ public abstract class AbstractTmfTreeViewer extends TmfTimeViewer {
      * @since 6.0
      */
     protected final void updateTreeUI(TreeViewer treeViewer, @NonNull ITmfTreeViewerEntry newInput) {
-        try (ScopeLog updateTreeUi = new ScopeLog(LOGGER, Level.FINE, getClass().getSimpleName() + "#updateTreeUI")) { //$NON-NLS-1$
+        try (ScopeLog _ = new ScopeLog(LOGGER, Level.FINE, getClass().getSimpleName() + "#updateTreeUI")) { //$NON-NLS-1$
             Set<String> expandedPaths = new HashSet<>();
             Object input = fTreeViewer.getInput();
 
@@ -543,10 +543,10 @@ public abstract class AbstractTmfTreeViewer extends TmfTimeViewer {
              * Find in the new entries the equivalent of the selected one
              */
             ISelection selection = null;
-            try (ScopeLog selection1 = new ScopeLog(LOGGER, Level.FINE, getClass().getSimpleName() + "#getSelection")) { //$NON-NLS-1$
+            try (ScopeLog _ = new ScopeLog(LOGGER, Level.FINE, getClass().getSimpleName() + "#getSelection")) { //$NON-NLS-1$
                 selection = TreeUtil.getNewSelection(fTreeViewer.getSelection(), newInput);
             }
-            try (ScopeLog updatePaths = new ScopeLog(LOGGER, Level.FINE, getClass().getSimpleName() + "#updatePaths")) { //$NON-NLS-1$
+            try (ScopeLog _ = new ScopeLog(LOGGER, Level.FINE, getClass().getSimpleName() + "#updatePaths")) { //$NON-NLS-1$
                 /*
                  * Get currently expanded nodes
                  */
@@ -561,7 +561,7 @@ public abstract class AbstractTmfTreeViewer extends TmfTimeViewer {
             Set<@NonNull ITmfTreeViewerEntry> allLeafEntries = new HashSet<>();
             Set<String> allPaths = new HashSet<>();
             Set<String> allChildren = Collections.emptySet();
-            try (ScopeLog updatePaths = new ScopeLog(LOGGER, Level.FINE, getClass().getSimpleName() + "#fillAllLeaves")) { //$NON-NLS-1$
+            try (ScopeLog _ = new ScopeLog(LOGGER, Level.FINE, getClass().getSimpleName() + "#fillAllLeaves")) { //$NON-NLS-1$
                 if (input instanceof ITmfTreeViewerEntry) {
                     TreeUtil.addIf(allLeafEntries, (ITmfTreeViewerEntry) input, entry -> !entry.hasChildren());
                     for (ITmfTreeViewerEntry child : ((ITmfTreeViewerEntry) input).getChildren()) {
@@ -572,7 +572,7 @@ public abstract class AbstractTmfTreeViewer extends TmfTimeViewer {
             }
             Set<String> allLeaves = allChildren;
             Set<@NonNull ITmfTreeViewerEntry> newExpanded = new HashSet<>();
-            try (ScopeLog updatePaths = new ScopeLog(LOGGER, Level.FINE, getClass().getSimpleName() + "#addAllNonCollapsed")) { //$NON-NLS-1$
+            try (ScopeLog _ = new ScopeLog(LOGGER, Level.FINE, getClass().getSimpleName() + "#addAllNonCollapsed")) { //$NON-NLS-1$
                 /*
                  * All the current nodes minus currently expanded are collapsed,
                  * so if an entry is included in the expanded list or it is NOT
@@ -586,17 +586,17 @@ public abstract class AbstractTmfTreeViewer extends TmfTimeViewer {
                     return (expandedPaths.contains(key) || !allPaths.contains(key)) || allLeaves.contains(key);
                 });
             }
-            try (ScopeLog updatePaths = new ScopeLog(LOGGER, Level.FINE, getClass().getSimpleName() + "#updateInput")) { //$NON-NLS-1$
+            try (ScopeLog _ = new ScopeLog(LOGGER, Level.FINE, getClass().getSimpleName() + "#updateInput")) { //$NON-NLS-1$
                 if (newInput != input) {
                     fTreeViewer.setInput(newInput);
                 } else {
                     fTreeViewer.refresh();
                 }
             }
-            try (ScopeLog updatePaths = new ScopeLog(LOGGER, Level.FINE, getClass().getSimpleName() + "#contentChanged")) { //$NON-NLS-1$
+            try (ScopeLog _ = new ScopeLog(LOGGER, Level.FINE, getClass().getSimpleName() + "#contentChanged")) { //$NON-NLS-1$
                 contentChanged(newInput);
             }
-            try (ScopeLog updatePaths = new ScopeLog(LOGGER, Level.FINE, getClass().getSimpleName() + "#resetSelection")) { //$NON-NLS-1$
+            try (ScopeLog _ = new ScopeLog(LOGGER, Level.FINE, getClass().getSimpleName() + "#resetSelection")) { //$NON-NLS-1$
                 /*
                  * Reset Selection
                  */
@@ -604,7 +604,7 @@ public abstract class AbstractTmfTreeViewer extends TmfTimeViewer {
                     fTreeViewer.setSelection(selection, true);
                 }
             }
-            try (ScopeLog updatePaths = new ScopeLog(LOGGER, Level.FINE, getClass().getSimpleName() + "#expand")) { //$NON-NLS-1$
+            try (ScopeLog _ = new ScopeLog(LOGGER, Level.FINE, getClass().getSimpleName() + "#expand")) { //$NON-NLS-1$
                 /*
                  * Reset Expanded. This may be a slow operation, so only do it for smaller trees
                  */

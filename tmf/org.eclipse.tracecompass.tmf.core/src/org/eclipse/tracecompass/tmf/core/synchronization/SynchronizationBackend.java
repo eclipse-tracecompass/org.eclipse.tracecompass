@@ -133,7 +133,7 @@ public class SynchronizationBackend {
 
         try (/* Set the position after the header */
                 FileInputStream fis = new FileInputStream(fSyncFile);
-                FileChannel fc = fis.getChannel().position(HEADER_SIZE);
+                FileChannel _ = fis.getChannel().position(HEADER_SIZE);
                 /* Read the input stream */
                 ObjectInputStream ois = new ObjectInputStream(fis);) {
 

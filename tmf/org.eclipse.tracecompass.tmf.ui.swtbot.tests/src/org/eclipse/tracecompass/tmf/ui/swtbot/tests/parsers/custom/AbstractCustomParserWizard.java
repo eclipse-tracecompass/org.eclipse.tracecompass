@@ -70,7 +70,7 @@ public class AbstractCustomParserWizard {
         StringBuilder xmlPart = new StringBuilder();
         boolean started = false;
         try (BufferedRandomAccessFile raf = new BufferedRandomAccessFile(xmlFile, "r");) {
-            String s = raf.readLine();
+            String s = raf.getNextLine();
             while (s != null) {
                 s = s.trim();
                 if (s.equals("<Definition category=\"" + category + "\" name=\"" + definitionName + "\">")) {

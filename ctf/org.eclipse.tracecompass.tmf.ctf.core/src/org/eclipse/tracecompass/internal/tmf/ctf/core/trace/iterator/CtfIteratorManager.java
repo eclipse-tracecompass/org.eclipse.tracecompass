@@ -138,7 +138,7 @@ public class CtfIteratorManager {
         fAccessLock.lock();
         try {
             /* The try below is only to auto-call CtfIterator.close() */
-            try (CtfIterator removed = fMap.remove(context)) {
+            try (CtfIterator _ = fMap.remove(context)) {
                 // try with resource
             }
             fRandomAccess.remove(context);

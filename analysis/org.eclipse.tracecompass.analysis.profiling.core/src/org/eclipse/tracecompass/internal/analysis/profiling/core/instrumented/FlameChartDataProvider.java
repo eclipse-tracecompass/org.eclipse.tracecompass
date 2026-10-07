@@ -271,7 +271,7 @@ public class FlameChartDataProvider extends AbstractTmfTraceDataProvider impleme
 
     @Override
     public TmfModelResponse<Map<String, String>> fetchTooltip(Map<String, Object> fetchParameters, @Nullable IProgressMonitor monitor) {
-        try (FlowScopeLog scope = new FlowScopeLogBuilder(LOGGER, Level.FINE, "FlameChartDataProvider#fetchTooltip") //$NON-NLS-1$
+        try (FlowScopeLog _ = new FlowScopeLogBuilder(LOGGER, Level.FINE, "FlameChartDataProvider#fetchTooltip") //$NON-NLS-1$
                 .setCategory(getClass().getSimpleName()).build()) {
             List<Long> times = DataProviderParameterUtils.extractTimeRequested(fetchParameters);
             if (times == null || times.isEmpty()) {
@@ -353,7 +353,7 @@ public class FlameChartDataProvider extends AbstractTmfTraceDataProvider impleme
             return fCached;
         }
 
-        try (FlowScopeLog scope = new FlowScopeLogBuilder(LOGGER, Level.FINE, "FlameChartDataProvider#fetchTree") //$NON-NLS-1$
+        try (FlowScopeLog _ = new FlowScopeLogBuilder(LOGGER, Level.FINE, "FlameChartDataProvider#fetchTree") //$NON-NLS-1$
                 .setCategory(getClass().getSimpleName()).build()) {
             IFlameChartProvider fcProvider = fFcProvider;
             boolean complete = fcProvider.isComplete();
@@ -458,7 +458,7 @@ public class FlameChartDataProvider extends AbstractTmfTraceDataProvider impleme
 
     @Override
     public TmfModelResponse<TimeGraphModel> fetchRowModel(Map<String, Object> fetchParameters, @Nullable IProgressMonitor monitor) {
-        try (FlowScopeLog scope = new FlowScopeLogBuilder(LOGGER, Level.FINE, "FlameChartDataProvider#fetchRowModel") //$NON-NLS-1$
+        try (FlowScopeLog _ = new FlowScopeLogBuilder(LOGGER, Level.FINE, "FlameChartDataProvider#fetchRowModel") //$NON-NLS-1$
                 .setCategory(getClass().getSimpleName()).build()) {
 
             Map<Long, FlameChartEntryModel> entries = getSelectedEntries(fetchParameters);

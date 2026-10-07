@@ -114,7 +114,7 @@ public class BtfTrace extends TmfTrace implements ITmfPersistentlyIndexable, ITm
     private BtfTimestampFormat fTsFormat = BtfTimestampFormat.NS;
 
     private File fFile;
-    private RandomAccessFile fFileInput;
+    private BufferedRandomAccessFile fFileInput;
     private long fDataOffset;
     private long fTsOffset = 0;
 
@@ -127,8 +127,8 @@ public class BtfTrace extends TmfTrace implements ITmfPersistentlyIndexable, ITm
         fProperties.put(TIMESCALE, fTsFormat.toString());
     }
 
-    private void parseHeader(RandomAccessFile input) throws IOException {
-        String line = input.readLine();
+    private void parseHeader(BufferedRandomAccessFile input) throws IOException {
+        String line = input.getNextLine();
         long pos = 0;
         while (line != null && line.startsWith("#")) { //$NON-NLS-1$
             String[] tokens = line.split(" ", 2); //$NON-NLS-1$
@@ -169,39 +169,39 @@ public class BtfTrace extends TmfTrace implements ITmfPersistentlyIndexable, ITm
                 break;
             case lENTITYTYPE:
                 pos = fFileInput.getFilePointer();
-                line = fFileInput.readLine();
+                line = fFileInput.getNextLine();
                 while (line.startsWith("#-")) { //$NON-NLS-1$
                     String tempLine = line.substring(1);
                     String[] elements = tempLine.split(" ", 2); //$NON-NLS-1$
                     fEntityTypes.put(Integer.parseInt(elements[0]), BtfEventTypeFactory.parse(elements[1]));
                     pos = fFileInput.getFilePointer();
-                    line = fFileInput.readLine();
+                    line = fFileInput.getNextLine();
                 }
                 fFileInput.seek(pos);
                 fProperties.put(ENTITYTYPE, fEntityTypes.toString());
                 break;
             case lENTITYTABLE:
                 pos = fFileInput.getFilePointer();
-                line = fFileInput.readLine();
+                line = fFileInput.getNextLine();
                 while (line.startsWith("#-")) { //$NON-NLS-1$
                     String tempLine = line.substring(1);
                     String[] elements = tempLine.split(" ", 2); //$NON-NLS-1$
                     fEntityTable.put(Integer.parseInt(elements[0]), elements[1]);
                     pos = fFileInput.getFilePointer();
-                    line = fFileInput.readLine();
+                    line = fFileInput.getNextLine();
                 }
                 fProperties.put(ENTITYTABLE, fEntityTable.toString());
                 fFileInput.seek(pos);
                 break;
             case lENTITYTYPETABLE:
                 pos = fFileInput.getFilePointer();
-                line = fFileInput.readLine();
+                line = fFileInput.getNextLine();
                 while (line.startsWith("#-")) { //$NON-NLS-1$
                     String tempLine = line.substring(1);
                     String[] elements = tempLine.split(" ", 2); //$NON-NLS-1$
                     fEntityTypeTable.put(BtfEventTypeFactory.parse(elements[0]), elements[1]);
                     pos = fFileInput.getFilePointer();
-                    line = fFileInput.readLine();
+                    line = fFileInput.getNextLine();
                 }
                 fFileInput.seek(pos);
                 fProperties.put(ENTITYTYPETABLE, fEntityTypeTable.toString());
@@ -210,7 +210,7 @@ public class BtfTrace extends TmfTrace implements ITmfPersistentlyIndexable, ITm
                 break;
             }
             fDataOffset = input.getFilePointer();
-            line = input.readLine();
+            line = input.getNextLine();
         }
         fTsOffset = (long) (fTsOffset * fTsFormat.getScaleFactor());
     }
@@ -220,7 +220,7 @@ public class BtfTrace extends TmfTrace implements ITmfPersistentlyIndexable, ITm
         super.initTrace(resource, path, type);
         fFile = new File(path);
         try {
-            fFileInput = new RandomAccessFile(fFile, "r"); //$NON-NLS-1$
+            fFileInput = new BufferedRandomAccessFile(fFile, "r"); //$NON-NLS-1$
             parseHeader(fFileInput);
         } catch (IOException e) {
             throw new TmfTraceException(e.getMessage(), e);
@@ -276,7 +276,7 @@ public class BtfTrace extends TmfTrace implements ITmfPersistentlyIndexable, ITm
             while ((line != null) && (lineCount++ < MAX_LINES)) {
                 // Skip comment lines
                 while (line != null && line.startsWith("#")) { //$NON-NLS-1$
-                    line = rafile.readLine();
+                    line = rafile.getNextLine();
                 }
                 ITmfEvent event = parseLine(0, line);
                 if (event != null) {
@@ -400,9 +400,9 @@ public class BtfTrace extends TmfTrace implements ITmfPersistentlyIndexable, ITm
             }
             String line;
             try {
-                line = fFileInput.readLine();
+                line = fFileInput.getNextLine();
                 while (line != null && line.startsWith("#")) { //$NON-NLS-1$
-                    line = fFileInput.readLine();
+                    line = fFileInput.getNextLine();
                 }
                 return parseLine(context.getRank(), line);
 

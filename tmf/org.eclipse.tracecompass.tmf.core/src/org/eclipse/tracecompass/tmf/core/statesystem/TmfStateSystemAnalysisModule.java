@@ -271,7 +271,7 @@ public abstract class TmfStateSystemAnalysisModule extends TmfAbstractAnalysisMo
         /*
          * FIXME: State systems should make use of the monitor, to be cancelled
          */
-        try (ScopeLog log = new ScopeLog(LOGGER, Level.FINE, "StateSystemAnalysis:executing", "id", id)) { //$NON-NLS-1$ //$NON-NLS-2$
+        try (ScopeLog _ = new ScopeLog(LOGGER, Level.FINE, "StateSystemAnalysis:executing", "id", id)) { //$NON-NLS-1$ //$NON-NLS-2$
             /* Get the state system according to backend */
             StateSystemBackendType backend = getBackendType();
 

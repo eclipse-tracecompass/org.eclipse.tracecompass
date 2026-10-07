@@ -551,7 +551,7 @@ public class StateSystem implements ITmfStateSystemBuilder {
             throw new StateSystemDisposedException();
         }
 
-        try (ScopeLog log = new ScopeLog(LOGGER, Level.FINER, "StateSystem:FullQuery", //$NON-NLS-1$
+        try (ScopeLog _ = new ScopeLog(LOGGER, Level.FINER, "StateSystem:FullQuery", //$NON-NLS-1$
                 "ssid", getSSID(), "ts", t)) { //$NON-NLS-1$ //$NON-NLS-2$
 
             final int nbAttr = getNbAttributes();
@@ -595,7 +595,7 @@ public class StateSystem implements ITmfStateSystemBuilder {
         if (isDisposed) {
             throw new StateSystemDisposedException();
         }
-        try (ScopeLog log = new ScopeLog(LOGGER, Level.FINER, "StateSystem:SingleQuery", //$NON-NLS-1$
+        try (ScopeLog _ = new ScopeLog(LOGGER, Level.FINER, "StateSystem:SingleQuery", //$NON-NLS-1$
                 "ssid", this.getSSID(), //$NON-NLS-1$
                 "ts", t, //$NON-NLS-1$
                 "attribute", attributeQuark)) { //$NON-NLS-1$

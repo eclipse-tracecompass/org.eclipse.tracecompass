@@ -542,7 +542,7 @@ public abstract class AbstractTimeGraphView extends TmfView implements ITmfTimeA
         }
 
         public void run(IProgressMonitor monitor) {
-            try (FlowScopeLog log = new FlowScopeLogBuilder(LOGGER, Level.FINE, "TimeGraphView:BuildThread", "trace", fBuildTrace.getName()).setParentScope(fScope).build()) { //$NON-NLS-1$ //$NON-NLS-2$
+            try (FlowScopeLog _ = new FlowScopeLogBuilder(LOGGER, Level.FINE, "TimeGraphView:BuildThread", "trace", fBuildTrace.getName()).setParentScope(fScope).build()) { //$NON-NLS-1$ //$NON-NLS-2$
                 buildEntryList(fBuildTrace, fParentTrace, NonNullUtils.checkNotNull(monitor));
                 synchronized (fBuildJobMap) {
                     fBuildJobMap.remove(fBuildTrace);
@@ -708,7 +708,7 @@ public abstract class AbstractTimeGraphView extends TmfView implements ITmfTimeA
                             fEntries, entry -> !sampling.equals(entry.getSampling()))));
 
             List<ILinkEvent> computedLinks;
-            try (ScopeLog linkLog = new ScopeLog(LOGGER, Level.FINER, "ZoomThread:GettingLinks")) { //$NON-NLS-1$
+            try (ScopeLog _ = new ScopeLog(LOGGER, Level.FINER, "ZoomThread:GettingLinks")) { //$NON-NLS-1$
                 /* Refresh the arrows when zooming */
                 computedLinks = getLinkList(zoomStartTime, zoomEndTime, resolution, monitor);
                 ViewFilterDialog filterDialog = getViewFilterDialog();
@@ -722,7 +722,7 @@ public abstract class AbstractTimeGraphView extends TmfView implements ITmfTimeA
             }
             List<ILinkEvent> links = computedLinks;
             /* Refresh the view-specific markers when zooming */
-            try (ScopeLog markerLoglog = new ScopeLog(LOGGER, Level.FINER, "ZoomThread:GettingMarkers")) { //$NON-NLS-1$
+            try (ScopeLog _ = new ScopeLog(LOGGER, Level.FINER, "ZoomThread:GettingMarkers")) { //$NON-NLS-1$
                 List<IMarkerEvent> newMarkers = new ArrayList<>(getViewMarkerList(incorrectSample, zoomStartTime, zoomEndTime, resolution, monitor));
                 /* Refresh the trace-specific markers when zooming */
                 newMarkers.addAll(getTraceMarkerList(zoomStartTime, zoomEndTime, resolution, monitor));
@@ -748,7 +748,7 @@ public abstract class AbstractTimeGraphView extends TmfView implements ITmfTimeA
                 });
 
             }
-            try (ScopeLog log = new ScopeLog(LOGGER, Level.FINER, "ZoomThread:GettingStates")) { //$NON-NLS-1$
+            try (ScopeLog _ = new ScopeLog(LOGGER, Level.FINER, "ZoomThread:GettingStates")) { //$NON-NLS-1$
                 getTimeGraphViewer().setTimeEventFilterApplied(isFilterActive);
 
                 boolean hasSavedFilter = fTimeEventFilterDialog != null && fTimeEventFilterDialog.hasActiveSavedFilters();
@@ -765,7 +765,7 @@ public abstract class AbstractTimeGraphView extends TmfView implements ITmfTimeA
             }
             if (isFilterActive && Thread.currentThread() == fZoomThread) {
                 /* Do a full filter search as a second pass */
-                try (ScopeLog log = new ScopeLog(LOGGER, Level.FINER, "ZoomThread:GettingStatesFullSearch")) { //$NON-NLS-1$
+                try (ScopeLog _ = new ScopeLog(LOGGER, Level.FINER, "ZoomThread:GettingStatesFullSearch")) { //$NON-NLS-1$
                     for (TimeGraphEntry entry : fEntries) {
                         if (monitor.isCanceled()) {
                             return;
@@ -2188,7 +2188,7 @@ public abstract class AbstractTimeGraphView extends TmfView implements ITmfTimeA
         try (FlowScopeLog parentLogger = new FlowScopeLogBuilder(LOGGER, Level.FINE, "RefreshRequested").setCategory(getViewId()).build()) { //$NON-NLS-1$
             final boolean isZoomThread = Thread.currentThread() instanceof ZoomThread;
             TmfUiRefreshHandler.getInstance().queueUpdate(this, () -> {
-                try (FlowScopeLog log = new FlowScopeLogBuilder(LOGGER, Level.FINE, "TimeGraphView:Refresh").setParentScope(parentLogger).build()) { //$NON-NLS-1$
+                try (FlowScopeLog _ = new FlowScopeLogBuilder(LOGGER, Level.FINE, "TimeGraphView:Refresh").setParentScope(parentLogger).build()) { //$NON-NLS-1$
                     if (fTimeGraphViewer.getControl().isDisposed()) {
                         return;
                     }
@@ -2281,7 +2281,7 @@ public abstract class AbstractTimeGraphView extends TmfView implements ITmfTimeA
         }
         try (FlowScopeLog flowParent = new FlowScopeLogBuilder(LOGGER, Level.FINE, "RedrawRequested").setCategory(getViewId()).build()) { //$NON-NLS-1$
             Display.getDefault().asyncExec(() -> {
-                try (FlowScopeLog log = new FlowScopeLogBuilder(LOGGER, Level.FINE, "TimeGraphView:Redraw").setParentScope(flowParent).build()) { //$NON-NLS-1$
+                try (FlowScopeLog _ = new FlowScopeLogBuilder(LOGGER, Level.FINE, "TimeGraphView:Redraw").setParentScope(flowParent).build()) { //$NON-NLS-1$
                     if (fTimeGraphViewer.getControl().isDisposed()) {
                         return;
                     }

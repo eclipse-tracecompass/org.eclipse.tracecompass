@@ -46,7 +46,7 @@
     <testArgLine></testArgLine>
 
     <jdk.version>25</jdk.version>
-    <jdk.release>21</jdk.release>
+    <jdk.release>25</jdk.release>
 
     <skip-tc-core-tests>false</skip-tc-core-tests>
     <skip-short-tc-ui-tests>false</skip-short-tc-ui-tests>

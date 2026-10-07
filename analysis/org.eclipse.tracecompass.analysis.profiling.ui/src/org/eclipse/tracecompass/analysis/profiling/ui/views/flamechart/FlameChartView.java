@@ -779,7 +779,7 @@ public class FlameChartView extends BaseDataProviderTimeGraphView {
             new Job("Resetting Symbols") { //$NON-NLS-1$
                 @Override
                 protected IStatus run(@Nullable IProgressMonitor monitor) {
-                    try (FlowScopeLog log = new FlowScopeLogBuilder(LOGGER, Level.FINE, "Resetting Symbols").setParentScope(flowParent).build()) { //$NON-NLS-1$
+                    try (FlowScopeLog _ = new FlowScopeLogBuilder(LOGGER, Level.FINE, "Resetting Symbols").setParentScope(flowParent).build()) { //$NON-NLS-1$
                         return resetSymbolsSync();
                     }
                 }

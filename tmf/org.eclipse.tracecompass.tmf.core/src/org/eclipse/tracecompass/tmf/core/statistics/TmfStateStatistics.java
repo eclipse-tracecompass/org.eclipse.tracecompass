@@ -135,7 +135,7 @@ public class TmfStateStatistics implements ITmfStatistics {
                 break;
             }
         }
-        try (FlowScopeLog log = new FlowScopeLogBuilder(LOGGER, Level.FINE, "StateStatistics:histogramQuery").build()) { //$NON-NLS-1$
+        try (FlowScopeLog _ = new FlowScopeLogBuilder(LOGGER, Level.FINE, "StateStatistics:histogramQuery").build()) { //$NON-NLS-1$
             addHistogramValuesFromQuery2d(quark, times, list);
             /* Padding for after trace ends */
             for (int i = list.size(); i < timeRequested.length; i++) {

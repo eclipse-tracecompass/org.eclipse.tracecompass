@@ -394,7 +394,7 @@ public abstract class TmfAbstractAnalysisModule extends TmfComponent
             Job job = new Job(jobName) {
                 @Override
                 protected @Nullable IStatus run(final @Nullable IProgressMonitor monitor) {
-                    try (FlowScopeLog jobLog = new FlowScopeLogBuilder(LOGGER, Level.FINE, "TmfAbstractAnalysis:executing").setParentScope(analysisLog).build()) { //$NON-NLS-1$
+                    try (FlowScopeLog _ = new FlowScopeLogBuilder(LOGGER, Level.FINE, "TmfAbstractAnalysis:executing").setParentScope(analysisLog).build()) { //$NON-NLS-1$
                         IProgressMonitor mon = SubMonitor.convert(monitor);
                         try {
                             broadcast(new TmfStartAnalysisSignal(TmfAbstractAnalysisModule.this, TmfAbstractAnalysisModule.this));

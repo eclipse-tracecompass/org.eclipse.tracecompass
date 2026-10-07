@@ -744,7 +744,7 @@ public abstract class HTNode {
      *             If some other I/O error occurs
      */
     public static int readToBuffer(FileChannel channel, int seqNb, long blockSize, ByteBuffer buffer) throws IOException {
-        try (ScopeLog readNode = new ScopeLog(LOGGER, Level.FINEST, "HTNode#readToBuffer")) { //$NON-NLS-1$
+        try (ScopeLog _ = new ScopeLog(LOGGER, Level.FINEST, "HTNode#readToBuffer")) { //$NON-NLS-1$
             IHistoryTree.seekFCToNodePos(channel, blockSize, seqNb);
             return channel.read(buffer);
         }

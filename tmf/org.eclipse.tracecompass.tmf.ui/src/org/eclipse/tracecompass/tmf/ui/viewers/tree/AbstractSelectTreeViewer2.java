@@ -329,7 +329,7 @@ public abstract class AbstractSelectTreeViewer2 extends AbstractTmfTreeViewer {
     }
 
     private void refreshTree(@NonNull FlowScopeLog parent) {
-        try (FlowScopeLog refresh = new FlowScopeLogBuilder(LOGGER, Level.FINE, getClass().getSimpleName() + "#treeRefresh()").setParentScope(parent).build()) { //$NON-NLS-1$
+        try (FlowScopeLog _ = new FlowScopeLogBuilder(LOGGER, Level.FINE, getClass().getSimpleName() + "#treeRefresh()").setParentScope(parent).build()) { //$NON-NLS-1$
             getTreeViewer().refresh();
         }
     }
@@ -440,7 +440,7 @@ public abstract class AbstractSelectTreeViewer2 extends AbstractTmfTreeViewer {
                         do {
                             TmfModelResponse<@NonNull TmfTreeModel<@NonNull ITmfTreeDataModel>> response;
                             TmfTreeModel<@NonNull ITmfTreeDataModel> model = null;
-                            try (FlowScopeLog iterScope = new FlowScopeLogBuilder(LOGGER, Level.FINE, UPDATE_CONTENT_JOB_NAME + " query") //$NON-NLS-1$
+                            try (FlowScopeLog _ = new FlowScopeLogBuilder(LOGGER, Level.FINE, UPDATE_CONTENT_JOB_NAME + " query") //$NON-NLS-1$
                                     .setParentScope(scope).build()) {
 
                                 response = provider.fetchTree(parameters, monitor);
@@ -516,7 +516,7 @@ public abstract class AbstractSelectTreeViewer2 extends AbstractTmfTreeViewer {
                     newTreeModel.getChildren().forEach(child -> rootEntry.addChild((TmfTreeViewerEntry) child));
                 }
                 Display.getDefault().asyncExec(() -> {
-                    try (FlowScopeLog scope = new FlowScopeLogBuilder(LOGGER, Level.FINE, "AbstractSelectTreeViewer:TreeUpdate").setParentScope(parentScope).build()) { //$NON-NLS-1$
+                    try (FlowScopeLog _ = new FlowScopeLogBuilder(LOGGER, Level.FINE, "AbstractSelectTreeViewer:TreeUpdate").setParentScope(parentScope).build()) { //$NON-NLS-1$
                         long startTime = System.currentTimeMillis();
 
                         if (!trace.equals(getTrace())) {
