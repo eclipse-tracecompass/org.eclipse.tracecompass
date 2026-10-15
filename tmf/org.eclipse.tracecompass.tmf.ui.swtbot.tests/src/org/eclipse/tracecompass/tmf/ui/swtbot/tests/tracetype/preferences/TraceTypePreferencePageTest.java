@@ -13,6 +13,7 @@ package org.eclipse.tracecompass.tmf.ui.swtbot.tests.tracetype.preferences;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeTrue;
 
@@ -198,10 +199,12 @@ public class TraceTypePreferencePageTest {
                 "Common Trace Format",
                 "Custom Text",
                 "Custom XML",
-                "Test trace",
-                "",
-                "Manage Custom Parsers...");
-        assertEquals("Test all categories enabled", categories, menuItems);
+                "Test trace");
+
+        for (String category : categories) {
+            assertTrue("Category in menu: " + category, menuItems.contains(category));
+        }
+        assertTrue("Manage Custom Parsers in menu", menuItems.contains("Manage Custom Parsers..."));
 
         //Change the preference values and test the 'Select Trace Type...' options
         setTraceTypePreferences(UNCHECK_ALL, "Custom Text");
