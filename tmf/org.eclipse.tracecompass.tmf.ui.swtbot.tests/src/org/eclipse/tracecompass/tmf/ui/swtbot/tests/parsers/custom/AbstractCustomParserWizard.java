@@ -83,7 +83,7 @@ public class AbstractCustomParserWizard {
                     xmlPart.append(s);
                     xmlPart.append('\n');
                 }
-                s = raf.readLine();
+                s = raf.getNextLine();
             }
         }
         return xmlPart.toString();
