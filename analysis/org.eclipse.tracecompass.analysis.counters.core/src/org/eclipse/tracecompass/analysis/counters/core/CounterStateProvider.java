@@ -22,13 +22,12 @@ import org.eclipse.tracecompass.analysis.counters.core.aspects.CounterAspect;
 import org.eclipse.tracecompass.analysis.counters.core.aspects.ITmfCounterAspect;
 import org.eclipse.tracecompass.common.core.log.TraceCompassLog;
 import org.eclipse.tracecompass.internal.analysis.counters.core.Activator;
+import org.eclipse.tracecompass.internal.provisional.tmf.core.statesystem.AbstractXYStateProvider;
 import org.eclipse.tracecompass.statesystem.core.ITmfStateSystemBuilder;
-import org.eclipse.tracecompass.statesystem.core.StateSystemBuilderUtils;
 import org.eclipse.tracecompass.statesystem.core.exceptions.StateValueTypeException;
 import org.eclipse.tracecompass.tmf.core.event.ITmfEvent;
 import org.eclipse.tracecompass.tmf.core.event.aspect.ITmfEventAspect;
 import org.eclipse.tracecompass.tmf.core.event.aspect.MultiAspect;
-import org.eclipse.tracecompass.tmf.core.statesystem.AbstractTmfStateProvider;
 import org.eclipse.tracecompass.tmf.core.statesystem.ITmfStateProvider;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
 import org.eclipse.tracecompass.tmf.core.trace.TmfTraceUtils;
@@ -52,7 +51,7 @@ import com.google.common.collect.ImmutableSet;
  *
  * @author Mikael Ferland
  */
-public class CounterStateProvider extends AbstractTmfStateProvider {
+public class CounterStateProvider extends AbstractXYStateProvider {
 
     private static final Logger LOGGER = TraceCompassLog.getLogger(CounterStateProvider.class);
 
@@ -106,7 +105,7 @@ public class CounterStateProvider extends AbstractTmfStateProvider {
 
     @Override
     public int getVersion() {
-        return 1;
+        return 2;
     }
 
     @Override
@@ -173,7 +172,7 @@ public class CounterStateProvider extends AbstractTmfStateProvider {
         handleCounterAspect(event, ss, aspect, quark);
     }
 
-    private static void handleCounterAspect(ITmfEvent event, ITmfStateSystemBuilder ss, CounterAspect aspect, int rootQuark) {
+    private void handleCounterAspect(ITmfEvent event, ITmfStateSystemBuilder ss, CounterAspect aspect, int rootQuark) {
         int quark = ss.getQuarkRelativeAndAdd(rootQuark, aspect.getName());
         Number eventContent = aspect.resolve(event);
         if (eventContent != null) {
@@ -181,10 +180,10 @@ public class CounterStateProvider extends AbstractTmfStateProvider {
                 try {
                     switch (aspect.getType()) {
                     case LONG:
-                        StateSystemBuilderUtils.incrementAttributeLong(ss, event.getTimestamp().toNanos(), quark, eventContent.longValue());
+                        incrementMipmapAttributeLong(event.getTimestamp().toNanos(), quark, eventContent.longValue());
                         break;
                     case DOUBLE:
-                        StateSystemBuilderUtils.incrementAttributeDouble(ss, event.getTimestamp().toNanos(), quark, eventContent.doubleValue());
+                        incrementMipmapAttributeDouble(event.getTimestamp().toNanos(), quark, eventContent.doubleValue());
                         break;
                     default:
                         Activator.getInstance().logWarning("This CounterType (" + aspect.getType().toString() //$NON-NLS-1$
@@ -195,7 +194,15 @@ public class CounterStateProvider extends AbstractTmfStateProvider {
                     LogUtils.traceInstant(LOGGER, Level.WARNING, "HandleCounterAspect:Exception", e); //$NON-NLS-1$
                 }
             } else {
-                ss.modifyAttribute(event.getTimestamp().toNanos(), eventContent, quark);
+                try {
+                    if (eventContent instanceof Double || eventContent instanceof Float) {
+                        modifyMipmapAttribute(event.getTimestamp().toNanos(), eventContent.doubleValue(), quark);
+                    } else {
+                        modifyMipmapAttribute(event.getTimestamp().toNanos(), eventContent.longValue(), quark);
+                    }
+                } catch (StateValueTypeException e) {
+                    LogUtils.traceInstant(LOGGER, Level.WARNING, "HandleCounterAspect:Exception", e); //$NON-NLS-1$
+                }
             }
         }
     }
