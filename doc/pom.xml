@@ -29,7 +29,7 @@
   <properties>
     <docDestination>/home/data/httpd/archive.eclipse.org/tracecompass/doc</docDestination>
     <wikitext.version>3.0.7</wikitext.version>
-    <guava.version>21.0</guava.version>
+    <guava.version>33.7</guava.version>
   </properties>
 
   <modules>
