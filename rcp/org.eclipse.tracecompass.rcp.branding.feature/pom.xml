@@ -28,25 +28,6 @@
     <plugins>
       <plugin>
         <groupId>org.eclipse.tycho</groupId>
-        <artifactId>tycho-source-plugin</artifactId>
-        <version>${tycho-version}</version>
-        <executions>
-          <execution>
-            <id>feature-source</id>
-            <phase>package</phase>
-            <goals>
-              <goal>feature-source</goal>
-            </goals>
-            <configuration>
-              <excludes>
-                <plugin id="org.eclipse.tracecompass.rcp.branding"/>
-              </excludes>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.eclipse.tycho</groupId>
         <artifactId>tycho-p2-plugin</artifactId>
         <executions>
           <execution>

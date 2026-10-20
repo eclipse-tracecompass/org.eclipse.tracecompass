@@ -28,6 +28,7 @@
 
   <modules>
     <module>org.eclipse.tracecompass.btf</module>
+    <module>org.eclipse.tracecompass.btf.source</module>
     <module>org.eclipse.tracecompass.btf.core</module>
     <module>org.eclipse.tracecompass.btf.core.tests</module>
     <module>org.eclipse.tracecompass.btf.ui</module>

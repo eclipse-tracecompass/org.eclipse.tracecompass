@@ -31,6 +31,7 @@
     <module>org.eclipse.tracecompass.lttng2.common.core.tests</module>
 
     <module>org.eclipse.tracecompass.lttng2.control</module>
+    <module>org.eclipse.tracecompass.lttng2.control.source</module>
     <module>org.eclipse.tracecompass.lttng2.control.core</module>
     <module>org.eclipse.tracecompass.lttng2.control.core.tests</module>
     <module>org.eclipse.tracecompass.lttng2.control.ui</module>
@@ -38,12 +39,14 @@
     <module>org.eclipse.tracecompass.lttng2.control.ui.swtbot.tests</module>
 
     <module>org.eclipse.tracecompass.lttng2.kernel</module>
+    <module>org.eclipse.tracecompass.lttng2.kernel.source</module>
     <module>org.eclipse.tracecompass.lttng2.kernel.core</module>
     <module>org.eclipse.tracecompass.lttng2.kernel.core.tests</module>
     <module>org.eclipse.tracecompass.lttng2.kernel.ui</module>
     <module>org.eclipse.tracecompass.lttng2.kernel.ui.swtbot.tests</module>
 
     <module>org.eclipse.tracecompass.lttng2.ust</module>
+    <module>org.eclipse.tracecompass.lttng2.ust.source</module>
     <module>org.eclipse.tracecompass.lttng2.ust.core</module>
     <module>org.eclipse.tracecompass.lttng2.ust.core.tests</module>
     <module>org.eclipse.tracecompass.lttng2.ust.ui</module>
