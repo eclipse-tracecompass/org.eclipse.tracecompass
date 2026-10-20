@@ -506,9 +506,10 @@
             <release>${jdk.release}</release>
             <useProjectSettings>${tycho-use-project-settings}</useProjectSettings>
             <encoding>UTF-8</encoding>
-            <compilerArguments>
-              <annotationpath>common/org.eclipse.tracecompass.common.core/annotations</annotationpath>
-            </compilerArguments>
+            <compilerArgs>
+              <arg>-annotationpath</arg>
+              <arg>common/org.eclipse.tracecompass.common.core/annotations</arg>
+            </compilerArgs>
           </configuration>
         </plugin>
 
