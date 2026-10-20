@@ -28,6 +28,7 @@
 
   <modules>
     <module>org.eclipse.tracecompass.tmf</module>
+    <module>org.eclipse.tracecompass.tmf.source</module>
     <module>org.eclipse.tracecompass.tmf.core</module>
     <module>org.eclipse.tracecompass.tmf.core.tests</module>
     <module>org.eclipse.tracecompass.tmf.ui</module>
@@ -35,6 +36,7 @@
     <module>org.eclipse.tracecompass.tmf.ui.swtbot.tests</module>
 
     <module>org.eclipse.tracecompass.tmf.cli</module>
+    <module>org.eclipse.tracecompass.tmf.cli.source</module>
     <module>org.eclipse.tracecompass.tmf.cli.core</module>
     <module>org.eclipse.tracecompass.tmf.cli.core.tests</module>
 
@@ -51,6 +53,7 @@
     <module>org.eclipse.tracecompass.tmf.chart.ui.swtbot.tests</module>
 
     <module>org.eclipse.tracecompass.tmf.remote</module>
+    <module>org.eclipse.tracecompass.tmf.remote.source</module>
     <module>org.eclipse.tracecompass.tmf.remote.core</module>
     <module>org.eclipse.tracecompass.tmf.remote.core.tests</module>
     <module>org.eclipse.tracecompass.tmf.remote.ui</module>

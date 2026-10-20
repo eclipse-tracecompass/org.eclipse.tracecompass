@@ -28,6 +28,7 @@
 
   <modules>
     <module>org.eclipse.tracecompass.gdbtrace</module>
+    <module>org.eclipse.tracecompass.gdbtrace.source</module>
     <module>org.eclipse.tracecompass.gdbtrace.core</module>
     <module>org.eclipse.tracecompass.gdbtrace.core.tests</module>
     <module>org.eclipse.tracecompass.gdbtrace.ui</module>
