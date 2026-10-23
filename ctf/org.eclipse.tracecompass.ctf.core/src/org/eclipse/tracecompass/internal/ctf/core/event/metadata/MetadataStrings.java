@@ -74,6 +74,10 @@ public interface MetadataStrings {
     String LITTLE_ENDIAN = "little-endian";
     /** Big endian for CTF2 */
     String BIG_ENDIAN = "big-endian";
+    /** Bit order first-to-last for CTF2 */
+    String FIRST_TO_LAST = "first-to-last";
+    /** Bit order last-to-first for CTF2 */
+    String LAST_TO_FIRST = "last-to-first";
     /** Alignment of a field */
     String ALIGN = "align";
     /** Mantissa digits */

@@ -300,6 +300,11 @@ public final class JsonMetadataStrings {
     public static final String BYTE_ORDER = "byte-order"; //$NON-NLS-1$
 
     /**
+     * Field string for bit order
+     */
+    public static final String BIT_ORDER = "bit-order"; //$NON-NLS-1$
+
+    /**
      * Field string for the metadata type of a blob
      */
     public static final String MEDIA_TYPE = "media-type"; //$NON-NLS-1$
