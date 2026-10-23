@@ -314,4 +314,15 @@ public final class JsonMetadataStrings {
      */
     public static final String FLAGS = "flags"; //$NON-NLS-1$
 
+    /**
+     * Field string for the selector field location of an optional or variant
+     * field class
+     */
+    public static final String SELECTOR_FIELD_LOCATION = "selector-field-location"; //$NON-NLS-1$
+
+    /**
+     * Field string for the selector field ranges of an optional field class
+     */
+    public static final String SELECTOR_FIELD_RANGES = "selector-field-ranges"; //$NON-NLS-1$
+
 }
