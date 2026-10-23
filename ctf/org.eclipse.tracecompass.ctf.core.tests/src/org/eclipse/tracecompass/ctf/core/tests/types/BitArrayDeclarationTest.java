@@ -16,10 +16,14 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.nio.ByteOrder;
+import java.util.List;
+import java.util.Map;
 
 import org.eclipse.tracecompass.ctf.core.event.types.BitArrayDeclaration;
+import org.eclipse.tracecompass.ctf.core.event.types.BitMapDeclaration;
 import org.eclipse.tracecompass.ctf.core.event.types.BitOrder;
 import org.eclipse.tracecompass.ctf.core.event.types.BooleanDeclaration;
+import org.eclipse.tracecompass.ctf.core.event.types.IntegerRange;
 import org.junit.Test;
 
 /**
@@ -83,6 +87,7 @@ public class BitArrayDeclarationTest {
         BitArrayDeclaration d = new BitArrayDeclaration(8, ByteOrder.BIG_ENDIAN, BitOrder.LAST_TO_FIRST, 8);
         BitArrayDeclaration e = new BitArrayDeclaration(8, ByteOrder.LITTLE_ENDIAN, BitOrder.FIRST_TO_LAST, 1);
         BooleanDeclaration f = new BooleanDeclaration(8, ByteOrder.LITTLE_ENDIAN, 8);
+        BitMapDeclaration g = new BitMapDeclaration(8, ByteOrder.LITTLE_ENDIAN, BitOrder.FIRST_TO_LAST, 8, Map.of("flag", List.of(new IntegerRange(0, 0))));
         BitArrayDeclaration h = new BitArrayDeclaration(8, ByteOrder.LITTLE_ENDIAN, BitOrder.LAST_TO_FIRST, 8);
         BitArrayDeclaration i = new BitArrayDeclaration(8, ByteOrder.LITTLE_ENDIAN, BitOrder.FIRST_TO_LAST, 8);
 
@@ -93,6 +98,7 @@ public class BitArrayDeclarationTest {
         assertFalse(a.isBinaryEquivalent(d));
         assertFalse(a.isBinaryEquivalent(e));
         assertFalse(a.isBinaryEquivalent(f));
+        assertFalse(a.isBinaryEquivalent(g));
         assertFalse(a.isBinaryEquivalent(h));
         assertTrue(a.isBinaryEquivalent(i));
         assertFalse(a.isBinaryEquivalent(null));
