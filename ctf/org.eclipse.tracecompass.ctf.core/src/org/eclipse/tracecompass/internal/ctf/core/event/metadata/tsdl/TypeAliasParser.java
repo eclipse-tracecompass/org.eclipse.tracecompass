@@ -32,6 +32,7 @@ import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.dynamicstr
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.enumeration.EnumParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.floatingpoint.FloatDeclarationParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.integer.IntegerDeclarationParser;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.optional.OptionalDeclarationParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.staticarray.StaticLengthArrayParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.staticstring.StaticLengthStringParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.string.StringDeclarationParser;
@@ -205,7 +206,7 @@ public final class TypeAliasParser extends AbstractScopedCommonTreeParser {
                     targetDeclaration = StructParser.INSTANCE.parse(typealias, new StructParser.Param(trace, null, scope));
                     break;
                 case JsonMetadataStrings.OPTIONAL:
-                    // TODO: handle optional
+                    targetDeclaration = OptionalDeclarationParser.INSTANCE.parse(typealias, new OptionalDeclarationParser.Param(trace, scope));
                     break;
                 case JsonMetadataStrings.FIXED_LENGTH_FLOATING_POINT:
                     targetDeclaration = FloatDeclarationParser.INSTANCE.parse(typealias, new FloatDeclarationParser.Param(trace));

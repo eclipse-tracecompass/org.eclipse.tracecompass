@@ -10,6 +10,7 @@
 
 package org.eclipse.tracecompass.ctf.core.tests.types;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -17,11 +18,15 @@ import org.eclipse.tracecompass.ctf.core.event.metadata.DeclarationScope;
 import org.eclipse.tracecompass.ctf.core.event.types.FloatDeclaration;
 import org.eclipse.tracecompass.ctf.core.event.types.IDeclaration;
 import org.eclipse.tracecompass.ctf.core.event.types.IntegerDeclaration;
+import org.eclipse.tracecompass.ctf.core.event.types.OptionalDeclaration;
+import org.eclipse.tracecompass.ctf.core.event.types.StringDeclaration;
 import org.eclipse.tracecompass.ctf.core.trace.CTFTrace;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonStructureFieldMemberMetadataNode;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.TypeAliasParser;
 import org.junit.Test;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
@@ -33,10 +38,10 @@ public class TypeAliasParserTest {
     /**
      * Test parsing fixed-length floating point field class
      *
-     * @throws Exception if parsing fails
+     * @throws ParseException if parsing fails
      */
     @Test
-    public void testFixedLengthFloatingPointParsing() throws Exception {
+    public void testFixedLengthFloatingPointParsing() throws ParseException {
         CTFTrace trace = new CTFTrace();
         DeclarationScope scope = new DeclarationScope(null, "test");
 
@@ -61,10 +66,10 @@ public class TypeAliasParserTest {
     /**
      * Test parsing static-length string field class
      *
-     * @throws Exception if parsing fails
+     * @throws ParseException if parsing fails
      */
     @Test
-    public void testStaticLengthStringParsing() throws Exception {
+    public void testStaticLengthStringParsing() throws ParseException {
         CTFTrace trace = new CTFTrace();
         DeclarationScope scope = new DeclarationScope(null, "test");
 
@@ -84,10 +89,10 @@ public class TypeAliasParserTest {
     /**
      * Test parsing dynamic-length string field class
      *
-     * @throws Exception if parsing fails
+     * @throws ParseException if parsing fails
      */
     @Test
-    public void testDynamicLengthStringParsing() throws Exception {
+    public void testDynamicLengthStringParsing() throws ParseException {
         // Test that the parser doesn't throw an exception for dynamic length strings
         // The actual parsing logic may not be fully implemented yet
         CTFTrace trace = new CTFTrace();
@@ -111,5 +116,41 @@ public class TypeAliasParserTest {
         // If we get here without exception, the basic parsing works
         assertNotNull(result);
 
+    }
+    /**
+     * Test parsing optional field class
+     *
+     * @throws ParseException if parsing fails
+     */
+    @Test
+    public void testOptionalParsing() throws ParseException {
+        CTFTrace trace = new CTFTrace();
+        DeclarationScope scope = new DeclarationScope(null, "test");
+
+        JsonObject selectorLocation = new JsonObject();
+        selectorLocation.add("origin", new JsonPrimitive("event-record-payload"));
+        JsonArray path = new JsonArray();
+        path.add("has-ip");
+        selectorLocation.add("path", path);
+
+        JsonObject optionalFieldClass = new JsonObject();
+        optionalFieldClass.add("type", new JsonPrimitive("null-terminated-string"));
+
+        JsonObject fieldClass = new JsonObject();
+        fieldClass.add("type", new JsonPrimitive("optional"));
+        fieldClass.add("selector-field-location", selectorLocation);
+        fieldClass.add("field-class", optionalFieldClass);
+
+        JsonStructureFieldMemberMetadataNode node = new JsonStructureFieldMemberMetadataNode(null, "optional", "test", "optional_field", fieldClass);
+
+        IDeclaration result = TypeAliasParser.INSTANCE.parse(node,
+            new TypeAliasParser.Param(trace, scope));
+
+        assertNotNull(result);
+        assertTrue(result instanceof OptionalDeclaration);
+
+        OptionalDeclaration optionalDecl = (OptionalDeclaration) result;
+        assertTrue(optionalDecl.getFieldDeclaration() instanceof StringDeclaration);
+        assertEquals("has-ip", optionalDecl.getSelectorName());
     }
 }
