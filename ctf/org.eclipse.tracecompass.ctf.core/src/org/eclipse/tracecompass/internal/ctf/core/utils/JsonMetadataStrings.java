@@ -280,6 +280,39 @@ public final class JsonMetadataStrings {
     public static final String ELEMENT_FIELD_CLASS = "element-field-class"; //$NON-NLS-1$
 
     /**
+     * Field string for the packet header field class of a trace class
+     */
+    public static final String PACKET_HEADER_FIELD_CLASS = "packet-header-field-class"; //$NON-NLS-1$
+
+    /**
+     * Field string for the packet context field class of a data stream class
+     */
+    public static final String PACKET_CONTEXT_FIELD_CLASS = "packet-context-field-class"; //$NON-NLS-1$
+
+    /**
+     * Field string for the event record header field class of a data stream
+     * class
+     */
+    public static final String EVENT_RECORD_HEADER_FIELD_CLASS = "event-record-header-field-class"; //$NON-NLS-1$
+
+    /**
+     * Field string for the event record common context field class of a data
+     * stream class
+     */
+    public static final String EVENT_RECORD_COMMON_CONTEXT_FIELD_CLASS = "event-record-common-context-field-class"; //$NON-NLS-1$
+
+    /**
+     * Field string for the specific context field class of an event record
+     * class
+     */
+    public static final String SPECIFIC_CONTEXT_FIELD_CLASS = "specific-context-field-class"; //$NON-NLS-1$
+
+    /**
+     * Field string for the payload field class of an event record class
+     */
+    public static final String PAYLOAD_FIELD_CLASS = "payload-field-class"; //$NON-NLS-1$
+
+    /**
      * Field string for member classes in a structure
      */
     public static final String MEMBER_CLASSES = "member-classes"; //$NON-NLS-1$

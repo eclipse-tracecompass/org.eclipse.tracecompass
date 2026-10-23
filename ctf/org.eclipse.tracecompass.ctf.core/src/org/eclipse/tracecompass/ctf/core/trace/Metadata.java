@@ -39,6 +39,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 
 import org.antlr.runtime.ANTLRReaderStream;
@@ -98,6 +99,20 @@ public class Metadata {
     private static final String TEXT_ONLY_METADATA_HEADER_PREFIX = "/* CTF"; //$NON-NLS-1$
 
     private static final List<String> TEXT_ONLY_METADATA_HEADER_PREFIXES = List.of(MetadataStrings.TYPE_ALIAS, MetadataStrings.TRACE, MetadataStrings.ENV);
+
+    /**
+     * Properties whose value may be the name of a previously occurring field
+     * class alias, see https://diamon.org/ctf/#fca-frag
+     */
+    private static final Set<String> FIELD_CLASS_PROPERTIES = Set.of(
+            JsonMetadataStrings.FIELD_CLASS,
+            JsonMetadataStrings.ELEMENT_FIELD_CLASS,
+            JsonMetadataStrings.PACKET_HEADER_FIELD_CLASS,
+            JsonMetadataStrings.PACKET_CONTEXT_FIELD_CLASS,
+            JsonMetadataStrings.EVENT_RECORD_HEADER_FIELD_CLASS,
+            JsonMetadataStrings.EVENT_RECORD_COMMON_CONTEXT_FIELD_CLASS,
+            JsonMetadataStrings.SPECIFIC_CONTEXT_FIELD_CLASS,
+            JsonMetadataStrings.PAYLOAD_FIELD_CLASS);
 
     private static final int PREVALIDATION_SIZE = 8;
 
@@ -323,7 +338,7 @@ public class Metadata {
     private static void expandAliases(JsonObject obj, Map<String, JsonObject> metadata) {
         for (String key : obj.keySet()) {
             JsonElement value = obj.get(key);
-            if (value.isJsonPrimitive() && value.getAsJsonPrimitive().isString() && metadata.containsKey(value.getAsString())) {
+            if (FIELD_CLASS_PROPERTIES.contains(key) && value.isJsonPrimitive() && value.getAsJsonPrimitive().isString() && metadata.containsKey(value.getAsString())) {
                 obj.add(key, metadata.get(value.getAsString()));
             } else if (value.isJsonObject()) {
                 expandAliases(value.getAsJsonObject(), metadata);
