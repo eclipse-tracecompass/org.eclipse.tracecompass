@@ -25,6 +25,7 @@ import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonFieldClassA
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonStructureFieldMemberMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.bitarray.BitArrayDeclarationParser;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.bitmap.BitMapDeclarationParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.bool.BooleanDeclarationParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.dynamicarray.DynamicLengthArrayParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.dynamicstring.DynamicLengthStringParser;
@@ -198,7 +199,7 @@ public final class TypeAliasParser extends AbstractScopedCommonTreeParser {
                     targetDeclaration = BitArrayDeclarationParser.INSTANCE.parse(typealias, new BitArrayDeclarationParser.Param(trace));
                     break;
                 case JsonMetadataStrings.FIXED_LENGTH_BIT_MAP:
-                    // TODO: handle fixed length bit map
+                    targetDeclaration = BitMapDeclarationParser.INSTANCE.parse(typealias, new BitMapDeclarationParser.Param(trace));
                     break;
                 case JsonMetadataStrings.STRUCTURE:
                     targetDeclaration = StructParser.INSTANCE.parse(typealias, new StructParser.Param(trace, null, scope));

@@ -309,4 +309,9 @@ public final class JsonMetadataStrings {
      */
     public static final String MEDIA_TYPE = "media-type"; //$NON-NLS-1$
 
+    /**
+     * Field string for the flags of a fixed-length bit map field class
+     */
+    public static final String FLAGS = "flags"; //$NON-NLS-1$
+
 }
