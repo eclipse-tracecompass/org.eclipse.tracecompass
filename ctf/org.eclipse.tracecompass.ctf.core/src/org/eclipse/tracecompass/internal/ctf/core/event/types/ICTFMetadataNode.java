@@ -31,15 +31,6 @@ public interface ICTFMetadataNode {
     ICTFMetadataNode getParent();
 
     /**
-     * Get a child with a given id
-     *
-     * @param id
-     *            the id
-     * @return child of the node matching the ID, or null if none is found
-     */
-    ICTFMetadataNode getChild(String id);
-
-    /**
      * Get a child with a given index
      *
      * @param index

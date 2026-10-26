@@ -14,9 +14,7 @@
 package org.eclipse.tracecompass.internal.ctf.core.event.metadata;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
@@ -30,7 +28,6 @@ import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
  */
 public class CTFAntlrMetadataNode implements ICTFMetadataNode {
     private ICTFMetadataNode fParent;
-    private final Map<String, ICTFMetadataNode> fChildren;
     private final String fValue;
     private final String fType;
     private final ArrayList<ICTFMetadataNode> fChildrenList;
@@ -50,24 +47,17 @@ public class CTFAntlrMetadataNode implements ICTFMetadataNode {
         }
         fType = Objects.requireNonNull(type);
         fValue = value;
-        fChildren = new HashMap<>();
         fChildrenList = new ArrayList<>();
     }
 
     @Override
     public void addChild(ICTFMetadataNode child) {
-        fChildren.put(child.getType(), child);
         fChildrenList.add(child);
     }
 
     @Override
     public ICTFMetadataNode getParent() {
         return fParent;
-    }
-
-    @Override
-    public ICTFMetadataNode getChild(String id) {
-        return fChildren.get(id);
     }
 
     @Override

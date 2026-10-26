@@ -14,7 +14,6 @@
 package org.eclipse.tracecompass.internal.ctf.core.event.metadata;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -39,7 +38,6 @@ public class CTFJsonMetadataNode implements ICTFMetadataNode {
 
     //other attributes added for convenience
     private ICTFMetadataNode fParent;
-    private Map<String, ICTFMetadataNode> fChildren;
     private ArrayList<ICTFMetadataNode> fChildrenList;
     private final String fValue;
 
@@ -61,18 +59,12 @@ public class CTFJsonMetadataNode implements ICTFMetadataNode {
         }
         fType = Objects.requireNonNull(type);
         fValue = value;
-        fChildren = new HashMap<>();
         fChildrenList = new ArrayList<>();
     }
 
     @Override
     public ICTFMetadataNode getParent() {
         return fParent;
-    }
-
-    @Override
-    public ICTFMetadataNode getChild(String id) {
-        return fChildren.get(id);
     }
 
     @Override
@@ -97,7 +89,6 @@ public class CTFJsonMetadataNode implements ICTFMetadataNode {
 
     @Override
     public void addChild(ICTFMetadataNode node) {
-        fChildren.put(node.getType(), node);
         fChildrenList.add(node);
     }
 
@@ -158,9 +149,6 @@ public class CTFJsonMetadataNode implements ICTFMetadataNode {
      *             if type is null but node is created with gson
      */
     public void initialize() throws CTFException {
-        if (fChildren == null) {
-            fChildren = new HashMap<>();
-        }
         if (fChildrenList == null) {
             fChildrenList = new ArrayList<>();
         }
