@@ -25,7 +25,7 @@ import org.eclipse.tracecompass.ctf.core.event.types.IntegerDeclaration;
 import org.eclipse.tracecompass.ctf.parser.CTFParser;
 import org.eclipse.tracecompass.internal.ctf.core.CtfCoreLoggerUtil;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ICommonTreeParser;
-import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonStructureFieldMemberMetadataNode;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.IFieldMemberMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.UnaryIntegerParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.UnaryStringParser;
@@ -103,10 +103,11 @@ public final class EnumeratorParser implements ICommonTreeParser {
         boolean valueSpecified = false;
         String label = null;
 
-        if (enumerator instanceof JsonStructureFieldMemberMetadataNode) {
-            JsonStructureFieldMemberMetadataNode jsonEnum = (JsonStructureFieldMemberMetadataNode) enumerator;
-            if (jsonEnum.getFieldClass().isJsonObject()) {
-                JsonObject fieldClass = jsonEnum.getFieldClass().getAsJsonObject();
+        if (enumerator instanceof IFieldMemberMetadataNode) {
+            IFieldMemberMetadataNode jsonEnum = (IFieldMemberMetadataNode) enumerator;
+            JsonElement enumFieldClass = jsonEnum.getFieldClass();
+            if (enumFieldClass != null && enumFieldClass.isJsonObject()) {
+                JsonObject fieldClass = enumFieldClass.getAsJsonObject();
                 if (fieldClass.has(MAPPINGS)) {
                     JsonObject mappings = fieldClass.get(MAPPINGS).getAsJsonObject();
                     Set<Entry<String, JsonElement>> enumerations = mappings.entrySet();

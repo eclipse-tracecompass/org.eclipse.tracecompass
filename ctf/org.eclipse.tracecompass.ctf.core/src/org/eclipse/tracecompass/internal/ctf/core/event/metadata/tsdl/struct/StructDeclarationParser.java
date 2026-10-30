@@ -19,8 +19,7 @@ import org.eclipse.tracecompass.ctf.core.event.types.StructDeclaration;
 import org.eclipse.tracecompass.ctf.core.trace.CTFTrace;
 import org.eclipse.tracecompass.ctf.parser.CTFParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.AbstractScopedCommonTreeParser;
-import org.eclipse.tracecompass.internal.ctf.core.event.metadata.CTFAntlrMetadataNode;
-import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonStructureFieldMemberMetadataNode;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.IFieldMemberMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.TypeAliasParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.TypeDeclaratorParser;
@@ -94,8 +93,14 @@ public final class StructDeclarationParser extends AbstractScopedCommonTreeParse
         StringBuilder identifierSB = new StringBuilder();
         IDeclaration decl = null;
         String fieldName = null;
-        boolean isCtf1 = declaration instanceof CTFAntlrMetadataNode;
-        if (isCtf1) {
+        if (declaration instanceof IFieldMemberMetadataNode) {
+            IFieldMemberMetadataNode member = (IFieldMemberMetadataNode) declaration;
+            decl = TypeAliasParser.INSTANCE.parse(declaration, new TypeAliasParser.Param(trace, scope));
+            fieldName = member.getMemberName();
+            if (fieldName == null) {
+                fieldName = member.getRole();
+            }
+        } else {
             /* Get the type specifier list node */
             ICTFMetadataNode typeSpecifierListNode = declaration.getFirstChildWithType(CTFParser.tokenNames[CTFParser.TYPE_SPECIFIER_LIST]);
 
@@ -125,12 +130,6 @@ public final class StructDeclarationParser extends AbstractScopedCommonTreeParse
             if (struct.getField(fieldName) != null) {
                 throw new ParseException("struct: duplicate field " //$NON-NLS-1$
                         + fieldName);
-            }
-        } else {
-            decl = TypeAliasParser.INSTANCE.parse(declaration, new TypeAliasParser.Param(trace, scope));
-            fieldName = ((JsonStructureFieldMemberMetadataNode) declaration).getName();
-            if (fieldName == null) {
-                fieldName = ((JsonStructureFieldMemberMetadataNode) declaration).getRole();
             }
         }
 

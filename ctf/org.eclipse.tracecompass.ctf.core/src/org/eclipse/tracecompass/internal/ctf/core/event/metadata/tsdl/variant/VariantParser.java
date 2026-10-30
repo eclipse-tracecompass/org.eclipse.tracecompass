@@ -27,6 +27,7 @@ import org.eclipse.tracecompass.ctf.core.event.types.VariantDeclaration;
 import org.eclipse.tracecompass.ctf.core.trace.CTFTrace;
 import org.eclipse.tracecompass.ctf.parser.CTFParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.AbstractScopedCommonTreeParser;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.IFieldMemberMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonStructureFieldMemberMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonStructureFieldMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
@@ -264,8 +265,12 @@ public final class VariantParser extends AbstractScopedCommonTreeParser {
         boolean hasTag = false;
         String variantTag = null;
 
-        if (variant instanceof JsonStructureFieldMemberMetadataNode) {
-            JsonObject fieldClass = ((JsonStructureFieldMemberMetadataNode) variant).getFieldClass().getAsJsonObject();
+        if (variant instanceof IFieldMemberMetadataNode) {
+            JsonElement variantFieldClassElement = ((IFieldMemberMetadataNode) variant).getFieldClass();
+            if (variantFieldClassElement == null) {
+                throw new ParseException("variant: missing field class"); //$NON-NLS-1$
+            }
+            JsonObject fieldClass = variantFieldClassElement.getAsJsonObject();
             if (fieldClass.has(SELECTOR_FIELD_LOCATION)) {
                 JsonArray location = (fieldClass.get(SELECTOR_FIELD_LOCATION).getAsJsonObject().get(JsonMetadataStrings.PATH)).getAsJsonArray();
                 variantTag = location.get(location.size() - 1).getAsString();

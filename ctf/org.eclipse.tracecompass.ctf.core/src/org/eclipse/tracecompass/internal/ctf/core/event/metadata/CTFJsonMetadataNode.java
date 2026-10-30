@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.ctf.core.CTFException;
 import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
 
@@ -29,7 +30,7 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Sehr Moosabhoy
  */
-public class CTFJsonMetadataNode implements ICTFMetadataNode {
+public class CTFJsonMetadataNode implements IByteOrderMetadataNode, ITypeSpecifierListMetadataNode {
     //deserialized attributes from Json
     @SerializedName("type")
     private String fType;
@@ -155,5 +156,20 @@ public class CTFJsonMetadataNode implements ICTFMetadataNode {
         if (fType == null) {
             throw new CTFException("type of node cannot be null"); //$NON-NLS-1$
         }
+    }
+
+    @Override
+    public @Nullable String getByteOrderString() {
+        return fValue;
+    }
+
+    @Override
+    public ICTFMetadataNode getTypeSpecifierNode() {
+        return this;
+    }
+
+    @Override
+    public @Nullable String getTypeSpecifierType() {
+        return null;
     }
 }

@@ -16,7 +16,7 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.tracecompass.ctf.core.event.types.EnumDeclaration;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ICommonTreeParser;
-import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonStructureFieldMemberMetadataNode;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.IFieldMemberMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
 import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
 
@@ -67,7 +67,7 @@ public final class EnumBodyParser implements ICommonTreeParser {
         Param parameter = (Param) param;
         EnumDeclaration enumDeclaration = parameter.fEnumDeclaration;
 
-        if (tree instanceof JsonStructureFieldMemberMetadataNode) {
+        if (tree instanceof IFieldMemberMetadataNode) {
             EnumeratorParser.INSTANCE.parse(tree, new EnumeratorParser.Param(enumDeclaration));
         } else {
             List<ICTFMetadataNode> enumerators = tree.getChildren();

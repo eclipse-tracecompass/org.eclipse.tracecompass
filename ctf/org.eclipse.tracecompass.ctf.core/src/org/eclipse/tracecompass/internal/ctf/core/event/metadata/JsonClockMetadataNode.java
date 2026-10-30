@@ -26,7 +26,7 @@ import com.google.gson.annotations.SerializedName;
  * @author Sehr Moosabhoy
  *
  */
-public class JsonClockMetadataNode extends CTFJsonMetadataNode {
+public class JsonClockMetadataNode extends CTFJsonMetadataNode implements IClockMetadataNode {
 
     @SerializedName("name")
     private final String fName;
@@ -113,6 +113,63 @@ public class JsonClockMetadataNode extends CTFJsonMetadataNode {
      */
     public String getName() {
         return fName;
+    }
+
+    @Override
+    public String getClockName() {
+        return fName;
+    }
+
+    @Override
+    public long getClockFrequency() {
+        return fFrequency != null ? fFrequency : 1000000000L;
+    }
+
+    @Override
+    public long getClockPrecision() {
+        return fPrecision;
+    }
+
+    @Override
+    public String getClockDescription() {
+        return fDescription;
+    }
+
+    @Override
+    public long getClockOffsetSeconds() {
+        if (fOffset != null && fOffset.has("seconds")) { //$NON-NLS-1$
+            return fOffset.get("seconds").getAsLong(); //$NON-NLS-1$
+        }
+        return 0;
+    }
+
+    @Override
+    public long getClockOffsetCycles() {
+        if (fOffset != null && fOffset.has("cycles")) { //$NON-NLS-1$
+            return fOffset.get("cycles").getAsLong(); //$NON-NLS-1$
+        }
+        return 0;
+    }
+
+    @Override
+    public String getClockOrigin() {
+        if (fOrigin == null) {
+            return null;
+        }
+        if (fOrigin.isJsonObject()) {
+            return fOrigin.getAsJsonObject().has("name") ? fOrigin.getAsJsonObject().get("name").getAsString() : null; //$NON-NLS-1$ //$NON-NLS-2$
+        }
+        return fOrigin.getAsString();
+    }
+
+    @Override
+    public boolean isClockAbsolute() {
+        return false;
+    }
+
+    @Override
+    public String getClockUUID() {
+        return null;
     }
 
 }

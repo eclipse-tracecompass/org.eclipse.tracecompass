@@ -11,14 +11,13 @@
 
 package org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl;
 
-import static org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.TsdlUtils.concatenateUnaryStrings;
 import static org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.TsdlUtils.isUnaryString;
 
 import java.nio.ByteOrder;
 
 import org.eclipse.tracecompass.ctf.core.trace.CTFTrace;
-import org.eclipse.tracecompass.internal.ctf.core.event.metadata.CTFAntlrMetadataNode;
-import org.eclipse.tracecompass.internal.ctf.core.event.metadata.CTFJsonMetadataNode;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.AntlrByteOrderMetadataNode;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.IByteOrderMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ICommonTreeParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.MetadataStrings;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
@@ -99,17 +98,18 @@ public final class ByteOrderParser implements ICommonTreeParser {
         }
         CTFTrace trace = ((Param) param).fTrace;
 
-        String strval = null;
-        ICTFMetadataNode firstChild = null;
-
-        if (byteOrderTree instanceof CTFAntlrMetadataNode) {
-            strval = concatenateUnaryStrings(byteOrderTree.getChildren());
-            firstChild = byteOrderTree.getChild(0);
-        } else if (byteOrderTree instanceof CTFJsonMetadataNode) {
-            strval = byteOrderTree.getText();
+        IByteOrderMetadataNode byteOrderNode;
+        if (byteOrderTree instanceof IByteOrderMetadataNode) {
+            byteOrderNode = (IByteOrderMetadataNode) byteOrderTree;
+        } else {
+            // Wrap raw ANTLR node into the typed interface
+            byteOrderNode = new AntlrByteOrderMetadataNode(byteOrderTree);
         }
 
-        if (isUnaryString(byteOrderTree) || isUnaryString(firstChild)) {
+        String strval = byteOrderNode.getByteOrderString();
+
+        ICTFMetadataNode firstChild = byteOrderTree.getChild(0);
+        if (isUnaryString(byteOrderTree) || (firstChild != null && isUnaryString(firstChild))) {
             if (strval != null) {
                 if (strval.equals(MetadataStrings.LE) || MetadataStrings.LITTLE_ENDIAN.equals(strval)) {
                     return ByteOrder.LITTLE_ENDIAN;
