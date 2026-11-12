@@ -22,7 +22,7 @@ import org.eclipse.tracecompass.ctf.core.trace.ICTFStream;
 import org.eclipse.tracecompass.ctf.parser.CTFParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.EventDeclaration;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.AbstractScopedCommonTreeParser;
-import org.eclipse.tracecompass.internal.ctf.core.event.metadata.CTFJsonMetadataNode;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.IEventMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.MetadataStrings;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.TypeAliasParser;
@@ -105,7 +105,7 @@ public final class EventParser extends AbstractScopedCommonTreeParser {
         EventDeclaration event = new EventDeclaration();
         DeclarationScope scope = new DeclarationScope(parameter.fCurrentScope, MetadataStrings.EVENT);
 
-        if (eventNode instanceof CTFJsonMetadataNode) {
+        if (eventNode instanceof IEventMetadataNode && ((IEventMetadataNode) eventNode).isSelfContained()) {
             EventDeclarationParser.INSTANCE.parse(eventNode, new EventDeclarationParser.Param(trace, event, scope));
         } else {
             List<ICTFMetadataNode> children = eventNode.getChildren();

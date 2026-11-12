@@ -21,8 +21,9 @@ import org.eclipse.tracecompass.ctf.core.event.types.VariantDeclaration;
 import org.eclipse.tracecompass.ctf.core.trace.CTFTrace;
 import org.eclipse.tracecompass.ctf.parser.CTFParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.AbstractScopedCommonTreeParser;
-import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonStructureFieldMemberMetadataNode;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.IFieldMemberMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonStructureFieldMetadataNode;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.IStructureFieldMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.TypeAliasParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.TypeDeclaratorParser;
@@ -98,17 +99,17 @@ public final class VariantDeclarationParser extends AbstractScopedCommonTreePars
         final DeclarationScope scope = ((Param) param).fDeclarationScope;
         CTFTrace trace = ((Param) param).fTrace;
 
-        if (declaration instanceof JsonStructureFieldMetadataNode) {
+        if (declaration instanceof IStructureFieldMetadataNode) {
             List<ICTFMetadataNode> children = declaration.getChildren();
             if (children.isEmpty()) {
                 throw new ParseException("Cannot have a variant with no fields"); //$NON-NLS-1$
             }
             for (ICTFMetadataNode child : children) {
-                JsonStructureFieldMemberMetadataNode member = (JsonStructureFieldMemberMetadataNode) child;
+                IFieldMemberMetadataNode member = (IFieldMemberMetadataNode) child;
                 JsonElement fieldClass = member.getFieldClass();
-                String name = member.getName();
+                String name = member.getMemberName();
                 IDeclaration decl;
-                if (fieldClass.isJsonObject()) {
+                if (fieldClass != null && fieldClass.isJsonObject()) {
                     String type = fieldClass.getAsJsonObject().get(JsonMetadataStrings.TYPE).getAsString();
                     if (JsonMetadataStrings.STRUCTURE.equals(type)) {
                         JsonStructureFieldMetadataNode structureFieldClass = Objects.requireNonNull(new Gson().fromJson(fieldClass.getAsJsonObject(), JsonStructureFieldMetadataNode.class));

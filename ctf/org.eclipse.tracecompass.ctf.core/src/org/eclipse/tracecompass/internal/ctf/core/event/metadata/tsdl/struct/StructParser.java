@@ -21,18 +21,12 @@ import org.eclipse.tracecompass.ctf.core.event.types.StructDeclaration;
 import org.eclipse.tracecompass.ctf.core.trace.CTFTrace;
 import org.eclipse.tracecompass.ctf.parser.CTFParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.AbstractScopedCommonTreeParser;
-import org.eclipse.tracecompass.internal.ctf.core.event.metadata.CTFAntlrMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.CTFJsonMetadataNode;
-import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonStructureFieldMemberMetadataNode;
-import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonStructureFieldMetadataNode;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.IStructureFieldMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.AlignmentParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.types.StructDeclarationFlattener;
-import org.eclipse.tracecompass.internal.ctf.core.utils.JsonMetadataStrings;
-
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 
 /**
  *
@@ -168,7 +162,16 @@ public final class StructParser extends AbstractScopedCommonTreeParser {
         /* Align */
         long structAlign = 0;
 
-        if (struct instanceof CTFAntlrMetadataNode) {
+        if (struct instanceof IStructureFieldMetadataNode) {
+            IStructureFieldMetadataNode structField = (IStructureFieldMetadataNode) struct;
+            if (structField.getStructureMinimumAlignment() != 0) {
+                structAlign = AlignmentParser.INSTANCE.parse(struct, null);
+            }
+            if (structField.getStructureMemberClasses() != null) {
+                hasBody = true;
+                structBody = struct;
+            }
+        } else {
             /* Loop on all children and identify what we have to work with. */
             for (ICTFMetadataNode child : children) {
                 String type = child.getType();
@@ -190,44 +193,6 @@ public final class StructParser extends AbstractScopedCommonTreeParser {
             if (!hasName && identifier != null) {
                 structName = identifier.getText();
                 hasName = true;
-            }
-        } else if (struct instanceof JsonStructureFieldMetadataNode structNode) {
-            if (structNode.getMinimumAlignment() != 0) {
-                structAlign = AlignmentParser.INSTANCE.parse(struct, null);
-            }
-            if (structNode.getMemberClasses() != null) {
-                hasBody = true;
-                structBody = struct;
-            }
-        } else if (struct instanceof JsonStructureFieldMemberMetadataNode memberNode) {
-            if (memberNode.getFieldClass().isJsonObject()) {
-                JsonElement fieldClassElement = memberNode.getFieldClass();
-                if (fieldClassElement == null || !fieldClassElement.isJsonObject()) {
-                    throw new ParseException(getClass().getName() + " fieldclass must be a json object."); //$NON-NLS-1$
-                }
-                JsonObject outerFieldClass = fieldClassElement.getAsJsonObject();
-                JsonElement minimumAlignment = outerFieldClass.get(JsonMetadataStrings.MINIMUM_ALIGNMENT);
-                if (minimumAlignment != null) {
-                    structAlign = minimumAlignment.getAsLong();
-                }
-                JsonElement memberClasses = outerFieldClass.get(JsonMetadataStrings.MEMBER_CLASSES);
-                if (memberClasses != null && memberClasses.isJsonArray()) {
-                    hasBody = true;
-                    for (JsonElement memberElement : memberClasses.getAsJsonArray()) {
-                        if (memberElement.isJsonObject()) {
-                            JsonObject memberObj = memberElement.getAsJsonObject();
-                            JsonElement nameElement = memberObj.get(JsonMetadataStrings.NAME);
-                            JsonElement fieldClass = memberObj.get(JsonMetadataStrings.FIELD_CLASS);
-                            if (nameElement == null || fieldClass == null || !fieldClass.isJsonObject()) {
-                                throw new ParseException("Member class requires 'name' and 'field-class' properties"); //$NON-NLS-1$
-                            }
-                            String name = nameElement.getAsString();
-                            // The constructor adds the reference to the parent automatically
-                            new JsonStructureFieldMemberMetadataNode(memberNode, "", "", name, fieldClass.getAsJsonObject()); //$NON-NLS-1$ //$NON-NLS-2$
-                        }
-                    }
-                    structBody = memberNode;
-                }
             }
         }
         /*

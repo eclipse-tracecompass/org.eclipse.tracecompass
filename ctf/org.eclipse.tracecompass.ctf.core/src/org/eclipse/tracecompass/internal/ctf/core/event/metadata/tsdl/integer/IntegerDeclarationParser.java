@@ -29,10 +29,10 @@ import org.eclipse.tracecompass.ctf.core.event.types.IntegerRange;
 import org.eclipse.tracecompass.ctf.core.trace.CTFTrace;
 import org.eclipse.tracecompass.ctf.parser.CTFParser;
 import org.eclipse.tracecompass.internal.ctf.core.CtfCoreLoggerUtil;
-import org.eclipse.tracecompass.internal.ctf.core.event.metadata.CTFAntlrMetadataNode;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.IFieldMemberMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.CTFJsonMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ICommonTreeParser;
-import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonStructureFieldMemberMetadataNode;
+
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.MetadataStrings;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.AlignmentParser;
@@ -152,12 +152,13 @@ public final class IntegerDeclarationParser implements ICommonTreeParser {
 
         Encoding encoding = Encoding.NONE;
 
-        if (integer instanceof JsonStructureFieldMemberMetadataNode member) {
+        if (integer instanceof IFieldMemberMetadataNode) {
+            IFieldMemberMetadataNode member = (IFieldMemberMetadataNode) integer;
             JsonElement fieldClassElement = member.getFieldClass();
             if (fieldClassElement == null || !fieldClassElement.isJsonObject()) {
                 throw new ParseException(getClass().getName() + " fieldclass must be a json object."); //$NON-NLS-1$
             }
-            JsonObject fieldclass = member.getFieldClass().getAsJsonObject();
+            JsonObject fieldclass = fieldClassElement.getAsJsonObject();
             role = member.getRole();
             // by default fieldclass is unsigned
             if (fieldclass.has(SIGNED)) {
@@ -203,7 +204,7 @@ public final class IntegerDeclarationParser implements ICommonTreeParser {
             CTFJsonMetadataNode bo = new CTFJsonMetadataNode(integer, CTFParser.tokenNames[CTFParser.UNARY_EXPRESSION_STRING], fieldclass.get(BYTE_ORDER).getAsString());
             byteOrder = ByteOrderParser.INSTANCE.parse(bo, new ByteOrderParser.Param(trace));
 
-        } else if (integer instanceof CTFAntlrMetadataNode) {
+        } else {
             List<ICTFMetadataNode> children = integer.getChildren();
             /*
              * If the integer has no attributes, then it is missing the size

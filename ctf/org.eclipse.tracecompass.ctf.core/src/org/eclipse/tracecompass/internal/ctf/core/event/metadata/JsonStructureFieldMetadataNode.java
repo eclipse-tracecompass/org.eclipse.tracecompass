@@ -26,7 +26,7 @@ import com.google.gson.annotations.SerializedName;
  * @author Sehr Moosabhoy
  *
  */
-public class JsonStructureFieldMetadataNode extends CTFJsonMetadataNode {
+public class JsonStructureFieldMetadataNode extends CTFJsonMetadataNode implements IStructureFieldMetadataNode {
 
     @SerializedName("member-classes")
     private List<JsonStructureFieldMemberMetadataNode> fMemberClasses;
@@ -62,6 +62,16 @@ public class JsonStructureFieldMetadataNode extends CTFJsonMetadataNode {
      * @return the minimum alignment
      */
     public int getMinimumAlignment() {
+        return fMinimumAlignment;
+    }
+
+    @Override
+    public List<JsonStructureFieldMemberMetadataNode> getStructureMemberClasses() {
+        return fMemberClasses;
+    }
+
+    @Override
+    public long getStructureMinimumAlignment() {
         return fMinimumAlignment;
     }
 
