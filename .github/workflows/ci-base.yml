@@ -23,7 +23,7 @@ on:
       maven-goals:
         description: maven goals to use, defaults to 'clean verify'
         required: false
-        default: 'clean install'
+        default: 'clean verify'
         type: string
 jobs:
   build:
