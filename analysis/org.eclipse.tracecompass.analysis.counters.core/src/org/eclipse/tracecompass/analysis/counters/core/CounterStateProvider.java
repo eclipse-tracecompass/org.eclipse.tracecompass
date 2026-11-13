@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017, 2025 Ericsson
+ * Copyright (c) 2017, 2026 Ericsson and others
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -17,11 +17,13 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.tracecompass.analysis.counters.core.aspects.CounterAspect;
 import org.eclipse.tracecompass.analysis.counters.core.aspects.ITmfCounterAspect;
 import org.eclipse.tracecompass.common.core.log.TraceCompassLog;
-import org.eclipse.tracecompass.internal.analysis.counters.core.Activator;
 import org.eclipse.tracecompass.statesystem.core.ITmfStateSystemBuilder;
 import org.eclipse.tracecompass.statesystem.core.StateSystemBuilderUtils;
 import org.eclipse.tracecompass.statesystem.core.exceptions.StateValueTypeException;
@@ -33,6 +35,8 @@ import org.eclipse.tracecompass.tmf.core.statesystem.ITmfStateProvider;
 import org.eclipse.tracecompass.tmf.core.trace.ITmfTrace;
 import org.eclipse.tracecompass.tmf.core.trace.TmfTraceUtils;
 import org.eclipse.tracecompass.traceeventlogger.LogUtils;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
@@ -187,8 +191,14 @@ public class CounterStateProvider extends AbstractTmfStateProvider {
                         StateSystemBuilderUtils.incrementAttributeDouble(ss, event.getTimestamp().toNanos(), quark, eventContent.doubleValue());
                         break;
                     default:
-                        Activator.getInstance().logWarning("This CounterType (" + aspect.getType().toString() //$NON-NLS-1$
-                                + ") is not supported in the CounterAnalysis."); //$NON-NLS-1$
+                        // FIXME: AF: may be replaced with `ILog#warn` when we
+                        // will be ready to retire support for older SimRel
+                        // releases, see
+                        // https://github.com/eclipse-tracecompass/org.eclipse.tracecompass/issues/454
+                        Bundle bundle = FrameworkUtil.getBundle(CounterStateProvider.class);
+                        String message = "This CounterType (" + aspect.getType().toString() //$NON-NLS-1$
+                        + ") is not supported in the CounterAnalysis."; //$NON-NLS-1$
+                        Platform.getLog(bundle).log(new Status(IStatus.WARNING, bundle.getSymbolicName(), message));
                         break;
                     }
                 } catch (StateValueTypeException e) {
