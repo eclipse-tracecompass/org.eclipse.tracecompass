@@ -62,5 +62,4 @@ Export-Package: org.eclipse.tracecompass.alltests;x-internal:=true,
  org.eclipse.tracecompass.alltests.swtbot;x-internal:=true
 Import-Package: org.apache.commons.lang3,
  org.json
-Bundle-Activator: org.eclipse.tracecompass.alltests.Activator
 Automatic-Module-Name: org.eclipse.tracecompass.alltests
