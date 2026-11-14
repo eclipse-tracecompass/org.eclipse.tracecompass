@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2022 École Polytechnique de Montréal and others
+ * Copyright (c) 2015, 2026 École Polytechnique de Montréal and others
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License 2.0 which
@@ -29,7 +29,6 @@ import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.tracecompass.analysis.graph.core.criticalpath.AbstractCriticalPathModule;
 import org.eclipse.tracecompass.internal.analysis.graph.core.dataprovider.CriticalPathDataProvider;
 import org.eclipse.tracecompass.internal.analysis.graph.core.dataprovider.CriticalPathEntry;
-import org.eclipse.tracecompass.internal.analysis.graph.ui.Activator;
 import org.eclipse.tracecompass.internal.provisional.tmf.ui.widgets.timegraph.BaseDataProviderTimeGraphPresentationProvider;
 import org.eclipse.tracecompass.internal.tmf.core.model.filters.FetchParametersUtils;
 import org.eclipse.tracecompass.tmf.core.analysis.IAnalysisModule;
@@ -53,6 +52,8 @@ import org.eclipse.tracecompass.tmf.ui.widgets.timegraph.model.TimeGraphEntry;
 import org.eclipse.tracecompass.tmf.ui.widgets.timegraph.model.TimeLinkEvent;
 import org.eclipse.tracecompass.tmf.ui.widgets.timegraph.widgets.Utils;
 import org.eclipse.ui.IWorkbenchActionConstants;
+import org.eclipse.ui.PlatformUI;
+import org.osgi.framework.FrameworkUtil;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Iterables;
@@ -253,7 +254,7 @@ public class CriticalPathView extends BaseDataProviderTimeGraphView {
             return;
         }
 
-        IDialogSettings settings = Activator.getDefault().getDialogSettings();
+        IDialogSettings settings = PlatformUI.getDialogSettingsProvider(FrameworkUtil.getBundle(getClass())).getDialogSettings();
         IDialogSettings section = settings.getSection(getClass().getName());
         if (section == null) {
             section = settings.addNewSection(getClass().getName());
