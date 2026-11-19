@@ -107,26 +107,23 @@ public final class VariantDeclarationParser extends AbstractScopedCommonTreePars
                 JsonStructureFieldMemberMetadataNode member = (JsonStructureFieldMemberMetadataNode) child;
                 JsonElement fieldClass = member.getFieldClass();
                 String name = member.getName();
-                IDeclaration decl;
-                if (fieldClass.isJsonObject()) {
-                    String type = fieldClass.getAsJsonObject().get(JsonMetadataStrings.TYPE).getAsString();
-                    if (JsonMetadataStrings.STRUCTURE.equals(type)) {
-                        JsonStructureFieldMetadataNode structureFieldClass = Objects.requireNonNull(new Gson().fromJson(fieldClass.getAsJsonObject(), JsonStructureFieldMetadataNode.class));
-                        try {
-                            structureFieldClass.initialize();
-                        } catch (CTFException e) {
-                            throw new ParseException("Variant declaration does not match CTF2 Json format"); //$NON-NLS-1$
-                        }
-                        decl = TypeSpecifierListParser.INSTANCE.parse(structureFieldClass, new TypeSpecifierListParser.Param(trace, null, null, scope));
-                    } else {
-                        decl = TypeAliasParser.INSTANCE.parse(member, new TypeAliasParser.Param(trace, scope));
-                    }
-                } else {
-                    // TODO: Cover else-case where field class is JsonString for
-                    // field class alias
-                    throw new ParseException("Field class aliases are not yet supported by trace compass"); //$NON-NLS-1$
+                if (fieldClass == null || !fieldClass.isJsonObject()) {
+                    throw new ParseException("Variant field class requires a field-class property"); //$NON-NLS-1$
                 }
-                addVariantField(variant, scope, decl, name);
+                String type = fieldClass.getAsJsonObject().get(JsonMetadataStrings.TYPE).getAsString();
+                IDeclaration fieldDeclaration;
+                if (JsonMetadataStrings.STRUCTURE.equals(type)) {
+                    JsonStructureFieldMetadataNode structureFieldClass = Objects.requireNonNull(new Gson().fromJson(fieldClass.getAsJsonObject(), JsonStructureFieldMetadataNode.class));
+                    try {
+                        structureFieldClass.initialize();
+                    } catch (CTFException e) {
+                        throw new ParseException("Variant declaration does not match CTF2 Json format"); //$NON-NLS-1$
+                    }
+                    fieldDeclaration = TypeSpecifierListParser.INSTANCE.parse(structureFieldClass, new TypeSpecifierListParser.Param(trace, null, null, scope));
+                } else {
+                    fieldDeclaration = TypeAliasParser.INSTANCE.parse(member, new TypeAliasParser.Param(trace, scope));
+                }
+                addVariantField(variant, scope, fieldDeclaration, name);
             }
         } else {
             /* Get the type specifier list node */
