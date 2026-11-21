@@ -24,7 +24,7 @@ import org.eclipse.tracecompass.ctf.core.event.types.IntegerDeclaration;
 import org.eclipse.tracecompass.ctf.core.trace.CTFTrace;
 import org.eclipse.tracecompass.ctf.parser.CTFParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.AbstractScopedCommonTreeParser;
-import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonStructureFieldMemberMetadataNode;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.IFieldMemberMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.integer.IntegerDeclarationParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.types.ICTFMetadataNode;
@@ -162,9 +162,9 @@ public final class EnumParser extends AbstractScopedCommonTreeParser {
         /* Container type */
         IntegerDeclaration containerTypeDeclaration = null;
 
-        if (theEnum instanceof JsonStructureFieldMemberMetadataNode) {
-            JsonStructureFieldMemberMetadataNode jsonEnum = (JsonStructureFieldMemberMetadataNode) theEnum;
-            enumName = jsonEnum.getName();
+        if (theEnum instanceof IFieldMemberMetadataNode) {
+            IFieldMemberMetadataNode jsonEnum = (IFieldMemberMetadataNode) theEnum;
+            enumName = jsonEnum.getMemberName();
             enumBody = jsonEnum;
             containerTypeDeclaration = IntegerDeclarationParser.INSTANCE.parse(jsonEnum, new IntegerDeclarationParser.Param(trace));
         } else {

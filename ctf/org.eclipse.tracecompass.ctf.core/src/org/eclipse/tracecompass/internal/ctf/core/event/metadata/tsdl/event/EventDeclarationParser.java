@@ -24,10 +24,7 @@ import org.eclipse.tracecompass.ctf.core.trace.ICTFStream;
 import org.eclipse.tracecompass.ctf.parser.CTFParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.EventDeclaration;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.AbstractScopedCommonTreeParser;
-import org.eclipse.tracecompass.internal.ctf.core.event.metadata.CTFAntlrMetadataNode;
-import org.eclipse.tracecompass.internal.ctf.core.event.metadata.CTFJsonMetadataNode;
-import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonEventRecordMetadataNode;
-import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonStructureFieldMetadataNode;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.IEventDeclarationMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.MetadataStrings;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.TypeSpecifierListParser;
@@ -92,16 +89,16 @@ public final class EventDeclarationParser extends AbstractScopedCommonTreeParser
         EventDeclaration event = ((Param) param).fEvent;
         CTFTrace fTrace = ((Param) param).fTrace;
 
-        if (eventDecl instanceof CTFJsonMetadataNode) {
-            JsonEventRecordMetadataNode rec = (JsonEventRecordMetadataNode) eventDecl;
+        if (eventDecl instanceof IEventDeclarationMetadataNode) {
+            IEventDeclarationMetadataNode rec = (IEventDeclarationMetadataNode) eventDecl;
 
-            String name = rec.getName();
+            String name = rec.getEventName();
             if (name != null) {
                 event.setName(name);
             }
 
             // default is 0
-            long id = rec.getId();
+            long id = rec.getEventId();
             verifyEventId(event, id);
             event.setId(id);
 
@@ -110,21 +107,21 @@ public final class EventDeclarationParser extends AbstractScopedCommonTreeParser
             CTFStream ctfStream = verifyStream(fTrace, streamId);
             event.setStream(ctfStream);
 
-            JsonStructureFieldMetadataNode context = rec.getSpecificContextClass();
+            ICTFMetadataNode context = rec.getSpecificContextNode();
             if (context != null) {
-                IDeclaration contextDecl = TypeSpecifierListParser.INSTANCE.parse(rec.getSpecificContextClass(), new TypeSpecifierListParser.Param(fTrace, null, null, scope));
+                IDeclaration contextDecl = TypeSpecifierListParser.INSTANCE.parse(context, new TypeSpecifierListParser.Param(fTrace, null, null, scope));
                 verifyContext(contextDecl);
                 event.setContext((StructDeclaration) contextDecl);
             }
 
-            JsonStructureFieldMetadataNode payload = rec.getPayloadFieldClass();
+            ICTFMetadataNode payload = rec.getPayloadNode();
             if (payload != null) {
-                IDeclaration fieldsDecl = TypeSpecifierListParser.INSTANCE.parse(rec.getPayloadFieldClass(), new TypeSpecifierListParser.Param(fTrace, null, null, scope));
+                IDeclaration fieldsDecl = TypeSpecifierListParser.INSTANCE.parse(payload, new TypeSpecifierListParser.Param(fTrace, null, null, scope));
                 StructDeclaration fields = verifyFieldsDeclaration(fieldsDecl);
                 event.setFields(fields);
             }
 
-        } else if (eventDecl instanceof CTFAntlrMetadataNode) {
+        } else {
             /* There should be a left and right */
 
             ICTFMetadataNode leftNode = eventDecl.getChild(0);

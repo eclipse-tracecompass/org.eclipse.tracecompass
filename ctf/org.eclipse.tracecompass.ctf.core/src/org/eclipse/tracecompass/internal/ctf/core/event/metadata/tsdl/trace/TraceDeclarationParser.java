@@ -11,11 +11,7 @@
 
 package org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.trace;
 
-import static org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.TsdlUtils.concatenateUnaryStrings;
-import static org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.TsdlUtils.isAnyUnaryString;
-
 import java.nio.ByteOrder;
-import java.util.List;
 import java.util.UUID;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -30,8 +26,8 @@ import org.eclipse.tracecompass.ctf.core.trace.CTFTrace;
 import org.eclipse.tracecompass.ctf.parser.CTFParser;
 import org.eclipse.tracecompass.internal.ctf.core.CtfCoreLoggerUtil;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.AbstractScopedCommonTreeParser;
-import org.eclipse.tracecompass.internal.ctf.core.event.metadata.CTFAntlrMetadataNode;
-import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonPreambleMetadataNode;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.AntlrTraceDeclarationMetadataNode;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ITraceDeclarationMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.MetadataStrings;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.ByteOrderParser;
@@ -126,30 +122,33 @@ public final class TraceDeclarationParser extends AbstractScopedCommonTreeParser
         CTFTrace trace = ((Param) param).fTrace;
         DeclarationScope scope = ((Param) param).fCurrentScope;
 
-        if (traceDecl instanceof JsonPreambleMetadataNode) {
-            int version = ((JsonPreambleMetadataNode) traceDecl).getVersion();
+        ITraceDeclarationMetadataNode declNode;
+        if (traceDecl instanceof ITraceDeclarationMetadataNode) {
+            declNode = (ITraceDeclarationMetadataNode) traceDecl;
+        } else {
+            // Wrap raw ANTLR node into the typed interface
+            declNode = new AntlrTraceDeclarationMetadataNode(traceDecl);
+        }
+
+        if (declNode.isPreamble()) {
+            int version = declNode.getTraceVersion();
             if (version == 2) {
                 trace.setMajor(version);
             } else {
                 throw new ParseException("invalid version of trace"); //$NON-NLS-1$
             }
-            UUID uuid = ((JsonPreambleMetadataNode) traceDecl).getUuid();
+            UUID uuid = declNode.getTraceUUID();
             if (uuid != null) {
                 uuidIsConsistent(trace, uuid);
             }
-        } else if (traceDecl instanceof CTFAntlrMetadataNode) {
+        } else if (declNode.isKeyValueDeclaration()) {
 
-            /* There should be a left and right */
-            ICTFMetadataNode leftNode = traceDecl.getChild(0);
-            ICTFMetadataNode rightNode = traceDecl.getChild(1);
+            String left = declNode.getDeclarationKey();
+            ICTFMetadataNode rightNode = declNode.getDeclarationValue();
 
-            List<ICTFMetadataNode> leftStrings = leftNode.getChildren();
-
-            if (!isAnyUnaryString(leftStrings.get(0))) {
+            if (left == null || rightNode == null) {
                 throw new ParseException("Left side of CTF assignment must be a string"); //$NON-NLS-1$
             }
-
-            String left = concatenateUnaryStrings(leftStrings);
 
             if (left.equals(MetadataStrings.MAJOR)) {
                 if (trace.majorIsSet()) {

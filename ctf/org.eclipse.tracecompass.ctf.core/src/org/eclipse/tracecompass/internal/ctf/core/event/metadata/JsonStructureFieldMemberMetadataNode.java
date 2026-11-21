@@ -28,7 +28,7 @@ import com.google.gson.annotations.SerializedName;
  * @author Sehr Moosabhoy
  *
  */
-public class JsonStructureFieldMemberMetadataNode extends CTFJsonMetadataNode {
+public class JsonStructureFieldMemberMetadataNode extends CTFJsonMetadataNode implements IFieldMemberMetadataNode {
 
     @SerializedName("name")
     private final String fName;
@@ -62,6 +62,16 @@ public class JsonStructureFieldMemberMetadataNode extends CTFJsonMetadataNode {
      *
      * @return the name
      */
+    @Override
+    public String getMemberName() {
+        return fName;
+    }
+
+    /**
+     * Get the name of the structure field member
+     *
+     * @return the name
+     */
     public String getName() {
         return fName;
     }
@@ -71,6 +81,7 @@ public class JsonStructureFieldMemberMetadataNode extends CTFJsonMetadataNode {
      *
      * @return the field class
      */
+    @Override
     public JsonElement getFieldClass() {
         return fFieldClass;
     }
@@ -80,6 +91,7 @@ public class JsonStructureFieldMemberMetadataNode extends CTFJsonMetadataNode {
      *
      * @return the role
      */
+    @Override
     public String getRole() {
         String role = null;
         if (fFieldClass != null && fFieldClass.isJsonObject()) {
@@ -99,6 +111,7 @@ public class JsonStructureFieldMemberMetadataNode extends CTFJsonMetadataNode {
      *
      * @return JsonElement of the field ranges for this variant field class
      */
+    @Override
     public JsonElement getFieldRanges() {
         return fFieldRanges;
     }

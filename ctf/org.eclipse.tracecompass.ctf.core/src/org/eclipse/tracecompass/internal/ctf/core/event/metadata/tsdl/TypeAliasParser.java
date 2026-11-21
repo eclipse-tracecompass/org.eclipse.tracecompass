@@ -22,7 +22,7 @@ import org.eclipse.tracecompass.ctf.core.trace.CTFTrace;
 import org.eclipse.tracecompass.ctf.parser.CTFParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.AbstractScopedCommonTreeParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonFieldClassAliasMetadataNode;
-import org.eclipse.tracecompass.internal.ctf.core.event.metadata.JsonStructureFieldMemberMetadataNode;
+import org.eclipse.tracecompass.internal.ctf.core.event.metadata.IFieldMemberMetadataNode;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.ParseException;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.bitarray.BitArrayDeclarationParser;
 import org.eclipse.tracecompass.internal.ctf.core.event.metadata.tsdl.bitmap.BitMapDeclarationParser;
@@ -109,16 +109,17 @@ public final class TypeAliasParser extends AbstractScopedCommonTreeParser {
         CTFTrace trace = ((Param) param).fTrace;
 
         String aliasString = null;
-        if (typealias instanceof JsonStructureFieldMemberMetadataNode) {
-            JsonStructureFieldMemberMetadataNode member = ((JsonStructureFieldMemberMetadataNode) typealias);
+        if (typealias instanceof IFieldMemberMetadataNode) {
+            IFieldMemberMetadataNode member = ((IFieldMemberMetadataNode) typealias);
             String type = typealias.getType();
             JsonObject fieldClass = null;
-            if (member.getFieldClass().isJsonObject()) {
-                fieldClass = member.getFieldClass().getAsJsonObject();
-                aliasString = member.getName();
+            JsonElement memberFieldClass = member.getFieldClass();
+            if (memberFieldClass != null && memberFieldClass.isJsonObject()) {
+                fieldClass = memberFieldClass.getAsJsonObject();
+                aliasString = member.getMemberName();
                 type = member.getType();
-            } else if (member.getFieldClass().isJsonPrimitive()) {
-                JsonPrimitive jPrimitive = member.getFieldClass().getAsJsonPrimitive();
+            } else if (memberFieldClass != null && memberFieldClass.isJsonPrimitive()) {
+                JsonPrimitive jPrimitive = memberFieldClass.getAsJsonPrimitive();
                 if (jPrimitive.isString()) {
                     String fieldClassAlias = jPrimitive.getAsString();
                     ICTFMetadataNode root = member;

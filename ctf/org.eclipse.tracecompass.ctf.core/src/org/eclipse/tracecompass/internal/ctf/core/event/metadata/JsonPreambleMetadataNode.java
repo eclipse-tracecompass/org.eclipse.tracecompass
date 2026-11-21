@@ -26,7 +26,7 @@ import com.google.gson.annotations.SerializedName;
  * @author Sehr Moosabhoy
  *
  */
-public class JsonPreambleMetadataNode extends CTFJsonMetadataNode {
+public class JsonPreambleMetadataNode extends CTFJsonMetadataNode implements ITraceDeclarationMetadataNode {
     /**
      * the uuid of a trace as a byte array
      */
@@ -75,6 +75,36 @@ public class JsonPreambleMetadataNode extends CTFJsonMetadataNode {
         long high = bb.getLong();
         long low = bb.getLong();
         return new UUID(high, low);
+    }
+
+    @Override
+    public boolean isPreamble() {
+        return true;
+    }
+
+    @Override
+    public boolean isKeyValueDeclaration() {
+        return false;
+    }
+
+    @Override
+    public int getTraceVersion() {
+        return fVersion;
+    }
+
+    @Override
+    public UUID getTraceUUID() {
+        return getUuid();
+    }
+
+    @Override
+    public String getDeclarationKey() {
+        return null;
+    }
+
+    @Override
+    public ICTFMetadataNode getDeclarationValue() {
+        return null;
     }
 
 }
