@@ -16,6 +16,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -74,6 +75,7 @@ public class HistogramDataProvider extends AbstractTmfTraceDataProvider implemen
     private final long fTraceId = TRACE_IDS.getAndIncrement();
     private final long fTotalId = TRACE_IDS.getAndIncrement();
     private final long fLostId = TRACE_IDS.getAndIncrement();
+    private final Map<String, Long> fEventTypeIds = new HashMap<>();
 
     /**
      * Constructor
@@ -101,6 +103,21 @@ public class HistogramDataProvider extends AbstractTmfTraceDataProvider implemen
         if (eventsSs.optQuarkAbsolute(Attributes.LOST_EVENTS) != ITmfStateSystem.INVALID_ATTRIBUTE) {
             builder.add(new TmfXyTreeDataModel(fLostId, fTraceId, Collections.singletonList(Objects.requireNonNull(Messages.HistogramDataProvider_Lost)), true, null, true));
         }
+
+        // Add event type children
+        int eventTypesQuark = eventsSs.optQuarkAbsolute(Attributes.EVENT_TYPES);
+        if (eventTypesQuark != ITmfStateSystem.INVALID_ATTRIBUTE) {
+            List<Integer> eventTypeQuarks = eventsSs.getSubAttributes(eventTypesQuark, false);
+            for (Integer quark : eventTypeQuarks) {
+                String eventTypeName = eventsSs.getAttributeName(quark);
+                if (!"Lost event".equals(eventTypeName)) { //$NON-NLS-1$
+                    long eventTypeId = TRACE_IDS.getAndIncrement();
+                    fEventTypeIds.put(eventTypeName, eventTypeId);
+                    builder.add(new TmfXyTreeDataModel(eventTypeId, fTraceId, Collections.singletonList(eventTypeName), true, null, true));
+                }
+            }
+        }
+
         if (eventsSs.waitUntilBuilt(0)) {
             TmfModelResponse<TmfTreeModel<TmfTreeDataModel>> response = new TmfModelResponse<>(new TmfTreeModel<>(Collections.emptyList(), builder.build()), ITmfResponse.Status.COMPLETED, CommonStatusMessage.COMPLETED);
             fCached = response;
@@ -145,6 +162,21 @@ public class HistogramDataProvider extends AbstractTmfTraceDataProvider implemen
                 return TmfXyResponseFactory.createFailedResponse(CommonStatusMessage.STATE_SYSTEM_FAILED);
             }
         }
+
+        // Handle event type requests
+        if (eventsSs != null) {
+            for (Map.Entry<String, Long> entry : fEventTypeIds.entrySet()) {
+                if (selected.contains(entry.getValue())) {
+                    try {
+                        YModel series = getEventTypeHistogram(eventsSs, entry.getKey(), entry.getValue(), xValues);
+                        builder.add(series);
+                    } catch (StateSystemDisposedException e) {
+                        return TmfXyResponseFactory.createFailedResponse(CommonStatusMessage.STATE_SYSTEM_FAILED);
+                    }
+                }
+            }
+        }
+
         boolean completed = eventsSs != null ? eventsSs.waitUntilBuilt(0) || eventsSs.getCurrentEndTime() >= filter.getEnd() : false;
 
         return TmfXyResponseFactory.create(TITLE, xValues, builder.build(), completed);
@@ -210,6 +242,58 @@ public class HistogramDataProvider extends AbstractTmfTraceDataProvider implemen
         }
         String lostName = getTrace().getName() + '/' + Messages.HistogramDataProvider_Lost;
         return new YModel(fLostId, lostName, leY);
+    }
+
+    private YModel getEventTypeHistogram(ITmfStateSystem eventsSs, String eventTypeName, long eventTypeId, long[] times) throws StateSystemDisposedException {
+        int eventTypeQuark = eventsSs.optQuarkAbsolute(Attributes.EVENT_TYPES, eventTypeName);
+        if (eventTypeQuark == ITmfStateSystem.INVALID_ATTRIBUTE) {
+            return new YModel(eventTypeId, getTrace().getName() + '/' + eventTypeName, new double[times.length]);
+        }
+
+        List<Long> timesList = new ArrayList<>();
+        for (long time : times) {
+            timesList.add(time);
+        }
+
+        List<Long> values = new ArrayList<>();
+        try {
+            List<ITmfStateInterval> rawValues = new ArrayList<>();
+
+            Iterable<ITmfStateInterval> intervals = eventsSs.query2D(Collections.singletonList(eventTypeQuark), timesList);
+            for (ITmfStateInterval interval : intervals) {
+                rawValues.add(interval);
+            }
+            rawValues.sort(new Comparator<ITmfStateInterval>() {
+                @Override
+                public int compare(ITmfStateInterval arg0, ITmfStateInterval arg1) {
+                    return Long.compare(arg0.getStartTime(), arg1.getStartTime());
+                }
+            });
+            long prevValue = rawValues.get(0).getValueLong();
+            for (ITmfStateInterval interval : rawValues) {
+                Object value = interval.getValue();
+                long currentValue = (value instanceof Number) ? ((Number) value).longValue() : 0;
+                values.add(currentValue - prevValue);
+                prevValue = currentValue;
+            }
+        } catch (StateSystemDisposedException e) {
+            // Return empty data if state system is disposed
+            for (int i = 0; i < times.length; i++) {
+                values.add(0L);
+            }
+        }
+
+        // Pad with zeros if needed
+        while (values.size() < times.length) {
+            values.add(0L);
+        }
+
+        double[] y = new double[times.length];
+        for (int i = 0; i < Math.min(times.length, values.size()); i++) {
+            y[i] = values.get(i).doubleValue();
+        }
+
+        return new YModel(eventTypeId, getTrace().getName() + '/' + eventTypeName, y);
     }
 
     private class LostEventInterval {
