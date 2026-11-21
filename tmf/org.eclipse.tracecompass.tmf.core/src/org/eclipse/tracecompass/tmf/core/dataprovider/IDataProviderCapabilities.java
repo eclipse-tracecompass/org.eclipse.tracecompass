@@ -15,14 +15,18 @@ import org.eclipse.tracecompass.tmf.core.config.ITmfDataProviderConfigurator;
 /**
  * Interface to implement to indicate capabilities of a data provider, such as
  * "canCreate" and "canDelete" capability.
- *
+ * <p>
  * "canCreate" indicates that a given data provider can create a derived data
  * provider. "canDelete" indicates that a given data provider can be deleted.
- *
+ * <p>
  * Call method {@link IDataProviderFactory#getAdapter(Class)} with class
  * {@link ITmfDataProviderConfigurator} to obtain an instance of
  * {@link ITmfDataProviderConfigurator}, which implements the "canCreate" and
  * "canDelete" capabilities.
+ * <p>
+ * "selectionRange" indicates that a given data provider can use the selection
+ * range to compute its data. Clients should include the selection range in
+ * query parameters and refresh the data when the selection range changes.
  *
  * @since 9.6
  * @author Bernd Hufmann
@@ -43,4 +47,15 @@ public interface IDataProviderCapabilities {
      *         {@code false}
      */
     boolean canDelete();
+
+    /**
+     * Whether the data provider uses the selection range.
+     *
+     * @return {@code true} if this data provider uses the selection range, else
+     *         {@code false}
+     * @since 10.2
+     */
+    default boolean selectionRange() {
+        return false;
+    }
 }
