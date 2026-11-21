@@ -26,7 +26,6 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.tracecompass.internal.tmf.core.Activator;
 import org.eclipse.tracecompass.tmf.core.exceptions.TmfConfigurationException;
-
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 import com.google.gson.annotations.Expose;
@@ -49,8 +48,11 @@ public class TmfConfiguration implements ITmfConfiguration {
 
     /**
      * The json file extension
+     *
      * @since 9.5
+     * @deprecated use {@link AbstractTmfDataProviderConfigurator#JSON_EXTENSION} instead
      */
+    @Deprecated
     public static final String JSON_EXTENSION = "json"; //$NON-NLS-1$
 
     @Expose
@@ -327,7 +329,11 @@ public class TmfConfiguration implements ITmfConfiguration {
      * @throws TmfConfigurationException
      *             if an error occurs
      * @since 9.5
+     * @deprecated use
+     *             {@link AbstractTmfDataProviderConfigurator#writeConfiguration(ITmfConfiguration, IPath)}
+     *             instead
      */
+    @Deprecated
     public static void writeConfiguration(ITmfConfiguration configuration, IPath rootPath) throws TmfConfigurationException {
         IPath supplPath = rootPath;
         File folder = supplPath.toFile();
@@ -343,4 +349,5 @@ public class TmfConfiguration implements ITmfConfiguration {
             throw new TmfConfigurationException("Error writing configuration.", e); //$NON-NLS-1$
         }
     }
+
 }
