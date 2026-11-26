@@ -330,7 +330,10 @@ public class TmfAnalysisElement extends TmfProjectModelElement implements ITmfSt
         if (module == null) {
             return new Status(IStatus.INFO, Activator.PLUGIN_ID, String.format("null analysis for %s", getAnalysisHelper().getName())); //$NON-NLS-1$
         }
-        return module.schedule();
+        new Thread(() -> {
+            module.schedule();
+        }).run();
+        return Status.OK_STATUS;
     }
 
     /**
